@@ -1,0 +1,44 @@
+/* UnderBar 스타일 */
+.underbar {
+  position: fixed;
+  height: 73px;
+  bottom: 0;
+  width: 100%;
+  background-color: white;
+  border-top: 1px solid #ebebeb;
+  display: flex;
+  justify-content: center;
+  padding: 0px 0;
+  /* box-shadow: 0 -2px 5px rgba(0,0,0,0.1); */
+}
+
+.underbar-button {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: gray;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.3s;
+  margin : 10px 20px 0 20px;
+}
+
+.underbar-button:hover,
+.underbar-button:focus {
+  color: #6200ea;
+}
+
+.underbar-icon {
+  width: 16px;
+  height: 16px;
+  margin-bottom: 6px;
+}
+
+.underbar-button span {
+  font-size: 12px;
+}
+
+/* Material Icons */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');

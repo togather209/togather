@@ -1,20 +1,17 @@
-# 빌드 단계
-FROM node:20.15.0 AS build
+# Dockerfile
+FROM node:16-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
+
 RUN npm install
 
 COPY . .
+
+# 빌드 명령어 실행
 RUN npm run build
 
-# Nginx 단계
-FROM nginx:alpine
+EXPOSE 3000
 
-# Nginx 기본 HTML 폴더에 빌드 결과물 복사
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Nginx를 포그라운드에서 실행
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "run", "serve"]
