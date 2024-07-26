@@ -1,0 +1,10 @@
+.middle-button {
+  height: 50px;
+  width: 147px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  border-radius: 12px;
+  border: 0;
+  background: linear-gradient(45deg, #712FFF, #A074FF);
+}
