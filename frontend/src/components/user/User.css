@@ -11,6 +11,14 @@
   transition: background 0.3s ease;
 }
 
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 50px;
+}
+
 .submit-button:hover {
   background: linear-gradient(to right, #712FFF, #712FFF);
 }
@@ -29,6 +37,7 @@
 
 .logo {
   margin-bottom: 20px;
+  width: 180px;
 }
 
 .remember-email {
@@ -38,4 +47,31 @@
 }
 .remember-email input {
   margin-right: 5px;
+}
+
+.signupAndSearchpassword {
+  display: flex;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.textBoundary {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.easyLogin {
+  margin-top: 60px;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.loginWithKakao {
+  width: 100%;
+  border-radius: 4px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  background-color: #FEE500;
+  padding: 12px;
 }
