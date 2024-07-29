@@ -1,11 +1,11 @@
 import React from 'react';
-import './Receipt.css';
+import './ReceiptList.css';
 
 function ReceiptTotal({ amount }) {
   return (
     <div className="receipt-total">
-      <h3>실시간 정산 현황</h3>
-      <p>{amount}</p>
+      <p>실시간 정산 현황</p>
+      <h3>{amount}</h3>
     </div>
   );
 }

@@ -1,0 +1,19 @@
+.button {
+  background-color: #F0F0F0;
+  cursor:  pointer;
+  border: none;
+  border-radius: 15px;
+  padding: 10px 20px;
+  font-size: 18px;
+  white-space: nowrap;
+  width: 308px;
+  height: 58px;
+  box-shadow: 5px 10px 20px #E9E9E9;
+}
+
+.button-purple {
+  font-weight: bold;
+  background: linear-gradient(45deg, #712FFF, #A074FF);
+  color: white;
+  box-shadow: 5px 10px 20px #A074FF;
+}

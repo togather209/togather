@@ -1,10 +1,10 @@
 import React from 'react';
-import './Receipt.css';
+import './ReceiptList.css';
 
-const ReceiptAddButton = ({ onAddReceipt }) => {
+const ReceiptAddButton = ({ onClick }) => {
 
   return (
-    <div className="add-receipt" onClick={onAddReceipt} >
+    <div className="add-receipt" onClick={onClick} >
       <div className='add-receipt-icon'>+</div>
       <div className='add-receipt-text'>영수증 등록</div>
     </div>

@@ -16,6 +16,10 @@ import MeetingDetail from '../components/meeting/MeetingDetail'
 import CreateSchedule from '../components/meeting/CreateSchedule';
 import SignUpForm from '../components/user/SignUpForm';
 
+import ReceiptListContainer from '../components/receipt/receiptList/ReceiptListContainer';
+import ReceiptFormContainer from '../components/receipt/receiptForm/ReceiptFormContainer';
+import ReceiptDetail from '../components/receipt/receiptDetail/ReceiptDetail';
+
 function AppRoutes() {
     return (
         <Routes>
@@ -28,12 +32,18 @@ function AppRoutes() {
                 <Route path='alarm' element={<Alarm />} />
                 <Route path='allmeeting' element={<AllMeeting />} />
             </Route>
-            <Route path='/game' element={<Game />} />
             <Route path='/wallet' element={<Wallet />} />
             <Route path='/mypage' element={<MyPage />} />
             <Route path='/login' element={<User />} />
             <Route path='/signup' element={<SignUpForm/>} />
-            <Route path='/receipt' element={<Receipt />} />
+
+            <Route path='/receipt' element={<Receipt />}>
+              <Route index element={<ReceiptListContainer />} />
+              <Route path=':id' element={<ReceiptDetail />} />
+              <Route path='regist-form' element={<ReceiptFormContainer />} />
+            </Route>
+
+            <Route path='/game' element={<Game />} />
         </Routes>
     );
 }
