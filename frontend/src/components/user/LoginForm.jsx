@@ -72,7 +72,7 @@ function LoginForm(){
       </div>
 
       <div>
-        <p className="easyLogin">{"━━━━━━   간편로그인   ━━━━━━"}</p>
+        <p className="easy-login">{"━━━━━━   간편로그인   ━━━━━━"}</p>
       </div>
       <button
         className="loginWithKakao"
