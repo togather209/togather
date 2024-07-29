@@ -1,10 +1,9 @@
 import React from 'react';
+import NoPayment from '../components/wallet/NoPayment';
 
 function Wallet() {
   return (
-    <div>
-      <h1>Wallet Page</h1>
-    </div>
+      <NoPayment/>
   );
 }
 

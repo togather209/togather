@@ -14,6 +14,7 @@ import Alarm from '../components/meeting/Alarm';
 import AllMeeting from '../components/meeting/AllMeeting';
 import MeetingDetail from '../components/meeting/MeetingDetail'
 import CreateSchedule from '../components/meeting/CreateSchedule';
+import SignUpForm from '../components/user/SignUpForm';
 
 function AppRoutes() {
     return (
@@ -31,6 +32,7 @@ function AppRoutes() {
             <Route path='/wallet' element={<Wallet />} />
             <Route path='/mypage' element={<MyPage />} />
             <Route path='/login' element={<User />} />
+            <Route path='/signup' element={<SignUpForm/>} />
             <Route path='/receipt' element={<Receipt />} />
         </Routes>
     );
