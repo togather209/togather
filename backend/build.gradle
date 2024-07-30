@@ -44,6 +44,9 @@ dependencies {
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
     implementation 'com.google.guava:guava:29.0-jre'
+
+	// Validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 tasks.named('test') {
