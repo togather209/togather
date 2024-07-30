@@ -1,13 +1,22 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Game from '../pages/Game';
-import Wallet from '../pages/Wallet';
-import MyPage from '../pages/MyPage';
 import Landing from '../pages/Landing'
+
+//마이페이지
+import MyPage from '../pages/MyPage';
+
+//게임
+import Game from '../pages/Game';
 
 //유저
 import User from '../pages/User';
 import SignUpForm from '../components/user/SignUpForm';
+
+//지갑
+import Wallet from '../pages/Wallet';
+import TransactionList from "../components/wallet/TransactionList";
+import Send from "../components/wallet/Send";
+import CreatePayment from "../components/wallet/CreatePayment";
 
 //홈
 import Home from "../pages/Home";
@@ -31,7 +40,6 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="landing" element={<Landing />} />
-
       <Route path="/" element={<Home />}>
         <Route path="" element={<HomeMainContainer />}>
             <Route index element={<HomeMain />}></Route>
@@ -44,7 +52,11 @@ function AppRoutes() {
         </Route>
       </Route>
 
-      <Route path='/wallet' element={<Wallet />} />
+      <Route path="/wallet" element={<Wallet />} />
+      <Route path="/wallet/create_payment" element={<CreatePayment/>} />
+      <Route path="/wallet/transaction_list" element={<TransactionList />} />
+      <Route path="/wallet/send" element={<Send />} />
+
       <Route path='/mypage' element={<MyPage />} />
       <Route path='/login' element={<User />} />
       <Route path='/signup' element={<SignUpForm/>} />
