@@ -30,7 +30,7 @@ function RegistForm() {
             <div className="meeting-desc">
               <input className="desc-input" type="text" placeholder="설명" />
             </div>
-            <Button text={"생성"} type={"purple"} />
+            <Button type={"purple"}>생성</Button>
           </form>
         </div>
       </div>

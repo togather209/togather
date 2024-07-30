@@ -19,7 +19,7 @@ function JoinForm() {
                 placeholder="참여코드 6자"
               />
             </div>
-            <Button text={"참여"} type={"purple"} />
+            <Button type={"purple"}>참여</Button>
           </form>
         </div>
       </div>
