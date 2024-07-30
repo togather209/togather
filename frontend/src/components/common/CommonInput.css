@@ -1,0 +1,42 @@
+.input-container {
+  position: relative;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.input-label {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  background-color: white;
+  padding: 0 5px;
+  color: #ccc;
+  font-size: 16px;
+  transition: 0.2s;
+  pointer-events: none;
+}
+
+.common-input {
+  width: 100%;
+  padding: 10px;
+  padding-top: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.common-input:focus {
+  border-color: #712FFF; 
+  outline: none;
+}
+
+.common-input:focus + .input-label,
+.input-label.focused {
+  top: 0;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #712FFF;
+  font-size: 12px;
+}

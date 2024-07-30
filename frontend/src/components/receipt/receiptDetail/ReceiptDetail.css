@@ -1,0 +1,145 @@
+.receipt-detail-container {
+  padding: 16px;
+}
+
+.receipt-header {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.receipt-header div {
+  position: absolute;
+  top: 16px;
+  right: 37%;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+/* color별 영수증 background */
+.pink .receipt-info {
+  background-color: #FDEAE8;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.sky .receipt-info {
+  background-color: #E6F2FA;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.yellow .receipt-info {
+  background-color: #FFF3DC;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+/* color별 영수증 line */
+.pink .detail-line {
+  margin-bottom: 10px;
+  border: 1px solid #FBCED8;
+}
+
+.sky .detail-line {
+  margin-bottom: 10px;
+  border: 1px solid #98BFD7;
+}
+
+.yellow .detail-line {
+  margin-bottom: 10px;
+  border: 1px solid #EFCEA7;
+}
+
+.receipt-info h3 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.receipt-table {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.receipt-table th, .receipt-table td {
+  text-align: left;
+  padding: 10px;
+}
+
+.receipt-table th {
+  color: #575656;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.tagged-people {
+  display: block;
+  flex-direction: column;
+}
+
+/* .tagged-avatar {
+  width: 24px;
+  height: 24px;
+  border: #575656;
+  border-radius: 50%;
+  margin-left: 5px;
+} */
+
+.tagged-avatar {
+  width: auto;
+  height: auto;
+  border: 1px solid #575656;
+  border-radius: 50%;
+  margin: 5px 0;
+  padding: 5px;
+}
+
+.receipt-detail-total {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  padding: 0 12px 10px 12px;
+}
+
+.receipt-detail-total span:nth-child(2) {
+  font-size: 24px;
+}
+
+.receipt-meta {
+  font-size: 14px;
+  color: #575656;
+}
+
+.payment-info {
+  background-color: #e6f7ff;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.payment-table {
+  width: 100%;
+}
+
+.payment-table th, .payment-table td {
+  text-align: left;
+  padding: 10px;
+}
+
+.payment-table th {
+  background-color: #d4e9ff;
+}
+
+.confirm-button {
+  width: 100%;
+  padding: 15px;
+  background-color: #7b61ff;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
