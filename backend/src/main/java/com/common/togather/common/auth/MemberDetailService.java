@@ -1,29 +1,26 @@
 package com.common.togather.common.auth;
 
-import com.common.togather.api.service.MemberService;
 import com.common.togather.db.entity.Member;
+import com.common.togather.db.repository.MemberRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class MemberDetailService implements UserDetailsService {
 
-    private final MemberService memberService;
-
-    public MemberDetailService(MemberService memberService) {
-        this.memberService = memberService;
-    }
+    private final MemberRepository memberRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Member member = memberService.getMemberByEmail(email);
-        if(member != null){
-            MemberDetails memberDetails = new MemberDetails(member);
-            return memberDetails;
+        Member member = memberRepository.findByEmail(email);
+        if (member != null) {
+            return new MemberDetails(member);
+        } else {
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + email);
         }
-
-        return null;
     }
 }
