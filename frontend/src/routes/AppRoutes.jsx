@@ -19,6 +19,10 @@ import TransactionList from "../components/wallet/TransactionList";
 import Send from "../components/wallet/Send";
 import CreatePayment from "../components/wallet/CreatePayment";
 
+import ReceiptListContainer from '../components/receipt/receiptList/ReceiptListContainer';
+import ReceiptFormContainer from '../components/receipt/receiptForm/ReceiptFormContainer';
+import ReceiptDetail from '../components/receipt/receiptDetail/ReceiptDetail';
+
 function AppRoutes() {
   return (
     <Routes>
@@ -39,7 +43,11 @@ function AppRoutes() {
       <Route path="/mypage" element={<MyPage />} />
       <Route path="/login" element={<User />} />
       <Route path="/signup" element={<SignUpForm />} />
-      <Route path="/receipt" element={<Receipt />} />
+      <Route path='/receipt' element={<Receipt />}>
+              <Route index element={<ReceiptListContainer />} />
+              <Route path=':id' element={<ReceiptDetail />} />
+              <Route path='regist-form' element={<ReceiptFormContainer />} />
+            </Route>
     </Routes>
   );
 }
