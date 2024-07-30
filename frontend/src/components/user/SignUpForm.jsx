@@ -110,7 +110,7 @@ function SignUpForm() {
         </div>
         {certificationClick ? (
           <div>
-            <form className="certification">
+            <div className="certification">
               <input
                 id="certification"
                 type="text"
@@ -120,7 +120,7 @@ function SignUpForm() {
                 className="certification-input"
               />
               <button className="certification-button">확인</button>
-            </form>
+            </div>
           </div>
         ) : (
           ""
