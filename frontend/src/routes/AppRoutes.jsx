@@ -17,6 +17,7 @@ import Wallet from '../pages/Wallet';
 import TransactionList from "../components/wallet/TransactionList";
 import Send from "../components/wallet/Send";
 import CreatePayment from "../components/wallet/CreatePayment";
+import SendForm from '../components/wallet/SendForm';
 
 //홈
 import Home from "../pages/Home";
@@ -56,6 +57,7 @@ function AppRoutes() {
       <Route path="/wallet/create_payment" element={<CreatePayment/>} />
       <Route path="/wallet/transaction_list" element={<TransactionList />} />
       <Route path="/wallet/send" element={<Send />} />
+      <Route path="/wallet/sendform" element={<SendForm />} />
 
       <Route path='/mypage' element={<MyPage />} />
       <Route path='/login' element={<User />} />

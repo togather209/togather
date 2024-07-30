@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './CommonInput.css';
 
-const CommonInput = ({ id, type, placeholder, value, onChange }) => {
+const CommonInput = ({ id, type, placeholder, value, onChange, maxLength }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
@@ -14,6 +14,7 @@ const CommonInput = ({ id, type, placeholder, value, onChange }) => {
         type={type}
         value={value}
         onChange={onChange}
+        maxLength={maxLength}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         className="common-input"
