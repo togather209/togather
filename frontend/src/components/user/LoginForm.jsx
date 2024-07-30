@@ -30,14 +30,14 @@ function LoginForm(){
       <CommonInput
         id="email"
         type="email"
-        placeholder="email"
+        placeholder="이메일"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
       <CommonInput
         id="password"
         type="password"
-        placeholder="password"
+        placeholder="비밀번호"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />

@@ -1,59 +1,100 @@
-import React from 'react'
-import './MeetingDetail.css'
+import { useState, useEffect } from "react";
+import React from "react";
+import { useParams } from "react-router-dom";
 
-import { useParams, useNavigate } from 'react-router-dom';
+import "./MeetingDetail.css"
+import meetingsetting from "../../assets/meeting/meetingsetting.png"
+import promimg from "../../../public/다운로드.jpg"
+import BackButton from "../common/BackButton";
+import MiddleButton from "../common/MiddleButton"
+import ScheduleCard from "./ScheduleCard";
 
 function MeetingDetail() {
-    const params = useParams()
-    const navigation = useNavigate()
+  const [isPage, setIsPage] = useState(false)
+  const params = useParams();
+
+  // 모임 디테일 단일 조회
+  // 모임과 관련된 일정들 조회
+
+  const schedule_mokup = [
+    {
+      id: 1,
+      name : "우리의 첫번째 여행",
+    },
+    {
+      id: 2,
+      name : "우리의 두번째 여행",
+    },
+    {
+      id: 3,
+      name : "우리의 세번째 여행",
+    },
+  ]
+
+
+  if (!isPage) {
     return (
-        <div className='meeting-detail'>
-            <div>{ params.id }MeetingDetail</div>
-            <div className='meeting-detail-header'>
-                <button>뒤로가기</button>
-                <button>모임관리</button>
-            </div>
-            <div className='meeting-detail-body'>
-                <div className='meeting-detail-describe'>
-                    <img src="" alt="모임 사진" />
-                    <div>모임명</div>
-                    <div>모임 설명</div>
-                </div>
-                <div className='schedule-list'>
-                    <div className='schedule-item'>
-
-                        <div>우리의 여행</div>
-                        <button>영수증 작성 버튼</button>
-
-                    </div>
-                    <div className='schedule-item'>
-
-                        <div>우리의 여행2</div>
-                        <button>영수증 작성 버튼</button>
-
-                    </div>
-                    <div className='schedule-item'>
-
-                        <div>우리의 여행3</div>
-                        <button>영수증 작성 버튼</button>
-
-                    </div>
-                    <div className='schedule-item'>
-
-                        <div>우리의 여행4</div>
-                        <button>영수증 작성 버튼</button>
-
-                    </div>
-                    <div className='create-schedule'>
-                        <button onClick={() => navigation(`/${params.id}/createschedule`)}>+ 일정만들기</button>
-                    </div>
-                </div>
-
-
-            </div>
-
+      <div className="none-meetingdetail">
+        <div className="none-meetingdetail-header">
+          <BackButton />
+          <div className="none-meetingdetail-header-setting">
+            <p className="meeting-setting-text">모임관리</p>
+            <img className="meeting-setting" src={meetingsetting} alt="settingicon" />
+          </div>
         </div>
+        
+ 
+          <img className="meetingdetail-img" src={promimg} alt="모임 이미지" />
+      
+
+
+        <div className="meetingdetail-schedule">일정</div>
+
+        <div className="no-schedule-box">
+          <p className="no-schedule-text">등록된 일정이 없습니다</p>
+          <p className="make-new-schedule">새로운 일정을 만들어 보세요 !</p>
+        </div>
+
+        <MiddleButton>+ 일정 만들기</MiddleButton>
+
+      </div>
     )
+  }
+
+  if (isPage) {
+    return (
+      <div className="none-meetingdetail">
+      <div className="none-meetingdetail-header">
+        <BackButton />
+        <div className="none-meetingdetail-header-setting">
+          <p className="meeting-setting-text">모임관리</p>
+          <img className="meeting-setting" src={meetingsetting} alt="settingicon" />
+        </div>
+      </div>
+      
+      <img className="meetingdetail-img" src={promimg} alt="모임 이미지" />
+
+      <div className="meetingdetail-schedule2">일정 목록</div>
+
+      <div className="schedule-list-box">
+
+        {schedule_mokup.map((item, index) => (
+          <ScheduleCard 
+          key={item.id}
+          id={item.id}
+          name={item.name}
+          />
+        ))}
+
+      </div>
+
+      <MiddleButton>+ 일정 만들기</MiddleButton>
+
+    </div>
+    )
+  }
+
+  // <div>미팅 상세{params.id}</div>;
 }
 
 export default MeetingDetail;
