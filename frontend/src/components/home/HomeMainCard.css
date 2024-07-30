@@ -1,0 +1,14 @@
+.card {
+  width: 96px;
+  height: 105px;
+}
+
+.card-img {
+  width: 96px;
+  height: 75px;
+  border-radius: 15px;
+}
+
+.card-name {
+  font-size: 16px;
+}

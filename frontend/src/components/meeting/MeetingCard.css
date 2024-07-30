@@ -1,0 +1,39 @@
+.meeting-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 208px;
+    border: 0.5px solid #D7DEDD;
+    border-radius: 12px;
+}
+
+.meeting-img {
+    width: 130px;
+    height: 90px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.text-section {
+    width: 130px;
+    margin-bottom: 13px;
+}
+
+.title {
+    font-size: 16px;
+    margin-bottom: 2px;
+}
+
+.desc {
+    font-size: 12px;
+    color: #131212;
+    opacity: 70%;
+}
+
+.button-section {
+    width: 130px;
+    display: flex;
+    justify-content: end;
+}

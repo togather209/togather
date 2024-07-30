@@ -1,0 +1,38 @@
+.joinform {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.joinform-header {
+    width: 320px;
+    margin-top: 60px;
+}
+
+.joinform-desc {
+    margin-top: 25px;
+    margin-bottom: 36px;
+}
+
+.join-code {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    border: none;
+    width: 300px;
+    height: 53px;
+    border-radius: 15px;
+    background-color: #F9F9F9;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 190px;
+}
+
+.join-input {
+    width: 90%;
+    height: 50%;
+    border: none;
+    background-color: #F9F9F9;
+}
