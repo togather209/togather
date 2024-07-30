@@ -87,4 +87,10 @@ public class MemberService {
         Member member = memberRepository.findByEmail(email);
         return member;
     }
+
+    // 로그아웃
+    public void logout(String refreshToken) {
+        String email = jwtUtil.getEmailFromToken(refreshToken); // 토큰값에서 이메일 추출
+        redisService.deleteRefreshToken(email);
+    }
 }
