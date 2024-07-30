@@ -1,0 +1,19 @@
+.schedule-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 319px;
+    height: 53px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    padding: 0 15px;
+    border: none;
+    border-radius: 15px;
+    background-color: #F9F9F9;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.schedule-receipt {
+    width: 24px;
+    height: 24px;
+}
