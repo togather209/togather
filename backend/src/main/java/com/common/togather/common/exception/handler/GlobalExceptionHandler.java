@@ -1,6 +1,8 @@
 package com.common.togather.common.exception.handler;
 
+import com.common.togather.api.error.EmailAlreadyExistsException;
 import com.common.togather.api.error.InsufficientBalanceException;
+import com.common.togather.api.error.NicknameAlreadyExistsException;
 import com.common.togather.api.error.PayAccountNotFoundException;
 import com.common.togather.api.response.ErrorResponseDto;
 import org.springframework.http.HttpStatus;
@@ -33,5 +35,19 @@ public class GlobalExceptionHandler {
         ex.printStackTrace();
         ErrorResponseDto error = new ErrorResponseDto("Pay Account Not Found", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Email Already Exists", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(NicknameAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleNicknameAlreadyExistsException(NicknameAlreadyExistsException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Nickname Already Exists", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 }
