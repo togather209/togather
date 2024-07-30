@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './ReceiptForm.css';
 import BackButton from '../../common/BackButton';
 import Design from './DesignComponent';
-import RecognizeComponent from './RecognizeComponent';
+import Recognize from './RecognizeComponent';
 
 function ReceiptRegistForm() {
   const [activeTab, setActiveTab] = useState('design');
@@ -36,8 +36,8 @@ function ReceiptRegistForm() {
         </div>
       </div>
       <div className='tab-content'>
-        {activeTab === 'design' && <Design />}
-        {activeTab === 'recognize' && <RecognizeComponent />}
+        {activeTab === 'design' && <Design setActiveTab={setActiveTab}/>}
+        {activeTab === 'recognize' && <Recognize setActiveTab={setActiveTab}/>}
       </div>
     </div>
   )

@@ -1,19 +1,35 @@
-
 import React from 'react';
 import './ReceiptDetail.css';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import BackButton from '../../common/BackButton';
+import Button from '../../common/Button'
 
 function ReceiptDetail() {
+  // Receipt 상세 조회를 위한 id
   const { id } = useParams();
+
   const location = useLocation();
   const { meetingId, scheduleId } = location.state || {};
+
+  const navigate = useNavigate();
+
   // 임시 데이터
   const receipt = {
     id: 1,
     color: 'pink',
     title: '한화 이글스 파크',
     items: [
+      {
+        name: '1루 입장권',
+        quantity: 2,
+        price: 13000,
+        taggedPeople: [
+          {
+            id: 'jihye',
+            name: '이지혜'
+          },
+        ]
+      },
       {
         name: '1루 입장권',
         quantity: 2,
@@ -47,6 +63,30 @@ function ReceiptDetail() {
     paymentDate: '2024.07.16',
   };
 
+  // 정산액 계산
+  const calculateSettlements = (items) => {
+    const settlements = {};
+
+    items.forEach(item => {
+      const perPersonAmount = item.price / item.taggedPeople.length;
+
+      item.taggedPeople.forEach(person => {
+        if (!settlements[person.name]) {
+          settlements[person.name] = 0;
+        }
+        settlements[person.name] += perPersonAmount;
+      });
+    });
+
+    return settlements;
+  };
+
+  const settlements = calculateSettlements(receipt.items);
+
+  const handleCheck = () => {
+    navigate(-1);
+  }
+
   return (
     <>
       <div className={`receipt-detail-container ${receipt.color}`}>
@@ -68,17 +108,21 @@ function ReceiptDetail() {
             </thead>
             <tbody>
               {receipt.items.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.name}</td>
-                  <td>{item.quantity}개</td>
-                  <td>{item.price.toLocaleString()}원</td>
-                  <td className='tagged-people'>
-                    {item.taggedPeople.map((person, idx) => (
-                      // <img key={idx} src={person.avatar} alt={person.name} className="tagged-avatar" />
-                      <div key={idx} className="tagged-avatar">{person.name}</div>
-                    ))}
-                  </td>
-                </tr>
+                <React.Fragment key={index}>
+                  <tr>
+                    <td>{item.name}</td>
+                    <td>{item.quantity}개</td>
+                    <td>{item.price.toLocaleString()}원</td>
+                  </tr>
+                  <tr>
+                    <td colSpan="3" className='tagged-people'>
+                      {item.taggedPeople.map((person, idx) => (
+                        // <img key={idx} src={person.avatar} alt={person.name} className="tagged-avatar" />
+                        <div key={idx} className="tagged-avatar"></div>
+                      ))}
+                    </td>
+                  </tr>
+                </React.Fragment>
               ))}
             </tbody>
           </table>
@@ -92,7 +136,7 @@ function ReceiptDetail() {
             <p>결제일시 : {receipt.paymentDate}</p>
           </div>
         </div>
-        {/* <div className="payment-info">
+        <div className="payment-info">
           <table className="payment-table">
             <thead>
               <tr>
@@ -101,15 +145,18 @@ function ReceiptDetail() {
               </tr>
             </thead>
             <tbody>
-              {receipt.paymentDetails.map((detail, index) => (
+              {Object.keys(settlements).map((name, index) => (
                 <tr key={index}>
-                  <td>{detail.name}</td>
-                  <td>{detail.amount.toLocaleString()}원</td>
+                  <td>{name}</td>
+                  <td>{settlements[name].toLocaleString()}원</td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div> */}
+        </div>
+        <div className="receipt-detail-check">
+          <Button className="detail-confirm-button" type="purple" onClick={handleCheck}>확인</Button>
+        </div>
       </div>
     </>
   )

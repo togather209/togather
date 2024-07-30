@@ -72,7 +72,7 @@
   margin-bottom: 140px;
 }
 
-.asd{
+.component-button{
   position: fixed;
   bottom: 0;
   left: 0;
@@ -85,7 +85,7 @@
   margin: 15px 0 83px 0;
 }
 
-/* recognize */
+/* Recognize Tab */
 .receipt-type {
   display: flex;
   justify-content: center;
@@ -98,6 +98,8 @@
   border: 0;
   background-color: white;
   cursor: pointer;
+  z-index: 2;
+  border-bottom: 1px #D7D7D7 solid;
 }
 
 .type-button.active {
@@ -106,9 +108,44 @@
   border-bottom: 2px #712FFF solid;
 }
 
+.receipt-type-img-container {
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  height: 100px;
+  transition: height 0.5s ease;
+}
+
+.receipt-type-img{
+  display: inline-block;
+  transform: translateY(-70%);
+  transition: transform 0.8s ease, clip-path 0.8s ease;
+  margin-right: 10px;
+}
+
+.receipt-type-img.unActive {
+  clip-path: inset(30% 0 0 0);
+}
+
+
+.receipt-type-img.active {
+  transform: translateY(0);
+  clip-path: inset(0 0 0 0);
+}
+
+.receipt-type-img:nth-child(1) img {
+  width: 90px;
+  margin-right: 30px;
+}
+
+.receipt-type-img:nth-child(2) img {
+  width: 100px;
+  margin-right: 10px;
+}
+
 .recognition-section {
   text-align: center;
-  margin-bottom: 20px;
+  margin-top: 50px;
 }
 
 .receipt-image {
@@ -117,32 +154,50 @@
   margin-bottom: 20px;
 }
 
-.recognize-button {
+.recognize-badge {
   display: inline-block;
-  padding: 10px 20px;
-  background-color: #6200ea;
+  padding: 14px 25px;
+  background-color: #712FFF;
   color: white;
   border: none;
   cursor: pointer;
+  margin-right: 10px;
   margin-bottom: 20px;
+  border-radius: 8px;
+  position: relative;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 .recognize-options {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-.option-button {
-  border: none;
-  background-color: transparent;
-  margin: 0 10px;
-  cursor: pointer;
+.recognize-options > img {
+  width: 40px;
+  height: 40px;
+  margin: 3px 5px;
 }
 
 .recognized-content {
-  background-color: #f5f5f5;
-  padding: 20px;
-  border: 1px dashed #6200ea;
+  margin: 10px;
+  background-color: #F9F9F9;
+  padding: 30px;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='13' ry='13' stroke='%23D7D7D7FF' stroke-width='4' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
+border-radius: 13px;
   margin-bottom: 20px;
+  border-radius: 12px;
+}
+
+.recognized-content p:nth-child(1) {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.recognized-content p:nth-child(2) {
+  font-size: 12px;
+  margin-bottom: 10px;
 }
