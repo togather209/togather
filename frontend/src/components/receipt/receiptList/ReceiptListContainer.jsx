@@ -10,13 +10,12 @@ import LineButton from "../../common/LineButton";
 import { useNavigate } from "react-router-dom";
 
 import FinishedScheduleButton from './FinishedScheduleButton';
+import ScheduleFinishModal from "./ScheduleFinishModal";
 
 function ReceiptListContainer() {
-  // state : 일정 진행 중(before), 일정 끝남 (after), 정산 완료(completet) 
+  // state : 일정 진행 중(before), 일정 끝남(after), 정산 완료(completet) 
   const [scheduleState, setScheduleState] = useState('before');
-  
-  // TODO : meetingId, scheduleId 가져오기
-  const meetingId = 1, scheduleId = 2;
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // TODO : 전체 영수증 리스트 가져오기
   const [receipts, setReceipts] = useState([
@@ -43,20 +42,37 @@ function ReceiptListContainer() {
     },
   ]);
 
+  // TODO : 일정장인지 확인해서 일정 끝내기 보여주기
+  const IsScheduleReader = () => {
+  }
+  
+  // TODO : meetingId, scheduleId 가져오기
+  const meetingId = 1, scheduleId = 2;
+
   const navigate = useNavigate();
   
   // 일정 끝내기 버튼
   const handlePurpleLineButton = () => {
-    console.log('일정 끝내기 버튼');
+    setIsModalOpen(true);
+    console.log(isModalOpen);
   }
 
   // 일정 끝난 후 정산 확인 버튼
   const handleFinishedButtonClick = () => {
-    if (scheduleState === 'after') {
-      console.log('정산하러 가기')
-    } else {
-      console.log('정산 확인하러 가기')
-    }
+    // TODO : 정산 페이지로 이동
+
+  }
+
+  // 모달 닫기 버튼
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  }
+
+  // 모달 확인 버튼
+  const handleComfirmModal = () => {
+    setIsModalOpen(false);
+    setScheduleState('after');
+    // TODO : 정산 페이지로 이동
   }
 
   // 일정 상세보기 버튼
@@ -83,6 +99,12 @@ function ReceiptListContainer() {
         ))}
       </div>
       <ReceiptTotal amount="28,000원" />
+      {isModalOpen && (
+        <ScheduleFinishModal
+          onClose={handleCloseModal}
+          onConfirm={handleComfirmModal}
+        />
+      )}
     </div>
   )
 }

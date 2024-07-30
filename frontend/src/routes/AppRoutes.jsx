@@ -21,31 +21,31 @@ import ReceiptFormContainer from '../components/receipt/receiptForm/ReceiptFormC
 import ReceiptDetail from '../components/receipt/receiptDetail/ReceiptDetail';
 
 function AppRoutes() {
-    return (
-        <Routes>
-            <Route path='' element={<Home />}>
-                <Route path='/' element={<HomeMain />} />
-                <Route path=':id' element={<MeetingDetail />} />
-                <Route path=':id/createschedule' element={<CreateSchedule />} />
-                <Route path='createmeeting' element={<CreateMeeting />} />
-                <Route path='joinmeeting' element={<JoinMeeting />} />
-                <Route path='alarm' element={<Alarm />} />
-                <Route path='allmeeting' element={<AllMeeting />} />
-            </Route>
-            <Route path='/wallet' element={<Wallet />} />
-            <Route path='/mypage' element={<MyPage />} />
-            <Route path='/login' element={<User />} />
-            <Route path='/signup' element={<SignUpForm/>} />
+  return (
+    <Routes>
+      <Route path='' element={<Home />}>
+        <Route path='/' element={<HomeMain />} />
+        <Route path=':id' element={<MeetingDetail />} />
+        <Route path=':id/createschedule' element={<CreateSchedule />} />
+        <Route path='createmeeting' element={<CreateMeeting />} />
+        <Route path='joinmeeting' element={<JoinMeeting />} />
+        <Route path='alarm' element={<Alarm />} />
+        <Route path='allmeeting' element={<AllMeeting />} />
+      </Route>
+      <Route path='/wallet' element={<Wallet />} />
+      <Route path='/mypage' element={<MyPage />} />
+      <Route path='/login' element={<User />} />
+      <Route path='/signup' element={<SignUpForm/>} />
 
-            <Route path='/receipt' element={<Receipt />}>
-              <Route index element={<ReceiptListContainer />} />
-              <Route path=':id' element={<ReceiptDetail />} />
-              <Route path='regist-form' element={<ReceiptFormContainer />} />
-            </Route>
+      <Route path='/receipt' element={<Receipt />}>
+        <Route index element={<ReceiptListContainer />} />
+        <Route path=':id' element={<ReceiptDetail />} />
+        <Route path='regist-form' element={<ReceiptFormContainer />} />
+      </Route>
 
-            <Route path='/game' element={<Game />} />
-        </Routes>
-    );
+      <Route path='/game' element={<Game />} />
+    </Routes>
+  );
 }
 
 export default AppRoutes;
