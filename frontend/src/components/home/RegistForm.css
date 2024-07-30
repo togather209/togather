@@ -99,27 +99,3 @@
     border: none;
     background-color: #F9F9F9;
 }
-
-
-
-
-
-.input-container {
-    text-align: center;
-    margin-top: 20px;
-    border: 2px solid gray;
-    padding: 10px;
-    border-radius: 10px;
-    display: inline-block;
-  }
-  
-  .input-container.focused {
-    border-color: blue;
-  }
-  
-  .text-input {
-    border: none;
-    outline: none;
-    width: 200px;
-    padding: 5px;
-  }

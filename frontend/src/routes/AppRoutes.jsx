@@ -31,6 +31,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="landing" element={<Landing />} />
+
       <Route path="/" element={<Home />}>
         <Route path="" element={<HomeMainContainer />}>
             <Route index element={<HomeMain />}></Route>
@@ -42,7 +43,6 @@ function AppRoutes() {
             <Route path=":id" element={<MeetingDetail />}></Route>
         </Route>
       </Route>
-
 
       <Route path='/wallet' element={<Wallet />} />
       <Route path='/mypage' element={<MyPage />} />
