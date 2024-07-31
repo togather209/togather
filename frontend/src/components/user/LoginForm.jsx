@@ -23,7 +23,7 @@ function LoginForm(){
   return (
     <div className="login-container">
       <div className="logo-container">
-        <img src={logo} alt="로고" className="logo" />
+        <img src={logo} alt="로고" className="login-logo" />
         <p>일정관리부터 정산까지</p>
       </div>
 

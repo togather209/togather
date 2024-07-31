@@ -1,0 +1,29 @@
+.terms-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 16px; 
+    height: 100vh; 
+    overflow-y: auto;
+}
+
+.terms-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-right: 25px;
+}
+
+.terms-header-title {
+    margin-left: 15px;
+    margin-right: auto;
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+.terms-content-container {
+    margin-top: 15px;
+    border: 1px solid #fff;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+}

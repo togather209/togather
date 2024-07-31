@@ -1,0 +1,183 @@
+.mypage-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mypage-profile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 20px;
+  width: 85%;
+}
+
+.mypage-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+}
+
+.mypage-profile-image {
+  width: 100px;
+  height: 100px;
+}
+
+.mypage-profile-name {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.mypage-profile-email {
+  font-size: 14px;
+}
+
+.mypage-my-wallet {
+  margin-top: 20px;
+  width: 85%;
+  padding: 20px 40px;
+  border-radius: 6px;
+  border: none;
+  background: linear-gradient(to right, #712fff, #925eff);
+  text-align: start;
+  color: white;
+  box-shadow: 0 4px 6px rgba(227, 136, 250, 0.25);
+}
+
+.mypage-my-wallet-summary {
+  font-size: 12px;
+}
+
+.mypage-my-wallet-balance {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.mypage-my-profile-update,
+.mypage-my-profile-terms {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 20px;
+  width: 85%;
+  padding: 20px 30px;
+  border-radius: 6px;
+  border: none;
+  background-color: #f0f0f0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+}
+
+.mypage-my-profile-update-image,
+.mypage-my-profile-terms-image {
+  width: 30px;
+  height: 30px;
+}
+
+.mypage-my-profile-update p,
+.mypage-my-profile-terms p {
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+.mypage-secession-container {
+  width: 85%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.mypage-secession {
+  border: none;
+  background-color: white;
+}
+
+.mypage-secession-modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Center align items */
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    background: rgba(0, 0, 0, 0);
+  }
+  to {
+    background: rgba(0, 0, 0, 0.5);
+  }
+}
+
+.mypage-secession-modal-content {
+  background: white;
+  border-radius: 10px;
+  width: 70%;
+  max-width: 400px;
+  max-height: 90%;
+  position: relative;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin: 0;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.mypage-secession-modal-isSecession {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.mypage-secession-modal-isSecession-title {
+  color: #712fff;
+  font-size: 16px;
+  font-weight: 900;
+  text-align: center;
+  padding: 10px;
+}
+
+.mypage-secession-modal-isSecession-content {
+  padding: 5px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.mypage-secession-modal-isSecession-button {
+  display: flex;
+  justify-content: space-evenly;
+  padding-bottom: 20px;
+}
+
+.mypage-secession-modal-isSecession-button-cancel {
+  padding: 10px 30px;
+  border-radius: 12px;
+  border: 1px solid#712fff;
+  background-color: white;
+  color: #712fff;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.mypage-secession-modal-isSecession-button-ok {
+  padding: 10px 30px;
+  border-radius: 12px;
+  border: none;
+  color: white;
+  background: linear-gradient(to right, #712fff, #925eff);
+  font-weight: 600;
+  font-size: 12px;
+}
