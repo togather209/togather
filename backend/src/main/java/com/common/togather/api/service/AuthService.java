@@ -31,7 +31,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final RedisService redisService;
     private final JwtUtil jwtUtil;
-    
+
     // 회원가입
     @Transactional
     public void signup(MemberSaveRequest memberSaveRequest) {
@@ -58,6 +58,7 @@ public class AuthService {
     }
 
     // 로그인
+    @Transactional
     public TokenInfo login(LoginRequest loginRequest) {
         String email = loginRequest.getEmail();
 

@@ -65,4 +65,5 @@ public class GlobalExceptionHandler {
         ErrorResponseDto error = new ErrorResponseDto("Invalid Password", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
+
 }
