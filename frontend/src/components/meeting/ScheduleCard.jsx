@@ -1,12 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import "./ScheduleCard.css"
 import schedulereceipt from "../../assets/schedule/schedulereceipt.png"
 
 function ScheduleCard({id, name}) {
+    const navigation = useNavigate()
     return (
         <div className="schedule-card">
-            <p>{name}</p>
+            <div className="to-schedule-detail" onClick={() => navigation(`schedule/${id}`)}>{name}</div>
             <img className="schedule-receipt" src={schedulereceipt} alt="영수증 사진" />
         </ div>
     )

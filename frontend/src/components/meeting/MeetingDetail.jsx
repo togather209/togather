@@ -10,7 +10,7 @@ import MiddleButton from "../common/MiddleButton"
 import ScheduleCard from "./ScheduleCard";
 
 function MeetingDetail() {
-  const [isPage, setIsPage] = useState(false)
+  const [isPage, setIsPage] = useState(true)
   const params = useParams();
   const navigation = useNavigate()
   // 모임 디테일 단일 조회
