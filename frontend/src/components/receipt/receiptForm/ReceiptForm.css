@@ -145,7 +145,7 @@
 
 .recognition-section {
   text-align: center;
-  margin-top: 50px;
+  margin-top: 10px;
 }
 
 .receipt-image {
@@ -155,6 +155,8 @@
 }
 
 .recognize-badge {
+  position: absolute;
+  left: 20px;
   display: inline-block;
   padding: 14px 25px;
   background-color: #712FFF;
@@ -164,31 +166,76 @@
   margin-right: 10px;
   margin-bottom: 20px;
   border-radius: 8px;
-  position: relative;
   font-size: 12px;
   font-weight: bold;
 }
 
+.recognize-result-title {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.edit-result, .save-result {
+  position: absolute;
+  top: 15px;
+  border: 1px solid #D7D7D7;
+  padding: 5px 20px;
+  border-radius: 8px;
+  background-color: white;
+}
+
 .recognize-options {
+  position: relative;
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
 }
 
-.recognize-options > img {
+.recognize-options .recognize-image-buttons {
+  position: absolute;
+  right: 20px;
+}
+
+.recognize-options img {
   width: 40px;
   height: 40px;
   margin: 3px 5px;
 }
 
-.recognized-content {
-  margin: 10px;
+.recognize-image-buttons .active {
+  border-radius: 50px;
+  background-color: #712FFF;
+}
+
+.recognized-store-name {
+  margin: 70px 10px 20px 10px;
+  font-size: 16px;
+  font-weight: bold;
   background-color: #F9F9F9;
-  padding: 30px;
+  padding: 20px 30px;
   background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='13' ry='13' stroke='%23D7D7D7FF' stroke-width='4' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
 border-radius: 13px;
-  margin-bottom: 20px;
   border-radius: 12px;
+  display: flex;
+  box-shadow: 5px 10px 20px #f4f4f4;
+}
+
+.recognized-content {
+  margin: 10px 10px 5px 10px;
+  background-color: #F9F9F9;
+  padding: 10px 15px;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='13' ry='13' stroke='%23D7D7D7FF' stroke-width='4' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
+border-radius: 13px;
+  border-radius: 12px;
+  box-shadow: 5px 10px 20px #f4f4f4;
+}
+
+.recognized-content.no-content {
+  margin-top: 70px;
+  padding: 30px 30px;
 }
 
 .recognized-content p:nth-child(1) {
@@ -199,5 +246,78 @@ border-radius: 13px;
 
 .recognized-content p:nth-child(2) {
   font-size: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+}
+
+.recognized-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.recognized-content th, .recognized-content td {
+  padding: 8px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.recognized-content th {
+  font-weight: bold;
+}
+
+.recognized-content-line {
+  margin: 20px 0;
+}
+
+/* edit result */
+.recognized-content td:nth-child(1) input {
+  width: 120px;
+  padding: 8px;
+  box-sizing: border-box;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.recognized-content td:nth-child(2) input {
+  width: 40px;
+  padding: 8px;
+  box-sizing: border-box;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.recognized-content td:nth-child(3) input {
+  width: 60px;
+  padding: 8px;
+  box-sizing: border-box;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin: 10px 30px 0 30px;
+}
+
+.connect-schedule {
+  display: flex;
+  font-size: 14px;
+  margin: 30px 15px 10px 15px;
+  border: 1px solid #D7D7D7;
+  padding: 10px 40px;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.button-gray {
+  margin: 20px 0 80px 0;
+}
+
+.button-purple {
+  margin-bottom: 80px;
+  font-weight: bold;
 }
