@@ -6,6 +6,7 @@ import SubmitButton from "./SubmitButton";
 import CommonInput from "../common/CommonInput";
 import BackButton from "../common/BackButton";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function SignUpForm() {
   const API_LINK = "http://localhost:8080/";
@@ -18,6 +19,7 @@ function SignUpForm() {
   const [passwordMessage, setPasswordMessage] = useState("");
   const [certificationClick, setCertificationClick] = useState(false);
   const [certification, setCertification] = useState("");
+  const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -35,7 +37,12 @@ function SignUpForm() {
       nickname,
     };
 
-    console.log(memberData);
+    if(email === '' || password === '' || nickname === ''){
+      return;
+    }
+    else {
+      console.log(memberData);
+    }
 
     try {
       const response = await axios.post(`${API_LINK}api/auth/`, memberData, {
@@ -45,6 +52,7 @@ function SignUpForm() {
       });
 
       console.log("회원가입 성공!", response.data);
+      navigate('/login');
     } catch (error) {
       console.log("회원 가입 오류", error);
     }
