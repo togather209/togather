@@ -31,7 +31,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final RedisService redisService;
     private final JwtUtil jwtUtil;
-    
+
     // 회원가입
     @Transactional
     public void signup(MemberSaveRequest memberSaveRequest) {
@@ -58,6 +58,7 @@ public class AuthService {
     }
 
     // 로그인
+    @Transactional
     public TokenInfo login(LoginRequest loginRequest) {
         String email = loginRequest.getEmail();
 
@@ -83,6 +84,21 @@ public class AuthService {
             throw new InvalidPasswordException("비밀번호가 일치하지 않습니다.");
         }
     }
+
+    // 토큰 재발급
+    @Transactional
+    public TokenInfo refreshToken(String email) {
+        String accessToken = redisService.getRefreshToken(email);
+        String refreshToken = redisService.getRefreshToken(email);
+
+        redisService.saveRefreshToken(email, refreshToken);
+        TokenInfo tokenInfo = new TokenInfo(accessToken, refreshToken);
+
+        return tokenInfo;
+    }
+
+
+
 
 
 }
