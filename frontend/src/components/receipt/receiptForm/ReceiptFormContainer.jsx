@@ -3,6 +3,7 @@ import './ReceiptForm.css';
 import BackButton from '../../common/BackButton';
 import Design from './DesignComponent';
 import Recognize from './RecognizeComponent';
+import Caculate from './CalculateComponent';
 
 function ReceiptRegistForm() {
   const [activeTab, setActiveTab] = useState('design');
@@ -38,6 +39,7 @@ function ReceiptRegistForm() {
       <div className='tab-content'>
         {activeTab === 'design' && <Design setActiveTab={setActiveTab}/>}
         {activeTab === 'recognize' && <Recognize setActiveTab={setActiveTab}/>}
+        {activeTab === 'calculate' && <Caculate setActiveTab={setActiveTab}/>}
       </div>
     </div>
   )
