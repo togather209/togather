@@ -10,8 +10,17 @@ function CalculateComponent() {
           <div>개별</div>
           <div>몰아주기</div>
         </div>
-        <div className='calculate-'></div>
+        <div className='calculated-content-detail'>
 
+        </div>
+        <div className='calculated-result'>
+          <div className='calculated-result-title'>
+
+          </div>
+          <div className='calculated-result-content'>
+            
+          </div>
+        </div>
       </div>
     </>
   )
