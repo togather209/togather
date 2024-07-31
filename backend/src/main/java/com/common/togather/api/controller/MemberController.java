@@ -4,6 +4,7 @@ import com.common.togather.api.request.LogoutRequest;
 import com.common.togather.api.response.ResponseDto;
 import com.common.togather.api.service.MemberService;
 import com.common.togather.common.auth.TokenInfo;
+import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtUtil jwtUtil;
 
     @Operation(summary = "로그아웃")
     @PostMapping("/logout")
@@ -36,9 +38,9 @@ public class MemberController {
 
     @Operation(summary = "로그인 유저 정보 조회")
     @GetMapping("/me")
-    public ResponseEntity<ResponseDto<Member>> getAuthMember(HttpServletRequest request) {
+    public ResponseEntity<ResponseDto<Member>> getAuthMember(@RequestHeader(value = "Authorization", required = false) String header) {
 
-        String authEmail = memberService.getAuthMemberEmail(request);
+        String authEmail = jwtUtil.getAuthMemberEmail(header);
         Member member = memberService.getMemberByEmail(authEmail);
         ResponseDto<Member> responseDto = ResponseDto.<Member>builder()
                 .status(HttpStatus.OK.value())

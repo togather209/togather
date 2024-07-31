@@ -46,21 +46,4 @@ public class MemberService {
         return member;
     }
 
-    // 로그인 유저 이메일 추출
-    public String getAuthMemberEmail(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-
-        // Authorization 헤더가 있고 Bearer이면
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            String email = jwtUtil.getEmailFromToken(token);
-
-            return email;
-        }
-
-        // Authorization 헤더가 없으면
-        else {
-            throw new IllegalArgumentException("Authorization 헤더가 없습니다.");
-        }
-    }
 }

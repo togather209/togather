@@ -58,6 +58,18 @@ public class JwtUtil {
 
         return claims.getSubject();
     }
+
+    // Authorization 헤더로 회원 이메일 추출
+    public String getAuthMemberEmail(String header){
+        String token = header.substring(7);
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(this.getSecretKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject();
+    }
     
     // 토큰 유효 검사
     public boolean validateToken(String token) {
