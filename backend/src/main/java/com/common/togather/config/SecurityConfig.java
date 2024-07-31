@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
+                //.cors(Customizer.withDefaults()) // CORS 설정 추가
 
                 // 권한 설정
                 .authorizeHttpRequests( (requests) -> requests

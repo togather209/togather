@@ -8,13 +8,13 @@ import BackButton from "../common/BackButton";
 import axios from "axios";
 
 function SignUpForm() {
-  const API_LINK = 'http://localhost:8080/';
+  const API_LINK = "http://localhost:8080/";
 
   const [profileImage, setProfileImage] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validPassword, setValidPassword] = useState("");
-  const [nickName, setNickName] = useState("");
+  const [nickname, setNickname] = useState("");
   const [passwordMessage, setPasswordMessage] = useState("");
   const [certificationClick, setCertificationClick] = useState(false);
   const [certification, setCertification] = useState("");
@@ -22,32 +22,32 @@ function SignUpForm() {
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    if(password !== validPassword){
+    if (password !== validPassword) {
       setPasswordMessage("비밀번호가 일치하지 않습니다.");
+      alert("비밀번호와 비밀번호확인이 같아야합니다.");
+      window.location.reload();
       return;
     }
 
     const memberData = {
       email,
       password,
-      nickName,
+      nickname,
     };
 
     console.log(memberData);
 
     try {
-      const response = await axios.post(`${API_LINK}api/members/`, memberData,{
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
+      const response = await axios.post(`${API_LINK}api/auth/`, memberData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    console.log("회원가입 성공!", response.data);
-
+      console.log("회원가입 성공!", response.data);
     } catch (error) {
       console.log("회원 가입 오류", error);
     }
-    
   };
 
   const emailCertification = (e) => {
@@ -102,6 +102,11 @@ function SignUpForm() {
       reader.readAsDataURL(e.target.files[0]);
     }
   };
+
+  const nicknameCertification = (e) => {
+    e.preventDefault();
+    console.log("기다려봐.");
+  }
 
   return (
     <>
@@ -192,18 +197,22 @@ function SignUpForm() {
               {passwordMessage}
             </p>
           )}
-          <CommonInput
-            id="nickName"
-            type="text"
-            placeholder="닉네임"
-            value={nickName}
-            onChange={(e) => setNickName(e.target.value)}
-          />
-
-          <SubmitButton
-            type="submit"
-            className="submit-button"
-          >
+          <div className="nickname-form">
+            <CommonInput
+              id="nickName"
+              type="text"
+              placeholder="닉네임"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+            />
+            <button
+              className="nickname-certification-button"
+              onClick={nicknameCertification}
+            >
+              확인
+            </button>
+          </div>
+          <SubmitButton type="submit" className="submit-button">
             회원가입
           </SubmitButton>
         </form>
