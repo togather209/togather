@@ -1,0 +1,83 @@
+.schedule-regist {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.schedule-regist-header {
+    margin-top: 23px;
+    margin-left: 10px;
+    margin-bottom: 23px;
+}
+
+.schedule-regist-container-box {
+    width: 360px;
+    box-sizing: border-box;
+    padding: 16px 16px;
+}
+
+.schedule-regist-header-text {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.schedule-regist-header-desc-text {
+    font-size: 14px;
+    color: #131212;
+    opacity: 70%;    
+}
+
+.schedule-regist-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    /* background-color: beige; */
+}
+
+.schedule-regist-form-date-input {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 12px;
+    width: 300px;
+    background-color: #F9F9F9;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    padding: 20px 0 15px 0;
+}
+
+.schedule-regist-form-date-input-text {
+    box-sizing: border-box;
+    width: 100%;
+    font-size: 14px;
+    color: #131212;
+    opacity: 50%;
+    padding-left: 25px;
+    padding-bottom: 18px;
+}
+
+.schedule-regist-input-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    border: none;
+    width: 300px;
+    height: 53px;
+    border-radius: 15px;
+    background-color: #F9F9F9;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.schedule-regist-input-tag {
+    width: 90%;
+    height: 50%;
+    border: none;
+    background-color: #F9F9F9;
+}
