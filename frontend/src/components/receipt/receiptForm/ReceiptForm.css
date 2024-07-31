@@ -181,6 +181,7 @@
 .edit-result, .save-result {
   position: absolute;
   top: 15px;
+  right: 130px;
   border: 1px solid #D7D7D7;
   padding: 5px 20px;
   border-radius: 8px;

@@ -33,6 +33,12 @@ function RecognizeComponent({ setActiveTab }) {
 	const [connectedPlace, setConnectedPlace] = useState(null);
 
 	const handleReceiptType = (type) => {
+		// 인식 결과 모두 reset
+		setSelectedImageType(null);
+		setRecognizedResult(null);
+		setIsEditing(false);
+
+		// active type 변경
 		if (type === 'paper') {
 			setActiveType('paper');
 		} else {
