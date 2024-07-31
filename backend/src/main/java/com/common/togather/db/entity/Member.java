@@ -42,4 +42,7 @@ public class Member{
     // 가입 타입
     @Column(name = "type", nullable = true)
     int type;
+
+    @OneToOne(mappedBy = "member")
+    private PayAccount payAccount;
 }
