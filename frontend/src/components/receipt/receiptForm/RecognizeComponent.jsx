@@ -7,7 +7,8 @@ import Camera from '../../../assets/receipt/camera.png';
 import ActiveCamera from '../../../assets/receipt/activeCamera.png';
 import Picture from '../../../assets/receipt/picture.png';
 import ActivePicture from '../../../assets/receipt/activePicture.png';
-import ConnectReceiptSchedule from './ConnectReceiptSchedule';
+import ConnectReceiptSchedule from './ConnectReceiptScheduleModal';
+import Close from '../../../assets/icons/common/close.png';
 
 function RecognizeComponent({ setActiveTab }) {
 	// 영수증 타입 선택 (종이 or 모바일 내역)
@@ -28,7 +29,16 @@ function RecognizeComponent({ setActiveTab }) {
 	// 일정 연결 모달
 	const [isModalOpen, setIsModalOpen] = useState(false); 
 
+	// 연결된 장소
+	const [connectedPlace, setConnectedPlace] = useState(null);
+
 	const handleReceiptType = (type) => {
+		// 인식 결과 모두 reset
+		setSelectedImageType(null);
+		setRecognizedResult(null);
+		setIsEditing(false);
+
+		// active type 변경
 		if (type === 'paper') {
 			setActiveType('paper');
 		} else {
@@ -79,9 +89,27 @@ function RecognizeComponent({ setActiveTab }) {
 		setIsModalOpen(false);
 	}
 
+	const handleConfirm = (place) => {
+    setConnectedPlace(place);
+    setIsModalOpen(false);
+  };
+
+  const handleDisconnectPlace = () => {
+    setConnectedPlace(null);
+  };
+
+	const handleNextTab = () => {
+		// TODO : 인식결과 null인 경우 alert?
+
+		if (recognizedResult !== null) {
+			setActiveTab('calculate');
+		} 
+	}
+
 	// TODO : 임시 인식 데이터
 	const tempRecognizedItems = {
 		storeName: 'How Cafe',
+		paymentDate: '2024.07.31',
 		items: [
 			{
 				name: '3루 입장권',
@@ -120,13 +148,13 @@ function RecognizeComponent({ setActiveTab }) {
 			{recognizedResult === null &&
 				<div className="reciept-type-img-container">
 					<div 
-						className={`receipt-type-img ${activeType === 'paper' ? 'active' : 'unActive'}`} 
+						className={`receipt-type-img ${activeType === 'paper' ? 'active' : 'inactive'}`} 
 						onClick={() => {setActiveType('paper')}}
 					>
 						<img src={PaperReceipt} alt="paper" />
 					</div>
 					<div 
-						className={`receipt-type-img ${activeType === 'mobile' ? 'active' : 'unActive'}`}
+						className={`receipt-type-img ${activeType === 'mobile' ? 'active' : 'inactive'}`}
 						onClick={() => {setActiveType('mobile')}}
 					>
 						<img src={MobileReceipt} alt="mobile" />
@@ -164,11 +192,31 @@ function RecognizeComponent({ setActiveTab }) {
 				<p>인식된 내용이 없어요</p>
 				<p>영수증을 인식해 정산을 시작해보세요!</p>
 			</div>}
-			{recognizedResult !== null && 
-				<div className="recognized-store-name">
-					<p>{recognizedResult.storeName}</p>
-				</div>
-			}
+			{recognizedResult !== null && isEditing ? (
+        <div className="recognized-edit-info">
+          <input 
+            type="text" 
+            className="recognized-store-name edit" 
+            value={recognizedResult.storeName} 
+            onChange={(e) => setRecognizedResult({ ...recognizedResult, storeName: e.target.value })}
+          />
+          <input 
+            type="text" 
+            className="recognized-payment-date edit" 
+            value={recognizedResult.paymentDate} 
+            onChange={(e) => setRecognizedResult({ ...recognizedResult, paymentDate: e.target.value })}
+          />
+        </div>
+      ) : recognizedResult !== null && (
+        <>
+          <div className="recognized-store-name">
+            <p>{recognizedResult.storeName}</p>
+          </div>
+          <div className="recognized-payment-date">
+            <p>{recognizedResult.paymentDate}</p>
+          </div>
+				</>
+			)}
 			{recognizedResult !== null && <div className="recognized-content">
 				<table>
 					<thead>
@@ -204,9 +252,18 @@ function RecognizeComponent({ setActiveTab }) {
 					<p>{editedItems.reduce((total, item) => total + item.price, 0).toLocaleString()}원</p>
 				</div>
 			</div>}
-			{recognizedResult !== null && <button className="connect-schedule" onClick={handleConnectSchedule}>장소연결</button>}
-			<Button type={(recognizedResult === null ? 'gray' : 'purple')} >다음</Button>
-			{isModalOpen && <ConnectReceiptSchedule closeModal={closeModal} />}
+			{recognizedResult !== null && !connectedPlace && <button className="connect-schedule" onClick={handleConnectSchedule}>장소연결</button>}
+			{recognizedResult !== null && connectedPlace && (
+				<div className="connected-place-info">
+					<div>연결된 장소</div>
+					<div className="connected-place-name">
+						{connectedPlace.name}
+						<img src={Close} alt="disconnect" className="disconnect-button" onClick={handleDisconnectPlace}/>
+					</div>
+				</div>
+			)}
+			<Button type={(recognizedResult === null ? 'gray' : 'purple')} onClick={handleNextTab}>다음</Button>
+			{isModalOpen && <ConnectReceiptSchedule onClose={closeModal} onConfirm={handleConfirm} />}
 		</div>
 	)
 }

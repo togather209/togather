@@ -1,0 +1,130 @@
+.connect-schedule-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.connect-schedule-modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 25px 0 30px 0;
+}
+
+.connect-schedule-modal-close {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  background: none;
+  border: none;
+  font-size: 40px 20px;
+  cursor: pointer;
+}
+
+.connect-schedule-modal-close img {
+  width: 20px;
+  height: 20px;
+}
+
+.connect-schedule-modal-detail {
+  width: 80%;
+  text-align: center;
+}
+
+.connect-schedule-select {
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.day-section {
+  margin: 30px 0;
+  text-align: left;
+}
+
+.day-section h3 {
+  font-weight: 500;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #373535;
+  padding: 5px 10px;
+  border-left: 4px solid #c5c5c5;
+}
+
+.place-item {
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  margin-left: 10px;
+}
+
+.place-item input {
+  margin-right: 10px;
+  width: 15px;
+  height: 15px;
+}
+
+.place-item input:checked {
+  accent-color: #712FFF;
+}
+
+.connect-confirm-button {
+  width: 80%;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.connect-confirm-button.active {
+  background: linear-gradient(45deg, #712FFF, #A074FF);
+  box-shadow: 5px 10px 20px #b08cff;
+  color: white;
+}
+
+.connect-confirm-button.inactive {
+  background-color: #F0F0F0;
+  color: #ccc;
+  box-shadow: 5px 10px 20px #E9E9E9;
+  cursor: not-allowed;
+}
+
+.connected-place-info {
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+.connected-place-info div:nth-child(1) {
+  display: flex;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.connected-place-name {
+  display: flex;
+  margin-top: 10px;
+}
+
+.connected-place-name img.disconnect-button {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  margin-left: 10px;
+  cursor: pointer;
+}
