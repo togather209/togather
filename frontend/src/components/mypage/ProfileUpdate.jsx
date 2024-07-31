@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import "./User.css";
-import "../common/CommonInput.css";
-import logo from "../../assets/icons/common/logo.png";
-import SubmitButton from "./SubmitButton";
 import CommonInput from "../common/CommonInput";
+import { useState } from "react";
+import SubmitButton from "../user/SubmitButton";
+import logo from "../../assets/icons/common/logo.png";
+import "../user/User.css";
 import BackButton from "../common/BackButton";
 
-function SignUpForm() {
+function ProfileUpdate() {
   const [profileImage, setProfileImage] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,8 +15,8 @@ function SignUpForm() {
   const [certificationClick, setCertificationClick] = useState(false);
   const [certification, setCertification] = useState("");
 
-  const handleSignup = () => {
-    console.log("회원가입 받아조!!!!!!!!");
+  const handleUpdate = () => {
+    console.log("회원수정 받아조!!!!!!!!");
   };
 
   const emailCertification = (e) => {
@@ -105,38 +104,6 @@ function SignUpForm() {
               style={{ display: "none" }}
             />
           </div>
-          <div className="emailForm">
-            <CommonInput
-              id="email"
-              type="email"
-              placeholder="이메일"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <button
-              className="email-certification"
-              onClick={emailCertification}
-            >
-              인증
-            </button>
-          </div>
-          {certificationClick ? (
-            <div>
-              <div className="certification">
-                <input
-                  id="certification"
-                  type="text"
-                  placeholder="인증코드를 입력하세요."
-                  value={certification}
-                  onChange={(e) => setCertification(e.target.value)}
-                  className="certification-input"
-                />
-                <button className="certification-button">확인</button>
-              </div>
-            </div>
-          ) : (
-            ""
-          )}
           <CommonInput
             id="password"
             type="password"
@@ -172,10 +139,10 @@ function SignUpForm() {
 
           <SubmitButton
             type="button"
-            onClick={handleSignup}
+            onClick={handleUpdate}
             className="submit-button"
           >
-            회원가입
+            수정 완료
           </SubmitButton>
         </form>
       </div>
@@ -183,4 +150,4 @@ function SignUpForm() {
   );
 }
 
-export default SignUpForm;
+export default ProfileUpdate;

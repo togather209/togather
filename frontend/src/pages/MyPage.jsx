@@ -1,10 +1,10 @@
 import React from 'react';
+import MyPageMain from '../components/mypage/MyPageMain';
 
 function MyPage() {
   return (
     <div>
-      <h1>My Page</h1>
-      <h3>마이페이지</h3>
+      <MyPageMain/>
     </div>
   );
 }
