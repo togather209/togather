@@ -66,4 +66,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
+    // 토큰을 찾을 수 없는 경우
+    @ExceptionHandler(MissingTokenException.class)
+    public ResponseEntity<ErrorResponseDto> handleMissingTokenException(MissingTokenException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Token Not Found", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
 }

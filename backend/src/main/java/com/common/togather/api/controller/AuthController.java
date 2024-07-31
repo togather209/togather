@@ -1,7 +1,9 @@
 package com.common.togather.api.controller;
 
+import com.common.togather.api.error.MissingTokenException;
 import com.common.togather.api.request.LoginRequest;
 import com.common.togather.api.request.MemberSaveRequest;
+import com.common.togather.api.request.RefreshRequest;
 import com.common.togather.api.response.ResponseDto;
 import com.common.togather.api.service.AuthService;
 import com.common.togather.common.auth.TokenInfo;
@@ -45,6 +47,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<TokenInfo>> login(@RequestBody LoginRequest loginRequest) {
         TokenInfo tokenInfo = authService.login(loginRequest);
+
         ResponseDto<TokenInfo> responseDto = ResponseDto.<TokenInfo>builder()
                 .status(HttpStatus.OK.value())
                 .message("로그인 성공")
@@ -52,6 +55,29 @@ public class AuthController {
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "토큰 재발급")
+    @PostMapping("/refresh")
+    public ResponseEntity<ResponseDto<TokenInfo>> refresh(@RequestBody RefreshRequest refreshRequest) {
+        String refreshToken = refreshRequest.getRefreshToken();
+
+        // 리프레시 토큰이 없다면
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            throw new MissingTokenException("리프레시 토큰을 찾을 수 없습니다.");
+        }
+
+        // 리프레시 토큰이 있다면 재발급 가능
+        String email = jwtUtil.getEmailFromToken(refreshToken);
+        TokenInfo tokenInfo = authService.refreshToken(email);
+        ResponseDto<TokenInfo> responseDto = ResponseDto.<TokenInfo>builder()
+                .status(HttpStatus.OK.value())
+                .message("토큰 재발급을 성공했습니다.")
+                .data(tokenInfo)
+                .build();
+                
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+
     }
 
 
