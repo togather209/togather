@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,17 +30,21 @@ public class PayAccount {
     
     // 비밀번호
     @Column(name = "password", nullable = false)
-    private String password;
+    private int password;
 
     // 유저
     @OneToOne
-    @JoinColumn(name = "member_id") // 외래 키 컬럼
+    @JoinColumn(name = "member_id")
     private Member member;
 
     // 실 계좌
     @OneToOne
-    @JoinColumn(name = "account_id") // 외래 키 컬럼
+    @JoinColumn(name = "account_id")
     private Account account;
+
+    // 거래 내역
+    @OneToMany(mappedBy = "payAccount", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Transaction> transactions;
 
     // 잔액 증가 메서드
     public void increaseBalance(int price) {
