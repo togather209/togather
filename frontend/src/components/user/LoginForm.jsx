@@ -7,17 +7,52 @@ import "../common/CommonInput.css";
 import logo from "../../assets/icons/common/logo.png";
 import { Link } from "react-router-dom";
 import kakao from "../../assets/icons/common/kakao.png";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../../redux/slices/authSlice";
 
-function LoginForm(){
+function LoginForm() {
+  const API_LINK = "http://localhost:8080/";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberEmail, setRememberEmail] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const handleLogin = () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     console.log("로그인 시도");
     // 여기서 폼 데이터를 사용할 수 있습니다.
     console.log({ email, password, rememberEmail });
+
+    const memberData = {
+      email,
+      password,
+    };
+
+    try {
+      const response = await axios.post(`${API_LINK}auth/login/`, memberData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        withCredentials: true,
+      });
+
+      console.log("로그인 성공!");
+      dispatch(
+        loginSuccess({
+          member: response.data.member,
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken,
+        })
+      );
+
+      navigate("/");
+    } catch (error) {
+      console.log("로그인 에러", error);
+    }
   };
 
   return (
@@ -26,37 +61,34 @@ function LoginForm(){
         <img src={logo} alt="로고" className="login-logo" />
         <p>일정관리부터 정산까지</p>
       </div>
-
-      <CommonInput
-        id="email"
-        type="email"
-        placeholder="이메일"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <CommonInput
-        id="password"
-        type="password"
-        placeholder="비밀번호"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <div className="remember-email">
-        <input
-          type="checkbox"
-          id="rememberEmail"
-          checked={rememberEmail}
-          onChange={(e) => setRememberEmail(e.target.checked)}
+      <form onSubmit={handleLogin}>
+        <CommonInput
+          id="email"
+          type="email"
+          placeholder="이메일"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
-        <label htmlFor="rememberEmail">이메일 저장</label>
-      </div>
-      <SubmitButton
-        type="button"
-        onClick={handleLogin}
-        className="submit-button"
-      >
-        로그인
-      </SubmitButton>
+        <CommonInput
+          id="password"
+          type="password"
+          placeholder="비밀번호"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <div className="remember-email">
+          <input
+            type="checkbox"
+            id="rememberEmail"
+            checked={rememberEmail}
+            onChange={(e) => setRememberEmail(e.target.checked)}
+          />
+          <label htmlFor="rememberEmail">이메일 저장</label>
+        </div>
+        <SubmitButton type="submit" className="submit-button">
+          로그인
+        </SubmitButton>
+      </form>
 
       <div className="signupAndSearchpassword">
         <Link to="/signup" style={{ textDecoration: "none", color: "black" }}>
