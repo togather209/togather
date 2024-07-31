@@ -34,8 +34,8 @@ public class Account {
     private String phone;
 
     // 계좌 번호
-    @Column(name = "accountNum", nullable = false)
-    private String accountNum;
+    @Column(name = "accountNumber", nullable = false)
+    private String accountNumber;
 
     // 생년월일
     @Column(name = "birth", nullable = false)
@@ -43,7 +43,7 @@ public class Account {
 
     // 비밀번호
     @Column(name = "password", nullable = false)
-    private String password;
+    private int password;
 
     // Pay 계좌
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
