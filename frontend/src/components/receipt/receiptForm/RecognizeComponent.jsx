@@ -186,16 +186,31 @@ function RecognizeComponent({ setActiveTab }) {
 				<p>인식된 내용이 없어요</p>
 				<p>영수증을 인식해 정산을 시작해보세요!</p>
 			</div>}
-			{recognizedResult !== null && 
-			<>
-				<div className="recognized-store-name">
-					<p>{recognizedResult.storeName}</p>
-				</div>
-				<div className="recognized-payment-date">
-					<p>{recognizedResult.paymentDate}</p>
-				</div>
-			</>
-			}
+			{recognizedResult !== null && isEditing ? (
+        <div className="recognized-edit-info">
+          <input 
+            type="text" 
+            className="recognized-store-name edit" 
+            value={recognizedResult.storeName} 
+            onChange={(e) => setRecognizedResult({ ...recognizedResult, storeName: e.target.value })}
+          />
+          <input 
+            type="text" 
+            className="recognized-payment-date edit" 
+            value={recognizedResult.paymentDate} 
+            onChange={(e) => setRecognizedResult({ ...recognizedResult, paymentDate: e.target.value })}
+          />
+        </div>
+      ) : recognizedResult !== null && (
+        <>
+          <div className="recognized-store-name">
+            <p>{recognizedResult.storeName}</p>
+          </div>
+          <div className="recognized-payment-date">
+            <p>{recognizedResult.paymentDate}</p>
+          </div>
+				</>
+			)}
 			{recognizedResult !== null && <div className="recognized-content">
 				<table>
 					<thead>

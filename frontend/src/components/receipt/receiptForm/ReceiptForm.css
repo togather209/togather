@@ -281,6 +281,11 @@ border-radius: 13px;
 }
 
 /* edit result */
+.recognized-edit-info input {
+  border: 0;
+  width: 75%;
+}
+
 .recognized-content td:nth-child(1) input {
   width: 120px;
   padding: 8px;
