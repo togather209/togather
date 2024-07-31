@@ -104,3 +104,27 @@
   box-shadow: 5px 10px 20px #E9E9E9;
   cursor: not-allowed;
 }
+
+.connected-place-info {
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+.connected-place-info div:nth-child(1) {
+  display: flex;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.connected-place-name {
+  display: flex;
+  margin-top: 10px;
+}
+
+.connected-place-name img.disconnect-button {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  margin-left: 10px;
+  cursor: pointer;
+}

@@ -8,6 +8,7 @@ import ActiveCamera from '../../../assets/receipt/activeCamera.png';
 import Picture from '../../../assets/receipt/picture.png';
 import ActivePicture from '../../../assets/receipt/activePicture.png';
 import ConnectReceiptSchedule from './ConnectReceiptScheduleModal';
+import Close from '../../../assets/icons/common/close.png';
 
 function RecognizeComponent({ setActiveTab }) {
 	// 영수증 타입 선택 (종이 or 모바일 내역)
@@ -27,6 +28,9 @@ function RecognizeComponent({ setActiveTab }) {
 
 	// 일정 연결 모달
 	const [isModalOpen, setIsModalOpen] = useState(false); 
+
+	// 연결된 장소
+	const [connectedPlace, setConnectedPlace] = useState(null);
 
 	const handleReceiptType = (type) => {
 		if (type === 'paper') {
@@ -78,6 +82,15 @@ function RecognizeComponent({ setActiveTab }) {
 	const closeModal = () => {
 		setIsModalOpen(false);
 	}
+
+	const handleConfirm = (place) => {
+    setConnectedPlace(place);
+    setIsModalOpen(false);
+  };
+
+  const handleDisconnectPlace = () => {
+    setConnectedPlace(null);
+  };
 
 	// TODO : 임시 인식 데이터
 	const tempRecognizedItems = {
@@ -204,9 +217,18 @@ function RecognizeComponent({ setActiveTab }) {
 					<p>{editedItems.reduce((total, item) => total + item.price, 0).toLocaleString()}원</p>
 				</div>
 			</div>}
-			{recognizedResult !== null && <button className="connect-schedule" onClick={handleConnectSchedule}>장소연결</button>}
-			<Button type={(recognizedResult === null ? 'gray' : 'purple')} >다음</Button>
-			{isModalOpen && <ConnectReceiptSchedule onClose={closeModal} />}
+			{recognizedResult !== null && !connectedPlace && <button className="connect-schedule" onClick={handleConnectSchedule}>장소연결</button>}
+			{connectedPlace && (
+				<div className="connected-place-info">
+					<div>연결된 장소</div>
+					<div className="connected-place-name">
+						{connectedPlace.name}
+						<img src={Close} alt="disconnect" className="disconnect-button" onClick={handleDisconnectPlace}/>
+					</div>
+				</div>
+			)}
+			<Button type={(recognizedResult === null ? 'gray' : 'purple')}>다음</Button>
+			{isModalOpen && <ConnectReceiptSchedule onClose={closeModal} onConfirm={handleConfirm}  />}
 		</div>
 	)
 }

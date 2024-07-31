@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import './ConnectReceiptScheduleModal.css';
 import Close from '../../../assets/icons/common/close.png';
 
-function ConnectReceiptScheduleModal({ onClose }) {
+function ConnectReceiptScheduleModal({ onClose, onConfirm }) {
   const [expandedDays, setExpandedDays] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
 
@@ -14,6 +14,11 @@ function ConnectReceiptScheduleModal({ onClose }) {
 
   const handlePlaceSelect = (place) => {
     setSelectedPlace(place);
+  }
+
+  const handleConfirm = () => {
+    onConfirm(selectedPlace);
+    onClose();
   }
 
   // 임시 데이터
@@ -67,7 +72,7 @@ function ConnectReceiptScheduleModal({ onClose }) {
         </div>
         <button 
           className={`connect-confirm-button ${selectedPlace ? 'active' : 'inactive'}`} 
-          onClick={onClose}
+          onClick={handleConfirm}
         >
           선택완료
         </button>
