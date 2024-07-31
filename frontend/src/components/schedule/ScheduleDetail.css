@@ -1,0 +1,20 @@
+.schedule-detail {
+    padding: 16px;
+}
+
+.schedule-detail-alarm-icon {
+    width: 28px;
+    height: 28px;
+    margin-top: 18px;
+    margin-right: 16px;
+}
+
+.schedule-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.schedule-detail-header-search {
+    margin-top: 14px;
+}

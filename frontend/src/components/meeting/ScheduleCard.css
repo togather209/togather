@@ -13,6 +13,13 @@
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
 }
 
+.to-schedule-detail {
+    display: flex;
+    align-items: center;
+    width: 90%;
+    height: 100%;
+}
+
 .schedule-receipt {
     width: 24px;
     height: 24px;

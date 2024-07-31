@@ -34,6 +34,8 @@ import MeetingDetailContainer from "../components/meeting/MeetingDetailContainer
 
 //일정
 import ScheduleRegist from "../components/schedule/ScheduleRegist";
+import ScheduleDetail from "../components/schedule/ScheduleDetail";
+
 
 //영수증
 import Receipt from "../pages/Receipt";
@@ -62,8 +64,9 @@ function AppRoutes() {
         <Route path="meeting" element={<MeetingContainer />}>
           <Route index element={<Meetings />} />
           <Route path=":id" element={<MeetingDetailContainer />}>
-            <Route index element={<MeetingDetail />} />
-            <Route path="schedule-regist" element={<ScheduleRegist />} />
+            <Route index element={<MeetingDetail />}></Route>
+            <Route path="schedule-regist" element={<ScheduleRegist />}></Route>
+            <Route path="schedule/:id" element={<ScheduleDetail />}/>
           </Route>
         </Route>
       </Route>
