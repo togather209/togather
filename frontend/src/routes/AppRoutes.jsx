@@ -1,23 +1,23 @@
-import React from 'react';
-import { Route, Routes } from 'react-router-dom';
-import Landing from '../pages/Landing'
+import React from "react";
+import { Route, Routes } from "react-router-dom";
+import Landing from "../pages/Landing";
 
 //마이페이지
-import MyPage from '../pages/MyPage';
+import MyPage from "../pages/MyPage";
 
 //게임
-import Game from '../pages/Game';
+import Game from "../pages/Game";
 
 //유저
-import User from '../pages/User';
-import SignUpForm from '../components/user/SignUpForm';
+import User from "../pages/User";
+import SignUpForm from "../components/user/SignUpForm";
 
 //지갑
-import Wallet from '../pages/Wallet';
+import Wallet from "../pages/Wallet";
 import TransactionList from "../components/wallet/TransactionList";
 import Send from "../components/wallet/Send";
 import CreatePayment from "../components/wallet/CreatePayment";
-import SendForm from '../components/wallet/SendForm';
+import SendForm from "../components/wallet/SendForm";
 
 //홈
 import Home from "../pages/Home";
@@ -30,48 +30,66 @@ import JoinForm from "../components/home/JoinForm";
 import MeetingContainer from "../components/meeting/MeetingContainer";
 import Meetings from "../components/meeting/Meetings";
 import MeetingDetail from "../components/meeting/MeetingDetail";
+import MeetingDetailContainer from "../components/meeting/MeetingDetailContainer";
+
+//일정
+import ScheduleRegist from "../components/schedule/ScheduleRegist";
+import ScheduleDetail from "../components/schedule/ScheduleDetail";
+
 
 //영수증
-import Receipt from '../pages/Receipt';
-import ReceiptListContainer from '../components/receipt/receiptList/ReceiptListContainer';
-import ReceiptFormContainer from '../components/receipt/receiptForm/ReceiptFormContainer';
-import ReceiptDetail from '../components/receipt/receiptDetail/ReceiptDetail';
+import Receipt from "../pages/Receipt";
+import ReceiptListContainer from "../components/receipt/receiptList/ReceiptListContainer";
+import ReceiptFormContainer from "../components/receipt/receiptForm/ReceiptFormContainer";
+import ReceiptDetail from "../components/receipt/receiptDetail/ReceiptDetail";
+import ProfileUpdate from "../components/mypage/ProfileUpdate";
+import Terms from "../components/mypage/Terms";
+
+import PrivateRoute from "./PrivateRoute";
 
 function AppRoutes() {
   return (
     <Routes>
       <Route path="landing" element={<Landing />} />
-      <Route path="/" element={<Home />}>
+      <Route path="/signup" element={<SignUpForm />} />
+      <Route path="/login" element={<User />} />
+      
+      {/* 보호된 라우트 */}
+      <Route path="/" element={<PrivateRoute component={Home} />}>
         <Route path="" element={<HomeMainContainer />}>
-            <Route index element={<HomeMain />}></Route>
-            <Route path="regist_form" element={<RegistForm />}></Route>
-            <Route path="join_form" element={<JoinForm />}></Route>
+          <Route index element={<HomeMain />} />
+          <Route path="regist_form" element={<RegistForm />} />
+          <Route path="join_form" element={<JoinForm />} />
         </Route>
         <Route path="meeting" element={<MeetingContainer />}>
-            <Route index element={<Meetings />}></Route>
-            <Route path=":id" element={<MeetingDetail />}></Route>
+          <Route index element={<Meetings />} />
+          <Route path=":id" element={<MeetingDetailContainer />}>
+            <Route index element={<MeetingDetail />}></Route>
+            <Route path="schedule-regist" element={<ScheduleRegist />}></Route>
+            <Route path="schedule/:id" element={<ScheduleDetail />}/>
+          </Route>
         </Route>
       </Route>
 
-      <Route path="/wallet" element={<Wallet />} />
-      <Route path="/wallet/create_payment" element={<CreatePayment/>} />
-      <Route path="/wallet/transaction_list" element={<TransactionList />} />
-      <Route path="/wallet/send" element={<Send />} />
-      <Route path="/wallet/sendform" element={<SendForm />} />
+      <Route path="/wallet" element={<PrivateRoute component={Wallet} />} />
+      <Route path="/wallet/create_payment" element={<PrivateRoute component={CreatePayment} />} />
+      <Route path="/wallet/transaction_list" element={<PrivateRoute component={TransactionList} />} />
+      <Route path="/wallet/send" element={<PrivateRoute component={Send} />} />
+      <Route path="/wallet/sendform" element={<PrivateRoute component={SendForm} />} />
 
-      <Route path='/mypage' element={<MyPage />} />
-      <Route path='/login' element={<User />} />
-      <Route path='/signup' element={<SignUpForm/>} />
+      <Route path="/mypage" element={<PrivateRoute component={MyPage} />} />
+      <Route path="/mypage/profile_update" element={<PrivateRoute component={ProfileUpdate} />} />
+      <Route path="/mypage/terms" element={<PrivateRoute component={Terms} />} />
 
-      <Route path='/receipt' element={<Receipt />}>
+      <Route path="/receipt" element={<PrivateRoute component={Receipt} />}>
         <Route index element={<ReceiptListContainer />} />
-        <Route path=':id' element={<ReceiptDetail />} />
-        <Route path='regist-form' element={<ReceiptFormContainer />} />
+        <Route path=":id" element={<ReceiptDetail />} />
+        <Route path="regist-form" element={<ReceiptFormContainer />} />
       </Route>
 
-      <Route path='/game' element={<Game />} />
+      <Route path="/game" element={<PrivateRoute component={Game} />} />
     </Routes>
-    );
+  );
 }
 
 export default AppRoutes;

@@ -37,11 +37,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
 
                 // 권한 설정
                 .authorizeHttpRequests( (requests) -> requests
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                        .requestMatchers("/api/v1/**","/api/members/login", "/api/members/").permitAll()
+                        .requestMatchers("/api/v1/**","/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
 

@@ -1,61 +1,22 @@
-import React, { useState } from "react";
-import "./User.css";
-import "../common/CommonInput.css";
-import logo from "../../assets/icons/common/logo.png";
-import SubmitButton from "./SubmitButton";
 import CommonInput from "../common/CommonInput";
+import { useState } from "react";
+import SubmitButton from "../user/SubmitButton";
+import logo from "../../assets/icons/common/logo.png";
+import "../user/User.css";
 import BackButton from "../common/BackButton";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
-function SignUpForm() {
-  const API_LINK = "http://localhost:8080/";
-
+function ProfileUpdate() {
   const [profileImage, setProfileImage] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validPassword, setValidPassword] = useState("");
-  const [nickname, setNickname] = useState("");
+  const [nickName, setNickName] = useState("");
   const [passwordMessage, setPasswordMessage] = useState("");
   const [certificationClick, setCertificationClick] = useState(false);
   const [certification, setCertification] = useState("");
-  const navigate = useNavigate();
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
-
-    if (password !== validPassword) {
-      setPasswordMessage("비밀번호가 일치하지 않습니다.");
-      alert("비밀번호와 비밀번호확인이 같아야합니다.");
-      window.location.reload();
-      return;
-    }
-
-    const memberData = {
-      email,
-      password,
-      nickname,
-    };
-
-    if(email === '' || password === '' || nickname === ''){
-      return;
-    }
-    else {
-      console.log(memberData);
-    }
-
-    try {
-      const response = await axios.post(`${API_LINK}api/auth/`, memberData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      console.log("회원가입 성공!", response.data);
-      navigate('/login');
-    } catch (error) {
-      console.log("회원 가입 오류", error);
-    }
+  const handleUpdate = () => {
+    console.log("회원수정 받아조!!!!!!!!");
   };
 
   const emailCertification = (e) => {
@@ -111,11 +72,6 @@ function SignUpForm() {
     }
   };
 
-  const nicknameCertification = (e) => {
-    e.preventDefault();
-    console.log("기다려봐.");
-  }
-
   return (
     <>
       <div className="signup-back-button">
@@ -126,7 +82,7 @@ function SignUpForm() {
           <img src={logo} alt="로고" className="signup-logo" />
           <p>일정관리부터 정산까지</p>
         </div>
-        <form onSubmit={handleSignup}>
+        <form>
           <div className="profile-image-upload">
             <label htmlFor="profileImageUpload" className="image-upload-label">
               {profileImage ? (
@@ -148,38 +104,6 @@ function SignUpForm() {
               style={{ display: "none" }}
             />
           </div>
-          <div className="emailForm">
-            <CommonInput
-              id="email"
-              type="email"
-              placeholder="이메일"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <button
-              className="email-certification"
-              onClick={emailCertification}
-            >
-              인증
-            </button>
-          </div>
-          {certificationClick ? (
-            <div>
-              <div className="certification">
-                <input
-                  id="certification"
-                  type="text"
-                  placeholder="인증코드를 입력하세요."
-                  value={certification}
-                  onChange={(e) => setCertification(e.target.value)}
-                  className="certification-input"
-                />
-                <button className="certification-button">확인</button>
-              </div>
-            </div>
-          ) : (
-            ""
-          )}
           <CommonInput
             id="password"
             type="password"
@@ -205,23 +129,20 @@ function SignUpForm() {
               {passwordMessage}
             </p>
           )}
-          <div className="nickname-form">
-            <CommonInput
-              id="nickName"
-              type="text"
-              placeholder="닉네임"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-            />
-            <button
-              className="nickname-certification-button"
-              onClick={nicknameCertification}
-            >
-              확인
-            </button>
-          </div>
-          <SubmitButton type="submit" className="submit-button">
-            회원가입
+          <CommonInput
+            id="nickName"
+            type="text"
+            placeholder="닉네임"
+            value={nickName}
+            onChange={(e) => setNickName(e.target.value)}
+          />
+
+          <SubmitButton
+            type="button"
+            onClick={handleUpdate}
+            className="submit-button"
+          >
+            수정 완료
           </SubmitButton>
         </form>
       </div>
@@ -229,4 +150,4 @@ function SignUpForm() {
   );
 }
 
-export default SignUpForm;
+export default ProfileUpdate;
