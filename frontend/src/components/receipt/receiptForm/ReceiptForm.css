@@ -123,7 +123,7 @@
   margin-right: 10px;
 }
 
-.receipt-type-img.unActive {
+.receipt-type-img.inactive {
   clip-path: inset(30% 0 0 0);
 }
 

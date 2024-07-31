@@ -7,7 +7,7 @@ import Camera from '../../../assets/receipt/camera.png';
 import ActiveCamera from '../../../assets/receipt/activeCamera.png';
 import Picture from '../../../assets/receipt/picture.png';
 import ActivePicture from '../../../assets/receipt/activePicture.png';
-import ConnectReceiptSchedule from './ConnectReceiptSchedule';
+import ConnectReceiptSchedule from './ConnectReceiptScheduleModal';
 
 function RecognizeComponent({ setActiveTab }) {
 	// 영수증 타입 선택 (종이 or 모바일 내역)
@@ -120,13 +120,13 @@ function RecognizeComponent({ setActiveTab }) {
 			{recognizedResult === null &&
 				<div className="reciept-type-img-container">
 					<div 
-						className={`receipt-type-img ${activeType === 'paper' ? 'active' : 'unActive'}`} 
+						className={`receipt-type-img ${activeType === 'paper' ? 'active' : 'inactive'}`} 
 						onClick={() => {setActiveType('paper')}}
 					>
 						<img src={PaperReceipt} alt="paper" />
 					</div>
 					<div 
-						className={`receipt-type-img ${activeType === 'mobile' ? 'active' : 'unActive'}`}
+						className={`receipt-type-img ${activeType === 'mobile' ? 'active' : 'inactive'}`}
 						onClick={() => {setActiveType('mobile')}}
 					>
 						<img src={MobileReceipt} alt="mobile" />
@@ -206,7 +206,7 @@ function RecognizeComponent({ setActiveTab }) {
 			</div>}
 			{recognizedResult !== null && <button className="connect-schedule" onClick={handleConnectSchedule}>장소연결</button>}
 			<Button type={(recognizedResult === null ? 'gray' : 'purple')} >다음</Button>
-			{isModalOpen && <ConnectReceiptSchedule closeModal={closeModal} />}
+			{isModalOpen && <ConnectReceiptSchedule onClose={closeModal} />}
 		</div>
 	)
 }
