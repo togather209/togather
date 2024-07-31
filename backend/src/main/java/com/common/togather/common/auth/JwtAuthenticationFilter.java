@@ -34,14 +34,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             token = authHeader.substring(7);
             email = jwtUtil.getEmailFromToken(token); // 토큰에서 이메일 추출
         }
-    
+
         // 이메일이 존재하고, 인증 정보는 없다면
         if(email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             var memberDetails = memberDetailService.loadUserByUsername(email);
 
             if(jwtUtil.validateToken(token)){
                 // 인증 객체 생성
-                var authToken = new UsernamePasswordAuthenticationToken(memberDetails.getUsername(), null, memberDetails.getAuthorities());
+                var authToken = new UsernamePasswordAuthenticationToken(memberDetails, null, memberDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
