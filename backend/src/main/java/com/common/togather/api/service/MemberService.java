@@ -38,6 +38,7 @@ public class MemberService {
     }
 
     // 로그아웃
+    @Transactional
     public void logout(String refreshToken) {
         String email = jwtUtil.getEmailFromToken(refreshToken); // 토큰값에서 이메일 추출
         redisService.deleteRefreshToken(email);
