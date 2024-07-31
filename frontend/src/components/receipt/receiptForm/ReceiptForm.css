@@ -217,7 +217,18 @@
   background-color: #F9F9F9;
   padding: 20px 30px;
   background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='13' ry='13' stroke='%23D7D7D7FF' stroke-width='4' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
-border-radius: 13px;
+  border-radius: 12px;
+  display: flex;
+  box-shadow: 5px 10px 20px #f4f4f4;
+}
+
+.recognized-payment-date {
+  margin: 20px 10px 20px 10px;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #F9F9F9;
+  padding: 20px 30px;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='13' ry='13' stroke='%23D7D7D7FF' stroke-width='4' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
   border-radius: 12px;
   display: flex;
   box-shadow: 5px 10px 20px #f4f4f4;

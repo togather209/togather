@@ -92,9 +92,18 @@ function RecognizeComponent({ setActiveTab }) {
     setConnectedPlace(null);
   };
 
+	const handleNextTab = () => {
+		// TODO : 인식결과 null인 경우 alert?
+
+		if (recognizedResult !== null) {
+			setActiveTab('calculate');
+		} 
+	}
+
 	// TODO : 임시 인식 데이터
 	const tempRecognizedItems = {
 		storeName: 'How Cafe',
+		paymentDate: '2024.07.31',
 		items: [
 			{
 				name: '3루 입장권',
@@ -178,9 +187,14 @@ function RecognizeComponent({ setActiveTab }) {
 				<p>영수증을 인식해 정산을 시작해보세요!</p>
 			</div>}
 			{recognizedResult !== null && 
+			<>
 				<div className="recognized-store-name">
 					<p>{recognizedResult.storeName}</p>
 				</div>
+				<div className="recognized-payment-date">
+					<p>{recognizedResult.paymentDate}</p>
+				</div>
+			</>
 			}
 			{recognizedResult !== null && <div className="recognized-content">
 				<table>
@@ -218,7 +232,7 @@ function RecognizeComponent({ setActiveTab }) {
 				</div>
 			</div>}
 			{recognizedResult !== null && !connectedPlace && <button className="connect-schedule" onClick={handleConnectSchedule}>장소연결</button>}
-			{connectedPlace && (
+			{recognizedResult !== null && connectedPlace && (
 				<div className="connected-place-info">
 					<div>연결된 장소</div>
 					<div className="connected-place-name">
@@ -227,8 +241,8 @@ function RecognizeComponent({ setActiveTab }) {
 					</div>
 				</div>
 			)}
-			<Button type={(recognizedResult === null ? 'gray' : 'purple')}>다음</Button>
-			{isModalOpen && <ConnectReceiptSchedule onClose={closeModal} onConfirm={handleConfirm}  />}
+			<Button type={(recognizedResult === null ? 'gray' : 'purple')} onClick={handleNextTab}>다음</Button>
+			{isModalOpen && <ConnectReceiptSchedule onClose={closeModal} onConfirm={handleConfirm} />}
 		</div>
 	)
 }
