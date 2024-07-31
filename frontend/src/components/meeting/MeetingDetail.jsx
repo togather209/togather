@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import "./MeetingDetail.css"
 import meetingsetting from "../../assets/meeting/meetingsetting.png"
@@ -12,7 +12,7 @@ import ScheduleCard from "./ScheduleCard";
 function MeetingDetail() {
   const [isPage, setIsPage] = useState(false)
   const params = useParams();
-
+  const navigation = useNavigate()
   // 모임 디테일 단일 조회
   // 모임과 관련된 일정들 조회
 
@@ -43,9 +43,13 @@ function MeetingDetail() {
           </div>
         </div>
         
- 
+        <div className="meeting-info-container">
           <img className="meetingdetail-img" src={promimg} alt="모임 이미지" />
-      
+          <div className="overlay">
+            <p className="meeting-name-in-detail">모임명</p>
+            <p className="meeting-desc-in-detail">모임 설명</p>
+          </div>
+        </div>
 
 
         <div className="meetingdetail-schedule">일정</div>
@@ -55,7 +59,7 @@ function MeetingDetail() {
           <p className="make-new-schedule">새로운 일정을 만들어 보세요 !</p>
         </div>
 
-        <MiddleButton>+ 일정 만들기</MiddleButton>
+        <MiddleButton onClick={() => navigation("schedule-regist")}>+ 일정 만들기</MiddleButton>
 
       </div>
     )
@@ -72,7 +76,13 @@ function MeetingDetail() {
         </div>
       </div>
       
-      <img className="meetingdetail-img" src={promimg} alt="모임 이미지" />
+      <div className="meeting-info-container">
+          <img className="meetingdetail-img" src={promimg} alt="모임 이미지" />
+          <div className="overlay">
+            <p className="meeting-name-in-detail">모임명</p>
+            <p className="meeting-desc-in-detail">모임 설명</p>
+          </div>
+        </div>
 
       <div className="meetingdetail-schedule2">일정 목록</div>
 
@@ -88,7 +98,7 @@ function MeetingDetail() {
 
       </div>
 
-      <MiddleButton>+ 일정 만들기</MiddleButton>
+      <MiddleButton onClick={() => navigation("schedule-regist")}>+ 일정 만들기</MiddleButton>
 
     </div>
     )
