@@ -5,8 +5,11 @@ import logo from "../../assets/icons/common/logo.png";
 import SubmitButton from "./SubmitButton";
 import CommonInput from "../common/CommonInput";
 import BackButton from "../common/BackButton";
+import axios from "axios";
 
 function SignUpForm() {
+  const API_LINK = 'http://localhost:8080/';
+
   const [profileImage, setProfileImage] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,8 +19,35 @@ function SignUpForm() {
   const [certificationClick, setCertificationClick] = useState(false);
   const [certification, setCertification] = useState("");
 
-  const handleSignup = () => {
-    console.log("회원가입 받아조!!!!!!!!");
+  const handleSignup = async (e) => {
+    e.preventDefault();
+
+    if(password !== validPassword){
+      setPasswordMessage("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    const memberData = {
+      email,
+      password,
+      nickName,
+    };
+
+    console.log(memberData);
+
+    try {
+      const response = await axios.post(`${API_LINK}api/members/`, memberData,{
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    console.log("회원가입 성공!", response.data);
+
+    } catch (error) {
+      console.log("회원 가입 오류", error);
+    }
+    
   };
 
   const emailCertification = (e) => {
@@ -83,7 +113,7 @@ function SignUpForm() {
           <img src={logo} alt="로고" className="signup-logo" />
           <p>일정관리부터 정산까지</p>
         </div>
-        <form>
+        <form onSubmit={handleSignup}>
           <div className="profile-image-upload">
             <label htmlFor="profileImageUpload" className="image-upload-label">
               {profileImage ? (
@@ -171,8 +201,7 @@ function SignUpForm() {
           />
 
           <SubmitButton
-            type="button"
-            onClick={handleSignup}
+            type="submit"
             className="submit-button"
           >
             회원가입
