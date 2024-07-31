@@ -30,6 +30,11 @@ import JoinForm from "../components/home/JoinForm";
 import MeetingContainer from "../components/meeting/MeetingContainer";
 import Meetings from "../components/meeting/Meetings";
 import MeetingDetail from "../components/meeting/MeetingDetail";
+import MeetingDetailContainer from "../components/meeting/MeetingDetailContainer";
+
+
+//일정
+import ScheduleRegist from "../components/schedule/ScheduleRegist";
 
 //영수증
 import Receipt from "../pages/Receipt";
@@ -51,7 +56,11 @@ function AppRoutes() {
         </Route>
         <Route path="meeting" element={<MeetingContainer />}>
           <Route index element={<Meetings />}></Route>
-          <Route path=":id" element={<MeetingDetail />}></Route>
+          <Route path=":id" element={<MeetingDetailContainer />}>
+            <Route index element={<MeetingDetail />}></Route>
+            <Route path="schedule-regist" element={<ScheduleRegist />}></Route>
+          </Route>
+          {/* 미팅 디테일을 빈 컴포넌트로 만들고 outlet을 하나 더 작성하면 된다. */}
         </Route>
       </Route>
 
