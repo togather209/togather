@@ -1,9 +1,6 @@
 package com.common.togather.api.controller;
 
-import com.common.togather.api.request.PayAccountDeleteRequest;
-import com.common.togather.api.request.PayAccountRechargeRequest;
-import com.common.togather.api.request.PayAccountSaveRequest;
-import com.common.togather.api.request.PayAccountTransferRequest;
+import com.common.togather.api.request.*;
 import com.common.togather.api.response.PayAccountFindByMemberIdResponse;
 import com.common.togather.api.response.ResponseDto;
 import com.common.togather.api.service.PayAccountService;
@@ -93,6 +90,21 @@ public class PayAccountController {
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
                 .message("송금을 성공했습니다.")
+                .data(null)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    // 출금하기
+    @Operation(summary = "출금하기")
+    @PostMapping("/withdraw")
+    public ResponseEntity<ResponseDto<String>> withdrawPayAccount(@RequestBody PayAccountWithdrawRequest requestDto, @RequestHeader(value = "Authorization", required = false) String token) {
+        payAccountService.withDrawPayAccount(jwtUtil.getAuthMemberEmail(token), requestDto);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("출금을 성공했습니다.")
                 .data(null)
                 .build();
 

@@ -49,6 +49,11 @@ public class Account {
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private PayAccount payAccount;
 
+    // 잔액 증가 메서드
+    public void increaseBalance(int price) {
+        this.balance += price;
+    }
+
     // 잔액 감소 메서드
     public void decreaseBalance(int price) {
         if (this.balance < price) {
