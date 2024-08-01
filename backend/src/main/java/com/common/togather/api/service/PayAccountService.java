@@ -4,10 +4,7 @@ import com.common.togather.api.error.InvalidPayAccountPasswordException;
 import com.common.togather.api.error.MemberNotFoundException;
 import com.common.togather.api.error.PayAccountBalanceNotEmptyException;
 import com.common.togather.api.error.PayAccountNotFoundException;
-import com.common.togather.api.request.PayAccountDeleteRequest;
-import com.common.togather.api.request.PayAccountRechargeRequest;
-import com.common.togather.api.request.PayAccountSaveRequest;
-import com.common.togather.api.request.PayAccountTransferRequest;
+import com.common.togather.api.request.*;
 import com.common.togather.api.response.PayAccountFindByMemberIdResponse;
 import com.common.togather.db.entity.Account;
 import com.common.togather.db.entity.Member;
@@ -114,5 +111,20 @@ public class PayAccountService {
 
         payAccountRepository.delete(payAccount);
         payAccountRepository.flush();
+    }
+
+    // Pay 계좌 출금하기
+    @Transactional
+    public void withDrawPayAccount(String email, PayAccountWithdrawRequest requestDto) {
+
+        PayAccount payAccount = payAccountRepository.findByMemberId(memberRepository.findByEmail(email).get().getId())
+                .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
+        Account account = payAccount.getAccount();
+
+        account.increaseBalance(requestDto.getPrice());
+        payAccount.decreaseBalance(requestDto.getPrice());
+
+        accountRepository.save(account);
+        payAccountRepository.save(payAccount);
     }
 }
