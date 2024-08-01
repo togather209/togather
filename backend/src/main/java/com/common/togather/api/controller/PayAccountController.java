@@ -21,7 +21,7 @@ public class PayAccountController {
     private final JwtUtil jwtUtil;
 
     // 나의 Pay 계좌 조회
-    @GetMapping()
+    @GetMapping("/members/me")
     public ResponseEntity<ResponseDto<PayAccountFindByMemberIdResponse>> findPayAccountByMemberId(@RequestHeader(value = "Authorization", required = false) String token) {
 
         ResponseDto<PayAccountFindByMemberIdResponse> responseDto = ResponseDto.<PayAccountFindByMemberIdResponse>builder()
