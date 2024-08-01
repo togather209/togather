@@ -1,0 +1,43 @@
+.schedule-detail-list-box {
+    /* border: 1px black solid; */
+    width: 327px;
+    height: 73px;
+    margin-bottom: 13px;
+    border-radius: 15px;
+    box-shadow: 5px 10px 20px #E9E9E9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.schedule-detail-section1 {
+    display: flex;
+    align-items: center;
+}
+
+.schedule-detail-place-img {
+    width: 49px;
+    height: 49px;
+    margin-left: 10px;
+}
+
+.schedule-detail-place-name {
+    font-size: 16px;
+}
+
+.schedule-detail-place-address {
+    font-size: 10px;
+    color: #131212;
+    opacity: 50%;
+}
+
+.schedule-detail-place-receipt-img {
+    width: 16px;
+    height: 16px;
+    margin-right: 20px;
+}
+
+.side-stick {
+    width: 30px;
+    height: 30px;
+}

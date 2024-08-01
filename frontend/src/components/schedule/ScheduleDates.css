@@ -9,4 +9,12 @@
     border-radius: 50%;
     background-color: white;
     border: none;
+    cursor: pointer;
+    /* transition: background-color 0.3s, color 0.5s; */
   }
+
+.schedule-detail-weekdays-element2.selected {
+    background: linear-gradient(45deg, #712fff, #a074ff);
+    color: white;
+}
+

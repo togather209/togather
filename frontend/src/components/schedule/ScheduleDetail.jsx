@@ -5,13 +5,57 @@ import meetingimg from "../../../public/다운로드.jpg";
 import alarm from "../../assets/icons/common/alarm.png";
 import exit from "../../assets/schedule/scheduleexit.png";
 import heart from "../../assets/schedule/scheduleheartimg.png";
+import heartpurple from "../../assets/schedule/scheduleheartpurple.png"
 
 import BackButton from "../common/BackButton";
 import ScheduleButton from "./ScheduleButton";
 import ScheduleDates from "./ScheduleDates";
 import ScheduleWeekdays from "./ScheduleWeekdays";
+import ScheduleDetailPlaces from "./ScheduleDetailPlaces";
 
 function ScheduleDetail() {
+
+    
+    const locations_mokup = [
+        {
+            id: 1,
+            name: "서울 맛집",
+            address: "서울특별시 중구 을지로 123",
+            image: "https://example.com/images/seoul-matzip.jpg",
+            date: "2024-08-01"
+        },
+        {
+            id: 2,
+            name: "홍대 카페",
+            address: "서울특별시 마포구 홍익로 45",
+            image: "https://example.com/images/hongdae-cafe.jpg",
+            date: "2024-08-02"
+        },
+        {
+            id: 3,
+            name: "강남 베이커리",
+            address: "서울특별시 강남구 강남대로 678",
+            image: "https://example.com/images/gangnam-bakery.jpg",
+            date: "2024-08-03"
+        },
+        {
+            id: 4,
+            name: "이태원 레스토랑",
+            address: "서울특별시 용산구 이태원로 22",
+            image: "https://example.com/images itaewon-restaurant.jpg",
+            date: "2024-08-04"
+        },
+        {
+            id: 5,
+            name: "명동 쇼핑몰",
+            address: "서울특별시 중구 명동길 45",
+            image: "https://example.com/images/myeongdong-mall.jpg",
+            date: "2024-08-05"
+        }
+    ];
+
+
+
 
     const parseDate = (dateString) => {
         const date = new Date(dateString);
@@ -22,6 +66,8 @@ function ScheduleDetail() {
 
     const [startDate, setStartDate] = useState(parseDate('Thu AUG 1 2024 00:00:00 GMT+0900 (한국 표준시)')); // 예시 날짜
     const [endDate, setEndDate] = useState(parseDate('Sun AUG 4 2024 00:00:00 GMT+0900 (한국 표준시)'));   // 예시 날짜
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [isHeartClicked, setIsHeartClicked] = useState(false);
     const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
 
     const formatDate = (date) => {
@@ -54,7 +100,17 @@ function ScheduleDetail() {
         const datedata = getDatesWithWeekdays(startDate, endDate)
         console.log(datedata)
 
+    const handleDateClick = (date) => {
+        setSelectedDate(date);
+        setIsHeartClicked(false); // 하트 색상 토글
+ // 클릭된 날짜 초기화
+    };
 
+    const handleHeartClick = () => {
+        // 하트 클릭 취소
+        setSelectedDate(null); // 클릭된 날짜 초기화
+        setIsHeartClicked(!isHeartClicked); // 하트 색상 토글
+    };
         
   return (
     <div className="schedule-detail">
@@ -99,30 +155,35 @@ function ScheduleDetail() {
 
         </div>
         <div className="schedule-detail-weekdays">
-          <img
-            className="schedule-detail-like-icon"
-            src={heart}
-            alt="찜 아이콘"
-          />
+            <img
+                className="schedule-detail-like-icon"
+                src={isHeartClicked ? heartpurple : heart}
+                alt="찜 아이콘"
+                onClick={handleHeartClick}
+            />
            {datedata.map((item, index) => 
-                    <ScheduleDates key={index}>{parseInt(item.date.split('-')[2])}</ScheduleDates>
-                )}
+                <ScheduleDates
+                    key={index}
+                    onClick={() => handleDateClick(item.date)}
+                    isSelected={item.date === selectedDate}
+                >
+                    {parseInt(item.date.split('-')[2])}
+                </ScheduleDates>
+    )}
         </div>
       </div>
 
 
 
-      <div className="schedule-detail-place-list-box">
-
+        <div className="schedule-detail-place-list-box">
 
         <p className="schedule-detail-choose-date-text">
           장소를 클릭해 방문일을 변경해보세요 !
         </p>
 
-
-        {/* 여기서 map 사용?? */}
-        {/* 일단 카드를 만들어야 한다. 그리고 로직 생각해보자
-        생각해 볼것 1. 날짜 클릭했을 때 보이는 장소 달라야 한다 2. 등등 */}
+        {locations_mokup.map((item, index) => 
+            <ScheduleDetailPlaces key={item.id} img_url={item.image} name={item.name} address={item.address}></ScheduleDetailPlaces>
+        )}
       </div>
     </div>
   );
