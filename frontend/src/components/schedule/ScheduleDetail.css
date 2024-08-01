@@ -1,20 +1,101 @@
-.schedule-detail {
-    padding: 16px;
-}
+/* .schedule-detail {
+  padding: 16px;
+} */
 
 .schedule-detail-alarm-icon {
     width: 28px;
     height: 28px;
     margin-top: 18px;
     margin-right: 16px;
-}
-
-.schedule-detail-header {
+  }
+  
+  .schedule-detail-small-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+  }
+  
+  .schedule-detail-meeting-name {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .schedule-detail-schedule-name {
+    font-size: 12px;
+    color: #131212;
+    opacity: 70%;
+  }
+  
+  .schedule-detail-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.schedule-detail-header-search {
+    padding: 16px 16px 0 16px;
+  }
+  
+  .schedule-detail-middle-box {
+    padding: 16px 16px 0 16px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .schedule-detail-middle-info {
+    display: flex;
+    flex: row;
+    margin-bottom: 10px;
+  }
+  
+  .schedule-detail-first-section {
+    width: 300px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 10px;
+  }
+  
+  .schedule-detail-second-section {
+    width: 330px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .schedule-detail-header-search {
     margin-top: 14px;
-}
+  }
+  
+  .schedule-exit-img {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .schedule-detail-date-box {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    background-color: #f4f4f4;
+    opacity: 50%;
+    padding: 15px 15px;
+  }
+  
+  .schedule-detail-weekdays {
+    display: flex;
+    flex: row;
+  }
+  
+  .schedule-detail-weekdays-element {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+  }
+  
+  .schedule-detail-choose-date-text {
+    font-size: 10px;
+    color: #131212;
+    opacity: 50%;
+  }
+  
