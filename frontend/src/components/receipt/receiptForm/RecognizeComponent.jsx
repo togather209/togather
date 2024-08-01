@@ -100,9 +100,9 @@ function RecognizeComponent({ setActiveTab }) {
 
 	const handleNextTab = () => {
 		// TODO : 인식결과 null인 경우 alert?
-
 		if (recognizedResult !== null) {
-			setActiveTab('calculate');
+			console.log(recognizedResult.items);
+			setActiveTab('calculate', recognizedResult.items);
 		} 
 	}
 
