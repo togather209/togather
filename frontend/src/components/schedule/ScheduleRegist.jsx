@@ -9,7 +9,7 @@ function ScheduleRegist() {
   
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-    useEffect(() => {console.log(startDate, endDate)}, [startDate, endDate])
+    useEffect(() => {console.log(new Date(startDate), new Date(endDate))}, [startDate, endDate])
 
   return (
     <div className="schedule-regist">

@@ -1,0 +1,12 @@
+.schedule-detail-weekdays-element2 {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    color: #000000;
+    border-radius: 50%;
+    background-color: white;
+    border: none;
+  }
