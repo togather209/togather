@@ -81,13 +81,13 @@ function AppRoutes() {
       <Route path="/mypage/profile_update" element={<PrivateRoute component={ProfileUpdate} />} />
       <Route path="/mypage/terms" element={<PrivateRoute component={Terms} />} />
 
-      <Route path="/receipt" element={<PrivateRoute component={Receipt} />}>
+      <Route path="/receipt" element={<Receipt component={Receipt} />}>
         <Route index element={<ReceiptListContainer />} />
         <Route path=":id" element={<ReceiptDetail />} />
         <Route path="regist-form" element={<ReceiptFormContainer />} />
       </Route>
 
-      <Route path="/game" element={<PrivateRoute component={Game} />} />
+      <Route path="/game" element={<Game component={Game} />} />
     </Routes>
   );
 }

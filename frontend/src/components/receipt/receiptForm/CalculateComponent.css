@@ -1,0 +1,100 @@
+/* 정산 방법 선택 버튼 */
+.calculate-type-button {
+  padding: 10px 5px;
+  width: 90px;
+  font-size: 16px;
+  border: 0;
+  background-color: white;
+  cursor: pointer;
+  z-index: 2;
+  border-bottom: 1px #D7D7D7 solid;
+}
+
+.calculate-type-button.active {
+  color: #712FFF;
+  font-weight: bold;
+  border-bottom: 2px #712FFF solid;
+}
+
+.select-participant-detail {
+  width: 100%;
+}
+
+.select-participant-title, .calculated-result-title {
+  display: flex;
+  font-size: 14px;
+  text-align: left;
+  justify-items: start;
+  margin: 20px;
+}
+
+button.select-participant-title {
+  display: flex;
+  font-size: 14px;
+  margin: 20px 15px 0 15px;
+  border: 1px solid #D7D7D7;
+  padding: 10px 40px;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.select-participant-table {
+  width: 95%;
+  box-sizing: border-box;
+  margin: 0 auto 0 auto;
+  /* margin: 10px 0 5px 0; */
+  background-color: #F9F9F9;
+  padding: 10px 15px;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='13' ry='13' stroke='%23D7D7D7FF' stroke-width='4' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
+border-radius: 13px;
+  border-radius: 12px;
+  box-shadow: 5px 10px 20px #f4f4f4;
+}
+
+.select-participant-table th, .select-participant-table td {
+  text-align: left;
+  padding: 5px;
+  font-size: 14px;
+  vertical-align: top; /* Vertical align to top */
+}
+
+.select-participant-table th {
+  color: #131212;
+  font-size: 14px;
+  font-weight: 500;
+  font-weight: bold;
+}
+.calculate-tagged-peple {
+  display: flex;
+  align-items: start;
+  height: 21px;
+}
+
+.add-participant-button {
+  width: 21px;
+  margin-right: 10px;
+}
+
+.participant-badge {
+  margin-right: 10px;
+}
+
+/* TODO: color별 처리 */
+.calculated-result-content {
+  width: 95%;
+  box-sizing: border-box;
+  margin: 0 auto 0 auto;
+  background-color: #FDEAE8;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23FBCED8FF' stroke-width='4' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
+border-radius: 12px;
+  padding: 20px;
+}
+
+.calculated-result-table {
+  width: 100%;
+}
+
+.calculated-result-table th, .calculated-result-table td {
+  text-align: left;
+  padding: 5px;
+}
