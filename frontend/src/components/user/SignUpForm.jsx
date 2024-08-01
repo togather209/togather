@@ -9,7 +9,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function SignUpForm() {
-  const API_LINK = "http://localhost:8080/";
+  const API_LINK = "http://localhost:8080/api";
 
   const [profileImage, setProfileImage] = useState("");
   const [email, setEmail] = useState("");
@@ -45,7 +45,7 @@ function SignUpForm() {
     }
 
     try {
-      const response = await axios.post(`${API_LINK}api/auth/`, memberData, {
+      const response = await axios.post(`${API_LINK}/auth/register`, memberData, {
         headers: {
           "Content-Type": "application/json",
         },
