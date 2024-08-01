@@ -8,7 +8,7 @@ RUN npm install
 
 COPY . .
 
-빌드 명령어 실행
+#빌드 명령어 실행
 RUN npm run build
 
 EXPOSE 3000
