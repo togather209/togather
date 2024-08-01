@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../redux/slices/authSlice";
 
 function LoginForm() {
-  const API_LINK = "http://localhost:8080/api";
+  const API_LINK = import.meta.env.VITE_API_URL;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,12 +40,13 @@ function LoginForm() {
         withCredentials: true,
       });
 
-      console.log("로그인 성공!");
+      console.log("로그인 성공!", response.data);
+      
       dispatch(
         loginSuccess({
           member: response.data.member,
-          accessToken: response.data.accessToken,
-          refreshToken: response.data.refreshToken,
+          accessToken: response.data.data.accessToken,
+          refreshToken: response.data.data.refreshToken,
         })
       );
 
