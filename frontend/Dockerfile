@@ -1,4 +1,3 @@
-# Dockerfile
 FROM node:16-alpine
 
 WORKDIR /app
@@ -9,9 +8,9 @@ RUN npm install
 
 COPY . .
 
-# 빌드 명령어 실행
+빌드 명령어 실행
 RUN npm run build
 
 EXPOSE 3000
 
-CMD ["npm", "run", "serve"]
+CMD ["npm", "run","dev"]
