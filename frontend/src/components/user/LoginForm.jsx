@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../redux/slices/authSlice";
 
 function LoginForm() {
-  const API_LINK = "http://localhost:8080/";
+  const API_LINK = "http://localhost:8080/api";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,7 +32,7 @@ function LoginForm() {
     };
 
     try {
-      const response = await axios.post(`${API_LINK}auth/login/`, memberData, {
+      const response = await axios.post(`${API_LINK}/auth/login`, memberData, {
         headers: {
           "Content-Type": "application/json",
         },

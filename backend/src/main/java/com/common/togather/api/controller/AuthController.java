@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/auth/")
+@RequestMapping("/api/auth")
 @Tag(name = "AuthController", description = "토큰 없어도 접근 가능한 요청")
 @RequiredArgsConstructor
 public class AuthController {
@@ -26,7 +26,7 @@ public class AuthController {
 
     // 회원가입
     @Operation(summary = "회원가입")
-    @PostMapping("/")
+    @PostMapping("/register")
     public ResponseEntity<ResponseDto<String>> signup(@RequestBody MemberSaveRequest memberSaveRequest){
 
         authService.signup(memberSaveRequest);
