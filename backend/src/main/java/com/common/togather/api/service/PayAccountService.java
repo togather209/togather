@@ -1,5 +1,6 @@
 package com.common.togather.api.service;
 
+import com.common.togather.api.error.InvalidPayAccountPasswordException;
 import com.common.togather.api.error.MemberNotFoundException;
 import com.common.togather.api.error.PayAccountNotFoundException;
 import com.common.togather.api.request.PayAccountRechargeRequest;
@@ -83,6 +84,10 @@ public class PayAccountService {
                 .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
         PayAccount targetPayAccount = payCountRepository.findByMemberId(requestDto.getTargetMemberId())
                 .orElseThrow(() -> new PayAccountNotFoundException("Target Pay 계좌가 존재하지 않습니다."));
+
+        if (payAccount.getPassword() != requestDto.getPayAccountPassword()) {
+            throw new InvalidPayAccountPasswordException("계좌 비밀번호가 일치하지 않습니다.");
+        }
 
         payAccount.decreaseBalance(requestDto.getPrice());
         targetPayAccount.increaseBalance(requestDto.getPrice());
