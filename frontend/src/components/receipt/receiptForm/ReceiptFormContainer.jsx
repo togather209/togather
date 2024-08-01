@@ -8,6 +8,7 @@ import Caculate from './CalculateComponent';
 function ReceiptRegistForm() {
   const [activeTab, setActiveTab] = useState('design');
   const [receiptItems, setReceiptItems] = useState([]);
+  const [receiptColor, setReceiptColor] = useState('sky');
 
   const handleSetActiveTab = (tab, items = []) => {
     setActiveTab(tab);
@@ -45,9 +46,9 @@ function ReceiptRegistForm() {
         </div>
       </div>
       <div className='tab-content'>
-        {activeTab === 'design' && <Design setActiveTab={setActiveTab}/>}
-        {activeTab === 'recognize' && <Recognize setActiveTab={handleSetActiveTab}/>}
-        {activeTab === 'calculate' && <Caculate setActiveTab={setActiveTab} items={receiptItems}/>}
+        {activeTab === 'design' && <Design setActiveTab={setActiveTab} setReceiptColor={setReceiptColor} />}
+        {activeTab === 'recognize' && <Recognize setActiveTab={handleSetActiveTab} />}
+        {activeTab === 'calculate' && <Caculate setActiveTab={setActiveTab} items={receiptItems} receiptColor={receiptColor} />}
       </div>
     </div>
   )

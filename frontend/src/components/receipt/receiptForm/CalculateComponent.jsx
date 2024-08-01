@@ -4,7 +4,7 @@ import SelectParticipantsModal from './SelectParticipantsModal';
 import AddButton from '../../../assets/icons/common/add.png';
 import Button from '../../common/Button';
 
-function CalculateComponent({ items }) {
+function CalculateComponent({ items, receiptColor }) {
   const [activeType, setActiveType] = useState('divide');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [itemParticipants, setItemParticipants] = useState({});
@@ -72,16 +72,24 @@ function CalculateComponent({ items }) {
     : generalParticipants.length > 0;
 
   const handleRegister = () => {
-    console.log('Items:', items);
-    Object.keys(itemParticipants).forEach((itemIndex) => {
-      console.log(`Item ${itemIndex}:`, itemParticipants[itemIndex]);
-    });
+    const receiptTempInfo = {
+      color: receiptColor,
+      items: items.map((item, index) => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        participants: itemParticipants[index] || []
+      }))
+    };
+    
+    // TODO : 전체 정보 전달
+    console.log(receiptTempInfo);
   };
 
   const participants = ['김범규', '김해수', '이지혜'];
 
   const haveParticipants = Object.keys(settlements).length > 0;
-  
+
   return (
     <>
       <div className='calculate-component-container'>
