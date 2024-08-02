@@ -55,7 +55,7 @@ function AppRoutes() {
       <Route path="/login" element={<User />} />
       
       {/* 보호된 라우트 */}
-      <Route path="/" element={<PrivateRoute component={Home} />}>
+      <Route path="/" element={<Home />}>
         <Route path="" element={<HomeMainContainer />}>
           <Route index element={<HomeMain />} />
           <Route path="regist_form" element={<RegistForm />} />
@@ -71,15 +71,15 @@ function AppRoutes() {
         </Route>
       </Route>
 
-      <Route path="/wallet" element={<PrivateRoute component={Wallet} />} />
-      <Route path="/wallet/create_payment" element={<PrivateRoute component={CreatePayment} />} />
-      <Route path="/wallet/transaction_list" element={<PrivateRoute component={TransactionList} />} />
-      <Route path="/wallet/send" element={<PrivateRoute component={Send} />} />
-      <Route path="/wallet/sendform" element={<PrivateRoute component={SendForm} />} />
+      <Route path="/wallet" element={<Wallet/>} />
+      <Route path="/wallet/create_payment" element={<CreatePayment />} />
+      <Route path="/wallet/transaction_list" element={<TransactionList />} />
+      <Route path="/wallet/send" element={<Send />} />
+      <Route path="/wallet/sendform" element={<SendForm />} />
 
-      <Route path="/mypage" element={<PrivateRoute component={MyPage} />} />
-      <Route path="/mypage/profile_update" element={<PrivateRoute component={ProfileUpdate} />} />
-      <Route path="/mypage/terms" element={<PrivateRoute component={Terms} />} />
+      <Route path="/mypage" element={<MyPage />} />
+      <Route path="/mypage/profile_update" element={<ProfileUpdate />} />
+      <Route path="/mypage/terms" element={<Terms />} />
 
       <Route path="/receipt" element={<Receipt component={Receipt} />}>
         <Route index element={<ReceiptListContainer />} />
