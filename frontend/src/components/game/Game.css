@@ -1,3 +1,4 @@
+/* game container */
 .game-container {
   padding: 16px;
 }
@@ -8,13 +9,58 @@
   text-align: center;
 }
 
+.game-add-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #e7e7e7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24;
+  cursor: pointer;
+}
+
+.game-participant {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin: 0 5px;
+}
+
+.game-participant-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin: 0 5px;
+}
+
 .game-container .people {
   display: inline-block;
   font-size: 14px;
   margin-bottom: 10px;
 }
 
-.machine {
+.game-machine-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.game-machine {
   margin-top: 30px;
   width: 100%;
+}
+
+.game-start-button {
+  position: absolute;
+  bottom: 60px; /* 이미지의 하단에서 버튼이 떨어지는 거리 */
+  left: 50%;
+  width: 250px;
+  transform: translateX(-50%);
+  padding: 15px 20px; /* 버튼의 크기 조정 */
+  background-color: white;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 5px 10px 20px #f0f0f034;
 }

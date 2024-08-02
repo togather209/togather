@@ -7,6 +7,7 @@ import MyPage from "../pages/MyPage";
 
 //게임
 import Game from "../pages/Game";
+import GameContainer from "../components/game/GameContainer";
 
 //유저
 import User from "../pages/User";
@@ -42,6 +43,7 @@ import Receipt from "../pages/Receipt";
 import ReceiptListContainer from "../components/receipt/receiptList/ReceiptListContainer";
 import ReceiptFormContainer from "../components/receipt/receiptForm/ReceiptFormContainer";
 import ReceiptDetail from "../components/receipt/receiptDetail/ReceiptDetail";
+
 import ProfileUpdate from "../components/mypage/ProfileUpdate";
 import Terms from "../components/mypage/Terms";
 
@@ -87,7 +89,9 @@ function AppRoutes() {
         <Route path="regist-form" element={<ReceiptFormContainer />} />
       </Route>
 
-      <Route path="/game" element={<Game component={Game} />} />
+      <Route path="/game" element={<Game component={Game} />} >
+        <Route index element={<GameContainer />} />
+      </Route>
     </Routes>
   );
 }

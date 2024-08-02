@@ -1,9 +1,10 @@
 import React from 'react';
+import { Outlet } from "react-router-dom";
 
 function Game() {
   return (
     <div>
-      <h1>Game Page</h1>
+      <Outlet />
     </div>
   );
 }

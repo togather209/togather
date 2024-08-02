@@ -1,0 +1,84 @@
+.game-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-modal-content {
+  position: relative;
+  width: 230px;
+  background-color: white;
+  padding: 20px 30px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-modal-title {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.game-modal-close {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+}
+
+.game-participant-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.game-participant-item {
+  cursor: pointer;
+}
+
+.game-participant-item label {
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+}
+
+.game-participant-item input {
+  margin-right: 10px;
+}
+
+.game-participant-item input:checked {
+  accent-color: #712FFF;
+}
+
+.game-modal-confirm-button {
+  width: 80%;
+  height: 45px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.game-modal-confirm-button.active {
+  background: linear-gradient(45deg, #712FFF, #A074FF);
+  box-shadow: 5px 10px 20px #b08cff;
+  color: white;
+}
+
+.game-modal-confirm-button.inactive {
+  background-color: #F0F0F0;
+  color: #ccc;
+  box-shadow: 5px 10px 20px #E9E9E9;
+  cursor: not-allowed;
+}
