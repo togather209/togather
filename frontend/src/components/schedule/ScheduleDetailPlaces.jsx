@@ -3,6 +3,7 @@ import React from "react";
 import "./ScheduleDetailPlaces.css"
 import ScheduleReceiptPurple from "../../assets/schedule/schedulereceiptpurple.png"
 import SideStick from "../../assets/schedule/sidestick.png"
+import matjip from "../../assets/schedule/mayjip.jpg"
 
 function ScheduleDetailPlaces ({ img_url, name, address }) {
     return (
@@ -11,15 +12,18 @@ function ScheduleDetailPlaces ({ img_url, name, address }) {
                 <div>
                     <img className="side-stick" src={SideStick} alt="sidestick" />
                 </div>
-                <div className="schedule-detail-place-img">
-                    <img src={img_url} alt="임시" />
+                <div>
+                    <img className="schedule-detail-place-img" src={matjip} alt="임시" />
                 </div>
                 <div>
                     <p className="schedule-detail-place-name">{ name }</p>
                     <p className="schedule-detail-place-address">{ address }</p>
                 </div>
             </div>
-            <img className="schedule-detail-place-receipt-img" src={ScheduleReceiptPurple} alt="영수증 이미지" />
+            <div className="receipt-box-div">
+                <img className="schedule-detail-place-receipt-img" src={ScheduleReceiptPurple} alt="영수증 이미지" />
+                <p className="schedule-detail-place-receipt-num">1</p>
+            </div>
         </div>
     )
 }

@@ -18,3 +18,12 @@
   color: white;
   box-shadow: 5px 10px 20px #b08cff;
 }
+
+.schedule-button-border {
+  font-weight: bold;
+  /* background: linear-gradient(45deg, #712fff, #a074ff); */
+  border: 0.5px solid #712fff;
+  color: #712fff;
+  margin-right: 13px;
+  /* box-shadow: 5px 10px 20px #b08cff; */
+}

@@ -12,6 +12,8 @@ import ScheduleButton from "./ScheduleButton";
 import ScheduleDates from "./ScheduleDates";
 import ScheduleWeekdays from "./ScheduleWeekdays";
 import ScheduleDetailPlaces from "./ScheduleDetailPlaces";
+import headphone from "../../assets/schedule/headphone.png"
+import mic from "../../assets/schedule/mic.png"
 
 function ScheduleDetail() {
 
@@ -51,6 +53,27 @@ function ScheduleDetail() {
             address: "서울특별시 중구 명동길 45",
             image: "https://example.com/images/myeongdong-mall.jpg",
             date: "2024-08-05"
+        },
+        {
+            id: 5,
+            name: "명동 쇼핑몰",
+            address: "서울특별시 중구 명동길 45",
+            image: "https://example.com/images/myeongdong-mall.jpg",
+            date: "2024-08-05"
+        },
+        {
+            id: 5,
+            name: "명동 쇼핑몰",
+            address: "서울특별시 중구 명동길 45",
+            image: "https://example.com/images/myeongdong-mall.jpg",
+            date: "2024-08-05"
+        },
+        {
+            id: 5,
+            name: "명동 쇼핑몰",
+            address: "서울특별시 중구 명동길 45",
+            image: "https://example.com/images/myeongdong-mall.jpg",
+            date: "2024-08-05"
         }
     ];
 
@@ -68,6 +91,23 @@ function ScheduleDetail() {
     const [endDate, setEndDate] = useState(parseDate('Sun AUG 4 2024 00:00:00 GMT+0900 (한국 표준시)'));   // 예시 날짜
     const [selectedDate, setSelectedDate] = useState(null);
     const [isHeartClicked, setIsHeartClicked] = useState(false);
+    const [isCallStarted, setIsCallStarted] = useState(false)
+    const [isHeadPhone, setIsHeadPhone] = useState(false)
+    const [isMic, setIsMic] = useState(false)
+    
+
+    const handleCallStart = () => {
+      setIsCallStarted(!isCallStarted)
+    }
+
+    const handleHeadPhone = () => {
+      setIsHeadPhone(!isHeadPhone)
+    }
+
+    const handleMic = () => {
+      setIsMic(!isMic)
+    }
+
     const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
 
     const formatDate = (date) => {
@@ -185,6 +225,32 @@ function ScheduleDetail() {
             <ScheduleDetailPlaces key={item.id} img_url={item.image} name={item.name} address={item.address}></ScheduleDetailPlaces>
         )}
       </div>
+
+        <div className="schedule-detail-button">
+          {isCallStarted ? (
+            <ScheduleButton type={"purple"} onClick={handleCallStart}>통화 시작</ScheduleButton>
+          ) : (
+            <div className="schedule-detail-call-started">
+              <ScheduleButton type={"border"} onClick={handleCallStart}>통화 종료</ScheduleButton>
+
+              {isHeadPhone ? (
+                <div className="headphone-mic-container-activate" onClick={handleHeadPhone}><img className="headphone-mic-size" src={headphone} alt="해드폰" /></div>
+              ) : (
+                <div className="headphone-mic-container" onClick={handleHeadPhone}><img className="headphone-mic-size" src={headphone} alt="해드폰" /></div>
+              )}
+
+              {isMic ? (
+                <div className="headphone-mic-container-activate" onClick={handleMic}><img className="headphone-mic-size" src={mic} alt="마이크" /></div>
+                
+              ) : (
+                <div className="headphone-mic-container" onClick={handleMic}><img className="headphone-mic-size" src={mic} alt="마이크" /></div>
+              )}
+
+
+            </div>
+          )}
+        </div>
+
     </div>
   );
 }
