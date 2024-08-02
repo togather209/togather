@@ -158,6 +158,7 @@ public class AuthController {
                     .message("이미 사용중인 이메일입니다.")
                     .data(true)
                     .build();
+            return new ResponseEntity<>(responseDto,  HttpStatus.BAD_REQUEST);
         }
 
         else {
@@ -166,9 +167,9 @@ public class AuthController {
                     .message("사용 가능한 이메일입니다.")
                     .data(false)
                     .build();
+        return new ResponseEntity<>(responseDto,  HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(responseDto,  HttpStatus.OK);
     }
 
     @Operation(summary = "닉네임 중복 검사")
