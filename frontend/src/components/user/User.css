@@ -110,7 +110,7 @@
   color: blue;
 }
 
-.invalid-password, .invalid-email, .invalid-nickname {
+.invalid-password, .invalid-email, .invalid-nickname, .duplicated-email, .duplicated-nickname {
   color: red;
   font-size: 12px;
 }

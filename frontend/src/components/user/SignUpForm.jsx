@@ -12,21 +12,21 @@ import { FaEye, FaEyeSlash } from "react-icons/fa"; // 아이콘 추가
 function SignUpForm() {
   const API_LINK = import.meta.env.VITE_API_URL;
 
-  const [profileImage, setProfileImage] = useState("");//프로필 이미지
-  const [email, setEmail] = useState("");//이메일
-  const [emailMessage, setEmailMessage] = useState("");//이메일 메시지
-  const [password, setPassword] = useState("");//비밀번호
-  const [validPassword, setValidPassword] = useState("");//비밀번호 확인
-  const [nickname, setNickname] = useState("");//닉네임
-  const [passwordMessage, setPasswordMessage] = useState("");//비밀번호 메세지
-  const [certificationClick, setCertificationClick] = useState(false);//인증버튼 클릭
-  const [inputCode, setInputCode] = useState("");//인증 코드
+  const [profileImage, setProfileImage] = useState(""); //프로필 이미지
+  const [email, setEmail] = useState(""); //이메일
+  const [emailMessage, setEmailMessage] = useState(""); //이메일 메시지
+  const [password, setPassword] = useState(""); //비밀번호
+  const [validPassword, setValidPassword] = useState(""); //비밀번호 확인
+  const [nickname, setNickname] = useState(""); //닉네임
+  const [passwordMessage, setPasswordMessage] = useState(""); //비밀번호 메세지
+  const [certificationClick, setCertificationClick] = useState(false); //인증버튼 클릭
+  const [inputCode, setInputCode] = useState(""); //인증 코드
   const [certificationComplete, setCertificaionComplete] = useState(false); //인증 정보 확인
   const [timer, setTimer] = useState(300); // 300초 = 5분
-  const [timerActive, setTimerActive] = useState(false);//시간 재기 시작!
+  const [timerActive, setTimerActive] = useState(false); //시간 재기 시작!
   const [passwordVisible, setPasswordVisible] = useState(false); // 비밀번호 가시성 상태
   const [validPasswordVisible, setValidPasswordVisible] = useState(false); // 비밀번호 확인 가시성 상태
-  const [nicknameMessage, setNicknameMessage] = useState("");
+  const [nicknameMessage, setNicknameMessage] = useState(""); //닉네임 메시지
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,9 +51,8 @@ function SignUpForm() {
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
   };
-
 
   //회원가입 제출 폼
   const handleSignup = async (e) => {
@@ -86,21 +85,25 @@ function SignUpForm() {
       nickname,
     };
 
-    if (email === '' || password === '' || nickname === '') {
+    if (email === "" || password === "" || nickname === "") {
       return;
     } else {
       console.log(memberData);
     }
 
     try {
-      const response = await axios.post(`${API_LINK}/auth/register`, memberData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        `${API_LINK}/auth/register`,
+        memberData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       console.log("회원가입 성공!", response.data);
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
       console.log("회원 가입 오류", error);
     }
@@ -115,8 +118,7 @@ function SignUpForm() {
       return;
     }
 
-    if (!validateEmail(email)){
-      console.log("유효하지않음");
+    if (!validateEmail(email)) {
       return;
     }
 
@@ -126,11 +128,15 @@ function SignUpForm() {
 
     try {
       // 이메일 코드 전송...
-      const response = await axios.post(`${API_LINK}/auth/verification-codes`, emailData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        `${API_LINK}/auth/verification-codes`,
+        emailData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       setCertificationClick(true);
       setTimer(300); // 타이머를 5분으로 설정
@@ -160,25 +166,46 @@ function SignUpForm() {
   const validateEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
-  }
+  };
 
-
-  const handleEmailBlur = () => {
-
+  const handleEmailBlur = async () => {
     //이메일 없으면 메세지 없앤다.
-    if(email.length === 0){
+    if (email.length === 0) {
       setEmailMessage("");
       return;
     }
 
     //유효성 검사 탈락이면?
-    if(!validateEmail(email)){
+    if (!validateEmail(email)) {
       setEmailMessage("올바른 이메일 형식이 아닙니다.");
+    } else {
+      const emailData = {
+        email: email,
+      };
+
+      try {
+        const response = await axios.post(
+          `${API_LINK}/auth/email/duplicate-check`,
+          emailData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.data.data) {
+          //true이면
+          setEmailMessage("중복된 이메일 입니다.");
+        }
+        else {
+          setEmailMessage("");
+        }
+      } catch (error) {
+        console.log("error");
+      }
     }
-    else {
-      setEmailMessage("");
-    }
-  }
+  };
 
   //값 변경하는 메서드
   const handlePasswordChange = (e) => {
@@ -187,14 +214,15 @@ function SignUpForm() {
 
   //focus해제 됐을 때, 유효성 검사 실시
   const handlePasswordBlur = () => {
-
-    if(password.length === 0){
+    if (password.length === 0) {
       setPasswordMessage("");
       return;
     }
 
     if (!validatePassword(password)) {
-      setPasswordMessage("비밀번호는 영문, 숫자, 특수문자를 포함한 8~20자여야 합니다.");
+      setPasswordMessage(
+        "비밀번호는 영문, 숫자, 특수문자를 포함한 8~20자여야 합니다."
+      );
     } else if (password !== validPassword) {
       setPasswordMessage("비밀번호가 일치하지 않습니다.");
     } else {
@@ -203,19 +231,43 @@ function SignUpForm() {
   };
 
   //닉네임 유효성 검사하기
-  const handleNicknameBlur = () => {
-    if(nickname.length === 0){
+  const handleNicknameBlur = async () => {
+    if (nickname.length === 0) {
       setNicknameMessage("");
       return;
     }
 
-    if (!validateNickname(nickname)){
-      setNicknameMessage("닉네임은 2~15자의 영문 대/소문자, 한글(초성 제외), 숫자만 가능합니다.");
+    if (!validateNickname(nickname)) {
+      setNicknameMessage(
+        "닉네임은 2~15자의 영문 대/소문자, 한글(초성 제외), 숫자만 가능합니다."
+      );
+    } else {
+      const nicknameData = {
+        nickname: nickname,
+      };
+
+      try {
+        const response = await axios.post(
+          `${API_LINK}/auth/nickname/duplicate-check`,
+          nicknameData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+
+        if (response.data.data) {
+          setNicknameMessage("사용할 수 없는 닉네임 입니다.");
+        } else {
+          setNicknameMessage("");
+        }
+      } catch (error) {
+        console.log("에러 발생");
+      }
     }
-    else {
-      setNicknameMessage("");
-    }
-  }
+  };
 
   //비밀번호 확인 입력할 때 ...
   const handleValidPasswordChange = (e) => {
@@ -225,7 +277,9 @@ function SignUpForm() {
   //비밀번호 확인 focus 떼면 수행
   const handleValidPasswordBlur = () => {
     if (!validatePassword(validPassword)) {
-      setPasswordMessage("비밀번호는 영문, 숫자, 특수문자를 포함한 8~20자여야 합니다.");
+      setPasswordMessage(
+        "비밀번호는 영문, 숫자, 특수문자를 포함한 8~20자여야 합니다."
+      );
     } else if (validPassword !== password) {
       setPasswordMessage("비밀번호가 일치하지 않습니다.");
     } else {
@@ -250,15 +304,19 @@ function SignUpForm() {
 
     const emailCodeForm = {
       email: email,
-      inputCode: inputCode
+      inputCode: inputCode,
     };
 
     try {
-      await axios.post(`${API_LINK}/auth/verification-codes/check`, emailCodeForm, {
-        headers: {
-          "Content-Type": "application/json"
-        },
-      });
+      await axios.post(
+        `${API_LINK}/auth/verification-codes/check`,
+        emailCodeForm,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       // 인증 성공시...
       setCertificaionComplete(true);
       console.log("이메일 인증 성공!");
@@ -325,7 +383,7 @@ function SignUpForm() {
               className={
                 emailMessage === "올바른 이메일 형식이 아닙니다."
                   ? "invalid-email"
-                  : ""
+                  : "duplicated-email"
               }
             >
               {emailMessage}
@@ -342,16 +400,22 @@ function SignUpForm() {
                   onChange={(e) => setInputCode(e.target.value)}
                   className="certification-input"
                 />
-                <button type="submit" className="certification-button" onClick={certificationCode}>확인</button>
+                <button
+                  type="submit"
+                  className="certification-button"
+                  onClick={certificationCode}
+                >
+                  확인
+                </button>
               </div>
               <div className="certification-timer">
                 남은 시간: {formatTime(timer)}
               </div>
             </div>
           ) : (
-            ''
+            ""
           )}
-          {certificationComplete ? <div>인증 완료되었습니다.</div> : ''}
+          {certificationComplete ? <div>인증 완료되었습니다.</div> : ""}
           <div className="password-container">
             <CommonInput
               id="password"
@@ -404,9 +468,10 @@ function SignUpForm() {
           {nicknameMessage && (
             <p
               className={
-                nicknameMessage === "닉네임은 2~15자의 영문 대/소문자, 한글(초성 제외), 숫자만 가능합니다."
+                nicknameMessage ===
+                "닉네임은 2~15자의 영문 대/소문자, 한글(초성 제외), 숫자만 가능합니다."
                   ? "invalid-nickname"
-                  : ""
+                  : "duplicated-nickname"
               }
             >
               {nicknameMessage}
