@@ -33,6 +33,22 @@ public class GlobalExceptionHandler {
         ErrorResponseDto error = new ErrorResponseDto("Pay Account Not Found", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+
+    // Pay 계좌가 비밀번호가 틀린 경우
+    @ExceptionHandler(InvalidPayAccountPasswordException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidPayAccountPasswordException(InvalidPayAccountPasswordException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Invalid Pay Account Password", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    // Pay 계좌에 금액이 존재하는 경우
+    @ExceptionHandler(PayAccountBalanceNotEmptyException.class)
+    public ResponseEntity<ErrorResponseDto> handlePayAccountBalanceNotEmptyException(PayAccountBalanceNotEmptyException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Pay Account Balance Not Empty", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
     
     // 가입된 이메일이 이미 있는 경우
     @ExceptionHandler(EmailAlreadyExistsException.class)
