@@ -12,9 +12,15 @@ import ScheduleCard from "./ScheduleCard";
 function MeetingDetail() {
   const [isPage, setIsPage] = useState(true)
   const params = useParams();
+  const [meetingSetting, setMeetingSetting] = useState(false)
   const navigation = useNavigate()
   // 모임 디테일 단일 조회
   // 모임과 관련된 일정들 조회
+
+  const handleSetting = () => {
+    setMeetingSetting(!meetingSetting)
+    console.log(meetingSetting)
+  }
 
   const schedule_mokup = [
     {
@@ -37,7 +43,7 @@ function MeetingDetail() {
       <div className="none-meetingdetail">
         <div className="none-meetingdetail-header">
           <BackButton />
-          <div className="none-meetingdetail-header-setting">
+          <div className="none-meetingdetail-header-setting" onClick={handleSetting}>
             <p className="meeting-setting-text">모임관리</p>
             <img className="meeting-setting" src={meetingsetting} alt="settingicon" />
           </div>
@@ -70,7 +76,7 @@ function MeetingDetail() {
       <div className="none-meetingdetail">
       <div className="none-meetingdetail-header">
         <BackButton />
-        <div className="none-meetingdetail-header-setting">
+        <div className="none-meetingdetail-header-setting" onClick={handleSetting}>
           <p className="meeting-setting-text">모임관리</p>
           <img className="meeting-setting" src={meetingsetting} alt="settingicon" />
         </div>

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState} from "react";
 
 import "./ScheduleDetail.css";
 import meetingimg from "../../../public/다운로드.jpg";
