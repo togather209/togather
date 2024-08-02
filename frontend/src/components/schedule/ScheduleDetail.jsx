@@ -12,6 +12,7 @@ import ScheduleButton from "./ScheduleButton";
 import ScheduleDates from "./ScheduleDates";
 import ScheduleWeekdays from "./ScheduleWeekdays";
 import ScheduleDetailPlaces from "./ScheduleDetailPlaces";
+import ScheduleDetailFavoritePlaces from "./ScheduleDetailFavoritePlaces";
 import headphone from "../../assets/schedule/headphone.png"
 import mic from "../../assets/schedule/mic.png"
 
@@ -55,21 +56,21 @@ function ScheduleDetail() {
             date: "2024-08-05"
         },
         {
-            id: 5,
+            id: 6,
             name: "명동 쇼핑몰",
             address: "서울특별시 중구 명동길 45",
             image: "https://example.com/images/myeongdong-mall.jpg",
             date: "2024-08-05"
         },
         {
-            id: 5,
+            id: 7,
             name: "명동 쇼핑몰",
             address: "서울특별시 중구 명동길 45",
             image: "https://example.com/images/myeongdong-mall.jpg",
             date: "2024-08-05"
         },
         {
-            id: 5,
+            id: 8,
             name: "명동 쇼핑몰",
             address: "서울특별시 중구 명동길 45",
             image: "https://example.com/images/myeongdong-mall.jpg",
@@ -90,7 +91,7 @@ function ScheduleDetail() {
     const [startDate, setStartDate] = useState(parseDate('Thu AUG 1 2024 00:00:00 GMT+0900 (한국 표준시)')); // 예시 날짜
     const [endDate, setEndDate] = useState(parseDate('Sun AUG 4 2024 00:00:00 GMT+0900 (한국 표준시)'));   // 예시 날짜
     const [selectedDate, setSelectedDate] = useState(null);
-    const [isHeartClicked, setIsHeartClicked] = useState(false);
+    const [isHeartClicked, setIsHeartClicked] = useState(true);
     const [isCallStarted, setIsCallStarted] = useState(false)
     const [isHeadPhone, setIsHeadPhone] = useState(false)
     const [isMic, setIsMic] = useState(false)
@@ -149,7 +150,7 @@ function ScheduleDetail() {
     const handleHeartClick = () => {
         // 하트 클릭 취소
         setSelectedDate(null); // 클릭된 날짜 초기화
-        setIsHeartClicked(!isHeartClicked); // 하트 색상 토글
+        setIsHeartClicked(true); // 하트 색상 토글
     };
         
   return (
@@ -159,7 +160,7 @@ function ScheduleDetail() {
         <input
           className="schedule-detail-header-search"
           type="text"
-          placeholder="장소 검색"
+          // placeholder="장소 검색"
         />
         <img className="schedule-detail-alarm-icon" src={alarm} alt="알람" />
       </div>
@@ -214,17 +215,31 @@ function ScheduleDetail() {
       </div>
 
 
-
-        <div className="schedule-detail-place-list-box">
+      <div className="schedule-detail-place-list-box">
 
         <p className="schedule-detail-choose-date-text">
           장소를 클릭해 방문일을 변경해보세요 !
         </p>
 
-        {locations_mokup.map((item, index) => 
-            <ScheduleDetailPlaces key={item.id} img_url={item.image} name={item.name} address={item.address}></ScheduleDetailPlaces>
+        {isHeartClicked ? (
+          <div>
+            {locations_mokup.map((item, index) => 
+                <ScheduleDetailFavoritePlaces key={item.id} img_url={item.image} name={item.name} address={item.address}></ScheduleDetailFavoritePlaces>
+            )}
+          </div>
+        ) : (
+          <div>
+            {locations_mokup.map((item, index) => 
+                <ScheduleDetailPlaces key={item.id} img_url={item.image} name={item.name} address={item.address}></ScheduleDetailPlaces>
+            )}
+          </div>
         )}
+
       </div>
+
+
+
+
 
         <div className="schedule-detail-button">
           {isCallStarted ? (
