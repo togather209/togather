@@ -8,9 +8,10 @@ import promimg from "../../../public/다운로드.jpg"
 import BackButton from "../common/BackButton";
 import MiddleButton from "../common/MiddleButton"
 import ScheduleCard from "./ScheduleCard";
+import MeetingSetting from "./MeetingSetting";
 
 function MeetingDetail() {
-  const [isPage, setIsPage] = useState(true)
+  const [isPage, setIsPage] = useState(false)
   const params = useParams();
   const [meetingSetting, setMeetingSetting] = useState(false)
   const navigation = useNavigate()
@@ -19,7 +20,7 @@ function MeetingDetail() {
 
   const handleSetting = () => {
     setMeetingSetting(!meetingSetting)
-    console.log(meetingSetting)
+    // console.log(meetingSetting)
   }
 
   const schedule_mokup = [
@@ -57,15 +58,20 @@ function MeetingDetail() {
           </div>
         </div>
 
-
-        <div className="meetingdetail-schedule">일정</div>
-
-        <div className="no-schedule-box">
-          <p className="no-schedule-text">등록된 일정이 없습니다</p>
-          <p className="make-new-schedule">새로운 일정을 만들어 보세요 !</p>
-        </div>
-
-        <MiddleButton onClick={() => navigation("schedule-regist")}>+ 일정 만들기</MiddleButton>
+        {meetingSetting ? (
+          <MeetingSetting></MeetingSetting >
+        ) : (
+            <div className="meeting-detail-no-schedule-container">
+              <div className="meetingdetail-schedule">일정</div>
+      
+              <div className="no-schedule-box">
+                <p className="no-schedule-text">등록된 일정이 없습니다</p>
+                <p className="make-new-schedule">새로운 일정을 만들어 보세요 !</p>
+                <MiddleButton onClick={() => navigation("schedule-regist")}>+ 일정 만들기</MiddleButton>
+              </div>
+      
+            </div>
+        )}
 
       </div>
     )
