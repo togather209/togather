@@ -88,7 +88,7 @@
   align-items: center;
 }
 
-.email-certification, .nickname-certification-button {
+.email-certification {
   width: 25%;
   font-size: 12px;
   border-radius: 12px;
@@ -110,7 +110,7 @@
   color: blue;
 }
 
-.invalid-password, .invalid-email {
+.invalid-password, .invalid-email, .invalid-nickname {
   color: red;
   font-size: 12px;
 }

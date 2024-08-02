@@ -12,18 +12,18 @@ import { FaEye, FaEyeSlash } from "react-icons/fa"; // 아이콘 추가
 function SignUpForm() {
   const API_LINK = import.meta.env.VITE_API_URL;
 
-  const [profileImage, setProfileImage] = useState("");
-  const [email, setEmail] = useState("");
-  const [emailMessage, setEmailMessage] = useState("");
-  const [password, setPassword] = useState("");
-  const [validPassword, setValidPassword] = useState("");
-  const [nickname, setNickname] = useState("");
-  const [passwordMessage, setPasswordMessage] = useState("");
-  const [certificationClick, setCertificationClick] = useState(false);
-  const [inputCode, setInputCode] = useState("");
+  const [profileImage, setProfileImage] = useState("");//프로필 이미지
+  const [email, setEmail] = useState("");//이메일
+  const [emailMessage, setEmailMessage] = useState("");//이메일 메시지
+  const [password, setPassword] = useState("");//비밀번호
+  const [validPassword, setValidPassword] = useState("");//비밀번호 확인
+  const [nickname, setNickname] = useState("");//닉네임
+  const [passwordMessage, setPasswordMessage] = useState("");//비밀번호 메세지
+  const [certificationClick, setCertificationClick] = useState(false);//인증버튼 클릭
+  const [inputCode, setInputCode] = useState("");//인증 코드
   const [certificationComplete, setCertificaionComplete] = useState(false); //인증 정보 확인
   const [timer, setTimer] = useState(300); // 300초 = 5분
-  const [timerActive, setTimerActive] = useState(false);
+  const [timerActive, setTimerActive] = useState(false);//시간 재기 시작!
   const [passwordVisible, setPasswordVisible] = useState(false); // 비밀번호 가시성 상태
   const [validPasswordVisible, setValidPasswordVisible] = useState(false); // 비밀번호 확인 가시성 상태
   const [nicknameMessage, setNicknameMessage] = useState("");
@@ -152,7 +152,7 @@ function SignUpForm() {
 
   //닉네임 유효성 검사
   const validateNickname = (nickname) => {
-    const nicknameRegex = /^[a-zA-Z0-9가-힣]+$/;
+    const nicknameRegex = /^[a-zA-Z0-9가-힣]{2,15}$/;
     return nicknameRegex.test(nickname);
   };
 
@@ -161,6 +161,7 @@ function SignUpForm() {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
   }
+
 
   const handleEmailBlur = () => {
 
@@ -201,6 +202,21 @@ function SignUpForm() {
     }
   };
 
+  //닉네임 유효성 검사하기
+  const handleNicknameBlur = () => {
+    if(nickname.length === 0){
+      setNicknameMessage("");
+      return;
+    }
+
+    if (!validateNickname(nickname)){
+      setNicknameMessage("닉네임은 2~15자의 영문 대/소문자, 한글(초성 제외), 숫자만 가능합니다.");
+    }
+    else {
+      setNicknameMessage("");
+    }
+  }
+
   //비밀번호 확인 입력할 때 ...
   const handleValidPasswordChange = (e) => {
     setValidPassword(e.target.value);
@@ -225,33 +241,6 @@ function SignUpForm() {
         setProfileImage(e.target.result);
       };
       reader.readAsDataURL(e.target.files[0]);
-    }
-  };
-
-  //닉네임을 중복검사하는 함수
-  const nicknameCertification = async (e) => {
-    e.preventDefault();
-
-    if (!validateNickname(nickname)) {
-      setNicknameMessage("닉네임은 영어, 숫자, 한글(초성 제외)만 사용할 수 있습니다.");
-      return;
-    }
-
-    try {
-      const response = await axios.post(`${API_LINK}/auth/nickname-check`, { nickname }, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.data.exists) {
-        setNicknameMessage("이미 사용 중인 닉네임입니다.");
-      } else {
-        setNicknameMessage("사용 가능한 닉네임입니다.");
-      }
-    } catch (error) {
-      console.log("닉네임 중복 검사 오류", error);
-      setNicknameMessage("닉네임 중복 검사 오류가 발생했습니다.");
     }
   };
 
@@ -409,20 +398,15 @@ function SignUpForm() {
               placeholder="닉네임"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
+              onBlur={handleNicknameBlur}
             />
-            <button
-              className="nickname-certification-button"
-              onClick={nicknameCertification}
-            >
-              확인
-            </button>
           </div>
           {nicknameMessage && (
             <p
               className={
-                nicknameMessage === "사용 가능한 닉네임입니다."
-                  ? "valid-nickname"
-                  : "invalid-nickname"
+                nicknameMessage === "닉네임은 2~15자의 영문 대/소문자, 한글(초성 제외), 숫자만 가능합니다."
+                  ? "invalid-nickname"
+                  : ""
               }
             >
               {nicknameMessage}
