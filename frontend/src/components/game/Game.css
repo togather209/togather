@@ -35,10 +35,15 @@
   margin: 0 5px;
 }
 
-.game-container .people {
+.game-container .game-participants {
   display: inline-block;
   font-size: 14px;
   margin-bottom: 10px;
+}
+
+.game-participants-list {
+  padding: 10px;
+  background-color: #F9F9F9;
 }
 
 .game-machine-container {
@@ -50,6 +55,33 @@
 .game-machine {
   margin-top: 30px;
   width: 100%;
+}
+
+.game-machine-tongs-head {
+  position: absolute;
+  width: 15px;
+  top: 50px;
+  right: 80px;
+  z-index: -1;
+}
+
+.game-machine-tongs {
+  position: absolute;
+  width: 63px;
+  top: 40px;
+  right: 55px;
+  z-index: -1; 
+  transform: translateY(0%);
+  transition: transform 1s ease, clip-path 1s ease;
+}
+
+/* 애니메이션 클래스 */
+.tongs-down {
+  transform: translateY(40%);
+}
+
+.tongs-up {
+  transform: translateY(0%);
 }
 
 .game-start-button {
