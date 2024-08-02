@@ -20,11 +20,11 @@ public class PayAccount {
     private int id;
     
     // 계좌명
-    @Column(name = "accountName", nullable = false)
+    @Column(name = "account_name", nullable = false)
     private String accountName;
     
     // 잔액
-    @Column(name = "balance", nullable = false)
+    @Column(name = "balance")
     @ColumnDefault("0")
     private int balance;
     
@@ -34,12 +34,12 @@ public class PayAccount {
 
     // 유저
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     // 실 계좌
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
     // 거래 내역
