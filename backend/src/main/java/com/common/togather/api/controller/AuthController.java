@@ -171,5 +171,28 @@ public class AuthController {
         return new ResponseEntity<>(responseDto,  HttpStatus.OK);
     }
 
+    @Operation(summary = "닉네임 중복 검사")
+    @PostMapping("/nickname/duplicate-check")
+    public ResponseEntity<ResponseDto<Boolean>> checkNickname(@RequestBody NicknameCheckRequest nicknameCheckRequest){
+        boolean result = memberRepository.existsByNickname(nicknameCheckRequest.getNickname());
+        ResponseDto<Boolean> responseDto;
+        if(result){
+            responseDto = ResponseDto.<Boolean>builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message("이미 사용중인 닉네임입니다.")
+                    .data(true)
+                    .build();
+        }
+
+        else {
+            responseDto = ResponseDto.<Boolean>builder()
+                    .status(HttpStatus.OK.value())
+                    .message("사용 가능한 닉네임입니다.")
+                    .data(false)
+                    .build();
+        }
+
+        return new ResponseEntity<>(responseDto,  HttpStatus.OK);
+    }
 
 }
