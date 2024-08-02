@@ -123,7 +123,7 @@ public class AuthController {
 
         ResponseDto<Boolean> responseDto;
         
-        // 일치하면
+        // 발급한 인증코드와 일치하면
         if(mailService.matchCode(email, inputCode)){
             responseDto = ResponseDto.<Boolean>builder()
                     .status(HttpStatus.OK.value())
@@ -135,7 +135,7 @@ public class AuthController {
 
         }
 
-        // 일치하지 않으면
+        // 발급한 인증코드와 일치하지 않으면
         responseDto = ResponseDto.<Boolean>builder()
                 .status(HttpStatus.BAD_REQUEST.value())
                 .message("인증에 실패했습니다.")
@@ -158,7 +158,6 @@ public class AuthController {
                     .message("이미 사용중인 이메일입니다.")
                     .data(true)
                     .build();
-            return new ResponseEntity<>(responseDto,  HttpStatus.BAD_REQUEST);
         }
 
         else {
@@ -167,8 +166,9 @@ public class AuthController {
                     .message("사용 가능한 이메일입니다.")
                     .data(false)
                     .build();
-        return new ResponseEntity<>(responseDto,  HttpStatus.OK);
         }
+
+        return new ResponseEntity<>(responseDto,  HttpStatus.OK);
 
     }
 
