@@ -4,10 +4,15 @@ import profile from "../../assets/mypage/profile.png";
 import terms from "../../assets/mypage/terms.png";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { clearUser } from "../../redux/slices/userSlice";
+import { clearToken } from "../../redux/slices/authSlice";
+import axios from "axios";
 
 function MyPageMain() {
   const [secessionModalOpen, setSecessionModalOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const OpenSecessionModal = (e) => {
     e.preventDefault();
@@ -19,12 +24,21 @@ function MyPageMain() {
     setSecessionModalOpen(false);
   };
 
+  const handleLogout = async () => {
+    await axios.get(`/members/logout`);
+    await dispatch(clearUser());
+    await dispatch(clearToken());
+    console.log("응 사라졌어!");
+    navigate('/login');
+  }
+
   return (
     <div className="mypage-container">
       <div className="mypage-profile">
         <img src={chunsik} alt="춘식" className="mypage-profile-image" />
         <p className="mypage-profile-name">KBG</p>
         <p className="mypage-profile-email">KBG28@naver.com</p>
+        <button className="mypage-logout-button" onClick={handleLogout}>로그아웃</button>
       </div>
       <div className="mypage-content">
         <button className="mypage-my-wallet" onClick={() => navigate('/wallet')}>

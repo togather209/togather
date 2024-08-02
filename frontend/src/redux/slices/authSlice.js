@@ -31,7 +31,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { loginSuccess, clearToken, refeshAccessToken } = authSlice.actions;
+export const { setToken, clearToken, refeshAccessToken } = authSlice.actions;
 
 export const refreshAccessTokenAsync = () => async (dispatch, getState) => {
   const API_LINK = import.meta.env.VITE_API_URL;

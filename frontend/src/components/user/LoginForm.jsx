@@ -9,7 +9,8 @@ import { Link } from "react-router-dom";
 import kakao from "../../assets/icons/common/kakao.png";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { loginSuccess } from "../../redux/slices/authSlice";
+import { setUser } from "../../redux/slices/userSlice";
+import { setToken } from "../../redux/slices/authSlice";
 
 function LoginForm() {
   const API_LINK = import.meta.env.VITE_API_URL;
@@ -43,12 +44,17 @@ function LoginForm() {
       console.log("로그인 성공!", response.data);
       
       dispatch(
-        loginSuccess({
+        setUser({
           member: response.data.member,
+        })
+      );
+
+      dispatch(
+        setToken({
           accessToken: response.data.data.accessToken,
           refreshToken: response.data.data.refreshToken,
         })
-      );
+      )
 
       navigate("/");
     } catch (error) {
