@@ -1,7 +1,9 @@
 package com.common.togather.api.service;
 
+import com.common.togather.api.error.EmailAlreadyExistsException;
 import com.common.togather.api.error.InvalidEmailPatternException;
 import com.common.togather.api.error.VerificationCodeSendException;
+import com.common.togather.db.repository.MemberRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ public class MailService {
     private static final String EMAIL_PATTERN =
             "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
     private static final Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+    @Autowired
+    private MemberRepository memberRepository;
 
     // 이메일 주소 검증
     public boolean isValidEmail(String email) {
@@ -31,8 +35,13 @@ public class MailService {
 
     // 메일 전송
     public void sendMail(String to, String subject, String content) {
+
         if(!isValidEmail(to)) {
-            throw new InvalidEmailPatternException("유효하지 않은 이메일 주소입니다.");
+            throw new InvalidEmailPatternException("올바르지 않은 이메일 형식입니다.");
+        }
+
+        if(memberRepository.existsByEmail(to)){
+            throw new EmailAlreadyExistsException("이미 사용중인 이메일입니다.");
         }
 
         try{

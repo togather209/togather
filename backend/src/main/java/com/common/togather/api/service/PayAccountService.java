@@ -16,6 +16,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ public class PayAccountService {
     private final PayAccountRepository payAccountRepository;
     private final AccountRepository accountRepository;
     private final MemberRepository memberRepository;
+    private final TransactionService transactionService;
 
     // 나의 Pay 계좌 조회
     @Transactional
@@ -63,6 +66,8 @@ public class PayAccountService {
     @Transactional
     public void rechargePayAccount(String email, PayAccountRechargeRequest requestDto) {
 
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
         PayAccount payAccount = payAccountRepository.findByMemberId(memberRepository.findByEmail(email).get().getId())
                 .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
         Account account = payAccount.getAccount();
@@ -72,6 +77,18 @@ public class PayAccountService {
 
         accountRepository.save(account);
         payAccountRepository.save(payAccount);
+
+        TransactionSaveRequest transactionSaveRequest = TransactionSaveRequest.builder()
+                .senderName(member.getName())
+                .receiverName(member.getName())
+                .price(requestDto.getPrice())
+                .balance(payAccount.getBalance())
+                .date(LocalDateTime.now())
+                .status(0)  // 입금
+                .payAccountId(payAccount.getId())
+                .build();
+
+        transactionService.saveTransaction(transactionSaveRequest);
     }
 
     // 송금하기
@@ -92,6 +109,18 @@ public class PayAccountService {
 
         payAccountRepository.save(payAccount);
         payAccountRepository.save(targetPayAccount);
+
+        TransactionSaveRequest transactionSaveRequest = TransactionSaveRequest.builder()
+                .senderName(payAccount.getMember().getName())
+                .receiverName(targetPayAccount.getMember().getName())
+                .price(requestDto.getPrice())
+                .balance(payAccount.getBalance())
+                .date(LocalDateTime.now())
+                .status(1)  // 출금
+                .payAccountId(payAccount.getId())
+                .build();
+
+        transactionService.saveTransaction(transactionSaveRequest);
     }
 
     // 계좌 삭제
@@ -117,6 +146,8 @@ public class PayAccountService {
     @Transactional
     public void withDrawPayAccount(String email, PayAccountWithdrawRequest requestDto) {
 
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
         PayAccount payAccount = payAccountRepository.findByMemberId(memberRepository.findByEmail(email).get().getId())
                 .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
         Account account = payAccount.getAccount();
@@ -126,5 +157,17 @@ public class PayAccountService {
 
         accountRepository.save(account);
         payAccountRepository.save(payAccount);
+
+        TransactionSaveRequest transactionSaveRequest = TransactionSaveRequest.builder()
+                .senderName(member.getName())
+                .receiverName(member.getName())
+                .price(requestDto.getPrice())
+                .balance(payAccount.getBalance())
+                .date(LocalDateTime.now())
+                .status(1)  // 출금
+                .payAccountId(payAccount.getId())
+                .build();
+
+        transactionService.saveTransaction(transactionSaveRequest);
     }
 }

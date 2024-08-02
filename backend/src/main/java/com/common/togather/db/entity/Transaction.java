@@ -35,7 +35,7 @@ public class Transaction {
     private int balance;
 
     // 날짜
-    @Column(name = "date", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "date", nullable = false)
     private LocalDateTime date;
 
     // 상태

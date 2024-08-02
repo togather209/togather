@@ -46,4 +46,9 @@ public class MemberService {
         return member;
     }
 
+    // 해당 이메일 회원이 있는지
+    public boolean existsMemberByEmail(String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
 }
