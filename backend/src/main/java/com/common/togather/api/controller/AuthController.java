@@ -5,9 +5,11 @@ import com.common.togather.api.request.*;
 import com.common.togather.api.response.ResponseDto;
 import com.common.togather.api.service.AuthService;
 import com.common.togather.api.service.MailService;
+import com.common.togather.api.service.MemberService;
 import com.common.togather.api.service.RedisService;
 import com.common.togather.common.auth.TokenInfo;
 import com.common.togather.common.util.JwtUtil;
+import com.common.togather.db.repository.MemberRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -15,8 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Random;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -28,6 +28,8 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final MailService mailService;
     private final RedisService redisService;
+    private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
     // 회원가입
     @Operation(summary = "회원가입")
@@ -84,8 +86,8 @@ public class AuthController {
     
     @Operation(summary = "이메일 인증코드 발급")
     @PostMapping("/verification-codes")
-    public ResponseEntity<ResponseDto<String>> sendCode(@RequestBody EmailVerificationRequest emailVerificationRequest){
-        String email = emailVerificationRequest.getEmail(); // 사용자가 입력한 이메일
+    public ResponseEntity<ResponseDto<String>> sendCode(@Valid @RequestBody EmailVerificateRequest emailVerificateRequest){
+        String email = emailVerificateRequest.getEmail(); // 사용자가 입력한 이메일
         String verificationCode = mailService.generateVerificationCode(); // 인증코드 생성
 
         // 전송할 이메일 내용
@@ -143,5 +145,55 @@ public class AuthController {
         return new ResponseEntity<>(responseDto,  HttpStatus.BAD_REQUEST);
     }
 
+    @Operation(summary = "이메일 중복 검사")
+    @PostMapping("/email/duplicate-check")
+    public ResponseEntity<ResponseDto<Boolean>> checkEmail(@RequestBody EmailCheckRequest emailCheckRequest){
+        // 해당 이메일을 사용하는 회원이 있는지 (있으면 true)
+        boolean result = memberRepository.existsByEmail(emailCheckRequest.getEmail());
+        ResponseDto<Boolean> responseDto;
+
+        if(result){
+            responseDto = ResponseDto.<Boolean>builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message("이미 사용중인 이메일입니다.")
+                    .data(true)
+                    .build();
+            return new ResponseEntity<>(responseDto,  HttpStatus.BAD_REQUEST);
+        }
+
+        else {
+            responseDto = ResponseDto.<Boolean>builder()
+                    .status(HttpStatus.OK.value())
+                    .message("사용 가능한 이메일입니다.")
+                    .data(false)
+                    .build();
+        return new ResponseEntity<>(responseDto,  HttpStatus.OK);
+        }
+
+    }
+
+    @Operation(summary = "닉네임 중복 검사")
+    @PostMapping("/nickname/duplicate-check")
+    public ResponseEntity<ResponseDto<Boolean>> checkNickname(@RequestBody NicknameCheckRequest nicknameCheckRequest){
+        boolean result = memberRepository.existsByNickname(nicknameCheckRequest.getNickname());
+        ResponseDto<Boolean> responseDto;
+        if(result){
+            responseDto = ResponseDto.<Boolean>builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message("이미 사용중인 닉네임입니다.")
+                    .data(true)
+                    .build();
+        }
+
+        else {
+            responseDto = ResponseDto.<Boolean>builder()
+                    .status(HttpStatus.OK.value())
+                    .message("사용 가능한 닉네임입니다.")
+                    .data(false)
+                    .build();
+        }
+
+        return new ResponseEntity<>(responseDto,  HttpStatus.OK);
+    }
 
 }
