@@ -7,7 +7,6 @@ import MyPage from "../pages/MyPage";
 
 //게임
 import Game from "../pages/Game";
-
 //유저
 import User from "../pages/User";
 import SignUpForm from "../components/user/SignUpForm";
