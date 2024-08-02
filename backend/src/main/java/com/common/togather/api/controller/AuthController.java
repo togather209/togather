@@ -1,19 +1,22 @@
 package com.common.togather.api.controller;
 
 import com.common.togather.api.error.MissingTokenException;
-import com.common.togather.api.request.LoginRequest;
-import com.common.togather.api.request.MemberSaveRequest;
-import com.common.togather.api.request.RefreshRequest;
+import com.common.togather.api.request.*;
 import com.common.togather.api.response.ResponseDto;
 import com.common.togather.api.service.AuthService;
+import com.common.togather.api.service.MailService;
+import com.common.togather.api.service.RedisService;
 import com.common.togather.common.auth.TokenInfo;
 import com.common.togather.common.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Random;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -23,11 +26,13 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtUtil jwtUtil;
+    private final MailService mailService;
+    private final RedisService redisService;
 
     // 회원가입
     @Operation(summary = "회원가입")
     @PostMapping("/register")
-    public ResponseEntity<ResponseDto<String>> signup(@RequestBody MemberSaveRequest memberSaveRequest){
+    public ResponseEntity<ResponseDto<String>> signup(@Valid @RequestBody MemberSaveRequest memberSaveRequest){
 
         authService.signup(memberSaveRequest);
 
@@ -37,7 +42,7 @@ public class AuthController {
                 .data(null)
                 .build();
 
-        return new ResponseEntity<>(responseDto,HttpStatus.OK);
+        return new ResponseEntity<>(responseDto,HttpStatus.CREATED);
     }
 
     @Operation(summary = "일반 로그인")
@@ -75,6 +80,67 @@ public class AuthController {
                 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
 
+    }
+    
+    @Operation(summary = "이메일 인증코드 발급")
+    @PostMapping("/verification-codes")
+    public ResponseEntity<ResponseDto<String>> sendCode(@RequestBody EmailVerificationRequest emailVerificationRequest){
+        String email = emailVerificationRequest.getEmail(); // 사용자가 입력한 이메일
+        String verificationCode = mailService.generateVerificationCode(); // 인증코드 생성
+
+        // 전송할 이메일 내용
+        String emailContent = "<div style='font-family: Arial, sans-serif; line-height: 1.6;'>" +
+                "<h2>Togather 회원가입 인증 코드</h2>" +
+                "<p>안녕하세요,</p>" +
+                "<p>회원가입을 위한 인증 코드입니다:</p>" +
+                "<h3 style='color: #2E86C1;'>" + verificationCode + "</h3>" +
+                "<p>이 코드는 5분 동안 유효합니다.</p>" +
+                "<p>감사합니다,<br/>Togather 팀</p>" +
+                "</div>";
+
+        // 이메일 전송
+        mailService.sendMail(email, "Togather 회원가입 인증코드", emailContent);
+        
+        // redis 저장 (유효 기간 5분)
+        redisService.saveEmailVerificationCode(email, verificationCode);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("인증코드 전송에 성공했습니다.")
+                .data(null)
+                .build();
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+
+    }
+    
+    @Operation(summary = "인증코드 확인")
+    @PostMapping("/verification-codes/check")
+    public ResponseEntity<ResponseDto<Boolean>> checkCode(@RequestBody VerificationCheckRequest verificationCheckRequest){
+        String email = verificationCheckRequest.getEmail(); // 유저가 입력한 이메일
+        String inputCode = verificationCheckRequest.getInputCode(); // 유저가 입력한 인증코드
+
+        ResponseDto<Boolean> responseDto;
+        
+        // 일치하면
+        if(mailService.matchCode(email, inputCode)){
+            responseDto = ResponseDto.<Boolean>builder()
+                    .status(HttpStatus.OK.value())
+                    .message("인증에 성공했습니다.")
+                    .data(true)
+                    .build();
+
+        return new ResponseEntity<>(responseDto,  HttpStatus.OK);
+
+        }
+
+        // 일치하지 않으면
+        responseDto = ResponseDto.<Boolean>builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message("인증에 실패했습니다.")
+                .data(false)
+                .build();
+
+        return new ResponseEntity<>(responseDto,  HttpStatus.BAD_REQUEST);
     }
 
 

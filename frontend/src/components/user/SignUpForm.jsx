@@ -9,7 +9,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function SignUpForm() {
-  const API_LINK = "http://localhost:8080/api";
+  const API_LINK = import.meta.env.VITE_API_URL;
 
   const [profileImage, setProfileImage] = useState("");
   const [email, setEmail] = useState("");

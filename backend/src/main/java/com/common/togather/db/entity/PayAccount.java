@@ -42,6 +42,10 @@ public class PayAccount {
     @JoinColumn(name = "account_id")
     private Account account;
 
+    // 거래 내역
+    @OneToMany(mappedBy = "payAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Transaction> transactions;
+
     // 잔액 증가 메서드
     public void increaseBalance(int price) {
         this.balance += price;
