@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.TimeUnit;
+
 @Service
 public class RedisService {
 
@@ -15,6 +17,7 @@ public class RedisService {
 
     public void saveEmailVerificationCode(String email, String code) {
         redisTemplate.opsForValue().set(EMAIL_VERIFICATION_PREFIX + email, code);
+        redisTemplate.expire(EMAIL_VERIFICATION_PREFIX + email, 5, TimeUnit.MINUTES);
     }
 
     public String getEmailVerificationCode(String email) {

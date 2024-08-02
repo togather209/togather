@@ -43,6 +43,6 @@ public class Member{
     @Column(name = "type", nullable = true)
     int type;
 
-    @OneToOne(mappedBy = "member")
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private PayAccount payAccount;
 }

@@ -89,4 +89,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
+    // 인증코드 메일 전송 실패한 경우
+    @ExceptionHandler(VerificationCodeSendException.class)
+    public ResponseEntity<ErrorResponseDto> handleVerificationCodeSendException(VerificationCodeSendException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Verification Code Send", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // 입력한 이메일 주소가 잘못 되었을 때
+    @ExceptionHandler(InvalidEmailPatternException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidEmailPatternException(InvalidEmailPatternException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Invalid Email Pattern", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+
 }
