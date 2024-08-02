@@ -10,6 +10,7 @@ import com.common.togather.common.auth.TokenInfo;
 import com.common.togather.common.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class AuthController {
     // 회원가입
     @Operation(summary = "회원가입")
     @PostMapping("/register")
-    public ResponseEntity<ResponseDto<String>> signup(@RequestBody MemberSaveRequest memberSaveRequest){
+    public ResponseEntity<ResponseDto<String>> signup(@Valid @RequestBody MemberSaveRequest memberSaveRequest){
 
         authService.signup(memberSaveRequest);
 
@@ -41,7 +42,7 @@ public class AuthController {
                 .data(null)
                 .build();
 
-        return new ResponseEntity<>(responseDto,HttpStatus.OK);
+        return new ResponseEntity<>(responseDto,HttpStatus.CREATED);
     }
 
     @Operation(summary = "일반 로그인")
