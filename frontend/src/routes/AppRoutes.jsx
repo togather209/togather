@@ -25,6 +25,7 @@ import Receipt from "../pages/Receipt";
 import ReceiptListContainer from "../components/receipt/receiptList/ReceiptListContainer";
 import ReceiptFormContainer from "../components/receipt/receiptForm/ReceiptFormContainer";
 import ReceiptDetail from "../components/receipt/receiptDetail/ReceiptDetail";
+
 import ProfileUpdate from "../components/mypage/ProfileUpdate";
 import Terms from "../components/mypage/Terms";
 import PrivateRoute from "./PrivateRoute";
