@@ -12,9 +12,11 @@ import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.repository.MemberRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,8 +51,22 @@ public class AuthController {
 
     @Operation(summary = "일반 로그인")
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<TokenInfo>> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<ResponseDto<TokenInfo>> login(@RequestBody LoginRequest loginRequest,
+        
+                                                        HttpServletResponse response) {
+        // 사용자 인증 후 토큰 발급
         TokenInfo tokenInfo = authService.login(loginRequest);
+
+        // refresh token은 쿠키에 저장하여 응답 보내줌
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", tokenInfo.getRefreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(7*24*60*60)
+                .sameSite("Strict")
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
 
         ResponseDto<TokenInfo> responseDto = ResponseDto.<TokenInfo>builder()
                 .status(HttpStatus.OK.value())

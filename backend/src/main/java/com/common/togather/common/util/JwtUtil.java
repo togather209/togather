@@ -26,7 +26,7 @@ public class JwtUtil {
 
     @Value("${jwt.refresh.expiration}")
     private long refreshTokenExpiration;
-    
+
     // Access Token 발급
     public String generateAccessToken(String email) {
         return Jwts.builder()
@@ -37,7 +37,7 @@ public class JwtUtil {
                 .claim("type", "access_token")
                 .compact();
     }
-    
+
     // Refresh Token 발급
     public String generateRefreshToken(String email) {
         return Jwts.builder()
@@ -49,7 +49,7 @@ public class JwtUtil {
                 .compact();
 
     }
-    
+
     // 토큰으로 email 정보 추출
     public String getEmailFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
