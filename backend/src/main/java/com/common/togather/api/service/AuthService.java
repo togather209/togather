@@ -88,8 +88,8 @@ public class AuthService {
     // 토큰 재발급
     @Transactional
     public TokenInfo refreshToken(String email) {
-        String accessToken = redisService.getRefreshToken(email);
-        String refreshToken = redisService.getRefreshToken(email);
+        String accessToken = jwtUtil.generateAccessToken(email);
+        String refreshToken = jwtUtil.generateRefreshToken(email);
 
         redisService.saveRefreshToken(email, refreshToken);
         TokenInfo tokenInfo = new TokenInfo(accessToken, refreshToken);
