@@ -31,18 +31,19 @@ function MyPageMain({ accessToken }) {
     await dispatch(clearToken());
     alert("로그아웃 되었습니다.");
     navigate('/login');
+    return;
   };
 
   return (
     <div className="mypage-container">
       <div className="mypage-profile">
         <img src={chunsik} alt="춘식" className="mypage-profile-image" />
-        <p className="mypage-profile-name">{memberData.nickname}</p>
-        <p className="mypage-profile-email">{memberData.email}</p>
+        <p className="mypage-profile-name">{memberData?.nickname}</p>
+        <p className="mypage-profile-email">{memberData?.email}</p>
         <button className="mypage-logout-button" onClick={handleLogout}>로그아웃</button>
       </div>
       <div className="mypage-content">
-        {memberData.payAccount !== null? <button className="mypage-my-wallet" onClick={() => navigate('/wallet')}>
+        {memberData?.payAccount !== null? <button className="mypage-my-wallet" onClick={() => navigate('/wallet')}>
           <p className="mypage-my-wallet-summary">만수르지갑</p>
           <p className="mypage-my-wallet-balance">27,000원</p>
         </button> : <button className="mypage-my-wallet" onClick={() => navigate('/wallet')}>
