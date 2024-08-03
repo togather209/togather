@@ -16,11 +16,11 @@ public class Receipt {
     // pk
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     // 일정
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plain_id")
+    @JoinColumn(name = "plan_id")
     private Plan plan;
 
     // 영수증 관리자
@@ -43,11 +43,11 @@ public class Receipt {
 
     // 총 금액
     @Column(name = "total_price", nullable = false)
-    private int totalPrice;
+    private Integer totalPrice;
 
     // 색
     @Column(name = "color", nullable = false)
-    private int color;
+    private Integer color;
 
     // 품목
     @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL, orphanRemoval = true)

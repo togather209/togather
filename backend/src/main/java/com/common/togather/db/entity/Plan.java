@@ -16,12 +16,12 @@ public class Plan {
     // pk
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     // 모임
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
-    private Group group;
+    private Team team;
 
     // 일정 관리자
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,7 +46,7 @@ public class Plan {
 
     // 정산 여부
     @Column(name = "status", nullable = false)
-    private int status;
+    private Integer status;
 
     // 영수증
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)

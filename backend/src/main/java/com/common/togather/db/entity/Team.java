@@ -10,12 +10,12 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Group {
+public class Team {
 
     // pk
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     // 모임명
     @Column(name = "title", nullable = false)
@@ -33,7 +33,11 @@ public class Group {
     @Column(name = "code", nullable = false)
     private String code;
 
+    // 모임 유저
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TeamMember> teamMembers;
+
     // 일정
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Plan> plans;
 }

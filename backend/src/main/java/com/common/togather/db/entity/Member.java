@@ -48,12 +48,15 @@ public class Member {
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private PayAccount payAccount;
 
+    // 유저 모임
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Group> groups;
+    private List<TeamMember> teamMembers;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    // 일정
+    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Plan> plans;
 
-    @OneToMany(mappedBy = "member")
+    // 영수증
+    @OneToMany(mappedBy = "manager")
     private List<Receipt> receipts;
 }
