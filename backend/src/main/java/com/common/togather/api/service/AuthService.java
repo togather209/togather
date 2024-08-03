@@ -1,9 +1,6 @@
 package com.common.togather.api.service;
 
-import com.common.togather.api.error.EmailAlreadyExistsException;
-import com.common.togather.api.error.EmailNotFoundException;
-import com.common.togather.api.error.InvalidPasswordException;
-import com.common.togather.api.error.NicknameAlreadyExistsException;
+import com.common.togather.api.error.*;
 import com.common.togather.api.request.LoginRequest;
 import com.common.togather.api.request.MemberSaveRequest;
 import com.common.togather.common.auth.TokenInfo;
@@ -11,6 +8,8 @@ import com.common.togather.common.exception.handler.NotFoundHandler;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
 import com.common.togather.db.repository.MemberRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -95,6 +94,21 @@ public class AuthService {
         TokenInfo tokenInfo = new TokenInfo(accessToken, refreshToken);
 
         return tokenInfo;
+    }
+    
+    // 쿠키에서 리프레시 토큰 가져오기
+    public String getRefreshTokenFromCookie(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals("refreshToken")) {
+                    return cookie.getValue();
+                }
+            }
+
+            throw new MissingTokenException("쿠키에 리프레스 토큰 정보가 없습니다.");
+        }
+
+        else throw new MissingTokenException("쿠키값이 비어있어 리프레시 토큰 정보를 찾을 수 없습니다.");
     }
 
 
