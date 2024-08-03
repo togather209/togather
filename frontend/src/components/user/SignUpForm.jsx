@@ -197,8 +197,7 @@ function SignUpForm() {
         if (response.data.data) {
           //true이면
           setEmailMessage("중복된 이메일 입니다.");
-        }
-        else {
+        } else {
           setEmailMessage("");
         }
       } catch (error) {
@@ -257,11 +256,10 @@ function SignUpForm() {
           }
         );
 
-
         if (response.data.data) {
           setNicknameMessage("사용할 수 없는 닉네임 입니다.");
         } else {
-          setNicknameMessage("");
+          setNicknameMessage("사용 가능한 닉네임입니다.");
         }
       } catch (error) {
         console.log("에러 발생");
@@ -471,12 +469,15 @@ function SignUpForm() {
                 nicknameMessage ===
                 "닉네임은 2~15자의 영문 대/소문자, 한글(초성 제외), 숫자만 가능합니다."
                   ? "invalid-nickname"
+                  : nicknameMessage === "사용 가능한 닉네임입니다."
+                  ? "valid-nickname"
                   : "duplicated-nickname"
               }
             >
               {nicknameMessage}
             </p>
           )}
+
           <SubmitButton type="submit" className="submit-button">
             회원가입
           </SubmitButton>
