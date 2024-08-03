@@ -42,19 +42,32 @@ function LoginForm() {
       });
 
       console.log("로그인 성공!", response.data);
-      
-      dispatch(
-        setUser({
-          member: response.data.member,
-        })
-      );
+
+      //토큰 가져오기
+      const { accessToken, refreshToken } = response.data.data;
 
       dispatch(
         setToken({
-          accessToken: response.data.data.accessToken,
-          refreshToken: response.data.data.refreshToken,
+          accessToken,
+          refreshToken,
         })
-      )
+      );
+
+
+      //멤버 데이터 가져오기
+      const memberResponse = await axios.get(`${API_LINK}/members/me`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+
+      console.log(memberResponse.data);
+
+      dispatch(
+        setUser({
+          member: memberResponse.data.data,
+        })
+      );
 
       navigate("/");
     } catch (error) {

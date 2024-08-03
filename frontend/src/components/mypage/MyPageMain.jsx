@@ -4,7 +4,7 @@ import profile from "../../assets/mypage/profile.png";
 import terms from "../../assets/mypage/terms.png";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { clearUser } from "../../redux/slices/userSlice";
 import { clearToken } from "../../redux/slices/authSlice";
 
@@ -12,6 +12,7 @@ function MyPageMain({ accessToken }) {
   const [secessionModalOpen, setSecessionModalOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const memberData = useSelector((state) => state.user.member);
 
   console.log('MyPageMain accessToken:', accessToken);
 
@@ -36,15 +37,18 @@ function MyPageMain({ accessToken }) {
     <div className="mypage-container">
       <div className="mypage-profile">
         <img src={chunsik} alt="춘식" className="mypage-profile-image" />
-        <p className="mypage-profile-name">KBG</p>
-        <p className="mypage-profile-email">KBG28@naver.com</p>
+        <p className="mypage-profile-name">{memberData.nickname}</p>
+        <p className="mypage-profile-email">{memberData.email}</p>
         <button className="mypage-logout-button" onClick={handleLogout}>로그아웃</button>
       </div>
       <div className="mypage-content">
-        <button className="mypage-my-wallet" onClick={() => navigate('/wallet')}>
+        {memberData.payAccount !== null? <button className="mypage-my-wallet" onClick={() => navigate('/wallet')}>
           <p className="mypage-my-wallet-summary">만수르지갑</p>
           <p className="mypage-my-wallet-balance">27,000원</p>
-        </button>
+        </button> : <button className="mypage-my-wallet" onClick={() => navigate('/wallet')}>
+          <p className="mypage-my-wallet-summary">아직 Pay계좌가 없네요</p>
+          <p className="mypage-my-wallet-balance">Pay 계좌 생성</p>
+        </button>}
         <button className="mypage-my-profile-update" onClick={() => navigate('profile_update')}>
           <img
             src={profile}

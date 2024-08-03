@@ -40,8 +40,11 @@ export const refreshAccessTokenAsync = () => async (dispatch) => {
     .find(row => row.startsWith('refreshToken='))
     ?.split('=')[1];
 
+    console.log(refreshToken);
+
     if(!refreshToken){
         dispatch(clearToken());
+        console.log("여기다!~")
         return false;
     }
 
