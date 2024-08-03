@@ -7,30 +7,30 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { clearUser } from "../../redux/slices/userSlice";
 import { clearToken } from "../../redux/slices/authSlice";
-import axios from "axios";
 
-function MyPageMain() {
+function MyPageMain({ accessToken }) {
   const [secessionModalOpen, setSecessionModalOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const OpenSecessionModal = (e) => {
+  console.log('MyPageMain accessToken:', accessToken);
+
+  const openSecessionModal = (e) => {
     e.preventDefault();
     setSecessionModalOpen(true);
   };
 
-  const CloseSecessionModal = (e) => {
+  const closeSecessionModal = (e) => {
     e.preventDefault();
     setSecessionModalOpen(false);
   };
 
   const handleLogout = async () => {
-    await axios.get(`/members/logout`);
     await dispatch(clearUser());
     await dispatch(clearToken());
-    console.log("응 사라졌어!");
+    alert("로그아웃 되었습니다.");
     navigate('/login');
-  }
+  };
 
   return (
     <div className="mypage-container">
@@ -62,7 +62,7 @@ function MyPageMain() {
           <p>약관 보기</p>
         </button>
         <div className="mypage-secession-container">
-          <button className="mypage-secession" onClick={OpenSecessionModal}>
+          <button className="mypage-secession" onClick={openSecessionModal}>
             회원 탈퇴
           </button>
         </div>
@@ -81,7 +81,7 @@ function MyPageMain() {
             </div>
             <div className="mypage-secession-modal-isSecession-button">
               <button
-                onClick={CloseSecessionModal}
+                onClick={closeSecessionModal}
                 className="mypage-secession-modal-isSecession-button-cancel"
               >
                 취소
