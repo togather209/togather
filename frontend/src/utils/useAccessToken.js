@@ -19,7 +19,8 @@ const useAccessToken = () => {
                 }
                 else{
                     alert("서비스 이용을 위해 로그인을 해주세요.");
-                    navigate("/login");
+                    console.log(newAccessToken);
+                    //navigate("/login");
                 }
             }
             else{

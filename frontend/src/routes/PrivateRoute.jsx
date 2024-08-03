@@ -1,5 +1,4 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
 import useAccessToken from '../utils/useAccessToken';
 
 const PrivateRoute = ({ element: Component, accessToken, ...rest }) => {
