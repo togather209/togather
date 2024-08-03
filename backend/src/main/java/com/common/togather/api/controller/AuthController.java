@@ -12,6 +12,7 @@ import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.repository.MemberRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,13 +53,12 @@ public class AuthController {
     @Operation(summary = "일반 로그인")
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<TokenInfo>> login(@RequestBody LoginRequest loginRequest,
-        
                                                         HttpServletResponse response) {
         // 사용자 인증 후 토큰 발급
         TokenInfo tokenInfo = authService.login(loginRequest);
 
         // refresh token은 쿠키에 저장하여 응답 보내줌
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", tokenInfo.getRefreshToken())
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", tokenInfo.getRefreshToken())
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
@@ -66,7 +66,7 @@ public class AuthController {
                 .sameSite("Strict")
                 .build();
 
-        response.addHeader("Set-Cookie", cookie.toString());
+        response.setHeader("Set-Cookie", refreshCookie.toString());
 
         ResponseDto<TokenInfo> responseDto = ResponseDto.<TokenInfo>builder()
                 .status(HttpStatus.OK.value())
@@ -79,23 +79,34 @@ public class AuthController {
 
     @Operation(summary = "토큰 재발급")
     @PostMapping("/refresh")
-    public ResponseEntity<ResponseDto<TokenInfo>> refresh(@RequestBody RefreshRequest refreshRequest) {
-        String refreshToken = refreshRequest.getRefreshToken();
+    public ResponseEntity<ResponseDto<TokenInfo>> refresh(@CookieValue(value = "refreshToken", required = false) Cookie cookie,
+                                                          HttpServletResponse httpServletResponse) {
 
-        // 리프레시 토큰이 없다면
-        if (refreshToken == null || refreshToken.isEmpty()) {
-            throw new MissingTokenException("리프레시 토큰을 찾을 수 없습니다.");
+        // refreshToken이라는 쿠키가 존재하지 않으면
+        if(cookie == null){
+            throw new MissingTokenException("리프레시 토큰 정보를 담고 있는 쿠키가 없습니다.");
         }
 
         // 리프레시 토큰이 있다면 재발급 가능
-        String email = jwtUtil.getEmailFromToken(refreshToken);
+        String email = jwtUtil.getEmailFromToken(cookie.getValue());
         TokenInfo tokenInfo = authService.refreshToken(email);
+
+        // 발급 받은 refresh token은 쿠키에 저장하여 응답 보내줌
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", tokenInfo.getRefreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(7*24*60*60)
+                .sameSite("Strict")
+                .build();
+
+        httpServletResponse.setHeader("Set-Cookie", refreshCookie.toString());
+
         ResponseDto<TokenInfo> responseDto = ResponseDto.<TokenInfo>builder()
                 .status(HttpStatus.OK.value())
                 .message("토큰 재발급을 성공했습니다.")
                 .data(tokenInfo)
                 .build();
-                
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
 
     }

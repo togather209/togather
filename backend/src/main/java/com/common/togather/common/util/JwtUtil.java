@@ -1,6 +1,8 @@
 package com.common.togather.common.util;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -51,7 +53,7 @@ public class JwtUtil {
     }
 
     // 토큰으로 email 정보 추출
-    public String getEmailFromToken(String token) {
+    public String getEmailFromToken(String token) throws ExpiredJwtException, JwtException {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(this.getSecretKey())
                 .build()
