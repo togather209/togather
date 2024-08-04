@@ -46,6 +46,7 @@ public class MemberService {
 
 
     // 회원 정보 수정
+    @Transactional
     public void updateMember(String authEmail, MemberUpdateRequest memberUpdateRequest) {
         Member member = memberRepository.findByEmail(authEmail)
                 .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
@@ -66,6 +67,7 @@ public class MemberService {
     }
 
     // 회원 삭제
+    @Transactional
     public void deleteMember(String authEmail) {
         Member member = memberRepository.findByEmail(authEmail)
                 .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
