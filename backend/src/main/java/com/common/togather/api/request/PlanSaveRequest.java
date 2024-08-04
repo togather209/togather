@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -13,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class PlanSaveRequest {
     String title;
-    LocalDate startDate;
-    LocalDate endDate;
+    Date startDate;
+    Date endDate;
     String description;
 }
