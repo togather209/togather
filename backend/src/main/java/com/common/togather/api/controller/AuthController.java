@@ -230,7 +230,7 @@ public class AuthController {
     // 임시 비밀번호 전송 (비밀번호 찾기/재설정)
     @Operation(summary = "임시 비밀번호 전송")
     @PostMapping("/password-reset")
-    public ResponseEntity<ResponseDto<?>> getTemporaryPassword(@RequestBody PasswordResetRequest passwordResetRequest){
+    public ResponseEntity<ResponseDto<String>> getTemporaryPassword(@RequestBody PasswordResetRequest passwordResetRequest){
 
         String email = passwordResetRequest.getEmail();
 

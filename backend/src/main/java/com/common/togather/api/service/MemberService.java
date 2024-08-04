@@ -6,6 +6,7 @@ import com.common.togather.api.error.InvalidPasswordException;
 import com.common.togather.api.error.NicknameAlreadyExistsException;
 import com.common.togather.api.request.LoginRequest;
 import com.common.togather.api.request.MemberSaveRequest;
+import com.common.togather.api.request.MemberUpdateRequest;
 import com.common.togather.common.auth.TokenInfo;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
@@ -46,4 +47,23 @@ public class MemberService {
         redisService.deleteRefreshToken(email);
     }
 
+
+    // 회원 정보 수정
+    public void updateMember(String authEmail, MemberUpdateRequest memberUpdateRequest) {
+        Member member = memberRepository.findByEmail(authEmail).get();
+
+        System.out.println(member.getEmail());
+
+        if(memberUpdateRequest.getPassword() != null){
+            member.setPassword(bCryptPasswordEncoder.encode(memberUpdateRequest.getPassword()));
+        }
+        if(memberUpdateRequest.getNickname() != null){
+            member.setNickname(memberUpdateRequest.getNickname());
+        }
+        if(memberUpdateRequest.getProfileImg() != null){
+            member.setProfileImg(memberUpdateRequest.getProfileImg());
+        }
+
+        memberRepository.save(member);
+    }
 }

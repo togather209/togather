@@ -1,6 +1,7 @@
 package com.common.togather.api.controller;
 
 import com.common.togather.api.request.LogoutRequest;
+import com.common.togather.api.request.MemberUpdateRequest;
 import com.common.togather.api.response.ResponseDto;
 import com.common.togather.api.service.MemberService;
 import com.common.togather.common.auth.TokenInfo;
@@ -64,10 +65,30 @@ public class MemberController {
 
         String authEmail = jwtUtil.getAuthMemberEmail(header);
         Member member = memberRepository.findByEmail(authEmail).get();
+
         ResponseDto<Member> responseDto = ResponseDto.<Member>builder()
                 .status(HttpStatus.OK.value())
                 .message("로그인 유저 조회 성공")
                 .data(member)
+                .build();
+
+        return new ResponseEntity<>(responseDto,HttpStatus.OK);
+    }
+
+    @Operation(summary = "회원정보 수정")
+    @PatchMapping("/me")
+    public ResponseEntity<ResponseDto<String>> updateMember(@RequestHeader(value = "Authorization", required = false) String header,
+                                                            @RequestBody MemberUpdateRequest memberUpdateRequest) {
+        // 로그인 유저 이메일 추출
+        String authEmail = jwtUtil.getAuthMemberEmail(header);
+        
+        // 새로 입력한 정보로 업데이트
+        memberService.updateMember(authEmail, memberUpdateRequest);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("회원 정보 수정 성공")
+                .data(null)
                 .build();
 
         return new ResponseEntity<>(responseDto,HttpStatus.OK);
