@@ -1,9 +1,6 @@
 package com.common.togather.api.service;
 
-import com.common.togather.api.error.EmailAlreadyExistsException;
-import com.common.togather.api.error.EmailNotFoundException;
-import com.common.togather.api.error.InvalidPasswordException;
-import com.common.togather.api.error.NicknameAlreadyExistsException;
+import com.common.togather.api.error.*;
 import com.common.togather.api.request.LoginRequest;
 import com.common.togather.api.request.MemberSaveRequest;
 import com.common.togather.api.request.MemberUpdateRequest;
@@ -50,7 +47,8 @@ public class MemberService {
 
     // 회원 정보 수정
     public void updateMember(String authEmail, MemberUpdateRequest memberUpdateRequest) {
-        Member member = memberRepository.findByEmail(authEmail).get();
+        Member member = memberRepository.findByEmail(authEmail)
+                .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
 
         System.out.println(member.getEmail());
 
@@ -65,5 +63,13 @@ public class MemberService {
         }
 
         memberRepository.save(member);
+    }
+
+    // 회원 삭제
+    public void deleteMember(String authEmail) {
+        Member member = memberRepository.findByEmail(authEmail)
+                .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
+
+        memberRepository.delete(member);
     }
 }
