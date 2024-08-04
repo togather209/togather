@@ -11,4 +11,6 @@ public interface PlanRepository extends JpaRepository<Plan, Integer> {
 
     Optional<Plan> findById(int id);
 
+    boolean existsById(int id);
+
 }
