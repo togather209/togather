@@ -14,34 +14,37 @@ const authSlice = createSlice({
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
 
-      localStorage.setItem('accessToken', action.payload.accessToken);
+      //localStorage.setItem('accessToken', action.payload.accessToken);
       document.cookie = `refreshToken=${action.payload.refreshToken}; path=/;`;
     },
     clearToken(state) {
       state.accessToken = null;
       state.refreshToken = null;
 
-      localStorage.removeItem('accessToken');
+      //localStorage.removeItem('accessToken');
       document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     },
     refeshAccessToken(state, action) {
       state.accessToken = action.payload.accessToken;
-      localStorage.setItem('accessToken', action.payload.accessToken);
+      //localStorage.setItem('accessToken', action.payload.accessToken);
     },
   },
 });
 
 export const { setToken, clearToken, refeshAccessToken } = authSlice.actions;
 
-export const refreshAccessTokenAsync = () => async (dispatch, getState) => {
+export const refreshAccessTokenAsync = () => async (dispatch) => {
   const API_LINK = import.meta.env.VITE_API_URL;
     const refreshToken = document.cookie
     .split('; ')
     .find(row => row.startsWith('refreshToken='))
     ?.split('=')[1];
 
+    console.log(refreshToken);
+
     if(!refreshToken){
         dispatch(clearToken());
+        console.log("여기다!~")
         return false;
     }
 
@@ -51,14 +54,14 @@ export const refreshAccessTokenAsync = () => async (dispatch, getState) => {
 
         if( newAccessToken ) {
             dispatch(refeshAccessToken({ accessToken: newAccessToken}));
-            return true;
+            return newAccessToken;
         }else{
             throw new Error("리프레시토큰 발급 실패");
         }
     }catch(error){
         console.log(error);
         dispatch(clearToken());
-        return false   
+        return false;   
     }
 };
 

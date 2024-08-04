@@ -22,7 +22,7 @@ public class Team {
     private String title;
 
     // 대표 사진
-    @Column(name = "team_img", nullable = true)
+    @Column(name = "team_img", nullable = false)
     private String teamImg;
 
     // 소개
@@ -34,10 +34,17 @@ public class Team {
     private String code;
 
     // 모임 유저
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamMember> teamMembers;
 
     // 일정
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Plan> plans;
+
+    // 모임 수정 메서드
+    public void updateTeam(String title, String description, String teamImg) {
+        this.title = title;
+        this.description = description;
+        this.teamImg = teamImg;
+    }
 }

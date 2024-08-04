@@ -4,47 +4,51 @@ import profile from "../../assets/mypage/profile.png";
 import terms from "../../assets/mypage/terms.png";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { clearUser } from "../../redux/slices/userSlice";
 import { clearToken } from "../../redux/slices/authSlice";
-import axios from "axios";
 
-function MyPageMain() {
+function MyPageMain({ accessToken }) {
   const [secessionModalOpen, setSecessionModalOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const memberData = useSelector((state) => state.user.member);
 
-  const OpenSecessionModal = (e) => {
+  console.log('MyPageMain accessToken:', accessToken);
+
+  const openSecessionModal = (e) => {
     e.preventDefault();
     setSecessionModalOpen(true);
   };
 
-  const CloseSecessionModal = (e) => {
+  const closeSecessionModal = (e) => {
     e.preventDefault();
     setSecessionModalOpen(false);
   };
 
   const handleLogout = async () => {
-    await axios.get(`/members/logout`);
     await dispatch(clearUser());
     await dispatch(clearToken());
-    console.log("응 사라졌어!");
+    alert("로그아웃 되었습니다.");
     navigate('/login');
-  }
+  };
 
   return (
     <div className="mypage-container">
       <div className="mypage-profile">
         <img src={chunsik} alt="춘식" className="mypage-profile-image" />
-        <p className="mypage-profile-name">KBG</p>
-        <p className="mypage-profile-email">KBG28@naver.com</p>
+        <p className="mypage-profile-name">{memberData.nickname}</p>
+        <p className="mypage-profile-email">{memberData.email}</p>
         <button className="mypage-logout-button" onClick={handleLogout}>로그아웃</button>
       </div>
       <div className="mypage-content">
-        <button className="mypage-my-wallet" onClick={() => navigate('/wallet')}>
+        {memberData.payAccount !== null? <button className="mypage-my-wallet" onClick={() => navigate('/wallet')}>
           <p className="mypage-my-wallet-summary">만수르지갑</p>
           <p className="mypage-my-wallet-balance">27,000원</p>
-        </button>
+        </button> : <button className="mypage-my-wallet" onClick={() => navigate('/wallet')}>
+          <p className="mypage-my-wallet-summary">아직 Pay계좌가 없네요</p>
+          <p className="mypage-my-wallet-balance">Pay 계좌 생성</p>
+        </button>}
         <button className="mypage-my-profile-update" onClick={() => navigate('profile_update')}>
           <img
             src={profile}
@@ -62,7 +66,7 @@ function MyPageMain() {
           <p>약관 보기</p>
         </button>
         <div className="mypage-secession-container">
-          <button className="mypage-secession" onClick={OpenSecessionModal}>
+          <button className="mypage-secession" onClick={openSecessionModal}>
             회원 탈퇴
           </button>
         </div>
@@ -81,7 +85,7 @@ function MyPageMain() {
             </div>
             <div className="mypage-secession-modal-isSecession-button">
               <button
-                onClick={CloseSecessionModal}
+                onClick={closeSecessionModal}
                 className="mypage-secession-modal-isSecession-button-cancel"
               >
                 취소

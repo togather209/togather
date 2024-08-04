@@ -14,6 +14,6 @@ public class ErrorResponseDto {
     // 에러 종류
     private String error;
     // 에러 메세지
-    private String message;
+    private Object message;
 
 }
