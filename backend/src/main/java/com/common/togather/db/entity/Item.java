@@ -35,6 +35,10 @@ public class Item {
     private Integer count;
 
     // 품목 유저
-    @OneToMany(mappedBy = "item")
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemMember> itemMembers;
+
+    public void setItemMembers(List<ItemMember> itemMembers) {
+        this.itemMembers = itemMembers;
+    }
 }

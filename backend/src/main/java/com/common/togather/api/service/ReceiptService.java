@@ -1,14 +1,14 @@
 package com.common.togather.api.service;
 
-import com.common.togather.api.error.MemberTeamNotFoundException;
-import com.common.togather.api.error.ReceiptNotFoundException;
+import com.common.togather.api.error.*;
+import com.common.togather.api.request.ReceiptSaveRequest;
 import com.common.togather.api.response.ReceiptFindAllByPlanIdResponse;
 import com.common.togather.api.response.ReceiptFindByReceiptIdResponse;
-import com.common.togather.db.entity.TeamMember;
-import com.common.togather.db.repository.ReceiptRepositorySupport;
-import com.common.togather.db.repository.TeamMemberRepositorySupport;
+import com.common.togather.db.entity.*;
+import com.common.togather.db.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,7 +17,11 @@ import java.util.List;
 public class ReceiptService {
 
     private final ReceiptRepositorySupport receiptRepositorySupport;
+    private final ReceiptRepository receiptRepository;
     private final TeamMemberRepositorySupport teamMemberRepositorySupport;
+    private final MemberRepository memberRepository;
+    private final BookmarkRepository bookmarkRepository;
+    private final PlanRepository planRepository;
 
     public ReceiptFindByReceiptIdResponse findReceiptByReceiptId(String email, int teamId, int receiptId) {
 
@@ -32,6 +36,62 @@ public class ReceiptService {
         getTeamMember(email, teamId);
 
         return receiptRepositorySupport.findAllByPlanId(planId).get();
+    }
+
+    @Transactional
+    public void SaveReceipt(String email, int teamId, int planId, ReceiptSaveRequest requestDto) {
+
+        Member manager = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
+
+        getTeamMember(email, teamId);
+
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
+
+
+        Bookmark bookmark = bookmarkRepository.findById(requestDto.getBookMarkId())
+                .orElseThrow(() -> new BookmarkNotFoundException("해당 북마크가 존재하지 않습니다."));
+
+        Receipt receipt = Receipt.builder()
+                .plan(plan)
+                .manager(manager)
+                .bookmark(bookmark)
+                .businessName(requestDto.getBusinessName())
+                .paymentDate(requestDto.getPaymentDate())
+                .totalPrice(requestDto.getTotalPrice())
+                .color(requestDto.getColor())
+                .build();
+
+        List<Item> items = requestDto.getItems().stream().map(itemRequest -> {
+            Item item = Item.builder()
+                    .name(itemRequest.getName())
+                    .unitPrice(itemRequest.getUnitPrice())
+                    .count(itemRequest.getCount())
+                    .receipt(receipt)
+                    .build();
+
+            if (itemRequest.getMembers() != null) {
+                item.setItemMembers(itemRequest.getMembers().stream()
+                        .map(memberRequest -> {
+                            Member member = memberRepository.findById(memberRequest.getMemberId())
+                                    .orElseThrow(() -> new MemberNotFoundException("유저 " + memberRequest.getMemberId() + "는 가입된 회원은 존재하지 않습니다."));
+
+                            return ItemMember.builder()
+                                    .member(member)
+                                    .item(item)
+                                    .build();
+
+                        }).toList()
+                );
+            }
+            return item;
+
+        }).toList();
+
+        receipt.setItems(items);
+
+        receiptRepository.save(receipt);
     }
 
     private TeamMember getTeamMember(String email, int teamId) {
