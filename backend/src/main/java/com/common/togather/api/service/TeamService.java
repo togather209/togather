@@ -4,6 +4,7 @@ import com.common.togather.api.error.MemberNotFoundException;
 import com.common.togather.api.error.TeamNotFoundException;
 import com.common.togather.api.request.TeamSaveRequest;
 import com.common.togather.api.request.TeamUpdateRequest;
+import com.common.togather.api.response.TeamFindAllByMemberIdResponse;
 import com.common.togather.api.response.TeamSaveResponse;
 import com.common.togather.db.entity.Member;
 import com.common.togather.db.entity.Team;
@@ -16,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -79,4 +82,22 @@ public class TeamService {
         return code.toString();
     }
 
+    // 내가 속한 모임 조회
+    public List<TeamFindAllByMemberIdResponse> findAllTeamByMemberId(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
+
+        List<TeamMember> teamMembers = teamMemberRepository.findByMember(member);
+        return teamMembers.stream()
+                .map(teamMember -> {
+                    Team team = teamMember.getTeam();
+                    return TeamFindAllByMemberIdResponse.builder()
+                            .teamId(team.getId())
+                            .title(team.getTitle())
+                            .teamImg(team.getTeamImg())
+                            .description(team.getDescription())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
 }
