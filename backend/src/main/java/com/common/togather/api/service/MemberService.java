@@ -1,11 +1,9 @@
 package com.common.togather.api.service;
 
-import com.common.togather.api.error.EmailAlreadyExistsException;
-import com.common.togather.api.error.EmailNotFoundException;
-import com.common.togather.api.error.InvalidPasswordException;
-import com.common.togather.api.error.NicknameAlreadyExistsException;
+import com.common.togather.api.error.*;
 import com.common.togather.api.request.LoginRequest;
 import com.common.togather.api.request.MemberSaveRequest;
+import com.common.togather.api.request.MemberUpdateRequest;
 import com.common.togather.common.auth.TokenInfo;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
@@ -37,8 +35,6 @@ public class MemberService {
     @Transactional
     public void logout(String accessToken, String refreshToken) {
 
-
-
         // 아직 만료되지 않은 access token은 블랙리스트에 추가
         long expirationTime = jwtUtil.getExpirationFromToken(accessToken).getTime() - System.currentTimeMillis();
         redisService.blacklistAccessToken(accessToken, expirationTime);
@@ -48,15 +44,32 @@ public class MemberService {
         redisService.deleteRefreshToken(email);
     }
 
-    // 이메일로 회원 찾기
-    public Member getMemberByEmail(String email) {
-        Member member = memberRepository.findByEmail(email).get();
-        return member;
+
+    // 회원 정보 수정
+    public void updateMember(String authEmail, MemberUpdateRequest memberUpdateRequest) {
+        Member member = memberRepository.findByEmail(authEmail)
+                .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
+
+        System.out.println(member.getEmail());
+
+        if(memberUpdateRequest.getPassword() != null){
+            member.setPassword(bCryptPasswordEncoder.encode(memberUpdateRequest.getPassword()));
+        }
+        if(memberUpdateRequest.getNickname() != null){
+            member.setNickname(memberUpdateRequest.getNickname());
+        }
+        if(memberUpdateRequest.getProfileImg() != null){
+            member.setProfileImg(memberUpdateRequest.getProfileImg());
+        }
+
+        memberRepository.save(member);
     }
 
-    // 해당 이메일 회원이 있는지
-    public boolean existsMemberByEmail(String email) {
-        return memberRepository.existsByEmail(email);
-    }
+    // 회원 삭제
+    public void deleteMember(String authEmail) {
+        Member member = memberRepository.findByEmail(authEmail)
+                .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
 
+        memberRepository.delete(member);
+    }
 }

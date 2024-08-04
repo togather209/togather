@@ -96,23 +96,11 @@ public class AuthService {
         return tokenInfo;
     }
     
-    // 쿠키에서 리프레시 토큰 가져오기
-    public String getRefreshTokenFromCookie(HttpServletRequest request) {
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals("refreshToken")) {
-                    return cookie.getValue();
-                }
-            }
-
-            throw new MissingTokenException("쿠키에 리프레스 토큰 정보가 없습니다.");
-        }
-
-        else throw new MissingTokenException("쿠키값이 비어있어 리프레시 토큰 정보를 찾을 수 없습니다.");
+    // 임시 비밀번호로 변경
+    @Transactional
+    public void updatePassword(String email, String temporaryPassword) {
+        Member member = memberRepository.findByEmail(email).get();
+        member.setPassword(bCryptPasswordEncoder.encode(temporaryPassword));
     }
-
-
-
-
 
 }
