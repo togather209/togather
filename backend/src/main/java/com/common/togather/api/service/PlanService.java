@@ -2,8 +2,11 @@ package com.common.togather.api.service;
 
 import com.common.togather.api.error.MemberNotFoundException;
 import com.common.togather.api.error.MemberTeamNotFoundException;
+import com.common.togather.api.error.PlanNotFoundException;
 import com.common.togather.api.error.TeamNotFoundException;
 import com.common.togather.api.request.PlanSaveRequest;
+import com.common.togather.api.response.PlanFindByPlanIdResponse;
+import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
 import com.common.togather.db.entity.Plan;
 import com.common.togather.db.entity.Team;
@@ -20,12 +23,14 @@ public class PlanService {
     private final PlanRepository planRepository;
     private final TeamMemberRepositorySupport teamMemberRepositorySupport;
     private final TeamRepository teamRepository;
+    private final JwtUtil jwtUtil;
 
-    public PlanService(MemberRepository memberRepository, PlanRepository planRepository, TeamMemberRepositorySupport teamMemberRepositorySupport, TeamRepository teamRepository) {
+    public PlanService(MemberRepository memberRepository, PlanRepository planRepository, TeamMemberRepositorySupport teamMemberRepositorySupport, TeamRepository teamRepository, JwtUtil jwtUtil) {
         this.memberRepository = memberRepository;
         this.planRepository = planRepository;
         this.teamMemberRepositorySupport = teamMemberRepositorySupport;
         this.teamRepository = teamRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     // 일정 추가
@@ -52,5 +57,31 @@ public class PlanService {
 
         planRepository.save(plan);
 
+    }
+
+    // 일정 상세 조회
+    public PlanFindByPlanIdResponse getPlanDetail(int teamId, int planId, String authMemberEmail) {
+
+        Member member = memberRepository.findByEmail(authMemberEmail)
+                .orElseThrow(()-> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
+
+        teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, authMemberEmail)
+                .orElseThrow(()-> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
+
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(()->new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
+
+        int hostId = plan.getManager().getId();
+
+        PlanFindByPlanIdResponse response = PlanFindByPlanIdResponse.builder()
+                .hostId(hostId)
+                .title(plan.getTitle())
+                .description(plan.getDescription())
+                .startDate(plan.getStartDate())
+                .endDate(plan.getEndDate())
+                .isAdmin(hostId == member.getId()) // 일정장id와 현재 로그인유저id가 같은지 비교
+                .build();
+
+        return response;
     }
 }
