@@ -7,12 +7,10 @@ export const refreshAccessTokenAsync = createAsyncThunk(
   'auth/refreshAccessToken',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_LINK}/auth/refresh`, {
-        // refresh token or other needed data
-      });
-      return response.data.data;
+      const response = await axios.post(`${API_LINK}/auth/refresh`, {}, { withCredentials: true });
+      return response.data.data; // accessToken과 refreshToken을 반환한다고 가정
     } catch (error) {
-      return rejectWithValue(error.response.data.data);
+      return rejectWithValue(error.response ? error.response.data : error.message);
     }
   }
 );
@@ -22,8 +20,6 @@ const authSlice = createSlice({
   initialState: {
     accessToken: null,
     refreshToken: null,
-    status: 'idle',
-    error: null,
   },
   reducers: {
     setToken: (state, action) => {
@@ -35,20 +31,15 @@ const authSlice = createSlice({
       state.refreshToken = null;
     },
   },
-  //추가 케이스 설정
   extraReducers: (builder) => {
     builder
-      .addCase(refreshAccessTokenAsync.pending, (state) => {
-        state.status = 'loading';
-      })
       .addCase(refreshAccessTokenAsync.fulfilled, (state, action) => {
         state.accessToken = action.payload.accessToken;
-        state.status = 'succeeded';
+        state.refreshToken = action.payload.refreshToken;
       })
-      .addCase(refreshAccessTokenAsync.rejected, (state, action) => {
+      .addCase(refreshAccessTokenAsync.rejected, (state) => {
         state.accessToken = null;
-        state.status = 'failed';
-        state.error = action.error.message;
+        state.refreshToken = null;
       });
   },
 });

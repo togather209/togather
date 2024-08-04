@@ -2,7 +2,6 @@ import axios from "axios";
 import store from "../redux/store";
 import {
   clearToken,
-  refreshAccessTokenAsync,
   setToken,
 } from "../redux/slices/authSlice";
 
@@ -11,6 +10,7 @@ const API_LINK = import.meta.env.VITE_API_URL;
 //axios 기본 베이스 설정
 const axiosInstance = axios.create({
   baseURL: API_LINK,
+  withCredentials: true,
 });
 
 //인터셉터 설정(요청)
@@ -21,6 +21,7 @@ axiosInstance.interceptors.request.use(
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
+    console.log(config);
     return config;
   },
   (error) => {
@@ -40,11 +41,8 @@ axiosInstance.interceptors.response.use(
     const state = store.getState();
 
     //권한 없음 & 재시도 상황이 아니라면
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response.status === 403 && !originalRequest._retry) {
       originalRequest._retry = true;
-
-      //리프레시 토큰이 있고, 대기(로딩)중이면
-
         //재발급
         try {
             //axios 요청
