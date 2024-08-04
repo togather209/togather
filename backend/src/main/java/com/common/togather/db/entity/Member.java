@@ -59,4 +59,8 @@ public class Member {
     // 영수증
     @OneToMany(mappedBy = "manager")
     private List<Receipt> receipts;
+
+    // 유저 품목
+    @OneToMany(mappedBy = "member")
+    private List<ItemMember> itemMembers;
 }
