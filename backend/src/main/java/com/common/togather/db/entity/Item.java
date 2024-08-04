@@ -3,6 +3,8 @@ package com.common.togather.db.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,4 +33,8 @@ public class Item {
     // 수량
     @Column(name = "count", nullable = false)
     private Integer count;
+
+    // 품목 유저
+    @OneToMany(mappedBy = "item")
+    private List<ItemMember> itemMembers;
 }
