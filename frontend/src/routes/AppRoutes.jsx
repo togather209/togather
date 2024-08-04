@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Landing from "../pages/Landing";
-import MyPage from "../pages/MyPage";
+import MyPageMain from "../components/mypage/MyPageMain";
 import Game from "../pages/Game";
 import User from "../pages/User";
 import SignUpForm from "../components/user/SignUpForm";
@@ -29,43 +29,130 @@ import ReceiptDetail from "../components/receipt/receiptDetail/ReceiptDetail";
 import ProfileUpdate from "../components/mypage/ProfileUpdate";
 import Terms from "../components/mypage/Terms";
 import PrivateRoute from "./PrivateRoute";
-import MyPageMain from "../components/mypage/MyPageMain";
+import UnderBar from "../components/common/UnderBar";
 
-function AppRoutes({ accessToken }) {
+function AppRoutes() {
   return (
     <Routes>
-      <Route path="landing" element={<Landing />} />
+      <Route path="/landing" element={<Landing />} />
       <Route path="/signup" element={<SignUpForm />} />
       <Route path="/login" element={<User />} />
-      <Route path="/mypage" element={<PrivateRoute element={MyPageMain} accessToken={accessToken} />} />
-      <Route path="/" element={<PrivateRoute element={Home} accessToken={accessToken} />}>
-        <Route path="" element={<HomeMainContainer accessToken={accessToken} />}>
-          <Route index element={<HomeMain accessToken={accessToken} />} />
-          <Route path="regist_form" element={<RegistForm accessToken={accessToken} />} />
-          <Route path="join_form" element={<JoinForm accessToken={accessToken} />} />
+      <Route
+        path="/mypage"
+        element={
+          <PrivateRoute>
+            <MyPageMain />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/"
+        element={
+          <PrivateRoute>
+            <Home />
+          </PrivateRoute>
+        }
+      >
+        <Route
+          path=""
+          element={
+            <HomeMainContainer />
+          }
+        >
+          <Route index element={<HomeMain />} />
+          <Route path="regist_form" element={<RegistForm />} />
+          <Route path="join_form" element={<JoinForm />} />
         </Route>
-        <Route path="meeting" element={<MeetingContainer accessToken={accessToken} />}>
-          <Route index element={<Meetings accessToken={accessToken} />} />
-          <Route path=":id" element={<MeetingDetailContainer accessToken={accessToken} />}>
-            <Route index element={<MeetingDetail accessToken={accessToken} />}></Route>
-            <Route path="schedule-regist" element={<ScheduleRegist accessToken={accessToken} />}></Route>
-            <Route path="schedule/:id" element={<ScheduleDetail accessToken={accessToken} />}/>
+        <Route
+          path="meeting"
+          element={
+            <MeetingContainer />
+          }
+        >
+          <Route index element={<Meetings />} />
+          <Route path=":id" element={<MeetingDetailContainer />}>
+            <Route index element={<MeetingDetail />} />
+            <Route path="schedule-regist" element={<ScheduleRegist />} />
+            <Route path="schedule/:id" element={<ScheduleDetail />} />
           </Route>
         </Route>
       </Route>
-      <Route path="/wallet" element={<PrivateRoute element={Wallet} accessToken={accessToken} />} />
-      <Route path="/wallet/create_payment" element={<PrivateRoute element={CreatePayment} accessToken={accessToken} />} />
-      <Route path="/wallet/transaction_list" element={<PrivateRoute element={TransactionList} accessToken={accessToken} />} />
-      <Route path="/wallet/send" element={<PrivateRoute element={Send} accessToken={accessToken} />} />
-      <Route path="/wallet/sendform" element={<PrivateRoute element={SendForm} accessToken={accessToken} />} />
-      <Route path="/mypage/profile_update" element={<PrivateRoute element={ProfileUpdate} accessToken={accessToken} />} />
-      <Route path="/mypage/terms" element={<PrivateRoute element={Terms} accessToken={accessToken} />} />
-      <Route path="/receipt" element={<PrivateRoute element={Receipt} accessToken={accessToken} />}>
-        <Route index element={<ReceiptListContainer accessToken={accessToken} />} />
-        <Route path=":id" element={<ReceiptDetail accessToken={accessToken} />} />
-        <Route path="regist-form" element={<ReceiptFormContainer accessToken={accessToken} />} />
+      <Route
+        path="/wallet"
+        element={
+          <PrivateRoute>
+            <Wallet />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/wallet/create_payment"
+        element={
+          <PrivateRoute>
+            <CreatePayment />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/wallet/transaction_list"
+        element={
+          <PrivateRoute>
+            <TransactionList />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/wallet/send"
+        element={
+          <PrivateRoute>
+            <Send />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/wallet/sendform"
+        element={
+          <PrivateRoute>
+            <SendForm />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/mypage/profile_update"
+        element={
+          <PrivateRoute>
+            <ProfileUpdate />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/mypage/terms"
+        element={
+          <PrivateRoute>
+            <Terms />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/receipt"
+        element={
+          <PrivateRoute>
+            <Receipt />
+          </PrivateRoute>
+        }
+      >
+        <Route index element={<ReceiptListContainer />} />
+        <Route path=":id" element={<ReceiptDetail />} />
+        <Route path="regist-form" element={<ReceiptFormContainer />} />
       </Route>
-      <Route path="/game" element={<PrivateRoute element={Game} accessToken={accessToken} />} />
+      <Route
+        path="/game"
+        element={
+          <PrivateRoute>
+            <Game />
+          </PrivateRoute>
+        }
+      />
     </Routes>
   );
 }
