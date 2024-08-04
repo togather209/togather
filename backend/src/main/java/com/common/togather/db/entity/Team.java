@@ -22,8 +22,8 @@ public class Team {
     private String title;
 
     // 대표 사진
-    @Column(name = "group_img", nullable = false)
-    private String groupImg;
+    @Column(name = "team_img", nullable = false)
+    private String teamImg;
 
     // 소개
     @Column(name = "description", nullable = false)
@@ -34,10 +34,10 @@ public class Team {
     private String code;
 
     // 모임 유저
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamMember> teamMembers;
 
     // 일정
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Plan> plans;
 }
