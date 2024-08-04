@@ -51,8 +51,6 @@ public class MemberService {
         Member member = memberRepository.findByEmail(authEmail)
                 .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
 
-        System.out.println(member.getEmail());
-
         if(memberUpdateRequest.getPassword() != null){
             member.setPassword(bCryptPasswordEncoder.encode(memberUpdateRequest.getPassword()));
         }
