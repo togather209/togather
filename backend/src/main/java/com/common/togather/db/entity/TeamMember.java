@@ -13,18 +13,18 @@ public class TeamMember {
     //pk
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
 
     // 유저
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    Member member;
+    private Member member;
 
     // 모임
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
-    Team team;
+    private Team team;
 
     // 모임 권한
-    Integer role;
+    private Integer role;
 }
