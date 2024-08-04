@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearUser, setUser } from "../../redux/slices/userSlice";
 import { clearToken } from "../../redux/slices/authSlice";
 import axiosInstance from "../../utils/axiosInstance";
-import store from "../../redux/store";
 
 function MyPageMain() {
   const [secessionModalOpen, setSecessionModalOpen] = useState(false);
@@ -28,7 +27,6 @@ function MyPageMain() {
     try {
       const response = await axiosInstance.get("/members/me");
       dispatch(setUser({ member : response.data.data }));
-      console.log(store.getState());
     } catch (error) {
       console.error("데이터 불러오기실패", error);
     }

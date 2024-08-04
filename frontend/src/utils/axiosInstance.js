@@ -43,9 +43,6 @@ axiosInstance.interceptors.response.use(
     //권한 없음 & 재시도 상황이 아니라면
     if (error.response.status === 403 && !originalRequest._retry) {
       originalRequest._retry = true;
-
-      //리프레시 토큰이 있고, 대기(로딩)중이면
-
         //재발급
         try {
             //axios 요청
