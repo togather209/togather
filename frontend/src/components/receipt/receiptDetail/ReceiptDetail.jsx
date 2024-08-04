@@ -59,7 +59,7 @@ function ReceiptDetail() {
     ],
     date: '2024.07.02',
     hostName : '김범규',
-    totalPrice: 63000,
+    totalPrice: 41000,
     paymentDate: '2024.07.16',
   };
 
