@@ -53,22 +53,6 @@ function LoginForm() {
         })
       );
 
-
-      //멤버 데이터 가져오기
-      const memberResponse = await axios.get(`${API_LINK}/members/me`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
-
-      console.log(memberResponse.data);
-
-      dispatch(
-        setUser({
-          member: memberResponse.data.data,
-        })
-      );
-
       navigate("/");
     } catch (error) {
       console.log("로그인 에러", error);
