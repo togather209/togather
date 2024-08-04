@@ -39,11 +39,11 @@ public class Plan {
 
     // 시작일
     @Column(name = "start_date", nullable = false)
-    private Date startDate;
+    private LocalDateTime startDate;
 
     // 종료일
     @Column(name = "end_date", nullable = false)
-    private Date endDate;
+    private LocalDateTime endDate;
 
     // 정산 여부
     @Column(name = "status", nullable = false)

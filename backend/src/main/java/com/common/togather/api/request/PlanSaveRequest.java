@@ -15,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class PlanSaveRequest {
     String title;
-    Date startDate;
-    Date endDate;
+    LocalDateTime startDate;
+    LocalDateTime endDate;
     String description;
 }
