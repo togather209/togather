@@ -22,8 +22,8 @@ public class Team {
     private String title;
 
     // 대표 사진
-    @Column(name = "group_img", nullable = false)
-    private String groupImg;
+    @Column(name = "team_img", nullable = true)
+    private String teamImg;
 
     // 소개
     @Column(name = "description", nullable = false)
