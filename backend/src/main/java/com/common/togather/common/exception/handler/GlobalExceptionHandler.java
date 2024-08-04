@@ -55,11 +55,20 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    // 해당 거래내역을 찾을 수 없는 경우
     @ExceptionHandler(TransactionNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleTransactionNotFoundException(TransactionNotFoundException ex) {
         ex.printStackTrace();
-        ErrorResponseDto error = new ErrorResponseDto("Pay Account Balance Not Empty", ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        ErrorResponseDto error = new ErrorResponseDto("Transaction Not Found", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    // 모임을 찾을 수 없는 경우
+    @ExceptionHandler(TeamNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleTeamNotFoundException(TeamNotFoundException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Team Not Found", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
     
     // 가입된 이메일이 이미 있는 경우
