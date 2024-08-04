@@ -1,5 +1,6 @@
 package com.common.togather.db.repository;
 
+import com.common.togather.api.response.ReceiptFindAllByPlanIdResponse;
 import com.common.togather.api.response.ReceiptFindByReceiptIdResponse;
 import com.common.togather.api.response.ReceiptFindByReceiptIdResponse.ItemFindByReceipt;
 import com.common.togather.api.response.ReceiptFindByReceiptIdResponse.ItemFindByReceipt.MemberFindByReceipt;
@@ -66,5 +67,19 @@ public class ReceiptRepositorySupport {
         return Optional.of(response);
     }
 
+    public Optional<List<ReceiptFindAllByPlanIdResponse>> findAllByPlanId(int planId) {
+        List<ReceiptFindAllByPlanIdResponse> response = jpaQueryFactory
+                .select(Projections.fields(ReceiptFindAllByPlanIdResponse.class,
+                        qReceipt.id.as("receiptId"),
+                        qReceipt.businessName.as("businessName"),
+                        qReceipt.totalPrice.as("totalPrice"),
+                        qReceipt.paymentDate.as("paymentDate"),
+                        qReceipt.color.as("color")
+                ))
+                .from(qReceipt)
+                .where(qReceipt.plan.id.eq(planId))
+                .fetch();
 
+        return Optional.of(response);
+    }
 }
