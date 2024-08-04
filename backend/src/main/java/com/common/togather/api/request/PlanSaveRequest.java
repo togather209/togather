@@ -1,5 +1,6 @@
 package com.common.togather.api.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,12 @@ import java.util.Date;
 @NoArgsConstructor
 public class PlanSaveRequest {
     String title;
-    LocalDateTime startDate;
-    LocalDateTime endDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    LocalDate startDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    LocalDate endDate;
+
     String description;
 }
