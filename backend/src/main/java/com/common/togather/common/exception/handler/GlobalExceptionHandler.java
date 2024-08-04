@@ -138,17 +138,38 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    // 유저가 존재하지 않는 경우
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleMemberNotFoundException(MemberNotFoundException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("member Not Found", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
     // 유저가 모임에 존재하지 않는 경우
     @ExceptionHandler(MemberTeamNotFoundException.class)
-    public ResponseEntity<ErrorResponseDto> memberTeamNotFoundException(MemberTeamNotFoundException ex) {
+    public ResponseEntity<ErrorResponseDto> handleMemberTeamNotFoundException(MemberTeamNotFoundException ex) {
         ErrorResponseDto error = new ErrorResponseDto("Member Team Not Found", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     // 영수증이 존재하지 않는 경우
     @ExceptionHandler(ReceiptNotFoundException.class)
-    public ResponseEntity<ErrorResponseDto> receiptNotFoundException(ReceiptNotFoundException ex) {
+    public ResponseEntity<ErrorResponseDto> handleReceiptNotFoundException(ReceiptNotFoundException ex) {
         ErrorResponseDto error = new ErrorResponseDto("receipt Not Found", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    // 북마크가 존재하지 않는 경우
+    @ExceptionHandler(BookmarkNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleBookmarkNotFoundException(BookmarkNotFoundException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("bookmark Not Found", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    // 일정이 존재하지 않는 경우
+    @ExceptionHandler(PlanNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handlePlanNotFoundException(PlanNotFoundException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("plan Not Found", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }
