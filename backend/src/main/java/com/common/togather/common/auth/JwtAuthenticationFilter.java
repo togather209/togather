@@ -26,30 +26,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
-        String token = null;
-        String email = null;
 
-        // 요청에 Authorization 헤더가 존재하고 Bearer일때
-        if(authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-            email = jwtUtil.getEmailFromToken(token); // 토큰에서 이메일 추출
-        }
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
 
-        // 이메일이 존재하고, 인증 정보는 없다면
-        if(email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            var memberDetails = memberDetailService.loadUserByUsername(email);
+            if(jwtUtil.isTokenBlacklisted(token)){
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
 
-            if(jwtUtil.isAccessToken(token)&&jwtUtil.validateToken(token)){
-                // 인증 객체 생성
+            String email = jwtUtil.getEmailFromToken(token);
+
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null && jwtUtil.validateToken(token) && jwtUtil.isAccessToken(token)) {
+                var memberDetails = memberDetailService.loadUserByUsername(email);
                 var authToken = new UsernamePasswordAuthenticationToken(memberDetails, null, memberDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-
         }
 
         filterChain.doFilter(request, response);
-
     }
-
 }

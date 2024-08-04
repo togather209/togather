@@ -8,9 +8,12 @@ import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +29,25 @@ public class MemberController {
 
     @Operation(summary = "로그아웃")
     @PostMapping("/logout")
-    public ResponseEntity<ResponseDto<String>> logout(@RequestBody LogoutRequest logoutRequest) {
-        memberService.logout(logoutRequest.getRefreshToken());
+    public ResponseEntity<ResponseDto<String>> logout(@RequestHeader(value = "Authorization", required = false) String header,
+                                                      @CookieValue(value = "refreshToken", required = false) Cookie cookie,
+                                                      HttpServletResponse response) {
+
+        String accessToken = header.substring(7);
+        String refreshToken = cookie.getValue();
+        memberService.logout(accessToken, refreshToken);
+
+        // refresh token 쿠키 삭제
+        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+
+        response.setHeader("Set-Cookie", deleteCookie.toString());
+
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
                 .message("로그아웃 성공")
