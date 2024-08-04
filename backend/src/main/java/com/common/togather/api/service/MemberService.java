@@ -35,8 +35,16 @@ public class MemberService {
 
     // 로그아웃
     @Transactional
-    public void logout(String refreshToken) {
-        String email = jwtUtil.getEmailFromToken(refreshToken); // 토큰값에서 이메일 추출
+    public void logout(String accessToken, String refreshToken) {
+
+
+
+        // 아직 만료되지 않은 access token은 블랙리스트에 추가
+        long expirationTime = jwtUtil.getExpirationFromToken(accessToken).getTime() - System.currentTimeMillis();
+        redisService.blacklistAccessToken(accessToken, expirationTime);
+
+        // refresh token은 redis에서 삭제해 무효화
+        String email = jwtUtil.getEmailFromToken(refreshToken);
         redisService.deleteRefreshToken(email);
     }
 

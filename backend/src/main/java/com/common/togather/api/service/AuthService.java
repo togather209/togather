@@ -90,7 +90,7 @@ public class AuthService {
         String accessToken = jwtUtil.generateAccessToken(email);
         String refreshToken = jwtUtil.generateRefreshToken(email);
 
-        redisService.saveRefreshToken(email, refreshToken);
+        redisService.updateRefreshToken(email, refreshToken);
         TokenInfo tokenInfo = new TokenInfo(accessToken, refreshToken);
 
         return tokenInfo;
