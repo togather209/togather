@@ -1,7 +1,9 @@
 package com.common.togather.api.service;
 
 import com.common.togather.api.error.MemberNotFoundException;
+import com.common.togather.api.error.TeamNotFoundException;
 import com.common.togather.api.request.TeamSaveRequest;
+import com.common.togather.api.request.TeamUpdateRequest;
 import com.common.togather.api.response.TeamSaveResponse;
 import com.common.togather.db.entity.Member;
 import com.common.togather.db.entity.Team;
@@ -56,6 +58,16 @@ public class TeamService {
         return TeamSaveResponse.builder()
                 .teamId(team.getId())
                 .build();
+    }
+
+    // 모임 수정
+    public void updateTeam(int teamId, TeamUpdateRequest requestDto) {
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new TeamNotFoundException("해당 모임이 존재하지 않습니다."));
+
+        team.updateTeam(requestDto.getTitle(), requestDto.getDescription(), requestDto.getTeamImg());
+        teamRepository.save(team);
     }
 
     // 랜덤 코드 생성

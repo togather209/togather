@@ -40,4 +40,11 @@ public class Team {
     // 일정
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Plan> plans;
+
+    // 모임 수정 메서드
+    public void updateTeam(String title, String description, String teamImg) {
+        this.title = title;
+        this.description = description;
+        this.teamImg = teamImg;
+    }
 }
