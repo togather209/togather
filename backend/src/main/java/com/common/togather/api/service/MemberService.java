@@ -37,8 +37,6 @@ public class MemberService {
     @Transactional
     public void logout(String accessToken, String refreshToken) {
 
-
-
         // 아직 만료되지 않은 access token은 블랙리스트에 추가
         long expirationTime = jwtUtil.getExpirationFromToken(accessToken).getTime() - System.currentTimeMillis();
         redisService.blacklistAccessToken(accessToken, expirationTime);
@@ -46,17 +44,6 @@ public class MemberService {
         // refresh token은 redis에서 삭제해 무효화
         String email = jwtUtil.getEmailFromToken(refreshToken);
         redisService.deleteRefreshToken(email);
-    }
-
-    // 이메일로 회원 찾기
-    public Member getMemberByEmail(String email) {
-        Member member = memberRepository.findByEmail(email).get();
-        return member;
-    }
-
-    // 해당 이메일 회원이 있는지
-    public boolean existsMemberByEmail(String email) {
-        return memberRepository.existsByEmail(email);
     }
 
 }

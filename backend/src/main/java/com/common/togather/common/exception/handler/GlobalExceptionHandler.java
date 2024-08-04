@@ -102,9 +102,9 @@ public class GlobalExceptionHandler {
     }
 
     // 인증코드 메일 전송 실패한 경우
-    @ExceptionHandler(VerificationCodeSendException.class)
-    public ResponseEntity<ErrorResponseDto> handleVerificationCodeSendException(VerificationCodeSendException ex) {
-        ErrorResponseDto error = new ErrorResponseDto("Verification Code Send", ex.getMessage());
+    @ExceptionHandler(MailSendException.class)
+    public ResponseEntity<ErrorResponseDto> handleVerificationCodeSendException(MailSendException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Failed to send email", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

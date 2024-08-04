@@ -6,6 +6,7 @@ import com.common.togather.api.service.MemberService;
 import com.common.togather.common.auth.TokenInfo;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
+import com.common.togather.db.repository.MemberRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
@@ -26,6 +27,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final JwtUtil jwtUtil;
+    private final MemberRepository memberRepository;
 
     @Operation(summary = "로그아웃")
     @PostMapping("/logout")
@@ -61,7 +63,7 @@ public class MemberController {
     public ResponseEntity<ResponseDto<Member>> getAuthMember(@RequestHeader(value = "Authorization", required = false) String header) {
 
         String authEmail = jwtUtil.getAuthMemberEmail(header);
-        Member member = memberService.getMemberByEmail(authEmail);
+        Member member = memberRepository.findByEmail(authEmail).get();
         ResponseDto<Member> responseDto = ResponseDto.<Member>builder()
                 .status(HttpStatus.OK.value())
                 .message("로그인 유저 조회 성공")
