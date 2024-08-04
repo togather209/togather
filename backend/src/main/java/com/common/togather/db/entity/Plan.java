@@ -3,7 +3,9 @@ package com.common.togather.db.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -20,7 +22,7 @@ public class Plan {
 
     // 모임
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id")
+    @JoinColumn(name = "team_id")
     private Team team;
 
     // 일정 관리자
@@ -38,11 +40,11 @@ public class Plan {
 
     // 시작일
     @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     // 종료일
     @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     // 정산 여부
     @Column(name = "status", nullable = false)
