@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
         ErrorResponseDto error = new ErrorResponseDto("Team Not Found", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
-    
+
     // 가입된 이메일이 이미 있는 경우
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex) {
@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
         ErrorResponseDto error = new ErrorResponseDto("Email Already Exists", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
-    
+
     // 가입된 닉네임이 이미 있는 경우
     @ExceptionHandler(NicknameAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handleNicknameAlreadyExistsException(NicknameAlreadyExistsException ex) {
@@ -123,7 +123,7 @@ public class GlobalExceptionHandler {
         ErrorResponseDto error = new ErrorResponseDto("Invalid Email Pattern", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
-    
+
     // 유효성 에러
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDto> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -138,5 +138,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    // 유저가 모임에 존재하지 않는 경우
+    @ExceptionHandler(MemberTeamNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> memberTeamNotFoundException(MemberTeamNotFoundException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Member Team Not Found", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 
+    // 영수증이 존재하지 않는 경우
+    @ExceptionHandler(ReceiptNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> receiptNotFoundException(ReceiptNotFoundException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("receipt Not Found", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
 }
