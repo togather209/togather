@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setReceiptData } from "../../../redux/slices/receiptSlice";
 import "./CalculateComponent.css";
 import SelectParticipantsModal from "./SelectParticipantsModal";
 import AddButton from "../../../assets/icons/common/add.png";
@@ -6,14 +8,12 @@ import Button from "../../common/Button";
 import { useLocation } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance";
 
-function CalculateComponent({
-  items,
-  receiptColor,
-  businessName,
-  paymentDate,
-  totalPrice,
-}) {
-  // 모임, 일정 id 받기
+function CalculateComponent() {
+  const dispatch = useDispatch();
+  const receiptData = useSelector((state) => state.receipt);
+  const { color, businessName, paymentDate, items, totalPrice, bookmarkId } =
+    receiptData;
+
   const location = useLocation();
   const { teamId, planId } = location.state || {};
 
@@ -23,38 +23,43 @@ function CalculateComponent({
   const [currentItemIndex, setCurrentItemIndex] = useState(null);
   const [generalParticipants, setGeneralParticipants] = useState([]);
 
+  useEffect(() => {
+    console.log("general", generalParticipants);
+  }, [generalParticipants]);
+
   // 영수증 등록 요청
   const handleRegister = async () => {
     const receiptTempInfo = {
-      businessName: businessName,
-      paymentDate: paymentDate,
-      totalPrice: totalPrice,
-      bookmarkId: -1, // 필요에 따라 설정
-      color: receiptColor,
+      businessName,
+      paymentDate,
+      totalPrice,
+      bookmarkId,
+      color,
       items: items.map((item, index) => ({
         name: item.name,
-        unitPrice: item.price,
-        count: item.quantity,
-        members: (itemParticipants[index] || []).map((participant) => ({
-          memberId: participant,
-        })),
+        unitPrice: item.unitPrice,
+        count: item.count,
+        members:
+          activeType === "personal"
+            ? (itemParticipants[index] || []).map((participant) => ({
+                memberId: participant.id,
+              }))
+            : generalParticipants.map((participant) => ({
+                memberId: participant.id,
+              })),
       })),
     };
 
-    // TODO : 전체 정보 전달
     console.log(receiptTempInfo);
 
-    // 영수증 등록 API
     try {
       const response = await axiosInstance.post(
         `teams/${teamId}/plans/${planId}/receipts`,
         receiptTempInfo
       );
-      console.log("등록 성공:", response.data);
-      // 추가적인 처리 로직
+      console.log("등록 성공:", response);
     } catch (error) {
       console.error("등록 실패:", error);
-      // 에러 처리 로직
     }
   };
 
@@ -65,60 +70,62 @@ function CalculateComponent({
     setActiveType(type);
   };
 
-  // 참여자 선택 모달 열기 핸들러
   const handleOpenModal = (itemIndex) => {
     setCurrentItemIndex(itemIndex);
     setIsModalOpen(true);
   };
 
-  // 모달에서 참여자 선택 핸들러
   const handleSelectParticipants = (selected) => {
     if (currentItemIndex !== null) {
       setItemParticipants((prev) => ({
         ...prev,
-        [currentItemIndex]: selected,
+        [currentItemIndex]: selected.map((participant) => ({
+          id: participant.id,
+          name: participant.name,
+        })),
       }));
     } else {
-      setGeneralParticipants(selected);
+      setGeneralParticipants(
+        selected.map((participant) => ({
+          id: participant.id,
+          name: participant.name,
+        }))
+      );
     }
+    console.log(itemParticipants);
     setIsModalOpen(false);
   };
 
-  // 활성화된 계산 유형에 따른 정산 계산
   const calculateSettlements = () => {
     const settlements = {};
-    if (activeType === 'personal') {
-      // 'personal' 유형에 대한 계산
+    if (activeType === "personal") {
       Object.keys(itemParticipants).forEach((itemIndex) => {
         const item = items[itemIndex];
         const participants = itemParticipants[itemIndex] || [];
-        const share = Math.floor(item.price / participants.length);
+        const share = Math.floor(item.unitPrice / participants.length);
         participants.forEach((participant) => {
-          if (!settlements[participant]) {
-            settlements[participant] = 0;
+          if (!settlements[participant.name]) {
+            settlements[participant.name] = 0;
           }
-          settlements[participant] += share;
+          settlements[participant.name] += share;
         });
       });
-    } else if (activeType === 'divide') {
-      // 'divide' 유형에 대한 계산
-      const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
+    } else if (activeType === "divide") {
+      const totalAmount = items.reduce((sum, item) => sum + item.unitPrice, 0);
       const share = Math.floor(totalAmount / generalParticipants.length);
       generalParticipants.forEach((participant) => {
-        settlements[participant] = share;
+        settlements[participant.name] = share;
       });
-    } else if (activeType === 'all') {
-      // 'all' 유형에 대한 계산
-      const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
+    } else if (activeType === "all") {
+      const totalAmount = items.reduce((sum, item) => sum + item.unitPrice, 0);
       const participant = generalParticipants[0];
       if (participant) {
-        settlements[participant] = totalAmount;
+        settlements[participant.name] = totalAmount;
       }
     }
     return settlements;
   };
 
-  // 정산 결과 가져오기
   const settlements = calculateSettlements();
 
   const allItemsTagged =
@@ -129,21 +136,21 @@ function CalculateComponent({
         )
       : generalParticipants.length > 0;
 
-  // const handleRegister = () => {
-  //   const receiptTempInfo = {
-  //     color: receiptColor,
-  //     items: items.map((item, index) => ({
-  //       name: item.name,
-  //       quantity: item.quantity,
-  //       price: item.price,
-  //       participants: itemParticipants[index] || [],
-  //     })),
-  //   };
+  const participants = [
+    {
+      id: 0,
+      name: "김범규",
+    },
+    {
+      id: 1,
+      name: "김해수",
+    },
+    {
+      id: 2,
+      name: "이지혜",
+    },
+  ];
 
-  // TODO : 참여자 불러오기
-  const participants = ['김범규', '김해수', '이지혜']; // 예제 참여자 목록
-
-  // 선택된 참여자가 있는지 확인
   const haveParticipants = Object.keys(settlements).length > 0;
 
   return (
@@ -192,8 +199,8 @@ function CalculateComponent({
                     <React.Fragment key={index}>
                       <tr>
                         <td>{item.name}</td>
-                        <td>{item.quantity}</td>
-                        <td>{item.price.toLocaleString()}원</td>
+                        <td>{item.count}</td>
+                        <td>{item.unitPrice.toLocaleString()}원</td>
                       </tr>
                       <tr className="calculate-tag-list">
                         <td colSpan="3" className="calculate-tagged-people">
@@ -205,7 +212,7 @@ function CalculateComponent({
                           />
                           {itemParticipants[index]?.map((participant, idx) => (
                             <span key={idx} className="participant-badge">
-                              {participant}
+                              {participant.name}
                             </span>
                           ))}
                         </td>

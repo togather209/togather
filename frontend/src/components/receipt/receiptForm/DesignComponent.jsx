@@ -1,11 +1,18 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setActiveTab,
+  setReceiptData,
+} from "../../../redux/slices/receiptSlice";
 import Receipt from "./ReceiptSelect";
 import Button from "../../common/Button";
 import Pink from "../../../assets/receipt/pinkReceipt.png";
 import Sky from "../../../assets/receipt/skyReceipt.png";
 import Yellow from "../../../assets/receipt/yellowReceipt.png";
 
-function DesignComponent({ setActiveTab, receiptData, setReceiptData }) {
+function DesignComponent() {
+  const dispatch = useDispatch();
+  const receiptData = useSelector((state) => state.receipt);
   const [localReceiptColor, setLocalReceiptColor] = useState(receiptData.color);
 
   return (
@@ -26,8 +33,10 @@ function DesignComponent({ setActiveTab, receiptData, setReceiptData }) {
         <Button
           type="purple"
           onClick={() => {
-            setReceiptData({ ...receiptData, color: localReceiptColor });
-            setActiveTab("recognize");
+            dispatch(
+              setReceiptData({ ...receiptData, color: localReceiptColor })
+            );
+            dispatch(setActiveTab("recognize"));
           }}
         >
           다음

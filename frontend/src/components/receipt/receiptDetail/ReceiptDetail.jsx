@@ -9,16 +9,13 @@ import axiosInstance from "../../../utils/axiosInstance";
 import DeleteReceiptModal from "./DeleteReceiptModal";
 
 function ReceiptDetail() {
-  // Receipt 상세 조회를 위한 id
   const { receiptId } = useParams();
-
-  // 모임, 일정 id 받기
   const location = useLocation();
-  const { teamId, planId } = location.state || {};
-
   const navigate = useNavigate();
-  const [receipt, setReceipts] = useState(); // 영수증 정보
+  const [receipt, setReceipts] = useState(null); // 초기 상태를 null로 설정
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const { teamId, planId } = location.state || {};
 
   const colorMap = {
     0: "sky",
@@ -28,7 +25,7 @@ function ReceiptDetail() {
 
   useEffect(() => {
     if (!teamId || !planId) {
-      console.error("meetingId 또는 scheduleId가 전달되지 않았습니다.");
+      console.error("teamId 또는 planId가 전달되지 않았습니다.");
       return;
     }
 
@@ -46,7 +43,7 @@ function ReceiptDetail() {
     };
 
     fetchReceiptDetail();
-  }, [teamId, planId, receiptId]);
+  }, []); // 의존성 배열을 빈 배열로 설정
 
   // 정산액 계산
   const calculateSettlements = (items) => {
@@ -76,27 +73,32 @@ function ReceiptDetail() {
     });
   };
 
-  // 영수증 삭제 모달
-  const hanldeDeleteModal = () => {
+  const handleDeleteModal = () => {
     console.log("영수증 삭제");
     setIsDeleteModalOpen(true); // 삭제 모달 띄우기
   };
 
-  // 모달 닫기
   const handleCloseModal = () => {
     setIsDeleteModalOpen(false);
   };
 
-  // 영수증 삭제하기 요청
-  const handleDelete = () => {
-    // TODO : axios delete 요청 보내기
-    console.log(`${receipt.receiptId}번 영수증 삭제`);
-    setIsDeleteModalOpen(false);
-    navigate("/receipt");
+  const handleDelete = async () => {
+    try {
+      await axiosInstance.delete(
+        `teams/${teamId}/plans/${planId}/receipts/${receiptId}`
+      );
+      console.log(`${receiptId}번 영수증 삭제`);
+      setIsDeleteModalOpen(false);
+      navigate("/receipt");
+    } catch (error) {
+      console.error("영수증 삭제에 실패했습니다.", error);
+    }
   };
 
   const handleCheck = () => {
-    navigate(-1);
+    navigate(-1, {
+      state: { teamId: teamId, planId: planId, receiptId: receiptId },
+    });
   };
 
   return (
@@ -104,7 +106,7 @@ function ReceiptDetail() {
       {receipt ? (
         <div className={`receipt-detail-container ${colorMap[receipt.color]}`}>
           <header className="receipt-header">
-            <BackButton></BackButton>
+            <BackButton />
             <div>영수증 조회</div>
           </header>
           <div className="receipt-info">
@@ -130,7 +132,6 @@ function ReceiptDetail() {
                     <tr>
                       <td colSpan="3" className="tagged-people">
                         {item.members.map((member, idx) => (
-                          // <img key={idx} src={member.avatar} alt={member.name} className="tagged-avatar" />
                           <div key={idx} className="tagged-avatar"></div>
                         ))}
                       </td>
@@ -150,7 +151,7 @@ function ReceiptDetail() {
             </div>
             <div className="receipt-manage">
               <img src={Update} alt="update" onClick={handleUpdate} />
-              <img src={Delete} alt="delete" onClick={hanldeDeleteModal} />
+              <img src={Delete} alt="delete" onClick={handleDeleteModal} />
             </div>
           </div>
           <div className="payment-info">
@@ -182,7 +183,6 @@ function ReceiptDetail() {
           </div>
         </div>
       ) : (
-        // TODO : 로딩중 처리
         <div>로딩 중...</div>
       )}
       {isDeleteModalOpen && (

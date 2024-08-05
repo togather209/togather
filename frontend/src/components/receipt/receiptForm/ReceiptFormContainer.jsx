@@ -1,4 +1,9 @@
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setReceiptData,
+  setActiveTab,
+} from "../../../redux/slices/receiptSlice";
 import "./ReceiptForm.css";
 import BackButton from "../../common/BackButton";
 import Design from "./DesignComponent";
@@ -6,27 +11,23 @@ import Recognize from "./RecognizeComponent";
 import Calculate from "./CalculateComponent";
 
 function ReceiptRegistForm() {
-  const [activeTab, setActiveTab] = useState("design");
-  const [receiptData, setReceiptData] = useState({
-    color: 0,
-    items: [],
-    businessName: null,
-    connectedPlace: null,
-    paymentDate: null,
-    bookmarkId: -1,
-    totalPrice: -1,
-  });
+  const dispatch = useDispatch();
+  const activeTab = useSelector((state) => state.receipt.activeTab);
+  const receiptData = useSelector((state) => state.receipt);
 
   const handleSetActiveTab = (tab, items = [], storeName = "", date = "") => {
-    setActiveTab(tab);
+    dispatch(setActiveTab(tab));
+
     if (items.length > 0) {
-      setReceiptData((prevData) => ({
-        ...prevData,
-        items: items,
-        businessName: storeName,
-        paymentDate: date,
-        totalPrice: items.reduce((total, item) => total + item.price, 0),
-      }));
+      dispatch(
+        setReceiptData({
+          ...receiptData,
+          items: items,
+          businessName: businessName,
+          paymentDate: paymentDate,
+          totalPrice: items.reduce((total, item) => total + item.price, 0),
+        })
+      );
     }
   };
 
@@ -40,9 +41,7 @@ function ReceiptRegistForm() {
         <div className="tabs">
           <button
             className={`tab-button ${activeTab === "design" ? "active" : ""}`}
-            onClick={() => {
-              setActiveTab("design");
-            }}
+            onClick={() => dispatch(setActiveTab("design"))}
           >
             디자인
           </button>
@@ -50,9 +49,7 @@ function ReceiptRegistForm() {
             className={`tab-button ${
               activeTab === "recognize" ? "active" : ""
             }`}
-            onClick={() => {
-              setActiveTab("recognize");
-            }}
+            onClick={() => dispatch(setActiveTab("recognize"))}
           >
             인식
           </button>
@@ -60,32 +57,18 @@ function ReceiptRegistForm() {
             className={`tab-button ${
               activeTab === "calculate" ? "active" : ""
             }`}
-            onClick={() => {
-              setActiveTab("calculate");
-            }}
+            onClick={() => dispatch(setActiveTab("calculate"))}
           >
             정산
           </button>
         </div>
       </div>
       <div className="tab-content">
-        {activeTab === "design" && (
-          <Design
-            setActiveTab={setActiveTab}
-            receiptData={receiptData}
-            setReceiptData={setReceiptData}
-          />
-        )}
+        {activeTab === "design" && <Design />}
         {activeTab === "recognize" && (
           <Recognize setActiveTab={handleSetActiveTab} />
         )}
-        {activeTab === "calculate" && (
-          <Calculate
-            setActiveTab={setActiveTab}
-            receiptData={receiptData}
-            setReceiptData={setReceiptData}
-          />
-        )}
+        {activeTab === "calculate" && <Calculate />}
       </div>
     </div>
   );

@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setReceiptData } from "../../../redux/slices/receiptSlice";
 import "./ReceiptForm.css";
 import PaperReceipt from "../../../assets/receipt/paperReceipt.png";
 import MobileReceipt from "../../../assets/receipt/mobileReceipt.png";
@@ -11,6 +13,10 @@ import ConnectReceiptSchedule from "./ConnectReceiptScheduleModal";
 import Close from "../../../assets/icons/common/close.png";
 
 function RecognizeComponent({ setActiveTab }) {
+  // redux 상태관리
+  const dispatch = useDispatch();
+  const receiptData = useSelector((state) => state.receipt);
+
   // 영수증 타입 선택 (종이 or 모바일 내역)
   const [activeType, setActiveType] = useState("paper");
 
@@ -33,18 +39,10 @@ function RecognizeComponent({ setActiveTab }) {
   const [bookmark, setBookmark] = useState({ id: -1, name: "" });
 
   const handleReceiptType = (type) => {
-    // 인식 결과 모두 reset
     setSelectedImageType(null);
     setRecognizedResult(null);
     setIsEditing(false);
-
-    // active type 변경
-    if (type === "paper") {
-      setActiveType("paper");
-    } else {
-      setActiveType("mobile");
-    }
-    setRecognizedResult(null);
+    setActiveType(type);
   };
 
   const handleCameraButton = () => {
@@ -99,15 +97,23 @@ function RecognizeComponent({ setActiveTab }) {
   };
 
   const handleNextTab = () => {
+    console.log("다음버튼 눌렀다");
     if (recognizedResult !== null) {
-      console.log(recognizedResult.items);
-      setActiveTab(
-        "calculate",
-        recognizedResult.items,
-        recognizedResult.businessName,
-        recognizedResult.paymentDate,
-        bookmark.id
-      );
+      console.log("recognizedResult null 아님");
+      const newReceiptData = {
+        items: recognizedResult.items,
+        businessName: recognizedResult.businessName,
+        paymentDate: recognizedResult.paymentDate,
+        bookmarkId: bookmark.id,
+        totalPrice: recognizedResult.items.reduce(
+          (total, item) => total + item.unitPrice,
+          0
+        ),
+      };
+      console.log(newReceiptData);
+
+      dispatch(setReceiptData(newReceiptData));
+      setActiveTab("calculate");
     }
   };
 
@@ -309,7 +315,7 @@ function RecognizeComponent({ setActiveTab }) {
             <p>총액</p>
             <p>
               {editedItems
-                .reduce((total, item) => total + item.unitPrice * item.count, 0)
+                .reduce((total, item) => total + item.unitPrice, 0)
                 .toLocaleString()}
               원
             </p>
