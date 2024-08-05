@@ -181,4 +181,38 @@ public class ReceiptController {
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
+
+    // 영수증 삭제
+    @Operation(summary = "영수증 삭제")
+    @DeleteMapping("/receipts/{receiptId}")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "영수증 삭제를 성공했습니다."
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "해당 영수증이 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "영수증의 접근 권환이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
+    })
+    public ResponseEntity<ResponseDto<String>> deleteReceipt(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable(name = "receiptId") int receiptId) {
+
+        receiptService.DeleteReceipt(jwtUtil.getAuthMemberEmail(token), receiptId);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("영수증 삭제를 성공했습니다.")
+                .data(null)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 }

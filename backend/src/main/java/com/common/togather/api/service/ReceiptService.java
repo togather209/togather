@@ -95,12 +95,9 @@ public class ReceiptService {
     @Transactional
     public void UpdateReceipt(String email, int receiptId, ReceiptUpdateRequest requestDto) {
 
-        Receipt receipt = receiptRepository.findById(receiptId)
-                .orElseThrow(() -> new ReceiptNotFoundException(receiptId + "번 영수증이 존재하지 않습니다."));
+        Receipt receipt = getReceipt(receiptId);
 
-        if (!receipt.isManager(email)) {
-            throw new UnauthorizedAccessException(receiptId + "번 영수증의 접근 권환이 없습니다.");
-        }
+        existAuthorizedAccessReceipt(email, receiptId, receipt);
 
         Bookmark bookmark = null;
         if (requestDto.getBookmarkId() != null) {
@@ -141,6 +138,27 @@ public class ReceiptService {
         }).toList();
 
         receipt.addItems(updatedItems);
+    }
+
+    public void DeleteReceipt(String email, int receiptId) {
+
+        Receipt receipt = getReceipt(receiptId);
+
+        existAuthorizedAccessReceipt(email, receiptId, receipt);
+
+        receiptRepository.delete(receipt);
+    }
+
+    private static void existAuthorizedAccessReceipt(String email, int receiptId, Receipt receipt) {
+        if (!receipt.isManager(email)) {
+            throw new UnauthorizedAccessException(receiptId + "번 영수증의 접근 권환이 없습니다.");
+        }
+    }
+
+    private Receipt getReceipt(int receiptId) {
+        Receipt receipt = receiptRepository.findById(receiptId)
+                .orElseThrow(() -> new ReceiptNotFoundException(receiptId + "번 영수증이 존재하지 않습니다."));
+        return receipt;
     }
 
     private Member getMember(Integer memberId) {
