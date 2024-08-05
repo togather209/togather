@@ -35,7 +35,7 @@ public class Plan {
     private String title;
 
     // 소개
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = true)
     private String description;
 
     // 시작일
