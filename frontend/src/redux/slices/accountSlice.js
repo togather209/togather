@@ -8,7 +8,7 @@ const accountSlice = createSlice({
     name: 'account',
     initialState,
     reducers: {
-        setAcoount: (state , action) => {
+        setAccount: (state , action) => {
             state.account = action.payload.account;
         },
         clearAccount: (state) => {
@@ -17,5 +17,5 @@ const accountSlice = createSlice({
     },
 });
 
-export const { setAcoount, clearAccount } = accountSlice.actions;
+export const { setAccount, clearAccount } = accountSlice.actions;
 export default accountSlice.reducer;
