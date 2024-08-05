@@ -1,57 +1,94 @@
-import React, { useState } from 'react';
-import './ReceiptForm.css';
-import BackButton from '../../common/BackButton';
-import Design from './DesignComponent';
-import Recognize from './RecognizeComponent';
-import Caculate from './CalculateComponent';
+import React, { useState } from "react";
+import "./ReceiptForm.css";
+import BackButton from "../../common/BackButton";
+import Design from "./DesignComponent";
+import Recognize from "./RecognizeComponent";
+import Calculate from "./CalculateComponent";
 
 function ReceiptRegistForm() {
-  const [activeTab, setActiveTab] = useState('design');
-  const [receiptItems, setReceiptItems] = useState([]);
-  const [receiptColor, setReceiptColor] = useState('sky');
+  const [activeTab, setActiveTab] = useState("design");
+  const [receiptData, setReceiptData] = useState({
+    color: 0,
+    items: [],
+    businessName: null,
+    connectedPlace: null,
+    paymentDate: null,
+    bookmarkId: -1,
+    totalPrice: -1,
+  });
 
-  const handleSetActiveTab = (tab, items = []) => {
+  const handleSetActiveTab = (tab, items = [], storeName = "", date = "") => {
     setActiveTab(tab);
-    if(items.length > 0) {
-      setReceiptItems(items);
+    if (items.length > 0) {
+      setReceiptData((prevData) => ({
+        ...prevData,
+        items: items,
+        businessName: storeName,
+        paymentDate: date,
+        totalPrice: items.reduce((total, item) => total + item.price, 0),
+      }));
     }
-  }
+  };
 
   return (
     <div className="form-container">
-      <header className='form-header'>
+      <header className="form-header">
         <BackButton />
         <div className="form-title">어떤 영수증인가요?</div>
       </header>
-      <div className='tab-container'>
-        <div className='tabs'>
-          <button 
-            className={`tab-button ${activeTab === 'design' ? 'active' : ''}`}
-            onClick={() => {setActiveTab('design')}}
+      <div className="tab-container">
+        <div className="tabs">
+          <button
+            className={`tab-button ${activeTab === "design" ? "active" : ""}`}
+            onClick={() => {
+              setActiveTab("design");
+            }}
           >
             디자인
           </button>
-          <button 
-            className={`tab-button ${activeTab === 'recognize' ? 'active' : ''}`}
-            onClick={() => {setActiveTab('recognize')}}
+          <button
+            className={`tab-button ${
+              activeTab === "recognize" ? "active" : ""
+            }`}
+            onClick={() => {
+              setActiveTab("recognize");
+            }}
           >
             인식
           </button>
-          <button 
-            className={`tab-button ${activeTab === 'calculate' ? 'active' : ''}`}
-            onClick={() => {setActiveTab('calculate')}}
+          <button
+            className={`tab-button ${
+              activeTab === "calculate" ? "active" : ""
+            }`}
+            onClick={() => {
+              setActiveTab("calculate");
+            }}
           >
             정산
           </button>
         </div>
       </div>
-      <div className='tab-content'>
-        {activeTab === 'design' && <Design setActiveTab={setActiveTab} setReceiptColor={setReceiptColor} />}
-        {activeTab === 'recognize' && <Recognize setActiveTab={handleSetActiveTab} />}
-        {activeTab === 'calculate' && <Caculate setActiveTab={setActiveTab} items={receiptItems} receiptColor={receiptColor} />}
+      <div className="tab-content">
+        {activeTab === "design" && (
+          <Design
+            setActiveTab={setActiveTab}
+            receiptData={receiptData}
+            setReceiptData={setReceiptData}
+          />
+        )}
+        {activeTab === "recognize" && (
+          <Recognize setActiveTab={handleSetActiveTab} />
+        )}
+        {activeTab === "calculate" && (
+          <Calculate
+            setActiveTab={setActiveTab}
+            receiptData={receiptData}
+            setReceiptData={setReceiptData}
+          />
+        )}
       </div>
     </div>
-  )
+  );
 }
 
 export default ReceiptRegistForm;
