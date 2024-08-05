@@ -35,7 +35,7 @@ public class Plan {
     private String title;
 
     // 소개
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = true)
     private String description;
 
     // 시작일
@@ -57,4 +57,11 @@ public class Plan {
     // 북마크
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bookmark> bookmarks;
+
+    public void update(String title, String description, LocalDate startDate, LocalDate endDate){
+        this.title = title;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
 }
