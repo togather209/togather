@@ -26,7 +26,7 @@ public class Team {
     private String teamImg;
 
     // 소개
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = true)
     private String description;
 
     // 모임 코드

@@ -4,6 +4,7 @@ import com.common.togather.api.error.*;
 import com.common.togather.api.request.LoginRequest;
 import com.common.togather.api.request.MemberSaveRequest;
 import com.common.togather.api.request.MemberUpdateRequest;
+import com.common.togather.api.response.MemberUpdateResponse;
 import com.common.togather.common.auth.TokenInfo;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
@@ -47,7 +48,7 @@ public class MemberService {
 
     // 회원 정보 수정
     @Transactional
-    public void updateMember(String authEmail, MemberUpdateRequest memberUpdateRequest) {
+    public MemberUpdateResponse updateMember(String authEmail, MemberUpdateRequest memberUpdateRequest) {
         Member member = memberRepository.findByEmail(authEmail)
                 .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
 
@@ -62,6 +63,7 @@ public class MemberService {
         }
 
         memberRepository.save(member);
+        return new MemberUpdateResponse(member.getId());
     }
 
     // 회원 삭제
