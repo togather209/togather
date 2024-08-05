@@ -47,10 +47,11 @@ public class AuthService {
             throw new NicknameAlreadyExistsException("이미 사용중인 닉네임입니다.");
         }
 
-        Member member = new Member();
-        member.setEmail(email);
-        member.setPassword(bCryptPasswordEncoder.encode(password));
-        member.setNickname(nickname);
+        Member member = Member.builder()
+                .email(email)
+                .password(bCryptPasswordEncoder.encode(password))
+                .nickname(nickname)
+                .build();
 
         memberRepository.save(member);
 
@@ -100,7 +101,7 @@ public class AuthService {
     @Transactional
     public void updatePassword(String email, String temporaryPassword) {
         Member member = memberRepository.findByEmail(email).get();
-        member.setPassword(bCryptPasswordEncoder.encode(temporaryPassword));
+        member.updatePassword(temporaryPassword, bCryptPasswordEncoder);
     }
 
 }

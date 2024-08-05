@@ -65,11 +65,13 @@ function CalculateComponent({
     setActiveType(type);
   };
 
+  // 참여자 선택 모달 열기 핸들러
   const handleOpenModal = (itemIndex) => {
     setCurrentItemIndex(itemIndex);
     setIsModalOpen(true);
   };
 
+  // 모달에서 참여자 선택 핸들러
   const handleSelectParticipants = (selected) => {
     if (currentItemIndex !== null) {
       setItemParticipants((prev) => ({
@@ -82,9 +84,11 @@ function CalculateComponent({
     setIsModalOpen(false);
   };
 
+  // 활성화된 계산 유형에 따른 정산 계산
   const calculateSettlements = () => {
     const settlements = {};
-    if (activeType === "personal") {
+    if (activeType === 'personal') {
+      // 'personal' 유형에 대한 계산
       Object.keys(itemParticipants).forEach((itemIndex) => {
         const item = items[itemIndex];
         const participants = itemParticipants[itemIndex] || [];
@@ -96,13 +100,15 @@ function CalculateComponent({
           settlements[participant] += share;
         });
       });
-    } else if (activeType === "divide") {
+    } else if (activeType === 'divide') {
+      // 'divide' 유형에 대한 계산
       const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
       const share = Math.floor(totalAmount / generalParticipants.length);
       generalParticipants.forEach((participant) => {
         settlements[participant] = share;
       });
-    } else if (activeType === "all") {
+    } else if (activeType === 'all') {
+      // 'all' 유형에 대한 계산
       const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
       const participant = generalParticipants[0];
       if (participant) {
@@ -112,6 +118,7 @@ function CalculateComponent({
     return settlements;
   };
 
+  // 정산 결과 가져오기
   const settlements = calculateSettlements();
 
   const allItemsTagged =
@@ -133,8 +140,10 @@ function CalculateComponent({
   //     })),
   //   };
 
-  const participants = ["김범규", "김해수", "이지혜"];
+  // TODO : 참여자 불러오기
+  const participants = ['김범규', '김해수', '이지혜']; // 예제 참여자 목록
 
+  // 선택된 참여자가 있는지 확인
   const haveParticipants = Object.keys(settlements).length > 0;
 
   return (

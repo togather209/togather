@@ -1,6 +1,7 @@
 package com.common.togather.api.controller;
 
 import com.common.togather.api.request.ReceiptSaveRequest;
+import com.common.togather.api.request.ReceiptUpdateRequest;
 import com.common.togather.api.response.ErrorResponseDto;
 import com.common.togather.api.response.ReceiptFindAllByPlanIdResponse;
 import com.common.togather.api.response.ReceiptFindByReceiptIdResponse;
@@ -135,6 +136,80 @@ public class ReceiptController {
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
                 .message("영수증 등록을 성공했습니다.")
+                .data(null)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    // 영수증 수정
+    @Operation(summary = "영수증 수정")
+    @PutMapping("/receipts/{receiptId}")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "영수증 수정을 성공했습니다."
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "해당 영수증이 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "해당 북마크가 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "영수증의 접근 권환이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
+    })
+    public ResponseEntity<ResponseDto<String>> updateReceipt(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable(name = "receiptId") int receiptId,
+            @RequestBody ReceiptUpdateRequest requestDto) {
+
+        receiptService.UpdateReceipt(jwtUtil.getAuthMemberEmail(token), receiptId, requestDto);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("영수증 수정을 성공했습니다.")
+                .data(null)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    // 영수증 삭제
+    @Operation(summary = "영수증 삭제")
+    @DeleteMapping("/receipts/{receiptId}")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "영수증 삭제를 성공했습니다."
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "해당 영수증이 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "영수증의 접근 권환이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
+    })
+    public ResponseEntity<ResponseDto<String>> deleteReceipt(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable(name = "receiptId") int receiptId) {
+
+        receiptService.DeleteReceipt(jwtUtil.getAuthMemberEmail(token), receiptId);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("영수증 삭제를 성공했습니다.")
                 .data(null)
                 .build();
 

@@ -47,7 +47,7 @@ public class Account {
     private int password;
 
     // Pay 계좌
-    @OneToOne(mappedBy = "account")
+    @OneToOne(mappedBy = "account", fetch = FetchType.EAGER)
     private PayAccount payAccount;
 
     // 잔액 증가 메서드
@@ -61,5 +61,12 @@ public class Account {
             throw new InsufficientBalanceException("잔액이 부족합니다.");
         }
         this.balance -= price;
+    }
+
+    // PayAccount와 연관 끊기 메서드
+    public void removePayAccount() {
+        if (this.payAccount != null) {
+            this.payAccount = null;
+        }
     }
 }
