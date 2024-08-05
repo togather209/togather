@@ -18,16 +18,16 @@ public class PayAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    
+
     // 계좌명
     @Column(name = "account_name", nullable = false)
     private String accountName;
-    
+
     // 잔액
     @Column(name = "balance")
     @ColumnDefault("0")
     private int balance;
-    
+
     // 비밀번호
     @Column(name = "password", nullable = false)
     private int password;
@@ -38,7 +38,7 @@ public class PayAccount {
     private Member member;
 
     // 실 계좌
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
@@ -57,5 +57,17 @@ public class PayAccount {
             throw new InsufficientBalanceException("잔액이 부족합니다.");
         }
         this.balance -= price;
+    }
+
+    // Member와 Account와 연관 제거 메서드
+    public void removeAssociation() {
+        if (this.member != null) {
+            this.member.removePayAccount();
+        }
+        if (this.account != null) {
+            this.account.removePayAccount();
+        }
+        this.member = null;
+        this.account = null;
     }
 }
