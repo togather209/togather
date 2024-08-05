@@ -4,7 +4,9 @@ import com.common.togather.api.error.MemberNotFoundException;
 import com.common.togather.api.error.MemberTeamNotFoundException;
 import com.common.togather.api.error.TeamNotFoundException;
 import com.common.togather.api.request.PlanSaveRequest;
+import com.common.togather.api.request.PlanUpdateRequest;
 import com.common.togather.api.response.PlanFindByPlanIdResponse;
+import com.common.togather.api.response.PlanUpdateResponse;
 import com.common.togather.api.response.ResponseDto;
 import com.common.togather.api.service.PlanService;
 import com.common.togather.common.util.JwtUtil;
@@ -54,5 +56,23 @@ public class PlanController {
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
+
+    @Operation(summary = "일정 수정")
+    @PatchMapping("{teamId}/plans/{planId}")
+    public ResponseEntity<ResponseDto<PlanUpdateResponse>> updatePlan(@PathVariable(name = "teamId") int teamId,
+                                                                      @PathVariable(name = "planId") int planId,
+                                                                      @RequestHeader(value = "Authorization", required = false)String header,
+                                                                      @RequestBody PlanUpdateRequest planUpdateRequest){
+
+        PlanUpdateResponse response = planService.updatePlan(teamId, planId, jwtUtil.getAuthMemberEmail(header), planUpdateRequest);
+        ResponseDto<PlanUpdateResponse> responseDto = ResponseDto.<PlanUpdateResponse>builder()
+                .status(HttpStatus.OK.value())
+                .message("일정 수정을 성공했습니다.")
+                .data(response)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
 
 }

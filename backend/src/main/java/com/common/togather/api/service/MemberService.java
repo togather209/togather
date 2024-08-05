@@ -4,6 +4,8 @@ import com.common.togather.api.error.*;
 import com.common.togather.api.request.LoginRequest;
 import com.common.togather.api.request.MemberSaveRequest;
 import com.common.togather.api.request.MemberUpdateRequest;
+import com.common.togather.api.response.MemberFindByIdResponse;
+import com.common.togather.api.response.MemberUpdateResponse;
 import com.common.togather.common.auth.TokenInfo;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
@@ -47,7 +49,7 @@ public class MemberService {
 
     // 회원 정보 수정
     @Transactional
-    public void updateMember(String authEmail, MemberUpdateRequest memberUpdateRequest) {
+    public MemberUpdateResponse updateMember(String authEmail, MemberUpdateRequest memberUpdateRequest) {
         Member member = memberRepository.findByEmail(authEmail)
                 .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
 
@@ -62,6 +64,7 @@ public class MemberService {
         }
 
         memberRepository.save(member);
+        return new MemberUpdateResponse(member.getId());
     }
 
     // 회원 삭제
@@ -71,5 +74,23 @@ public class MemberService {
                 .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
 
         memberRepository.delete(member);
+    }
+    
+    // 로그인 회원 조회
+    @Transactional
+    public MemberFindByIdResponse getAuthMember(String authEmail) {
+
+        Member member = memberRepository.findByEmail(authEmail)
+                .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원을 찾을 수 없습니다."));
+
+        MemberFindByIdResponse memberFindByIdResponse = MemberFindByIdResponse.builder()
+                .memberId(member.getId())
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .name(member.getName())
+                .profileImg(member.getProfileImg())
+                .build();
+        return memberFindByIdResponse;
+
     }
 }

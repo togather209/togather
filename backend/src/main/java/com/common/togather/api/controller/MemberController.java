@@ -2,6 +2,8 @@ package com.common.togather.api.controller;
 
 import com.common.togather.api.request.LogoutRequest;
 import com.common.togather.api.request.MemberUpdateRequest;
+import com.common.togather.api.response.MemberFindByIdResponse;
+import com.common.togather.api.response.MemberUpdateResponse;
 import com.common.togather.api.response.ResponseDto;
 import com.common.togather.api.service.MemberService;
 import com.common.togather.common.auth.TokenInfo;
@@ -61,15 +63,16 @@ public class MemberController {
 
     @Operation(summary = "로그인 유저 정보 조회")
     @GetMapping("/me")
-    public ResponseEntity<ResponseDto<Member>> getAuthMember(@RequestHeader(value = "Authorization", required = false) String header) {
+    public ResponseEntity<ResponseDto<MemberFindByIdResponse>> getAuthMember(@RequestHeader(value = "Authorization", required = false) String header) {
 
         String authEmail = jwtUtil.getAuthMemberEmail(header);
-        Member member = memberRepository.findByEmail(authEmail).get();
 
-        ResponseDto<Member> responseDto = ResponseDto.<Member>builder()
+        MemberFindByIdResponse response = memberService.getAuthMember(authEmail);
+
+        ResponseDto<MemberFindByIdResponse> responseDto = ResponseDto.<MemberFindByIdResponse>builder()
                 .status(HttpStatus.OK.value())
                 .message("로그인 유저 조회 성공")
-                .data(member)
+                .data(response)
                 .build();
 
         return new ResponseEntity<>(responseDto,HttpStatus.OK);
@@ -77,18 +80,18 @@ public class MemberController {
 
     @Operation(summary = "회원정보 수정")
     @PatchMapping("/me")
-    public ResponseEntity<ResponseDto<String>> updateMember(@RequestHeader(value = "Authorization", required = false) String header,
-                                                            @RequestBody MemberUpdateRequest memberUpdateRequest) {
+    public ResponseEntity<ResponseDto<MemberUpdateResponse>> updateMember(@RequestHeader(value = "Authorization", required = false) String header,
+                                                                          @RequestBody MemberUpdateRequest memberUpdateRequest) {
         // 로그인 유저 이메일 추출
         String authEmail = jwtUtil.getAuthMemberEmail(header);
         
         // 새로 입력한 정보로 업데이트
-        memberService.updateMember(authEmail, memberUpdateRequest);
+        MemberUpdateResponse response = memberService.updateMember(authEmail, memberUpdateRequest);
 
-        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+        ResponseDto<MemberUpdateResponse> responseDto = ResponseDto.<MemberUpdateResponse>builder()
                 .status(HttpStatus.OK.value())
                 .message("회원 정보 수정 성공")
-                .data(null)
+                .data(response)
                 .build();
 
         return new ResponseEntity<>(responseDto,HttpStatus.OK);
