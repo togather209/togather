@@ -1,19 +1,14 @@
 package com.common.togather.api.controller;
 
-import com.common.togather.api.request.LogoutRequest;
 import com.common.togather.api.request.MemberUpdateRequest;
 import com.common.togather.api.response.MemberFindByIdResponse;
-import com.common.togather.api.response.MemberUpdateResponse;
 import com.common.togather.api.response.ResponseDto;
 import com.common.togather.api.service.MemberService;
-import com.common.togather.common.auth.TokenInfo;
 import com.common.togather.common.util.JwtUtil;
-import com.common.togather.db.entity.Member;
 import com.common.togather.db.repository.MemberRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -80,18 +75,18 @@ public class MemberController {
 
     @Operation(summary = "회원정보 수정")
     @PatchMapping("/me")
-    public ResponseEntity<ResponseDto<MemberUpdateResponse>> updateMember(@RequestHeader(value = "Authorization", required = false) String header,
+    public ResponseEntity<ResponseDto<String>> updateMember(@RequestHeader(value = "Authorization", required = false) String header,
                                                                           @RequestBody MemberUpdateRequest memberUpdateRequest) {
         // 로그인 유저 이메일 추출
         String authEmail = jwtUtil.getAuthMemberEmail(header);
         
         // 새로 입력한 정보로 업데이트
-        MemberUpdateResponse response = memberService.updateMember(authEmail, memberUpdateRequest);
+        memberService.updateMember(authEmail, memberUpdateRequest);
 
-        ResponseDto<MemberUpdateResponse> responseDto = ResponseDto.<MemberUpdateResponse>builder()
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
                 .message("회원 정보 수정 성공")
-                .data(response)
+                .data(null)
                 .build();
 
         return new ResponseEntity<>(responseDto,HttpStatus.OK);
