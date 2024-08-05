@@ -1,0 +1,29 @@
+.schedule-button {
+  background-color: #f0f0f0;
+  cursor: pointer;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-size: 12px;
+  white-space: nowrap;
+  width: 110px;
+  height: 36px;
+  box-shadow: 5px 10px 20px #e9e9e9;
+  margin-bottom: 0;
+}
+
+.schedule-button-purple {
+  font-weight: bold;
+  background: linear-gradient(45deg, #712fff, #a074ff);
+  color: white;
+  box-shadow: 5px 10px 20px #b08cff;
+}
+
+.schedule-button-border {
+  font-weight: bold;
+  /* background: linear-gradient(45deg, #712fff, #a074ff); */
+  border: 0.5px solid #712fff;
+  color: #712fff;
+  margin-right: 13px;
+  /* box-shadow: 5px 10px 20px #b08cff; */
+}

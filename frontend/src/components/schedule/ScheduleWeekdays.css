@@ -1,0 +1,10 @@
+.schedule-detail-weekdays-element {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    color: #6C7072;
+    opacity: 50%;
+  }

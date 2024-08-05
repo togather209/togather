@@ -1,0 +1,16 @@
+.meeting-participants-box {
+    width: 330px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.naga-button {
+    width: 53px;
+    height: 28px;
+    background-color: #ffffff;
+    border: 0.5px solid #712FFF;
+    color: #712FFF;
+    border-radius: 8px;
+    margin-right: 2px;
+}
