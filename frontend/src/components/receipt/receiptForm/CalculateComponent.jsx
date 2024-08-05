@@ -1,19 +1,67 @@
-import React, { useState, useEffect } from 'react';
-import './CalculateComponent.css';
-import SelectParticipantsModal from './SelectParticipantsModal';
-import AddButton from '../../../assets/icons/common/add.png';
-import Button from '../../common/Button';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setReceiptData } from "../../../redux/slices/receiptSlice";
+import "./CalculateComponent.css";
+import SelectParticipantsModal from "./SelectParticipantsModal";
+import AddButton from "../../../assets/icons/common/add.png";
+import Button from "../../common/Button";
+import { useLocation } from "react-router-dom";
+import axiosInstance from "../../../utils/axiosInstance";
 
-// CalculateComponent: 품목 분할 방식에 따라 정산을 관리하는 컴포넌트
-function CalculateComponent({ items, receiptColor }) {
-  // 상태 변수
-  const [activeType, setActiveType] = useState('divide'); // 활성화된 계산 유형 추적
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태 추적
-  const [itemParticipants, setItemParticipants] = useState({}); // 'personal' 유형에 대한 품목별 참여자 추적
-  const [currentItemIndex, setCurrentItemIndex] = useState(null); // 현재 편집 중인 품목 인덱스 추적
-  const [generalParticipants, setGeneralParticipants] = useState([]); // 'divide' 및 'all' 유형에 대한 참여자 추적
+function CalculateComponent() {
+  const dispatch = useDispatch();
+  const receiptData = useSelector((state) => state.receipt);
+  const { color, businessName, paymentDate, items, totalPrice, bookmarkId } =
+    receiptData;
 
-  // 계산 유형 변경 핸들러
+  const { teamId, planId } = useSelector((state) => state.receipt);
+
+  const [activeType, setActiveType] = useState("divide");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [itemParticipants, setItemParticipants] = useState({});
+  const [currentItemIndex, setCurrentItemIndex] = useState(null);
+  const [generalParticipants, setGeneralParticipants] = useState([]);
+
+  useEffect(() => {
+    console.log("general", generalParticipants);
+  }, [generalParticipants]);
+
+  // 영수증 등록 요청
+  const handleRegister = async () => {
+    const receiptTempInfo = {
+      businessName,
+      paymentDate,
+      totalPrice,
+      bookmarkId,
+      color,
+      items: items.map((item, index) => ({
+        name: item.name,
+        unitPrice: item.unitPrice,
+        count: item.count,
+        members:
+          activeType === "personal"
+            ? (itemParticipants[index] || []).map((participant) => ({
+                memberId: participant.id,
+              }))
+            : generalParticipants.map((participant) => ({
+                memberId: participant.id,
+              })),
+      })),
+    };
+
+    console.log(receiptTempInfo);
+
+    try {
+      const response = await axiosInstance.post(
+        `teams/${teamId}/plans/${planId}/receipts`,
+        receiptTempInfo
+      );
+      console.log("등록 성공:", response);
+    } catch (error) {
+      console.error("등록 실패:", error);
+    }
+  };
+
   const handleCalculateType = (type) => {
     setItemParticipants({});
     setGeneralParticipants([]);
@@ -21,125 +69,123 @@ function CalculateComponent({ items, receiptColor }) {
     setActiveType(type);
   };
 
-  // 참여자 선택 모달 열기 핸들러
   const handleOpenModal = (itemIndex) => {
     setCurrentItemIndex(itemIndex);
     setIsModalOpen(true);
   };
 
-  // 모달에서 참여자 선택 핸들러
   const handleSelectParticipants = (selected) => {
     if (currentItemIndex !== null) {
       setItemParticipants((prev) => ({
         ...prev,
-        [currentItemIndex]: selected
+        [currentItemIndex]: selected.map((participant) => ({
+          id: participant.id,
+          name: participant.name,
+        })),
       }));
     } else {
-      setGeneralParticipants(selected);
+      setGeneralParticipants(
+        selected.map((participant) => ({
+          id: participant.id,
+          name: participant.name,
+        }))
+      );
     }
+    console.log(itemParticipants);
     setIsModalOpen(false);
   };
 
-  // 활성화된 계산 유형에 따른 정산 계산
   const calculateSettlements = () => {
     const settlements = {};
-    if (activeType === 'personal') {
-      // 'personal' 유형에 대한 계산
+    if (activeType === "personal") {
       Object.keys(itemParticipants).forEach((itemIndex) => {
         const item = items[itemIndex];
         const participants = itemParticipants[itemIndex] || [];
-        const share = Math.floor(item.price / participants.length);
+        const share = Math.floor(item.unitPrice / participants.length);
         participants.forEach((participant) => {
-          if (!settlements[participant]) {
-            settlements[participant] = 0;
+          if (!settlements[participant.name]) {
+            settlements[participant.name] = 0;
           }
-          settlements[participant] += share;
+          settlements[participant.name] += share;
         });
       });
-    } else if (activeType === 'divide') {
-      // 'divide' 유형에 대한 계산
-      const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
+    } else if (activeType === "divide") {
+      const totalAmount = items.reduce((sum, item) => sum + item.unitPrice, 0);
       const share = Math.floor(totalAmount / generalParticipants.length);
       generalParticipants.forEach((participant) => {
-        settlements[participant] = share;
+        settlements[participant.name] = share;
       });
-    } else if (activeType === 'all') {
-      // 'all' 유형에 대한 계산
-      const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
+    } else if (activeType === "all") {
+      const totalAmount = items.reduce((sum, item) => sum + item.unitPrice, 0);
       const participant = generalParticipants[0];
       if (participant) {
-        settlements[participant] = totalAmount;
+        settlements[participant.name] = totalAmount;
       }
     }
     return settlements;
   };
 
-  // 정산 결과 가져오기
   const settlements = calculateSettlements();
 
-  // 모든 품목에 참여자가 태그되었는지 확인
-  const allItemsTagged = activeType === 'personal'
-    ? items.every((_, index) => itemParticipants[index] && itemParticipants[index].length > 0)
-    : generalParticipants.length > 0;
+  const allItemsTagged =
+    activeType === "personal"
+      ? items.every(
+          (_, index) =>
+            itemParticipants[index] && itemParticipants[index].length > 0
+        )
+      : generalParticipants.length > 0;
 
-  // 영수증 정보 등록 핸들러
-  const handleRegister = () => {
-    const receiptTempInfo = {
-      color: receiptColor,
-      items: items.map((item, index) => {
-        let participants = itemParticipants[index] || [];
-        if (activeType === 'divide') {
-          participants = generalParticipants;
-        } else if (activeType === 'all') {
-          participants = generalParticipants;
-        }
-        return {
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-          participants: participants
-        };
-      })
-    };
+  const participants = [
+    {
+      id: 0,
+      name: "김범규",
+    },
+    {
+      id: 1,
+      name: "김해수",
+    },
+    {
+      id: 2,
+      name: "이지혜",
+    },
+  ];
 
-    // 전체 정보 전달
-    console.log(receiptTempInfo);
-  };
-
-  // TODO : 참여자 불러오기
-  const participants = ['김범규', '김해수', '이지혜']; // 예제 참여자 목록
-
-  // 선택된 참여자가 있는지 확인
   const haveParticipants = Object.keys(settlements).length > 0;
 
   return (
     <>
-      <div className='calculate-component-container'>
-        <div className='calculate-type-tab'>
+      <div className="calculate-component-container">
+        <div className="calculate-type-tab">
           <button
-            className={`calculate-type-button ${activeType === 'divide' ? 'active' : ''}`}
-            onClick={() => handleCalculateType('divide')}
+            className={`calculate-type-button ${
+              activeType === "divide" ? "active" : ""
+            }`}
+            onClick={() => handleCalculateType("divide")}
           >
             1/n
           </button>
           <button
-            className={`calculate-type-button ${activeType === 'personal' ? 'active' : ''}`}
-            onClick={() => handleCalculateType('personal')}
+            className={`calculate-type-button ${
+              activeType === "personal" ? "active" : ""
+            }`}
+            onClick={() => handleCalculateType("personal")}
           >
             개별
           </button>
           <button
-            className={`calculate-type-button ${activeType === 'all' ? 'active' : ''}`}
-            onClick={() => handleCalculateType('all')}
+            className={`calculate-type-button ${
+              activeType === "all" ? "active" : ""
+            }`}
+            onClick={() => handleCalculateType("all")}
           >
             몰아주기
           </button>
         </div>
-        <div className='select-participant-detail'>
-          {activeType === 'personal' ? (
+        <div className="select-participant-detail">
+          {activeType === "personal" ? (
             <>
-              <div className='select-participant-title'>품목 별 인원 선택</div>
-              <table className='select-participant-table'>
+              <div className="select-participant-title">품목 별 인원 선택</div>
+              <table className="select-participant-table">
                 <thead>
                   <tr>
                     <th>품목</th>
@@ -152,20 +198,20 @@ function CalculateComponent({ items, receiptColor }) {
                     <React.Fragment key={index}>
                       <tr>
                         <td>{item.name}</td>
-                        <td>{item.quantity}</td>
-                        <td>{item.price.toLocaleString()}원</td>
+                        <td>{item.count}</td>
+                        <td>{item.unitPrice.toLocaleString()}원</td>
                       </tr>
-                      <tr className='calculate-tag-list'>
-                        <td colSpan='3' className="calculate-tagged-people">
-                          <img 
-                            src={AddButton} 
-                            onClick={() => handleOpenModal(index)} 
-                            className="add-participant-button" 
-                            alt="Add" 
+                      <tr className="calculate-tag-list">
+                        <td colSpan="3" className="calculate-tagged-people">
+                          <img
+                            src={AddButton}
+                            onClick={() => handleOpenModal(index)}
+                            className="add-participant-button"
+                            alt="Add"
                           />
                           {itemParticipants[index]?.map((participant, idx) => (
                             <span key={idx} className="participant-badge">
-                              {participant}
+                              {participant.name}
                             </span>
                           ))}
                         </td>
@@ -177,7 +223,7 @@ function CalculateComponent({ items, receiptColor }) {
             </>
           ) : (
             <button
-              className='select-participant-title'
+              className="select-participant-title"
               onClick={() => handleOpenModal(null)}
             >
               인원 선택
@@ -185,11 +231,9 @@ function CalculateComponent({ items, receiptColor }) {
           )}
         </div>
         {haveParticipants && (
-          <div className='calculated-result'>
-            <div className='calculated-result-title'>
-              정산 결과
-            </div>
-            <div className='calculated-result-content'>
+          <div className="calculated-result">
+            <div className="calculated-result-title">정산 결과</div>
+            <div className="calculated-result-content">
               <table className="calculated-result-table">
                 <thead>
                   <tr>
@@ -209,9 +253,9 @@ function CalculateComponent({ items, receiptColor }) {
             </div>
           </div>
         )}
-        <Button 
-          type={allItemsTagged ? 'purple' : 'gray'} 
-          className='receipt-regist-button'
+        <Button
+          type={allItemsTagged ? "purple" : "gray"}
+          className="receipt-regist-button"
           onClick={handleRegister}
           disabled={!allItemsTagged}
         >
@@ -221,10 +265,14 @@ function CalculateComponent({ items, receiptColor }) {
       {isModalOpen && (
         <SelectParticipantsModal
           participants={participants}
-          selectedParticipants={currentItemIndex === null ? generalParticipants : itemParticipants[currentItemIndex]}
+          selectedParticipants={
+            currentItemIndex === null
+              ? generalParticipants
+              : itemParticipants[currentItemIndex]
+          }
           onSelect={handleSelectParticipants}
           onClose={() => setIsModalOpen(false)}
-          isSingleSelect={activeType === 'all'}
+          isSingleSelect={activeType === "all"}
         />
       )}
     </>

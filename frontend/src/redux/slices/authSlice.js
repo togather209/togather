@@ -6,7 +6,7 @@ const API_LINK = import.meta.env.VITE_API_URL;
 export const refreshAccessTokenAsync = createAsyncThunk(
   'auth/refreshAccessToken',
   async (_, { rejectWithValue }) => {
-    try {
+    try   {
       const response = await axios.post(`${API_LINK}/auth/refresh`, {}, { withCredentials: true });
       return response.data.data; // accessToken과 refreshToken을 반환한다고 가정
     } catch (error) {
