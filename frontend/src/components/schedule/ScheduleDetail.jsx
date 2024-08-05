@@ -88,6 +88,7 @@ function ScheduleDetail() {
   const [startDate, setStartDate] = useState(
     parseDate("Thu AUG 1 2024 00:00:00 GMT+0900 (한국 표준시)")
   ); // 예시 날짜
+  console.log(startDate)
   const [endDate, setEndDate] = useState(
     parseDate("Sun AUG 4 2024 00:00:00 GMT+0900 (한국 표준시)")
   ); // 예시 날짜

@@ -9,20 +9,46 @@ import BackButton from "../common/BackButton";
 import MiddleButton from "../common/MiddleButton";
 import ScheduleCard from "./ScheduleCard";
 import MeetingSetting from "./MeetingSetting";
+import axiosInstance from "../../utils/axiosInstance";
 
 function MeetingDetail() {
-  const [isPage, setIsPage] = useState(true);
-  const params = useParams();
-  const [meetingSetting, setMeetingSetting] = useState(false);
   const navigation = useNavigate();
-  // 모임 디테일 단일 조회
-  // 모임과 관련된 일정들 조회
 
+  // id 파라미터 값을 받음
+  const { id } = useParams()
+  // 모임 디테일 객체 상태
+  const [meetingDetail, setMeetingDetail] = useState({})
+  
+  // 일정은 plans로 들어온다. => meetingDetail.plan
+  
+  // 미팅 창 상태
+  const [meetingSetting, setMeetingSetting] = useState(false);
+  
+  // 미팅 세팅 창 열고, 닫기 함수
   const handleSetting = () => {
     setMeetingSetting(!meetingSetting);
-    // console.log(meetingSetting)
   };
+  
 
+  // 해당 페이지 렌더링 되면 모임 상세 조회
+  useEffect(() => {
+    meetingDetailInfo()
+  }, [])  // => 이거 의존성 해치우고 싶다.
+
+  // 모임 상세 요청
+  const meetingDetailInfo = async () => {
+    try {
+        const response = await axiosInstance.get(`/teams/${id}`);
+        setMeetingDetail(response.data.data)
+    } catch (error) {
+      console.error("데이터 불러오기 실패", error)
+    }
+  }
+
+
+  console.log(meetingDetail)
+
+  // 목업 데이터
   const schedule_mokup = [
     {
       id: 1,
@@ -38,7 +64,7 @@ function MeetingDetail() {
     },
   ];
 
-  if (!isPage) {
+  if (Object.entries(meetingDetail).length === 0) {
     return (
       <div className="none-meetingdetail">
         <div className="none-meetingdetail-header">
@@ -57,10 +83,10 @@ function MeetingDetail() {
         </div>
 
         <div className="meeting-info-container">
-          <img className="meetingdetail-img" src={promimg} alt="모임 이미지" />
+          <img className="meetingdetail-img" src={meetingDetail.teamImg} alt="모임 이미지" />
           <div className="overlay">
-            <p className="meeting-name-in-detail">모임명</p>
-            <p className="meeting-desc-in-detail">모임 설명</p>
+            <p className="meeting-name-in-detail">{meetingDetail.title}</p>
+            <p className="meeting-desc-in-detail">{meetingDetail.description}</p>
           </div>
         </div>
 
@@ -76,14 +102,15 @@ function MeetingDetail() {
               <MiddleButton onClick={() => navigation("schedule-regist")}>
                 + 일정 만들기
               </MiddleButton>
+              
             </div>
           </div>
         )}
       </div>
     );
   }
-
-  if (isPage) {
+  // Object.entries(emptyObject).length === 0
+  if (Object.entries(meetingDetail).length !== 0) {
     return (
       <div className="none-meetingdetail">
         <div className="none-meetingdetail-header">
@@ -112,8 +139,8 @@ function MeetingDetail() {
         <div className="meetingdetail-schedule2">일정 목록</div>
 
         <div className="schedule-list-box">
-          {schedule_mokup.map((item, index) => (
-            <ScheduleCard key={item.id} id={item.id} name={item.name} />
+          {meetingDetail.plans.map((item, index) => (
+            <ScheduleCard key={item.planId} id={item.planId} name={item.title} />
           ))}
         </div>
 
