@@ -43,7 +43,7 @@ public class Member {
     @Column(name = "type", nullable = true)
     int type;
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "member", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private PayAccount payAccount;
 
     // 유저 모임
@@ -81,5 +81,12 @@ public class Member {
     // 비밀번호 변경
     public void updatePassword(String password, BCryptPasswordEncoder encoder) {
         this.password = encoder.encode(password);
+    }
+
+    // PayAccount와 연관 끊기 메서드
+    public void removePayAccount() {
+        if (this.payAccount != null) {
+            this.payAccount = null;
+        }
     }
 }

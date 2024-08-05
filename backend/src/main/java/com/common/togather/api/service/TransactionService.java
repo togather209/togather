@@ -7,6 +7,7 @@ import com.common.togather.api.request.TransactionSaveRequest;
 import com.common.togather.api.response.TransactionAllFindByMemberIdResponse;
 import com.common.togather.api.response.TransactionFindByTransactionIdResponse;
 import com.common.togather.db.entity.Member;
+import com.common.togather.db.entity.PayAccount;
 import com.common.togather.db.entity.Transaction;
 import com.common.togather.db.repository.MemberRepository;
 import com.common.togather.db.repository.PayAccountRepository;
@@ -31,8 +32,13 @@ public class TransactionService {
     public List<TransactionAllFindByMemberIdResponse> findAllTransaction(String email) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
-        List<Transaction> transactions = transactionRepository.findByPayAccountId(member.getPayAccount().getId());
+        PayAccount payAccount = member.getPayAccount();
 
+        if (payAccount == null) {
+            throw new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다.");
+        }
+
+        List<Transaction> transactions = member.getPayAccount().getTransactions();
         List<TransactionAllFindByMemberIdResponse> responseDto = transactions.stream()
                 .map(TransactionAllFindByMemberIdResponse::new)
                 .collect(Collectors.toList());
