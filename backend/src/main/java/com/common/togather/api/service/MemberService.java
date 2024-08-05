@@ -58,9 +58,17 @@ public class MemberService {
 
     // 회원 삭제
     @Transactional
-    public void deleteMember(String authEmail) {
+    public void deleteMember(String authEmail, String accessToken, String refreshToken) {
         Member member = memberRepository.findByEmail(authEmail)
                 .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
+
+        // 아직 만료되지 않은 access token은 블랙리스트에 추가
+        long expirationTime = jwtUtil.getExpirationFromToken(accessToken).getTime() - System.currentTimeMillis();
+        redisService.blacklistAccessToken(accessToken, expirationTime);
+
+        // refresh token은 redis에서 삭제해 무효화
+        String email = jwtUtil.getEmailFromToken(refreshToken);
+        redisService.deleteRefreshToken(email);
 
         memberRepository.delete(member);
     }

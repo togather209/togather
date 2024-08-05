@@ -94,9 +94,25 @@ public class MemberController {
 
     @Operation(summary = "회원 탈퇴")
     @DeleteMapping("/me")
-    public ResponseEntity<ResponseDto<String>> removeMember(@RequestHeader(value = "Authorization") String header) {
+    public ResponseEntity<ResponseDto<String>> removeMember(@RequestHeader(value = "Authorization", required = false) String header,
+                                                            @CookieValue(value = "refreshToken", required = false) Cookie cookie,
+                                                            HttpServletResponse response) {
         String authEmail = jwtUtil.getAuthMemberEmail(header);
-        memberService.deleteMember(authEmail);
+        String accessToken = header.substring(7);
+        String refreshToken = cookie.getValue();
+
+        memberService.deleteMember(authEmail, accessToken, refreshToken);
+
+        // refresh token 쿠키 삭제
+        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+
+        response.setHeader("Set-Cookie", deleteCookie.toString());
 
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
