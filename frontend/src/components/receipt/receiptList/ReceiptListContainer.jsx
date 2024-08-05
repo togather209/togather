@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import "./ReceiptList.css";
 
@@ -11,45 +11,38 @@ import { useNavigate } from "react-router-dom";
 
 import FinishedScheduleButton from "./FinishedScheduleButton";
 import ScheduleFinishModal from "./ScheduleFinishModal";
+import axiosInstance from "../../../utils/axiosInstance";
 
 function ReceiptListContainer() {
+  const navigate = useNavigate();
+
   // state : 일정 진행 중(before), 일정 끝남(after), 정산 완료(completet)
   const [scheduleState, setScheduleState] = useState("before");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [receipts, setReceipts] = useState([]);
 
-  // TODO : 전체 영수증 리스트 가져오기
-  const [receipts, setReceipts] = useState([
-    {
-      id: 1,
-      color: "pink",
-      title: "한화 이글스 파크",
-      amount: 63000,
-      date: "2024.07.02",
-    },
-    {
-      id: 2,
-      color: "sky",
-      title: "시립 미술관",
-      amount: 5000,
-      date: "2024.07.01",
-    },
-    {
-      id: 3,
-      color: "yellow",
-      title: "How Cafe",
-      amount: 20000,
-      date: "2024.07.01",
-    },
-  ]);
+  // TODO : meetingId, scheduleId 가져오기
+  const teamId = 1;
+  const planId = 1;
+
+  useEffect(() => {
+    const fetchReceipt = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/teams/${teamId}/plans/${planId}/receipts`
+        );
+        setReceipts(response.data.data); // 서버에서 받은 데이터를 상태로 설정
+        console.log(response.data);
+      } catch (error) {
+        console.error("영수증 데이터를 가져오는 데 실패했습니다.", error);
+      }
+    };
+
+    fetchReceipt();
+  }, []);
 
   // TODO : 일정장인지 확인해서 일정 끝내기 보여주기
   const IsScheduleReader = () => {};
-
-  // TODO : meetingId, scheduleId 가져오기
-  const meetingId = 1,
-    scheduleId = 2;
-
-  const navigate = useNavigate();
 
   // 일정 끝내기 버튼
   const handlePurpleLineButton = () => {
@@ -78,7 +71,7 @@ function ReceiptListContainer() {
   const handleReceiptCard = (receipt) => {
     console.log(receipt);
     navigate(`/receipt/${receipt.id}`, {
-      state: { meetingId: meetingId, scheduleId: scheduleId },
+      state: { teamId: teamId, planId: planId },
     });
   };
 
@@ -114,7 +107,7 @@ function ReceiptListContainer() {
         />
         {receipts.map((receipt) => (
           <ReceiptCard
-            key={receipt.id}
+            key={receipt.receiptId}
             receipt={receipt}
             onClick={() => handleReceiptCard(receipt)}
           />
