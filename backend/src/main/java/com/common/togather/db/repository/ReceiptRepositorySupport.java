@@ -8,13 +8,13 @@ import com.common.togather.db.entity.QItem;
 import com.common.togather.db.entity.QItemMember;
 import com.common.togather.db.entity.QMember;
 import com.common.togather.db.entity.QReceipt;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class ReceiptRepositorySupport {
@@ -45,24 +45,42 @@ public class ReceiptRepositorySupport {
             return Optional.empty();
         }
 
-        List<ItemFindByReceipt> items = jpaQueryFactory
-                .select(Projections.constructor(ItemFindByReceipt.class,
-                        qItem.name.as("name"),
-                        qItem.unitPrice.as("unitPrice"),
-                        qItem.count.as("count"),
-                        Projections.list(
-                                Projections.constructor(MemberFindByReceipt.class,
-                                        qMember.nickname.as("nickname"),
-                                        qMember.profileImg.as("profileImg"))
-                        )
-                ))
+        // Item 정보를 가져오기
+        List<Tuple> itemResults = jpaQueryFactory
+                .select(
+                        qItem.id,
+                        qItem.name,
+                        qItem.unitPrice,
+                        qItem.count,
+                        qMember.nickname,
+                        qMember.profileImg
+                )
                 .from(qItem)
                 .leftJoin(qItem.itemMembers, qItemMember)
                 .leftJoin(qItemMember.member, qMember)
                 .where(qItem.receipt.id.eq(receiptId))
                 .fetch();
 
-        response.setItems(items);
+        Map<Integer, ItemFindByReceipt> itemMap = new HashMap<>();
+
+        itemResults.forEach(result -> {
+            Integer itemId = result.get(qItem.id);
+
+            ItemFindByReceipt item = itemMap.computeIfAbsent(itemId, id -> new ItemFindByReceipt(
+                    result.get(qItem.name),
+                    result.get(qItem.unitPrice),
+                    result.get(qItem.count),
+                    new ArrayList<>()
+            ));
+
+            MemberFindByReceipt member = new MemberFindByReceipt(
+                    result.get(qMember.nickname),
+                    result.get(qMember.profileImg)
+            );
+            item.getMembers().add(member);
+        });
+
+        response.setItems(new ArrayList<>(itemMap.values()));
 
         return Optional.of(response);
     }
