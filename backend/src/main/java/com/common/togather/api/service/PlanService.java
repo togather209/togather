@@ -89,7 +89,7 @@ public class PlanService {
 
     // 일정 수정
     @Transactional
-    public PlanUpdateResponse updatePlan(int teamId, int planId, String authMemberEmail, PlanUpdateRequest planUpdateRequest) {
+    public void updatePlan(int teamId, int planId, String authMemberEmail, PlanUpdateRequest planUpdateRequest) {
 
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(()->new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
@@ -109,11 +109,5 @@ public class PlanService {
         plan.update(planUpdateRequest.getTitle(), planUpdateRequest.getDescription(),
                 planUpdateRequest.getStartDate(), planUpdateRequest.getEndDate());
         planRepository.save(plan);
-
-        PlanUpdateResponse response = PlanUpdateResponse.builder()
-                .planId(planId)
-                .build();
-
-        return response;
     }
 }

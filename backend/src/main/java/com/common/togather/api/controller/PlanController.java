@@ -59,16 +59,16 @@ public class PlanController {
 
     @Operation(summary = "일정 수정")
     @PatchMapping("{teamId}/plans/{planId}")
-    public ResponseEntity<ResponseDto<PlanUpdateResponse>> updatePlan(@PathVariable(name = "teamId") int teamId,
+    public ResponseEntity<ResponseDto<String>> updatePlan(@PathVariable(name = "teamId") int teamId,
                                                                       @PathVariable(name = "planId") int planId,
                                                                       @RequestHeader(value = "Authorization", required = false)String header,
                                                                       @RequestBody PlanUpdateRequest planUpdateRequest){
 
-        PlanUpdateResponse response = planService.updatePlan(teamId, planId, jwtUtil.getAuthMemberEmail(header), planUpdateRequest);
-        ResponseDto<PlanUpdateResponse> responseDto = ResponseDto.<PlanUpdateResponse>builder()
+        planService.updatePlan(teamId, planId, jwtUtil.getAuthMemberEmail(header), planUpdateRequest);
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
                 .message("일정 수정을 성공했습니다.")
-                .data(response)
+                .data(null)
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
