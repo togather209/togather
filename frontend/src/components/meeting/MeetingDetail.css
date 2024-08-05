@@ -65,6 +65,9 @@
 
 .no-schedule-box {
     margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .no-schedule-text {
@@ -80,6 +83,7 @@
     opacity: 70%;
     font-size: 12px;
     text-align: center;
+    margin-bottom: 30px;
 }
 
 
@@ -120,3 +124,6 @@
     margin-bottom: 15px;
   }
   
+  .meeting-detail-no-schedule-container {
+    width: 360px;
+  }
