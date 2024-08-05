@@ -2,6 +2,7 @@ package com.common.togather.api.controller;
 
 import com.common.togather.api.request.LogoutRequest;
 import com.common.togather.api.request.MemberUpdateRequest;
+import com.common.togather.api.response.MemberFindByIdResponse;
 import com.common.togather.api.response.MemberUpdateResponse;
 import com.common.togather.api.response.ResponseDto;
 import com.common.togather.api.service.MemberService;
@@ -62,15 +63,16 @@ public class MemberController {
 
     @Operation(summary = "로그인 유저 정보 조회")
     @GetMapping("/me")
-    public ResponseEntity<ResponseDto<Member>> getAuthMember(@RequestHeader(value = "Authorization", required = false) String header) {
+    public ResponseEntity<ResponseDto<MemberFindByIdResponse>> getAuthMember(@RequestHeader(value = "Authorization", required = false) String header) {
 
         String authEmail = jwtUtil.getAuthMemberEmail(header);
-        Member member = memberRepository.findByEmail(authEmail).get();
 
-        ResponseDto<Member> responseDto = ResponseDto.<Member>builder()
+        MemberFindByIdResponse response = memberService.getAuthMember(authEmail);
+
+        ResponseDto<MemberFindByIdResponse> responseDto = ResponseDto.<MemberFindByIdResponse>builder()
                 .status(HttpStatus.OK.value())
                 .message("로그인 유저 조회 성공")
-                .data(member)
+                .data(response)
                 .build();
 
         return new ResponseEntity<>(responseDto,HttpStatus.OK);
