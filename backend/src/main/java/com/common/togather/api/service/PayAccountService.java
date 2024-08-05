@@ -31,11 +31,13 @@ public class PayAccountService {
     // 나의 Pay 계좌 조회
     @Transactional
     public PayAccountFindByMemberIdResponse findPayAccountByMemberId(String email) {
-
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
-        PayAccount payAccount = payAccountRepository.findByMemberId(member.getId())
-                .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
+        PayAccount payAccount = member.getPayAccount();
+
+        if (payAccount == null) {
+            throw new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다.");
+        }
 
         return PayAccountFindByMemberIdResponse.builder()
                 .memberName(member.getName())
@@ -48,7 +50,6 @@ public class PayAccountService {
     // Pay 계좌 생성하기
     @Transactional
     public void savePayAccount(String email, PayAccountSaveRequest requestDto) {
-
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
         Account account = accountRepository.findByAccountNumber(requestDto.getAccountNum())
@@ -65,12 +66,17 @@ public class PayAccountService {
     // Pay 계좌 충전하기
     @Transactional
     public void rechargePayAccount(String email, PayAccountRechargeRequest requestDto) {
-
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
-        PayAccount payAccount = payAccountRepository.findByMemberId(memberRepository.findByEmail(email).get().getId())
-                .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
+        PayAccount payAccount = member.getPayAccount();
         Account account = payAccount.getAccount();
+
+        if (payAccount == null) {
+            throw new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다.");
+        }
+        if (account == null) {
+            throw new PayAccountNotFoundException("계좌가 존재하지 않습니다.");
+        }
 
         account.decreaseBalance(requestDto.getPrice());
         payAccount.increaseBalance(requestDto.getPrice());
@@ -94,12 +100,15 @@ public class PayAccountService {
     // 송금하기
     @Transactional
     public void transferPayAccount(String email, PayAccountTransferRequest requestDto) {
-
-        PayAccount payAccount = payAccountRepository.findByMemberId(memberRepository.findByEmail(email).get().getId())
-                .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
+        PayAccount payAccount = member.getPayAccount();
         PayAccount targetPayAccount = payAccountRepository.findByMemberId(requestDto.getTargetMemberId())
                 .orElseThrow(() -> new PayAccountNotFoundException("Target Pay 계좌가 존재하지 않습니다."));
 
+        if (payAccount == null) {
+            throw new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다.");
+        }
         if (payAccount.getPassword() != requestDto.getPayAccountPassword()) {
             throw new InvalidPayAccountPasswordException("계좌 비밀번호가 일치하지 않습니다.");
         }
@@ -126,10 +135,13 @@ public class PayAccountService {
     // 계좌 삭제
     @Transactional
     public void deletePayAccount(String email, PayAccountDeleteRequest requestDto) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
+        PayAccount payAccount = member.getPayAccount();
 
-        PayAccount payAccount = payAccountRepository.findByMemberId(memberRepository.findByEmail(email).get().getId())
-                .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
-
+        if (payAccount == null) {
+            throw new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다.");
+        }
         if (payAccount.getPassword() != requestDto.getPayAccountPassword()) {
             throw new InvalidPayAccountPasswordException("계좌 비밀번호가 일치하지 않습니다.");
         }
@@ -138,6 +150,8 @@ public class PayAccountService {
             throw new PayAccountBalanceNotEmptyException("계좌에 잔액이 남아있습니다.");
         }
 
+        payAccount.removeAssociation();
+
         payAccountRepository.delete(payAccount);
         payAccountRepository.flush();
     }
@@ -145,12 +159,17 @@ public class PayAccountService {
     // Pay 계좌 출금하기
     @Transactional
     public void withDrawPayAccount(String email, PayAccountWithdrawRequest requestDto) {
-
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
-        PayAccount payAccount = payAccountRepository.findByMemberId(memberRepository.findByEmail(email).get().getId())
-                .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
+        PayAccount payAccount = member.getPayAccount();
         Account account = payAccount.getAccount();
+
+        if (payAccount == null) {
+            throw new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다.");
+        }
+        if (account == null) {
+            throw new PayAccountNotFoundException("계좌가 존재하지 않습니다.");
+        }
 
         account.increaseBalance(requestDto.getPrice());
         payAccount.decreaseBalance(requestDto.getPrice());
