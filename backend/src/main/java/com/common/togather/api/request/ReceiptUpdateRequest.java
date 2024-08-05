@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReceiptSaveRequest {
+public class ReceiptUpdateRequest {
 
     // 상호명
     @NotBlank(message = "상호명은 필수 입력값입니다.")
@@ -40,13 +40,13 @@ public class ReceiptSaveRequest {
 
     // 품목
     @NotEmpty(message = "품목은 필수 입력값입니다.")
-    private List<ItemSaveByReceipt> items;
+    private List<ItemUpdateByReceipt> items;
 
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ItemSaveByReceipt {
+    public static class ItemUpdateByReceipt {
 
         // 품목명
         @NotBlank(message = "품목명은 필수 입력값입니다.")
@@ -64,13 +64,13 @@ public class ReceiptSaveRequest {
 
         // 품목 유저
         @NotEmpty(message = "품목 유저는 필수 입력값입니다.")
-        private List<MemberSaveByReceipt> members;
+        private List<MemberUpdateByReceipt> members;
 
         @Data
         @Builder
         @NoArgsConstructor
         @AllArgsConstructor
-        public static class MemberSaveByReceipt {
+        public static class MemberUpdateByReceipt {
 
             // 유저 아이디
             @NotNull(message = "유저 아이디는 필수 입력값입니다.")
