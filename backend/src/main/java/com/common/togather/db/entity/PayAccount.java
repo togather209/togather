@@ -20,11 +20,11 @@ public class PayAccount {
     private int id;
     
     // 계좌명
-    @Column(name = "accountName", nullable = false)
+    @Column(name = "account_name", nullable = false)
     private String accountName;
     
     // 잔액
-    @Column(name = "balance", nullable = false)
+    @Column(name = "balance")
     @ColumnDefault("0")
     private int balance;
     
@@ -33,17 +33,17 @@ public class PayAccount {
     private int password;
 
     // 유저
-    @OneToOne
-    @JoinColumn(name = "member_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     // 실 계좌
-    @OneToOne
-    @JoinColumn(name = "account_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
     // 거래 내역
-    @OneToMany(mappedBy = "payAccount", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "payAccount", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions;
 
     // 잔액 증가 메서드

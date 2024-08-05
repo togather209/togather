@@ -1,62 +1,48 @@
 import React from 'react';
+import './GameModal.css';
+import Close from '../../assets/icons/common/close.png';
 
-function Modal({ 
-  isOpen, onClose, onConfirm, newParticipant, setNewParticipant 
-}) {
-    if (!isOpen) return null;
+function GameModal({ isOpen, onClose, onConfirm, selectedParticipants, setSelectedParticipants, scheduleParticipants }) {
+  // isOpen이 false일 경우, 모달을 렌더링하지 않습니다.
+  if (!isOpen) return null;
 
-    return (
-        <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-        }}>
-            <div style={{
-                backgroundColor: 'white',
-                padding: 20,
-                borderRadius: 10,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center'
-            }}>
-                <h2>참여 인원 추가</h2>
-                <input
-                    type="text"
-                    placeholder="이름 입력"
-                    value={newParticipant}
-                    onChange={e => setNewParticipant(e.target.value)}
-                    style={{ padding: 10, marginBottom: 20, borderRadius: 5, border: '1px solid #ccc' }}
+  // 체크박스 변경 시 호출되는 함수입니다.
+  const handleCheckboxChange = (participant) => {
+    // 선택된 참가자 리스트에 해당 참가자가 이미 있는지 확인합니다.
+    if (selectedParticipants.includes(participant)) {
+      // 이미 있는 경우, 리스트에서 제거합니다.
+      setSelectedParticipants(selectedParticipants.filter(item => item !== participant));
+    } else {
+      // 없는 경우, 리스트에 추가합니다.
+      setSelectedParticipants([...selectedParticipants, participant]);
+    }
+  };
+
+  return (
+    <div className="game-modal-overlay">
+      <div className="game-modal-content">
+        <div className='game-modal-title'>참여 인원을 선택해주세요</div>
+        <img src={Close} className='game-modal-close' onClick={onClose} alt="close" />
+        <div className="game-participant-list">
+          {scheduleParticipants.map(participant => (
+            <div key={participant} className="game-participant-item">
+              <label>
+                <input 
+                  type="checkbox"
+                  checked={selectedParticipants.includes(participant)}
+                  onChange={() => handleCheckboxChange(participant)}
                 />
-                <button onClick={onConfirm} style={{
-                    padding: '10px 20px',
-                    borderRadius: 5,
-                    backgroundColor: '#007bff',
-                    color: 'white',
-                    border: 'none',
-                    cursor: 'pointer'
-                }}>
-                    확인
-                </button>
-                <button onClick={onClose} style={{
-                    padding: '10px 20px',
-                    borderRadius: 5,
-                    backgroundColor: '#6c757d',
-                    color: 'white',
-                    border: 'none',
-                    cursor: 'pointer',
-                    marginTop: 10
-                }}>
-                    취소
-                </button>
+                {participant}
+              </label>
             </div>
+          ))}
         </div>
-    );
+        <button onClick={onConfirm} className="game-modal-confirm-button">
+          확인
+        </button>
+      </div>
+    </div>
+  );
 }
 
-export default Modal;
+export default GameModal;

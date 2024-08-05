@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import NoPayment from "../components/wallet/NoPayment";
 import MyPayment from "../components/wallet/MyPayment";
 
-function Wallet() {
+function Wallet( { accessToken }) {
+  const [isExistPayment, setIsExistsPayment] = useState(false);
+
   return (
     <>
       <MyPayment/>
