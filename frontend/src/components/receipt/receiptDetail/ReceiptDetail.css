@@ -118,6 +118,16 @@
   color: #575656;
 }
 
+.receipt-manage {
+  display: flex;
+  justify-content: end;
+}
+.receipt-manage > img {
+  width: 40px;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
 .pink .payment-info {
   background-color: #FDEAE8;
   padding: 20px;

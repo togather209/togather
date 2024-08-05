@@ -16,16 +16,22 @@ import axiosInstance from "../../../utils/axiosInstance";
 function ReceiptListContainer() {
   const navigate = useNavigate();
 
+  // TODO : meetingId, scheduleId 가져오기
+  const teamId = 1;
+  const planId = 1;
+
   // state : 일정 진행 중(before), 일정 끝남(after), 정산 완료(completet)
   const [scheduleState, setScheduleState] = useState("before");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [receipts, setReceipts] = useState([]);
 
-  // TODO : meetingId, scheduleId 가져오기
-  const teamId = 1;
-  const planId = 1;
-
   useEffect(() => {
+    if (!teamId || !planId) {
+      console.error("meetingId 또는 scheduleId가 전달되지 않았습니다.");
+      return;
+    }
+
+    // 영수증 전체 조회 API 요청
     const fetchReceipt = async () => {
       try {
         const response = await axiosInstance.get(
@@ -37,12 +43,10 @@ function ReceiptListContainer() {
         console.error("영수증 데이터를 가져오는 데 실패했습니다.", error);
       }
     };
+    // TODO : 일정장 확인 후 일정 끝내기 버튼 활성화
 
     fetchReceipt();
-  }, []);
-
-  // TODO : 일정장인지 확인해서 일정 끝내기 보여주기
-  const IsScheduleReader = () => {};
+  }, [teamId, planId]);
 
   // 일정 끝내기 버튼
   const handlePurpleLineButton = () => {
@@ -69,8 +73,8 @@ function ReceiptListContainer() {
 
   // 일정 상세보기 버튼
   const handleReceiptCard = (receipt) => {
-    console.log(receipt);
-    navigate(`/receipt/${receipt.id}`, {
+    // console.log(receipt);
+    navigate(`/receipt/${receipt.receiptId}`, {
       state: { teamId: teamId, planId: planId },
     });
   };
