@@ -22,7 +22,7 @@ public class Team {
     private String title;
 
     // 대표 사진
-    @Column(name = "team_img", nullable = false)
+    @Column(name = "team_img", nullable = true)
     private String teamImg;
 
     // 소개
