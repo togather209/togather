@@ -1,11 +1,11 @@
 import "./App.css";
 import UnderBar from "./components/common/UnderBar";
-import AppRoutes from "./routes/AppRoutes";
+import TokenRefresher from "./utils/TokenRefresher";
 function App() {
   return (
-    <>
+    <TokenRefresher>
       <UnderBar />
-    </>
+    </TokenRefresher>
   );
 }
 

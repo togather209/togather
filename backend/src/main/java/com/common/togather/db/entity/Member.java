@@ -59,4 +59,14 @@ public class Member {
     // 영수증
     @OneToMany(mappedBy = "manager")
     private List<Receipt> receipts;
+
+    // 유저 품목
+    @OneToMany(mappedBy = "member")
+    private List<ItemMember> itemMembers;
+
+    public void update(String profileImg, String password, String nickname) {
+        this.password = password;
+        this.nickname = nickname;
+        this.profileImg = profileImg;
+    }
 }

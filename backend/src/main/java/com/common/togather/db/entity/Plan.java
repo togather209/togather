@@ -3,7 +3,9 @@ package com.common.togather.db.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -20,7 +22,7 @@ public class Plan {
 
     // 모임
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id")
+    @JoinColumn(name = "team_id")
     private Team team;
 
     // 일정 관리자
@@ -33,16 +35,16 @@ public class Plan {
     private String title;
 
     // 소개
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = true)
     private String description;
 
     // 시작일
     @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     // 종료일
     @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     // 정산 여부
     @Column(name = "status", nullable = false)
@@ -55,4 +57,11 @@ public class Plan {
     // 북마크
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bookmark> bookmarks;
+
+    public void update(String title, String description, LocalDate startDate, LocalDate endDate){
+        this.title = title;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
 }

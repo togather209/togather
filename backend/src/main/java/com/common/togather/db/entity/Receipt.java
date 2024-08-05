@@ -52,4 +52,8 @@ public class Receipt {
     // 품목
     @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Item> items;
+
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
 }

@@ -1,0 +1,29 @@
+.meeting-setting-member-manage-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.setting-member-manage {
+    font-size: 16px;
+    color: #712FFF;
+    font-weight: bold;
+}
+
+.part-code{
+    font-size: 14px;
+}
+
+.meeting-setting-request-manage-box {
+    color: #712FFF;
+    font-weight: bold;
+}
+
+.hr {
+    width: 330px;
+    height: 0.5px;
+    background-color: #848484;
+    opacity: 30%;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
