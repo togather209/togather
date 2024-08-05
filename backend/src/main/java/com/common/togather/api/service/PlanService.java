@@ -76,12 +76,12 @@ public class PlanService {
         int hostId = plan.getManager().getId();
 
         PlanFindByPlanIdResponse response = PlanFindByPlanIdResponse.builder()
-                .hostId(hostId)
+                .managerId(hostId)
                 .title(plan.getTitle())
                 .description(plan.getDescription())
                 .startDate(plan.getStartDate())
                 .endDate(plan.getEndDate())
-                .isAdmin(hostId == member.getId()) // 일정장id와 현재 로그인유저id가 같은지 비교
+                .isManager(hostId == member.getId()) // 일정장id와 현재 로그인유저id가 같은지 비교
                 .build();
 
         return response;
