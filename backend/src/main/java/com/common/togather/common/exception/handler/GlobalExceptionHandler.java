@@ -172,4 +172,11 @@ public class GlobalExceptionHandler {
         ErrorResponseDto error = new ErrorResponseDto("plan Not Found", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+
+    // 접근 권한이 없는 경우
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<ErrorResponseDto> handleUnauthorizedAccessException(UnauthorizedAccessException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Unauthorized Access", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
 }
