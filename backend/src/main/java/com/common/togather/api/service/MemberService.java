@@ -74,7 +74,6 @@ public class MemberService {
     }
     
     // 로그인 회원 조회
-    @Transactional
     public MemberFindByIdResponse getAuthMember(String authEmail) {
 
         Member member = memberRepository.findByEmail(authEmail)

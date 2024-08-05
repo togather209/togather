@@ -1,20 +1,13 @@
 package com.common.togather.api.controller;
 
-import com.common.togather.api.error.MemberNotFoundException;
-import com.common.togather.api.error.MemberTeamNotFoundException;
-import com.common.togather.api.error.TeamNotFoundException;
 import com.common.togather.api.request.PlanSaveRequest;
 import com.common.togather.api.request.PlanUpdateRequest;
 import com.common.togather.api.response.PlanFindByPlanIdResponse;
-import com.common.togather.api.response.PlanUpdateResponse;
 import com.common.togather.api.response.ResponseDto;
 import com.common.togather.api.service.PlanService;
 import com.common.togather.common.util.JwtUtil;
-import com.common.togather.db.entity.Member;
-import com.common.togather.db.entity.Team;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,17 +51,33 @@ public class PlanController {
     }
 
     @Operation(summary = "일정 수정")
-    @PatchMapping("{teamId}/plans/{planId}")
-    public ResponseEntity<ResponseDto<PlanUpdateResponse>> updatePlan(@PathVariable(name = "teamId") int teamId,
+    @PatchMapping("/{teamId}/plans/{planId}")
+    public ResponseEntity<ResponseDto<String>> updatePlan(@PathVariable(name = "teamId") int teamId,
                                                                       @PathVariable(name = "planId") int planId,
                                                                       @RequestHeader(value = "Authorization", required = false)String header,
                                                                       @RequestBody PlanUpdateRequest planUpdateRequest){
 
-        PlanUpdateResponse response = planService.updatePlan(teamId, planId, jwtUtil.getAuthMemberEmail(header), planUpdateRequest);
-        ResponseDto<PlanUpdateResponse> responseDto = ResponseDto.<PlanUpdateResponse>builder()
+        planService.updatePlan(teamId, planId, jwtUtil.getAuthMemberEmail(header), planUpdateRequest);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
                 .message("일정 수정을 성공했습니다.")
-                .data(response)
+                .data(null)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "일정 삭제")
+    @DeleteMapping("/{teamId}/plans/{planId}")
+    public ResponseEntity<ResponseDto<String>> deletePlan(@PathVariable(name = "teamId") int teamId, @PathVariable(name = "planId") int planId,
+                                                          @RequestHeader(value = "Authorization", required = false) String header){
+
+        planService.deletePlan(teamId, planId, jwtUtil.getAuthMemberEmail(header));
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("일정 삭제를 성공했습니다.")
+                .data(null)
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
