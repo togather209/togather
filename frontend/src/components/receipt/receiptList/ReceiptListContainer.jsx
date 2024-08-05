@@ -12,9 +12,12 @@ import { useNavigate } from "react-router-dom";
 import FinishedScheduleButton from "./FinishedScheduleButton";
 import ScheduleFinishModal from "./ScheduleFinishModal";
 import axiosInstance from "../../../utils/axiosInstance";
+import { setTeamPlan } from "../../../redux/slices/receiptSlice";
+import { useDispatch } from "react-redux";
 
 function ReceiptListContainer() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // TODO : meetingId, scheduleId 가져오기
   const teamId = 1;
@@ -31,6 +34,9 @@ function ReceiptListContainer() {
       return;
     }
 
+    // teamId와 planId를 redux에 저장
+    dispatch(setTeamPlan({ teamId, planId }));
+
     // 영수증 전체 조회 API 요청
     const fetchReceipt = async () => {
       try {
@@ -46,7 +52,7 @@ function ReceiptListContainer() {
     // TODO : 일정장 확인 후 일정 끝내기 버튼 활성화
 
     fetchReceipt();
-  }, [teamId, planId]);
+  }, [teamId, planId, dispatch]);
 
   // 일정 끝내기 버튼
   const handlePurpleLineButton = () => {

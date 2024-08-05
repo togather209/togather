@@ -8,6 +8,8 @@ const initialState = {
   items: [],
   totalPrice: 0,
   bookmarkId: null,
+  teamId: null,
+  planId: null,
 };
 
 const receiptSlice = createSlice({
@@ -24,10 +26,19 @@ const receiptSlice = createSlice({
     setActiveTab: (state, action) => {
       state.activeTab = action.payload;
     },
+    setTeamPlan: (state, action) => {
+      state.teamId = action.payload.teamId;
+      state.planId = action.payload.planId;
+    },
     resetReceipt: () => initialState,
   },
 });
 
-export const { setReceiptData, updateReceiptItem, setActiveTab, resetReceipt } =
-  receiptSlice.actions;
+export const {
+  setReceiptData,
+  updateReceiptItem,
+  setActiveTab,
+  setTeamPlan,
+  resetReceipt,
+} = receiptSlice.actions;
 export default receiptSlice.reducer;

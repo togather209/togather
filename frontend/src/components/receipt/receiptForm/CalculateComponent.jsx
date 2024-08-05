@@ -14,8 +14,7 @@ function CalculateComponent() {
   const { color, businessName, paymentDate, items, totalPrice, bookmarkId } =
     receiptData;
 
-  const location = useLocation();
-  const { teamId, planId } = location.state || {};
+  const { teamId, planId } = useSelector((state) => state.receipt);
 
   const [activeType, setActiveType] = useState("divide");
   const [isModalOpen, setIsModalOpen] = useState(false);
