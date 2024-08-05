@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearUser, setUser } from "../../redux/slices/userSlice";
 import { clearToken } from "../../redux/slices/authSlice";
 import axiosInstance from "../../utils/axiosInstance";
+import { clearAccount, setAccount } from "../../redux/slices/accountSlice";
 
 function MyPageMain() {
   const [secessionModalOpen, setSecessionModalOpen] = useState(false);
@@ -15,24 +16,33 @@ function MyPageMain() {
   const dispatch = useDispatch();
   const accessToken = useSelector((state) => state.auth.accessToken);
   const member = useSelector((state) => state.user.member);
+  const account = useSelector((state) => state.account.account);
 
   //로딩될 때 멤버들 데이터 불러와서 redux에 저장한다.
   useEffect(() => {
     loadingMemberData();
-    
+    loadingAccountData();
   }, []);
-
-  console.log("accessToken", accessToken);
 
   const loadingMemberData = async () => {
     try {
       const response = await axiosInstance.get("/members/me");
       dispatch(setUser({ member : response.data.data }));
-      console.log(response.data.data);
+      console.log(member);
     } catch (error) {
       console.error("데이터 불러오기실패", error);
     }
   };
+
+  const loadingAccountData = async () => {
+    try {
+      const response = await axiosInstance.get('/pay-accounts/members/me');
+      dispatch(setAccount({ account : response.data.data }));
+      console.log(account);
+    } catch (error) {
+      console.error("데이터 불러오기 실패", error);
+    }
+  }
 
   const openSecessionModal = (e) => {
     e.preventDefault();
@@ -56,6 +66,21 @@ function MyPageMain() {
     }
   };
 
+  const secessionMember = async () => {
+    if(account.balance > 0){
+      alert("Pay계좌에 잔액이 남아있습니다. 잔액을 비운 후 탈퇴를 진행해 주세요.");
+      return;
+    }
+    else{
+      //회원 탈퇴 진행
+      axiosInstance.delete('/members/me');
+      dispatch(clearUser());
+      dispatch(clearToken());
+      dispatch(clearAccount());
+      alert("서비스를 이용해주셔서 감사드립니다. 회원 탈퇴완료 되었습니다.");
+    }
+  }
+
   return (
     <div className="mypage-container">
       <div className="mypage-profile">
@@ -67,13 +92,13 @@ function MyPageMain() {
         </button>
       </div>
       <div className="mypage-content">
-        {member?.payAccount ? 
+        {account !== null ? 
         <button
           className="mypage-my-wallet"
           onClick={() => navigate("/wallet")}
         >
-          <p className="mypage-my-wallet-summary">만수르지갑</p>
-          <p className="mypage-my-wallet-balance">27,000원</p>
+          <p className="mypage-my-wallet-summary">{account?.memberName} 지갑</p>
+          <p className="mypage-my-wallet-balance">{account?.balance}원</p>
         </button> :
         <button
         className="mypage-my-wallet"
@@ -130,7 +155,8 @@ function MyPageMain() {
               >
                 취소
               </button>
-              <button className="mypage-secession-modal-isSecession-button-ok">
+              <button className="mypage-secession-modal-isSecession-button-ok" 
+              onClick={secessionMember}>
                 확인
               </button>
             </div>
