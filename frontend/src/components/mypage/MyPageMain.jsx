@@ -19,6 +19,7 @@ function MyPageMain() {
   //로딩될 때 멤버들 데이터 불러와서 redux에 저장한다.
   useEffect(() => {
     loadingMemberData();
+    
   }, []);
 
   console.log("accessToken", accessToken);
@@ -27,6 +28,7 @@ function MyPageMain() {
     try {
       const response = await axiosInstance.get("/members/me");
       dispatch(setUser({ member : response.data.data }));
+      console.log(response.data.data);
     } catch (error) {
       console.error("데이터 불러오기실패", error);
     }
@@ -58,20 +60,29 @@ function MyPageMain() {
     <div className="mypage-container">
       <div className="mypage-profile">
         <img src={chunsik} alt="춘식" className="mypage-profile-image" />
-        <p className="mypage-profile-name">KBG</p>
-        <p className="mypage-profile-email">더미더미</p>
+        <p className="mypage-profile-name">{member?.nickname}</p>
+        <p className="mypage-profile-email">{member?.email}</p>
         <button className="mypage-logout-button" onClick={handleLogout}>
           로그아웃
         </button>
       </div>
       <div className="mypage-content">
+        {member?.payAccount ? 
         <button
           className="mypage-my-wallet"
           onClick={() => navigate("/wallet")}
         >
           <p className="mypage-my-wallet-summary">만수르지갑</p>
           <p className="mypage-my-wallet-balance">27,000원</p>
-        </button>
+        </button> :
+        <button
+        className="mypage-my-wallet"
+        onClick={() => navigate("/wallet")}
+      >
+        <p className="mypage-my-wallet-summary">계좌가 없으신데용 ㅋㅋ</p>
+        <p className="mypage-my-wallet-balance">만드세요~</p>
+      </button>
+}
         <button
           className="mypage-my-profile-update"
           onClick={() => navigate("profile_update")}

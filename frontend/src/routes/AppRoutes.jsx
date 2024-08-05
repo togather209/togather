@@ -29,12 +29,11 @@ import ReceiptDetail from "../components/receipt/receiptDetail/ReceiptDetail";
 import ProfileUpdate from "../components/mypage/ProfileUpdate";
 import Terms from "../components/mypage/Terms";
 import PrivateRoute from "./PrivateRoute";
-import UnderBar from "../components/common/UnderBar";
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/landing" element={<Landing />} />
+      <Route path="/" element={<Landing />} />
       <Route path="/signup" element={<SignUpForm />} />
       <Route path="/login" element={<User />} />
       <Route
@@ -46,7 +45,7 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/"
+        path="/home"
         element={
           <PrivateRoute>
             <Home />

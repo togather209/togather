@@ -1,28 +1,23 @@
 import CommonInput from "../common/CommonInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SubmitButton from "../user/SubmitButton";
 import logo from "../../assets/icons/common/logo.png";
 import "../user/User.css";
 import BackButton from "../common/BackButton";
+import { useSelector } from "react-redux";
 
 function ProfileUpdate() {
   const [profileImage, setProfileImage] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [nickname, setnickName] = useState("");
   const [validPassword, setValidPassword] = useState("");
-  const [nickName, setNickName] = useState("");
   const [passwordMessage, setPasswordMessage] = useState("");
-  const [certificationClick, setCertificationClick] = useState(false);
-  const [certification, setCertification] = useState("");
+  const member = useSelector((state) => state.user.member);
+
+  console.log(member);
 
   const handleUpdate = () => {
     console.log("회원수정 받아조!!!!!!!!");
-  };
-
-  const emailCertification = (e) => {
-    e.preventDefault();
-    console.log("인증하실래용?");
-    setCertificationClick(!certificationClick);
   };
 
   const validatePassword = (password) => {
@@ -107,7 +102,7 @@ function ProfileUpdate() {
           <CommonInput
             id="password"
             type="password"
-            placeholder="비밀번호"
+            placeholde="비밀번호"
             value={password}
             onChange={handlePasswordChange}
           />
@@ -133,8 +128,8 @@ function ProfileUpdate() {
             id="nickName"
             type="text"
             placeholder="닉네임"
-            value={nickName}
-            onChange={(e) => setNickName(e.target.value)}
+            value={nickname}
+            onChange={(e) => setnickName(e.target.value)}
           />
 
           <SubmitButton
