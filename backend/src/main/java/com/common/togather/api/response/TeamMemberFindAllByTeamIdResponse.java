@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReceiptFindAllByPlanIdResponse {
-
-    private Integer receiptId;
-    private String businessName;
-    private Integer totalPrice;
-    private String paymentDate;
-    private Integer color;
+public class TeamMemberFindAllByTeamIdResponse {
+    private Integer memberId;
+    private String nickname;
+    private int role;
 }

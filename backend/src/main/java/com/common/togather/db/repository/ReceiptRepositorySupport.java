@@ -9,7 +9,10 @@ import com.common.togather.db.entity.QItemMember;
 import com.common.togather.db.entity.QMember;
 import com.common.togather.db.entity.QReceipt;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -33,7 +36,8 @@ public class ReceiptRepositorySupport {
                         qReceipt.manager.nickname.as("managerName"),
                         qReceipt.businessName.as("businessName"),
                         qReceipt.totalPrice.as("totalPrice"),
-                        qReceipt.paymentDate.as("paymentDate"),
+                        formattedDate.as("paymentDate"),
+                        qReceipt.bookmark.id.as("bookmarkId"),
                         qReceipt.color.as("color"),
                         qReceipt.manager.email.eq(email).as("isManager")
                 ))
@@ -91,7 +95,7 @@ public class ReceiptRepositorySupport {
                         qReceipt.id.as("receiptId"),
                         qReceipt.businessName.as("businessName"),
                         qReceipt.totalPrice.as("totalPrice"),
-                        qReceipt.paymentDate.as("paymentDate"),
+                        formattedDate.as("paymentDate"),
                         qReceipt.color.as("color")
                 ))
                 .from(qReceipt)
@@ -100,4 +104,9 @@ public class ReceiptRepositorySupport {
 
         return Optional.of(response);
     }
+
+    StringTemplate formattedDate = Expressions.stringTemplate(
+            "DATE_FORMAT({0}, {1})",
+            qReceipt.paymentDate,
+            ConstantImpl.create("%Y/%m/%d"));
 }

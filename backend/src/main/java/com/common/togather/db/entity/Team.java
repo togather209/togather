@@ -41,6 +41,10 @@ public class Team {
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Plan> plans;
 
+    // 모임 참여 요청
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TeamJoin> teamJoins;
+
     // 모임 수정 메서드
     public void updateTeam(String title, String description, String teamImg) {
         this.title = title;

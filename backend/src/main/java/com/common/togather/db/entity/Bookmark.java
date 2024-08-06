@@ -3,6 +3,7 @@ package com.common.togather.db.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -24,27 +25,32 @@ public class Bookmark {
 
     // 장소 사진
     @Column(name = "place_img", nullable = true)
-    private String place_img;
+    private String placeImg;
 
     // 장소명
     @Column(name = "place_name", nullable = false)
-    private String place_name;
+    private String placeName;
 
     // 장소 주소
     @Column(name = "place_addr", nullable = true)
-    private String place_addr;
+    private String placeAddr;
 
     // 일자
-    @Column(name = "day", nullable = false)
-    private Integer day;
+    @Column(name = "date", nullable = true)
+    private LocalDate date;
 
     // 순서
-    @Column(name = "item_order", nullable = false)
+    @Column(name = "item_order", nullable = true)
     private Integer itemOrder;
 
     // 영수증
     @OneToMany(mappedBy = "bookmark", cascade = CascadeType.ALL)
     private List<Receipt> receipts;
+
+    // 날짜 수정
+    public void updateDate(LocalDate date) {
+        this.date = date;
+    }
 }
 
 
