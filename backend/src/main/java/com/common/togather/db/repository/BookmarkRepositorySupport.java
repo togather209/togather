@@ -2,6 +2,7 @@ package com.common.togather.db.repository;
 
 import com.common.togather.api.response.BookmarkFindAllByPlanIdResponse;
 import com.common.togather.api.response.BookmarkFindAllByPlanIdResponse.PlaceByDate;
+import com.common.togather.db.entity.Bookmark;
 import com.common.togather.db.entity.QBookmark;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ConstantImpl;
@@ -57,4 +58,20 @@ public class BookmarkRepositorySupport {
             "DATE_FORMAT({0}, {1})",
             qBookmark.date,
             ConstantImpl.create("%Y/%m/%d"));
+    
+    // 같은 일정 아이디와 같은 장소 아이디를 갖는 북마크 조회
+    public Boolean existsSamePlaceInSamePlan(int planId, String placeId) {
+        QBookmark qBookmark = QBookmark.bookmark;
+
+        Bookmark result = jpaQueryFactory.selectFrom(qBookmark)
+                .where(qBookmark.plan.id.eq(planId)
+                        .and(qBookmark.placeId.eq(placeId)))
+                .fetchOne();
+
+        // 조회된 북마크가 없다면 false 반환
+        if(result == null) return false;
+
+        // 조회된 북마크가 있다면 true 반환
+        return true;
+    }
 }
