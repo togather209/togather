@@ -13,4 +13,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Integer> {
 
    List<Bookmark> findAllByDate(LocalDate date);
 
+   List<Bookmark> findByDateIsNull();
+
 }

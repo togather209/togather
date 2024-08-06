@@ -5,6 +5,7 @@ import com.common.togather.api.request.BookmarkDateUpdateRequest;
 import com.common.togather.api.request.BookmarkSaveRequest;
 import com.common.togather.api.response.BookmarkFindAllByDateResponse;
 import com.common.togather.api.response.BookmarkFindAllByPlanIdResponse;
+import com.common.togather.api.response.BookmarkFindAllInJjinResponse;
 import com.common.togather.api.response.BookmarkUpdateDateResponse;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Bookmark;
@@ -127,6 +128,29 @@ public class BookmarkService {
                         .placeName(bookmark.getPlaceName())
                         .placeAddr(bookmark.getPlaceAddr())
                         .itemOrder(bookmark.getItemOrder())
+                        .receiptCnt(bookmark.getReceipts() != null ? bookmark.getReceipts().size() : 0)
+                        .build())
+                .collect(Collectors.toList());
+
+    }
+
+    // 찜 목록 조회
+    public List<BookmarkFindAllInJjinResponse> findAllBookmarkInJjim(int teamId, int planId, String header) {
+        teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, jwtUtil.getAuthMemberEmail(header))
+                .orElseThrow(() -> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
+
+        planRepository.findById(planId)
+                .orElseThrow(()-> new PlanNotFoundException("해당 일정이 존재하지 않습니다."));
+
+        // 해당 날짜인 모든 북마크 리스트
+        List<Bookmark> bookmarkList = bookmarkRepository.findByDateIsNull();
+        return bookmarkList.stream()
+                .map(bookmark -> BookmarkFindAllInJjinResponse.builder()
+                        .bookmarkId(bookmark.getId())
+                        .placeId(bookmark.getPlaceId())
+                        .placeImg(bookmark.getPlaceImg())
+                        .placeName(bookmark.getPlaceName())
+                        .placeAddr(bookmark.getPlaceAddr())
                         .receiptCnt(bookmark.getReceipts() != null ? bookmark.getReceipts().size() : 0)
                         .build())
                 .collect(Collectors.toList());
