@@ -151,4 +151,19 @@ public class TeamController {
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
+
+    // 모임 나가기
+    @Operation(summary = "모임 나가기")
+    @DeleteMapping("/{teamId}/members/me")
+    public ResponseEntity<ResponseDto<String>> deleteTeamMember(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Integer teamId) {
+        teamService.deleteTeamMember(jwtUtil.getAuthMemberEmail(token), teamId);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("모임나가기를 성공했습니다.")
+                .data(null)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 }
