@@ -108,5 +108,5 @@ public class ReceiptRepositorySupport {
     StringTemplate formattedDate = Expressions.stringTemplate(
             "DATE_FORMAT({0}, {1})",
             qReceipt.paymentDate,
-            ConstantImpl.create("%Y-%m-%d"));
+            ConstantImpl.create("%Y/%m/%d"));
 }
