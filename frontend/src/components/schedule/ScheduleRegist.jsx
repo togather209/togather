@@ -74,7 +74,7 @@ function ScheduleRegist() {
     try {
       const response = await axiosInstance.post(`/teams/${id}/plans`, ScheduleFormData);
       console.log(response)
-      navigation(`/meeting/${id}`)
+      navigation(`/home/meeting/${id}`)
     } catch (error) {
       console.error("데이터 불러오기실패", error);
     }
