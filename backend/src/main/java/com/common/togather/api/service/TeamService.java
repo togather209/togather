@@ -1,7 +1,9 @@
 package com.common.togather.api.service;
 
+import com.common.togather.api.error.AlreadyJoinedTeamException;
 import com.common.togather.api.error.MemberNotFoundException;
 import com.common.togather.api.error.TeamNotFoundException;
+import com.common.togather.api.request.TeamJoinSaveRequest;
 import com.common.togather.api.request.TeamSaveRequest;
 import com.common.togather.api.request.TeamUpdateRequest;
 import com.common.togather.api.response.PlanFindAllByTeamIdResponse;
@@ -10,8 +12,10 @@ import com.common.togather.api.response.TeamFindByTeamIdResponse;
 import com.common.togather.api.response.TeamSaveResponse;
 import com.common.togather.db.entity.Member;
 import com.common.togather.db.entity.Team;
+import com.common.togather.db.entity.TeamJoin;
 import com.common.togather.db.entity.TeamMember;
 import com.common.togather.db.repository.MemberRepository;
+import com.common.togather.db.repository.TeamJoinRepository;
 import com.common.togather.db.repository.TeamMemberRepository;
 import com.common.togather.db.repository.TeamRepository;
 import jakarta.transaction.Transactional;
@@ -34,6 +38,7 @@ public class TeamService {
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final TeamJoinRepository teamJoinRepository;
 
     // 모임 생성
     public TeamSaveResponse saveTeam(String email, TeamSaveRequest requestDto) {
@@ -127,5 +132,26 @@ public class TeamService {
                 .isAdmin(isAdmin)
                 .plans(plans)
                 .build();
+    }
+
+    // 모임 참여 요청
+    public void joinTeamByCode(String email, TeamJoinSaveRequest requestDto) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
+        Team team = teamRepository.findByCode(requestDto.getCode())
+                .orElseThrow(() -> new TeamNotFoundException("코드에 해당하는 모임이 없습니다."));
+
+        if (teamMemberRepository.existsByMemberAndTeam(member, team)) {
+            throw new AlreadyJoinedTeamException("가입된 모임입니다.");
+        }
+        if (teamJoinRepository.existsByMemberAndTeam(member, team)) {
+            throw new AlreadyJoinedTeamException("가입 요청이 완료된 모임입니다.");
+        }
+
+        teamJoinRepository.save(TeamJoin.builder()
+                .team(team)
+                .member(member)
+                .status(0)
+                .build());
     }
 }
