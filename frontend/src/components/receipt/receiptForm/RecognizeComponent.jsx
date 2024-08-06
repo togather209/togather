@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   setReceiptData,
@@ -16,6 +16,7 @@ import ActivePicture from "../../../assets/receipt/activePicture.png";
 import ConnectReceiptSchedule from "./ConnectReceiptScheduleModal";
 import Close from "../../../assets/icons/common/close.png";
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { useSelector } from "react-redux";
 
 function RecognizeComponent({ defaultReceipt }) {
@@ -30,6 +31,9 @@ function RecognizeComponent({ defaultReceipt }) {
 
   // 선택된 이미지 타입
   const [selectedImageType, setSelectedImageType] = useState(null);
+
+  // 선택된 이미지
+  const [selectedImage, setSelectedImage] = useState(null);
 
   // 인식 결과 수정 상태
   const [isEditing, setIsEditing] = useState(false);
@@ -48,6 +52,11 @@ function RecognizeComponent({ defaultReceipt }) {
 
   // teamId, planId 가져오기
   let { teamId, planId } = useSelector((state) => state.receipt);
+
+  // 카메라 스트림을 위한 상태
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
 
   useEffect(() => {
     if (!teamId || !planId) {
@@ -70,7 +79,14 @@ function RecognizeComponent({ defaultReceipt }) {
       setRecognizedResult(defaultReceipt);
       setEditedItems(defaultReceipt.items);
 
-      console.log(defaultReceipt.items);
+      if (defaultReceipt.bookmarkId !== null) {
+        setBookmark({
+          id: defaultReceipt.bookmarkId,
+          name: defaultReceipt.bookmarkName,
+        });
+      }
+
+      console.log(defaultReceipt);
     }
   }, [defaultReceipt]);
 
@@ -81,8 +97,35 @@ function RecognizeComponent({ defaultReceipt }) {
     setActiveType(type);
   };
 
-  const handleCameraButton = () => {
-    console.log("camera 버튼 클릭");
+  const handleCameraButton = async () => {
+    setIsCameraOpen(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      videoRef.current.srcObject = stream;
+    } catch (err) {
+      console.error("카메라 접근 오류:", err);
+    }
+
+    // console.log("camera 버튼 클릭");
+    // setRecognizedResult(tempRecognizedItems);
+    // setSelectedImageType("camera");
+    // setEditedItems(tempRecognizedItems.items);
+  };
+
+  const handleCapture = () => {
+    const context = canvasRef.current.getContext("2d");
+    context.drawImage(
+      videoRef.current,
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+    const image = canvasRef.current.toDataURL("image/png");
+    setSelectedImage(image);
+    setIsCameraOpen(false);
+
+    // 이미지 인식 결과를 설정하는 로직을 여기에 추가하세요.
     setRecognizedResult(tempRecognizedItems);
     setSelectedImageType("camera");
     setEditedItems(tempRecognizedItems.items);
@@ -90,9 +133,24 @@ function RecognizeComponent({ defaultReceipt }) {
 
   const handleImageButton = () => {
     console.log("image 버튼 클릭");
-    setRecognizedResult(tempRecognizedItems);
-    setSelectedImageType("image");
-    setEditedItems(tempRecognizedItems.items);
+    document.getElementById("file-input").click();
+
+    // setRecognizedResult(tempRecognizedItems);
+    // setSelectedImageType("image");
+    // setEditedItems(tempRecognizedItems.items);
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        console.log(file);
+        // 이미지 인식 결과를 설정하는 로직을 여기에 추가하세요.
+        // setSelectedImageType("image");
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleEditButton = () => {
@@ -112,12 +170,15 @@ function RecognizeComponent({ defaultReceipt }) {
   };
 
   const handleChange = (index, field, value) => {
-    const updatedItems = [...editedItems];
-    if (field === "count" || field === "unitPrice") {
-      updatedItems[index][field] = value === "" ? "" : Number(value);
-    } else {
-      updatedItems[index][field] = value;
-    }
+    const updatedItems = editedItems.map((item, i) =>
+      i === index
+        ? {
+            ...item,
+            [field]:
+              field === "name" ? value : value === "" ? "" : Number(value),
+          }
+        : item
+    );
     setEditedItems(updatedItems);
   };
 
@@ -161,7 +222,7 @@ function RecognizeComponent({ defaultReceipt }) {
 
   const tempRecognizedItems = {
     businessName: "How Cafe",
-    paymentDate: "2024.07.31",
+    paymentDate: "2024-07-31", // 날짜를 문자열로 저장
     items: [
       {
         name: "3루 입장권",
@@ -257,14 +318,22 @@ function RecognizeComponent({ defaultReceipt }) {
                 <img src={Camera} alt="camera" onClick={handleCameraButton} />
               )}
               {selectedImageType === "image" ? (
-                <img src={ActivePicture} alt="active-camera" />
+                <img src={ActivePicture} alt="active-image" />
               ) : (
                 <img src={Picture} alt="image" onClick={handleImageButton} />
               )}
+              <input
+                type="file"
+                id="file-input"
+                style={{ display: "none" }}
+                accept="image/*"
+                onChange={handleFileChange}
+              />
             </div>
           )}
         </div>
       </div>
+
       {recognizedResult === null && (
         <div className="recognized-content no-content">
           <p>인식된 내용이 없어요</p>
@@ -285,11 +354,11 @@ function RecognizeComponent({ defaultReceipt }) {
             }
           />
           <DatePicker
-            selected={recognizedResult.paymentDate}
+            selected={new Date(recognizedResult.paymentDate)} // 문자열을 Date 객체로 변환
             onChange={(date) =>
               setRecognizedResult({
                 ...recognizedResult,
-                paymentDate: date,
+                paymentDate: date.toISOString().split("T")[0], // Date 객체를 문자열로 변환
               })
             }
             dateFormat="yyyy-MM-dd"
