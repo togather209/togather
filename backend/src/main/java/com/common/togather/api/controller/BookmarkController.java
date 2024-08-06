@@ -108,4 +108,19 @@ public class BookmarkController {
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
+
+    @Operation(summary = "찜목록 조회")
+    @GetMapping("/bookmarks/jjim")
+    public ResponseEntity<ResponseDto<List<BookmarkFindAllInJjinResponse>>> findAllBookmarkInJjim(
+            @PathVariable("teamId") int teamId, @PathVariable("planId") int planId,
+            @RequestHeader(value = "Authorization", required = false) String header){
+
+        ResponseDto<List<BookmarkFindAllInJjinResponse>> responseDto = ResponseDto.<List<BookmarkFindAllInJjinResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("해당 일정에 저장된 찜 목록 조회를 성공했습니다.")
+                .data(bookmarkService.findAllBookmarkInJjim(teamId, planId, header))
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 }

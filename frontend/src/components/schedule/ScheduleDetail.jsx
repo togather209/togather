@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import "./ScheduleDetail.css";
 import axiosInstance from "../../utils/axiosInstance";
@@ -15,9 +15,49 @@ import ScheduleDetailPlaces from "./ScheduleDetailPlaces";
 import ScheduleDetailFavoritePlaces from "./ScheduleDetailFavoritePlaces";
 import headphone from "../../assets/schedule/headphone.png";
 import mic from "../../assets/schedule/mic.png";
+import backImage from '../../assets/icons/common/back.png'
+
+import SearchForm from "../kakao/SearchForm";
+import PlacesList from "../kakao/PlacesList";
+import Pagination from "../kakao/Pagination";
 
 function ScheduleDetail() {
   const { id, schedule_id } = useParams();
+  const [places, setPlaces] = useState([]);
+  const [pagination, setPagination] = useState(null);
+  const [kakaoLoaded, setKakaoLoaded] = useState(false);
+
+    // 카카오 API가 로드되었는지 확인
+  useEffect(() => {
+    if (window.kakao && window.kakao.maps) {
+      setKakaoLoaded(true);
+    } else {
+      const checkKakaoLoaded = setInterval(() => {
+        if (window.kakao && window.kakao.maps) {
+          setKakaoLoaded(true);
+          clearInterval(checkKakaoLoaded);
+        }
+      }, 100); // 100ms마다 확인
+    }
+  }, []);
+  
+  const handleSearch = useCallback((keyword) => {
+    if (!kakaoLoaded) {
+      console.error('Kakao API is not loaded yet.');
+      return;
+    }
+
+    const ps = new window.kakao.maps.services.Places();
+
+    ps.keywordSearch(keyword, (data, status, pagination) => {
+      if (status === window.kakao.maps.services.Status.OK) {
+        setPlaces(data);
+        setPagination(pagination);
+      } else {
+        alert('검색 결과가 존재하지 않거나 오류가 발생했습니다.');
+      }
+    });
+  }, [kakaoLoaded]);
 
   // 일정 상세 상태
   const [scheduleDetail, setScheduleDetail] = useState({});
@@ -92,7 +132,6 @@ function ScheduleDetail() {
       image: "https://example.com/images/seoul-matzip.jpg",
       date: "2024-08-01",
     },
-    // ... 기타 목업 데이터
   ];
 
   const [selectedDate, setSelectedDate] = useState(null);
@@ -113,111 +152,146 @@ function ScheduleDetail() {
     setIsHeartClicked(true);
   };
 
+  // 검색창 출력을 위한 상태 저장
+  const [isOpenSearch, setIsOpenSearch] = useState(false)
+
+  const onOpenSearch = () => {
+    setIsOpenSearch(true)
+  }
+
+  useEffect(() => {
+    setIsOpenSearch(false)
+  }, [])
+
   return (
     <div className="schedule-detail">
-      <div className="schedule-detail-header">
-        <BackButton />
-        <input className="schedule-detail-header-search" type="text" />
-        <img className="schedule-detail-alarm-icon" src={alarm} alt="알람" />
-      </div>
+ 
+
+
+      {!isOpenSearch ? (
+        <div>
+          <div className="schedule-detail-header">
+            <BackButton />
+            <SearchForm onOpenSearch={onOpenSearch} onSearch={handleSearch} isOpenSearch={isOpenSearch} />
+            {/* <input className="schedule-detail-header-search" type="text" /> */}
+            <img className="schedule-detail-alarm-icon" src={alarm} alt="알람" />
+          </div>
       <div className="schedule-detail-middle-box">
-        <div className="schedule-detail-middle-info">
-          <img className="schedule-detail-small-img" src={meetingimg} alt="모임 사진" />
-          <div className="schedule-detail-first-section">
-            <div>
-              <p className="schedule-detail-meeting-name">모임명</p>
-              <p className="schedule-detail-schedule-name">일정명</p>
-            </div>
-            <img className="schedule-exit-img" src={exit} alt="일정 나가기" />
+      <div className="schedule-detail-middle-info">
+        <img className="schedule-detail-small-img" src={meetingimg} alt="모임 사진" />
+        <div className="schedule-detail-first-section">
+          <div>
+            <p className="schedule-detail-meeting-name">모임명</p>
+            <p className="schedule-detail-schedule-name">일정명</p>
           </div>
-        </div>
-        <div className="schedule-detail-second-section">
-          <p className="schedule-detail-schedule-name">일정 설명</p>
-          <ScheduleButton type={"purple"} onClick={() => {}}>
-            영수증 조회
-          </ScheduleButton>
+          <img className="schedule-exit-img" src={exit} alt="일정 나가기" />
         </div>
       </div>
-      <div className="schedule-detail-date-box">
-        <div className="schedule-detail-weekdays">
-          <div className="schedule-detail-like">찜</div>
-          {datedata.map((item, index) => (
-            <ScheduleWeekdays key={index}>{item.weekday}</ScheduleWeekdays>
+      <div className="schedule-detail-second-section">
+        <p className="schedule-detail-schedule-name">일정 설명</p>
+        <ScheduleButton type={"purple"} onClick={() => {}}>
+          영수증 조회
+        </ScheduleButton>
+      </div>
+    </div>
+    <div className="schedule-detail-date-box">
+      <div className="schedule-detail-weekdays">
+        <div className="schedule-detail-like">찜</div>
+        {datedata.map((item, index) => (
+          <ScheduleWeekdays key={index}>{item.weekday}</ScheduleWeekdays>
+        ))}
+      </div>
+      <div className="schedule-detail-weekdays">
+        <img
+          className="schedule-detail-like-icon"
+          src={isHeartClicked ? heartpurple : heart}
+          alt="찜 아이콘"
+          onClick={handleHeartClick}
+        />
+        {datedata.map((item, index) => (
+          <ScheduleDates
+            key={index}
+            onClick={() => handleDateClick(item.date)}
+            isSelected={item.date === selectedDate}
+          >
+            {parseInt(item.date.split("-")[2])}
+          </ScheduleDates>
+        ))}
+      </div>
+    </div>
+    <div className="schedule-detail-place-list-box">
+      <p className="schedule-detail-choose-date-text">
+        장소를 클릭해 방문일을 변경해보세요!
+      </p>
+      {isHeartClicked ? (
+        <div>
+          {locations_mokup.map((item, index) => (
+            <ScheduleDetailFavoritePlaces
+              key={item.id}
+              img_url={item.image}
+              name={item.name}
+              address={item.address}
+              firstDate={datedata[0]?.date}
+              lastDate={datedata[datedata.length - 1]?.date}
+            />
           ))}
         </div>
-        <div className="schedule-detail-weekdays">
-          <img
-            className="schedule-detail-like-icon"
-            src={isHeartClicked ? heartpurple : heart}
-            alt="찜 아이콘"
-            onClick={handleHeartClick}
-          />
-          {datedata.map((item, index) => (
-            <ScheduleDates
-              key={index}
-              onClick={() => handleDateClick(item.date)}
-              isSelected={item.date === selectedDate}
-            >
-              {parseInt(item.date.split("-")[2])}
-            </ScheduleDates>
+      ) : (
+        <div>
+          {locations_mokup.map((item, index) => (
+            <ScheduleDetailPlaces
+              key={item.id}
+              img_url={item.image}
+              name={item.name}
+              address={item.address}
+            />
           ))}
         </div>
-      </div>
-      <div className="schedule-detail-place-list-box">
-        <p className="schedule-detail-choose-date-text">
-          장소를 클릭해 방문일을 변경해보세요!
-        </p>
-        {isHeartClicked ? (
-          <div>
-            {locations_mokup.map((item, index) => (
-              <ScheduleDetailFavoritePlaces
-                key={item.id}
-                img_url={item.image}
-                name={item.name}
-                address={item.address}
-                firstDate={datedata[0]?.date}
-                lastDate={datedata[datedata.length - 1]?.date}
-              />
-            ))}
-          </div>
-        ) : (
-          <div>
-            {locations_mokup.map((item, index) => (
-              <ScheduleDetailPlaces
-                key={item.id}
-                img_url={item.image}
-                name={item.name}
-                address={item.address}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-      <div className="schedule-detail-button">
-        {isCallStarted ? (
-          <ScheduleButton type={"purple"} onClick={handleCallStart}>
-            통화 시작
+      )}
+    </div>
+    <div className="schedule-detail-button">
+      {isCallStarted ? (
+        <ScheduleButton type={"purple"} onClick={handleCallStart}>
+          통화 시작
+        </ScheduleButton>
+      ) : (
+        <div className="schedule-detail-call-started">
+          <ScheduleButton type={"border"} onClick={handleCallStart}>
+            통화 종료
           </ScheduleButton>
-        ) : (
-          <div className="schedule-detail-call-started">
-            <ScheduleButton type={"border"} onClick={handleCallStart}>
-              통화 종료
-            </ScheduleButton>
-            <div
-              className={isHeadPhone ? "headphone-mic-container-activate" : "headphone-mic-container"}
-              onClick={handleHeadPhone}
-            >
-              <img className="headphone-mic-size" src={headphone} alt="헤드폰" />
-            </div>
-            <div
-              className={isMic ? "headphone-mic-container-activate" : "headphone-mic-container"}
-              onClick={handleMic}
-            >
-              <img className="headphone-mic-size" src={mic} alt="마이크" />
-            </div>
+          <div
+            className={isHeadPhone ? "headphone-mic-container-activate" : "headphone-mic-container"}
+            onClick={handleHeadPhone}
+          >
+            <img className="headphone-mic-size" src={headphone} alt="헤드폰" />
           </div>
-        )}
-      </div>
+          <div
+            className={isMic ? "headphone-mic-container-activate" : "headphone-mic-container"}
+            onClick={handleMic}
+          >
+            <img className="headphone-mic-size" src={mic} alt="마이크" />
+          </div>
+        </div>
+      )}
+    </div>
+    </div>
+      ) : (
+        <div>
+          <div className="schedule-detail-header">
+      
+            <button className='search-back-button' onClick={() => setIsOpenSearch(false)}><img src={backImage} alt="뒤로가기 버튼" /></button>
+            <SearchForm onOpenSearch={onOpenSearch} onSearch={handleSearch} isOpenSearch={ isOpenSearch }/>
+            {/* <input className="schedule-detail-header-search" type="text" /> */}
+            {/* <img className="schedule-detail-alarm-icon" src={alarm} alt="알람" /> */}
+          </div>
+          <PlacesList id={id} schedule_id={schedule_id} places={places} onPlaceClick={() => {}} />
+          {pagination && <Pagination pagination={pagination} />}
+        </div>
+      )}
+
+
+
+
     </div>
   );
 }
