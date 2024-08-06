@@ -34,12 +34,10 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
           {place.road_address_name ? (
             <>
               <div className="jibun">{place.road_address_name}</div>
-              {/* <div className="jibun">{place.address_name}</div> */}
             </>
           ) : (
             <span className="jibun">{place.address_name}</span>
           )}
-          {/* <span className="tel">{place.phone}</span> */}
         </div>
         <button onClick={onButtonClick(place)}>찜하기</button> {/* 버튼 클릭 시 onButtonClick 함수 실행 */}
       </li>
