@@ -190,6 +190,7 @@ public class TeamService {
                         .memberId(teamMember.getMember().getId())
                         .nickname(teamMember.getMember().getNickname())
                         .role(teamMember.getRole())
+                        .profileImg(teamMember.getMember().getProfileImg())
                         .build())
                 .collect(Collectors.toList());
     }
