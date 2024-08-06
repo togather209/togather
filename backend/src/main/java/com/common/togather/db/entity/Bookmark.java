@@ -62,6 +62,11 @@ public class Bookmark {
         this.date = date;
         this.itemOrder = itemOrder;
     }
+
+    // 순서를 변경한 경우
+    public void updateOrder(Integer itemOrder) {
+        this.itemOrder = itemOrder;
+    }
 }
 
 
