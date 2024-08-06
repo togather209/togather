@@ -25,15 +25,15 @@ public class Bookmark {
 
     // 장소 사진
     @Column(name = "place_img", nullable = true)
-    private String place_img;
+    private String placeImg;
 
     // 장소명
     @Column(name = "place_name", nullable = false)
-    private String place_name;
+    private String placeName;
 
     // 장소 주소
     @Column(name = "place_addr", nullable = true)
-    private String place_addr;
+    private String placeAddr;
 
     // 일자
     @Column(name = "date", nullable = true)
