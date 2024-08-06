@@ -91,6 +91,11 @@ public class BookmarkService {
 
         // 날짜 정보가 있던 장소가 찜으로 이동하는 경우
         if (oldDate != null && newDate == null) {
+            // 영수증 등록된 장소는 찜으로 이동 불가능
+            if(!updatedBookmark.getReceipts().isEmpty()){
+                throw new UpdateNotAllwedException("영수증이 등록된 장소는 찜목록으로 이동할 수 없습니다.");
+            }
+
             int oldOrder = updatedBookmark.getItemOrder();
             // 날짜와 순서 모두 null로 변경
             updatedBookmark.moveToJjim();
@@ -253,6 +258,27 @@ public class BookmarkService {
                         .receiptCnt(bookmark.getReceipts() != null ? bookmark.getReceipts().size() : 0)
                         .build())
                 .collect(Collectors.toList());
+
+    }
+
+    // 찜 목록에서 삭제
+    @Transactional
+    public void deleteBookmark(int teamId, int planId, int bookmarkId, String header) {
+
+        teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, jwtUtil.getAuthMemberEmail(header))
+                .orElseThrow(() -> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
+
+        planRepository.findById(planId)
+                .orElseThrow(()-> new PlanNotFoundException("해당 일정이 존재하지 않습니다."));
+
+        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
+                .orElseThrow(() -> new BookmarkNotFoundException("해당 북마크가 존재하지 않습니다."));
+
+        if(bookmark.getDate() != null){
+            throw new DeletionNotAllowedException("날짜가 지정된 장소는 삭제할 수 없습니다.(찜 목록에서만 가능)");
+        }
+
+        bookmarkRepository.delete(bookmark);
 
     }
 }
