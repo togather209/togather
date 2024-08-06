@@ -5,6 +5,7 @@ import com.common.togather.api.request.PlanSaveRequest;
 import com.common.togather.api.request.PlanUpdateRequest;
 import com.common.togather.api.response.PlanFindAuthAccessResponse;
 import com.common.togather.api.response.PlanFindByPlanIdResponse;
+import com.common.togather.api.response.PlanSaveResponse;
 import com.common.togather.api.response.ReceiptFindAllByPlanIdResponse;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
@@ -40,7 +41,7 @@ public class PlanService {
 
     // 일정 추가
     @Transactional
-    public void savePlan(int teamId, String authMemberEmail, PlanSaveRequest planSaveRequest) {
+    public PlanSaveResponse savePlan(int teamId, String authMemberEmail, PlanSaveRequest planSaveRequest) {
 
         Member member = memberRepository.findByEmail(authMemberEmail)
                 .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
@@ -63,6 +64,12 @@ public class PlanService {
 
         planRepository.save(plan);
 
+        PlanSaveResponse response = PlanSaveResponse.builder()
+                .teamId(teamId)
+                .planId(plan.getId())
+                .build();
+
+        return response;
     }
 
     // 일정 상세 조회
