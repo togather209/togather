@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./ReceiptDetail.css";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "../../common/BackButton";
 import Update from "../../../assets/receipt/update.png";
 import Delete from "../../../assets/receipt/delete.png";
@@ -10,14 +10,14 @@ import DeleteReceiptModal from "./DeleteReceiptModal";
 import { useSelector } from "react-redux";
 
 function ReceiptDetail() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const [receipt, setReceipts] = useState(null); // 초기 상태를 null로 설정
+  const [receipt, setReceipt] = useState(null); // 초기 상태를 null로 설정
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isManager, setIsManager] = useState(false);
 
   const { receiptId } = useParams();
   const { teamId, planId } = useSelector((state) => state.receipt);
+
   const colorMap = {
     0: "sky",
     1: "pink",
@@ -36,7 +36,7 @@ function ReceiptDetail() {
         const response = await axiosInstance.get(
           `teams/${teamId}/plans/${planId}/receipts/${receiptId}`
         );
-        setReceipts(response.data.data);
+        setReceipt(response.data.data);
         setIsManager(response.data.data.isManager);
         console.log(response.data);
       } catch (error) {
@@ -71,7 +71,7 @@ function ReceiptDetail() {
 
   const handleUpdate = () => {
     navigate("/receipt/update-form", {
-      state: { teamId: teamId, planId: planId, receiptId: receiptId },
+      state: { receiptId: receiptId, receiptData: receipt },
     });
   };
 

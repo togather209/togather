@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setReceiptData } from "../../../redux/slices/receiptSlice";
 import "./ReceiptForm.css";
@@ -12,10 +12,9 @@ import ActivePicture from "../../../assets/receipt/activePicture.png";
 import ConnectReceiptSchedule from "./ConnectReceiptScheduleModal";
 import Close from "../../../assets/icons/common/close.png";
 
-function RecognizeComponent({ setActiveTab }) {
+function RecognizeComponent({ setActiveTab, defaultReceipt }) {
   // redux 상태관리
   const dispatch = useDispatch();
-  const receiptData = useSelector((state) => state.receipt);
 
   // 영수증 타입 선택 (종이 or 모바일 내역)
   const [activeType, setActiveType] = useState("paper");
@@ -37,6 +36,18 @@ function RecognizeComponent({ setActiveTab }) {
 
   // 연결된 북마크 정보
   const [bookmark, setBookmark] = useState({ id: -1, name: "" });
+
+  useEffect(() => {
+    if (defaultReceipt !== undefined) {
+      setRecognizedResult({
+        businessName: defaultReceipt.businessName,
+        paymentDate: defaultReceipt.paymentDate.slice(0, 19),
+        items: defaultReceipt.items,
+        totalPrice: defaultReceipt.totalPrice,
+        bookmarkId: defaultReceipt.bookmarkId,
+      });
+    }
+  }, [defaultReceipt]);
 
   const handleReceiptType = (type) => {
     setSelectedImageType(null);
