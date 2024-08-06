@@ -2,10 +2,7 @@ package com.common.togather.api.controller;
 
 import com.common.togather.api.request.BookmarkDateUpdateRequest;
 import com.common.togather.api.request.BookmarkSaveRequest;
-import com.common.togather.api.response.BookmarkFindAllByPlanIdResponse;
-import com.common.togather.api.response.BookmarkUpdateDateResponse;
-import com.common.togather.api.response.ErrorResponseDto;
-import com.common.togather.api.response.ResponseDto;
+import com.common.togather.api.response.*;
 import com.common.togather.api.service.BookmarkService;
 import com.common.togather.common.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -72,12 +69,12 @@ public class BookmarkController {
 
         bookmarkService.addBookmark(teamId, planId, header, request);
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
-                .status(HttpStatus.CREATED.value())
+                .status(HttpStatus.OK.value())
                 .message("찜 목록에 추가 되었습니다.")
                 .data(null)
                 .build();
 
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
 
     }
 
@@ -92,6 +89,36 @@ public class BookmarkController {
                 .status(HttpStatus.OK.value())
                 .message("해당 장소의 날짜를 새로 지정했습니다.")
                 .data(response)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "날짜가 정해진 북마크 조회")
+    @GetMapping("/bookmarks/{date}")
+    public ResponseEntity<ResponseDto<List<BookmarkFindAllByDateResponse>>> findAllBookmarkByDate(
+            @PathVariable("teamId") int teamId, @PathVariable("planId") int planId, @PathVariable("date") String date,
+            @RequestHeader(value = "Authorization", required = false) String header){
+
+        ResponseDto<List<BookmarkFindAllByDateResponse>> responseDto = ResponseDto.<List<BookmarkFindAllByDateResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("해당 날짜에 저장된 장소 목록 조회에 성공했습니다.")
+                .data(bookmarkService.findAllBookmarkByDate(teamId, planId, date, header))
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "찜목록 조회")
+    @GetMapping("/bookmarks/jjim")
+    public ResponseEntity<ResponseDto<List<BookmarkFindAllInJjinResponse>>> findAllBookmarkInJjim(
+            @PathVariable("teamId") int teamId, @PathVariable("planId") int planId,
+            @RequestHeader(value = "Authorization", required = false) String header){
+
+        ResponseDto<List<BookmarkFindAllInJjinResponse>> responseDto = ResponseDto.<List<BookmarkFindAllInJjinResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("해당 일정에 저장된 찜 목록 조회를 성공했습니다.")
+                .data(bookmarkService.findAllBookmarkInJjim(teamId, planId, header))
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);

@@ -93,6 +93,7 @@ public class PlanService {
                 .startDate(plan.getStartDate())
                 .endDate(plan.getEndDate())
                 .isManager(hostId == member.getId()) // 일정장id와 현재 로그인유저id가 같은지 비교
+                .status(plan.getStatus())
                 .build();
 
         return response;

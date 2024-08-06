@@ -239,7 +239,7 @@ public class TeamService {
                 .orElseThrow(() -> new TeamNotFoundException("해당 모임이 존재하지 않습니다."));
         TeamMember teamMember = teamMemberRepository.findByMemberAndTeam(member, team);
 
-        if (teamMember == null || teamMember.getRole() != 1) {
+        if (teamMember.getRole() != 1) {
             throw new NotTeamLeaderException("모임 삭제는 방장만 가능합니다.");
         }
 
@@ -252,5 +252,33 @@ public class TeamService {
 
         teamRepository.delete(team);
         teamRepository.flush();
+    }
+
+    // 모임에서 추방
+    public void deleteMemberFromTeam(String email, Integer teamId, Integer guestId) {
+        Member host = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException(email + " 유저가 존재하지 않습니다."));
+        Member guest = memberRepository.findById(guestId)
+                .orElseThrow(() -> new MemberNotFoundException(guestId + " 유저가 존재하지 않습니다."));
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new TeamNotFoundException("해당하는 모임이 없습니다."));
+        TeamMember teamMemberHost = teamMemberRepository.findByMemberAndTeam(host, team);
+        TeamMember teamMemberGuest = teamMemberRepository.findByMemberAndTeam(guest, team);
+
+        if (teamMemberHost.getRole() != 1) {
+            throw new NotTeamLeaderException("모임 방장만 추방이 가능합니다.");
+        }
+        if (teamMemberGuest == null) {
+            throw new MemberNotInTeamException(guestId + "가 모임에 없습니다.");
+        }
+
+        teamMemberRepository.delete(teamMemberGuest);
+        teamMemberRepository.flush();
+
+        teamJoinRepository.save(TeamJoin.builder()
+                .team(team)
+                .member(guest)
+                .status(1)
+                .build());
     }
 }

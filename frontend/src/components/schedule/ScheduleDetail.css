@@ -66,13 +66,13 @@
   margin-bottom: 15px;
 }
 
-.schedule-detail-header-search {
+/* .schedule-detail-header-search {
   margin-top: 14px;
   width: 200px;
   height: 36px;
   border-radius: 20px;
   border: 1px solid #d7dedd;
-}
+} */
 
 .schedule-exit-img {
   width: 22px;
@@ -181,4 +181,19 @@
 .headphone-mic-size {
   width: 15px;
   height: 15px;
+}
+
+
+.search-back-button {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 16px 0 0 16px;
+}
+
+.search-back-button img {
+  width: 24px;
+  height: 24px;
 }
