@@ -210,4 +210,11 @@ public class GlobalExceptionHandler {
         ErrorResponseDto error = new ErrorResponseDto("Deletion Not Allowed", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
+
+    // 이미 북마크에 있는 장소인 경우
+    @ExceptionHandler(PlaceAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handlePlaceAlreadyExistsException(PlaceAlreadyExistsException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Place Already Exists", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
 }
