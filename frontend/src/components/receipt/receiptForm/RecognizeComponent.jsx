@@ -67,13 +67,10 @@ function RecognizeComponent({ defaultReceipt }) {
       setIsEditStatus(true);
 
       // 기존 인식 데이터 가져오기
-      setRecognizedResult({
-        businessName: defaultReceipt.businessName,
-        paymentDate: defaultReceipt.paymentDate.slice(0, 19),
-        items: defaultReceipt.items,
-        totalPrice: defaultReceipt.totalPrice,
-        bookmarkId: defaultReceipt.bookmarkId,
-      });
+      setRecognizedResult(defaultReceipt);
+      setEditedItems(defaultReceipt.items);
+
+      console.log(defaultReceipt.items);
     }
   }, [defaultReceipt]);
 

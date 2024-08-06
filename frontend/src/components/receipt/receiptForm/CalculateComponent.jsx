@@ -23,11 +23,13 @@ function CalculateComponent() {
   const [isModalOpen, setIsModalOpen] = useState(false); // 참가자 선택 모달의 열림 상태를 저장
   const [itemParticipants, setItemParticipants] = useState({}); // 각 품목에 대한 참가자 정보를 저장
   const [currentItemIndex, setCurrentItemIndex] = useState(null); // 현재 선택된 품목의 인덱스를 저장
+  const [participants, setParticipants] = useState(null);
   const [generalParticipants, setGeneralParticipants] = useState([]); // 일반적인 참가자 정보를 저장
 
   useEffect(() => {
     console.log("general", generalParticipants);
 
+    // teamId, planId 없을 때 localStorage에서 가져오기
     if (!teamId || !planId) {
       teamId = localStorage.getItem("teamId");
       planId = localStorage.getItem("planId");
@@ -39,6 +41,32 @@ function CalculateComponent() {
         return;
       }
     }
+
+    // teamId, planId 없을 때 localStorage에서 가져오기
+    if (!teamId) {
+      teamId = localStorage.getItem("teamId");
+      planId = localStorage.getItem("planId");
+
+      if (teamId) {
+        dispatch(setTeamPlan({ teamId, planId }));
+      } else {
+        console.error("teamId가 전달되지 않았습니다.");
+        return;
+      }
+    }
+
+    // 일정 참여자 리스트 조회하기 API 요청
+    const fetchParticipants = async () => {
+      try {
+        const response = await axiosInstance.get(`teams/${teamId}/members`);
+        console.log("일정 참여자 리스트 조회 결과", response.data.data);
+        setParticipants(response.data.data);
+      } catch (error) {
+        console.error("일정 참여자 리스트 조회 중 문제가 발생했습니다.", error);
+      }
+    };
+
+    fetchParticipants();
   }, [generalParticipants]);
 
   // paymentDate를 ISO 8601 형식으로 변환
@@ -59,10 +87,10 @@ function CalculateComponent() {
         members:
           activeType === "personal"
             ? (itemParticipants[index] || []).map((participant) => ({
-                memberId: participant.id,
+                memberId: participant.memberId,
               }))
             : generalParticipants.map((participant) => ({
-                memberId: participant.id,
+                memberId: participant.memberId,
               })),
       })),
     };
@@ -108,15 +136,15 @@ function CalculateComponent() {
       setItemParticipants((prev) => ({
         ...prev,
         [currentItemIndex]: selected.map((participant) => ({
-          id: participant.id,
-          name: participant.name,
+          memberId: participant.memberId,
+          nickname: participant.nickname,
         })),
       }));
     } else {
       setGeneralParticipants(
         selected.map((participant) => ({
-          id: participant.id,
-          name: participant.name,
+          memberId: participant.memberId,
+          nickname: participant.nickname,
         }))
       );
     }
@@ -133,23 +161,23 @@ function CalculateComponent() {
         const participants = itemParticipants[itemIndex] || [];
         const share = Math.floor(item.unitPrice / participants.length);
         participants.forEach((participant) => {
-          if (!settlements[participant.name]) {
-            settlements[participant.name] = 0;
+          if (!settlements[participant.nickname]) {
+            settlements[participant.nickname] = 0;
           }
-          settlements[participant.name] += share;
+          settlements[participant.nickname] += share;
         });
       });
     } else if (activeType === "divide") {
       const totalAmount = items.reduce((sum, item) => sum + item.unitPrice, 0);
       const share = Math.floor(totalAmount / generalParticipants.length);
       generalParticipants.forEach((participant) => {
-        settlements[participant.name] = share;
+        settlements[participant.nickname] = share;
       });
     } else if (activeType === "all") {
       const totalAmount = items.reduce((sum, item) => sum + item.unitPrice, 0);
       const participant = generalParticipants[0];
       if (participant) {
-        settlements[participant.name] = totalAmount;
+        settlements[participant.nickname] = totalAmount;
       }
     }
     return settlements;
@@ -166,22 +194,15 @@ function CalculateComponent() {
         )
       : generalParticipants.length > 0;
 
-  const participants = [
-    {
-      id: 0,
-      name: "김범규",
-    },
-    {
-      id: 1,
-      name: "김해수",
-    },
-    {
-      id: 2,
-      name: "이지혜",
-    },
-  ];
-
   const haveParticipants = Object.keys(settlements).length > 0;
+
+  const fixProfileImgUrl = (url) => {
+    if (!url) {
+      console.log("url is", url);
+      return ""; // url이 undefined이거나 null일 경우 빈 문자열 반환
+    }
+    return url.replace("|", "");
+  };
 
   return (
     <>
@@ -241,9 +262,15 @@ function CalculateComponent() {
                             alt="Add"
                           />
                           {itemParticipants[index]?.map((participant, idx) => (
-                            <span key={idx} className="participant-badge">
-                              {participant.name}
-                            </span>
+                            // <span key={idx} className="participant-badge">
+                            //   {participant.nickname}
+                            // </span>
+                            <img
+                              key={idx}
+                              className="participant-badge"
+                              src={fixProfileImgUrl(participant.profileImg)}
+                              alt="profile"
+                            />
                           ))}
                         </td>
                       </tr>
@@ -273,10 +300,10 @@ function CalculateComponent() {
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.keys(settlements).map((name, index) => (
+                  {Object.keys(settlements).map((nickname, index) => (
                     <tr key={index}>
-                      <td>{name}</td>
-                      <td>{settlements[name].toLocaleString()}원</td>
+                      <td>{nickname}</td>
+                      <td>{settlements[nickname].toLocaleString()}원</td>
                     </tr>
                   ))}
                 </tbody>
