@@ -174,4 +174,16 @@ public class TeamService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    public List<TeamMemberFindAllByTeamIdResponse> findAllTeamMemberByTeamId(Integer teamId) {
+        List<TeamMember> teamMembers = teamMemberRepository.findByTeamId(teamId);
+
+        return teamMembers.stream()
+                .map(teamMember -> TeamMemberFindAllByTeamIdResponse.builder()
+                        .memberId(teamMember.getMember().getId())
+                        .nickname(teamMember.getMember().getNickname())
+                        .role(teamMember.getRole())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }
