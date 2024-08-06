@@ -3,6 +3,7 @@ package com.common.togather.db.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -35,11 +36,11 @@ public class Bookmark {
     private String place_addr;
 
     // 일자
-    @Column(name = "day", nullable = false)
-    private Integer day;
+    @Column(name = "date", nullable = true)
+    private LocalDate date;
 
     // 순서
-    @Column(name = "item_order", nullable = false)
+    @Column(name = "item_order", nullable = true)
     private Integer itemOrder;
 
     // 영수증
