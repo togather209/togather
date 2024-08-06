@@ -70,7 +70,14 @@ function RecognizeComponent({ defaultReceipt }) {
       setRecognizedResult(defaultReceipt);
       setEditedItems(defaultReceipt.items);
 
-      console.log(defaultReceipt.items);
+      if (defaultReceipt.bookmarkId !== null) {
+        setBookmark({
+          id: defaultReceipt.bookmarkId,
+          name: defaultReceipt.bookmarkName,
+        });
+      }
+
+      console.log(defaultReceipt);
     }
   }, [defaultReceipt]);
 
