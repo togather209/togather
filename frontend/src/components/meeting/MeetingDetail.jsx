@@ -48,21 +48,6 @@ function MeetingDetail() {
 
   console.log(meetingDetail)
 
-  // 목업 데이터
-  const schedule_mokup = [
-    {
-      id: 1,
-      name: "우리의 첫번째 여행",
-    },
-    {
-      id: 2,
-      name: "우리의 두번째 여행",
-    },
-    {
-      id: 3,
-      name: "우리의 세번째 여행",
-    },
-  ];
 
   if (Object.entries(meetingDetail).length === 0) {
     return (
