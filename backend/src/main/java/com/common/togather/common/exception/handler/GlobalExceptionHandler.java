@@ -106,7 +106,16 @@ public class GlobalExceptionHandler {
     // 정산 되지 않은 일정이 존재하는 경우
     @ExceptionHandler(PlansExistException.class)
     public ResponseEntity<ErrorResponseDto> handlePlansExistException(PlansExistException ex) {
+        ex.printStackTrace();
         ErrorResponseDto error = new ErrorResponseDto("Plans Exist", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    // 멤버가 팀에 없을 경우
+    @ExceptionHandler(MemberNotInTeamException.class)
+    public ResponseEntity<ErrorResponseDto> handleMemberNotInTeamException(MemberNotInTeamException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Member Not in Team", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
