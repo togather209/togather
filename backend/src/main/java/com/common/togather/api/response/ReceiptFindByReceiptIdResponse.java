@@ -19,6 +19,7 @@ public class ReceiptFindByReceiptIdResponse {
     private Integer totalPrice;
     private String paymentDate;
     private Integer bookmarkId;
+    private String bookmarkName;
     private Integer color;
     private Boolean isManager;
     private List<ItemFindByReceipt> items;
