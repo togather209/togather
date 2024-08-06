@@ -94,6 +94,7 @@ public class TeamController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
+    // 모임 참여 요청 조회
     @Operation(summary = "모임 참여 요청 조회")
     @GetMapping("/{teamId}/join-requests")
     public ResponseEntity<ResponseDto<List<TeamJoinFindAllByTeamIdResponse>>> findTeamJoinByTeamId(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Integer teamId) {
@@ -114,6 +115,38 @@ public class TeamController {
                 .status(HttpStatus.OK.value())
                 .message("모임 참여 인원 조회를 성공했습니다.")
                 .data(teamService.findAllTeamMemberByTeamId(teamId))
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    // 모임 참여 요청 수락
+    @Operation(summary = "모임 참여 요청 수락")
+    @PostMapping("/{teamId}/join-requests/{guestId}/accept")
+    public ResponseEntity<ResponseDto<String>> acceptTeamJoin(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Integer teamId, @PathVariable Integer guestId) {
+
+        teamService.acceptOrRejectTeamJoin(jwtUtil.getAuthMemberEmail(token), teamId, guestId, true);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("참여 요청을 수락했습니다.")
+                .data(null)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    // 모임 참여 요청 거절
+    @Operation(summary = "모임 참여 요청 거절")
+    @PostMapping("/{teamId}/join-requests/{guestId}/reject")
+    public ResponseEntity<ResponseDto<String>> rejectTeamJoin(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Integer teamId, @PathVariable Integer guestId) {
+
+        teamService.acceptOrRejectTeamJoin(jwtUtil.getAuthMemberEmail(token), teamId, guestId, false);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("참여 요청을 거절했습니다.")
+                .data(null)
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);

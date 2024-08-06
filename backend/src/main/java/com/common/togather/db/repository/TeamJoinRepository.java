@@ -14,4 +14,6 @@ public interface TeamJoinRepository extends JpaRepository<TeamJoin, Integer>  {
     boolean existsByMemberAndTeam(Member member, Team team);
     // team으로 TeamJoin 리스트 조회
     List<TeamJoin> findByTeam(Team team);
+    // team과 member로 TeamMember 조회
+    TeamJoin findByMemberAndTeam(Member member, Team team);
 }

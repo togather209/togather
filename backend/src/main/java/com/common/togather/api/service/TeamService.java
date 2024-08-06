@@ -1,9 +1,6 @@
 package com.common.togather.api.service;
 
-import com.common.togather.api.error.AlreadyJoinedTeamException;
-import com.common.togather.api.error.MemberNotFoundException;
-import com.common.togather.api.error.NotTeamLeaderException;
-import com.common.togather.api.error.TeamNotFoundException;
+import com.common.togather.api.error.*;
 import com.common.togather.api.request.TeamJoinSaveRequest;
 import com.common.togather.api.request.TeamSaveRequest;
 import com.common.togather.api.request.TeamUpdateRequest;
@@ -142,8 +139,16 @@ public class TeamService {
         if (teamMemberRepository.existsByMemberAndTeam(member, team)) {
             throw new AlreadyJoinedTeamException("가입된 모임입니다.");
         }
-        if (teamJoinRepository.existsByMemberAndTeam(member, team)) {
-            throw new AlreadyJoinedTeamException("가입 요청이 완료된 모임입니다.");
+
+        TeamJoin teamJoin = teamJoinRepository.findByMemberAndTeam(member, team);
+
+        if (teamJoin != null) {
+            if (teamJoin.getStatus() == 0) {
+                throw new AlreadyJoinedTeamException("가입 요청이 완료된 모임입니다.");
+            }
+            if (teamJoin.getStatus() == 1) {
+                throw new TeamJoinBlockedException("이 모임에는 더 이상 참여할 수 없습니다.");
+            }
         }
 
         teamJoinRepository.save(TeamJoin.builder()
@@ -169,12 +174,14 @@ public class TeamService {
         return teamJoins.stream()
                 .map(teamJoin -> TeamJoinFindAllByTeamIdResponse.builder()
                         .teamId(teamJoin.getTeam().getId())
+                        .memberId(teamJoin.getMember().getId())
                         .nickname(teamJoin.getMember().getNickname())
                         .status(teamJoin.getStatus())
                         .build())
                 .collect(Collectors.toList());
     }
 
+    // 모임 참여 인원 조회
     public List<TeamMemberFindAllByTeamIdResponse> findAllTeamMemberByTeamId(Integer teamId) {
         List<TeamMember> teamMembers = teamMemberRepository.findByTeamId(teamId);
 
@@ -186,4 +193,32 @@ public class TeamService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    // 모임 참여 요청 수락 또는 거절
+    public void acceptOrRejectTeamJoin(String email, Integer teamId, Integer guestId, boolean flag) {
+        Member host = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException(email + " 유저가 존재하지 않습니다."));
+        Member guest = memberRepository.findById(guestId)
+                .orElseThrow(() -> new MemberNotFoundException(guestId + " 유저가 존재하지 않습니다."));
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new TeamNotFoundException("해당하는 모임이 없습니다."));
+        TeamMember teamMemberHost = teamMemberRepository.findByMemberAndTeam(host, team);
+        TeamJoin teamJoin = teamJoinRepository.findByMemberAndTeam(guest, team);
+
+        if (teamMemberHost.getRole() != 1) { // 방장이 아닌 경우
+            throw new NotTeamLeaderException("모임 방장이 아닙니다.");
+        }
+
+        teamJoinRepository.delete(teamJoin);
+        teamJoinRepository.flush();
+
+        if (flag) {
+            teamMemberRepository.save(TeamMember.builder()
+                    .member(guest)
+                    .team(team)
+                    .role(0)
+                    .build());
+        }
+    }
+
 }
