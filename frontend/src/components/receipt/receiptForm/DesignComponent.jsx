@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setActiveTab,
@@ -10,10 +10,16 @@ import Pink from "../../../assets/receipt/pinkReceipt.png";
 import Sky from "../../../assets/receipt/skyReceipt.png";
 import Yellow from "../../../assets/receipt/yellowReceipt.png";
 
-function DesignComponent() {
+function DesignComponent({ defaultColor }) {
   const dispatch = useDispatch();
   const receiptData = useSelector((state) => state.receipt);
   const [localReceiptColor, setLocalReceiptColor] = useState(receiptData.color);
+
+  useEffect(() => {
+    if (defaultColor !== undefined) {
+      setLocalReceiptColor(defaultColor);
+    }
+  }, [defaultColor]);
 
   return (
     <>
