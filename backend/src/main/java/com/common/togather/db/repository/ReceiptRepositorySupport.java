@@ -36,7 +36,7 @@ public class ReceiptRepositorySupport {
                         qReceipt.manager.nickname.as("managerName"),
                         qReceipt.businessName.as("businessName"),
                         qReceipt.totalPrice.as("totalPrice"),
-                        qReceipt.paymentDate.as("paymentDate"),
+                        formattedDate.as("paymentDate"),
                         qReceipt.bookmark.id.as("bookmarkId"),
                         qReceipt.color.as("color"),
                         qReceipt.manager.email.eq(email).as("isManager")
@@ -95,7 +95,7 @@ public class ReceiptRepositorySupport {
                         qReceipt.id.as("receiptId"),
                         qReceipt.businessName.as("businessName"),
                         qReceipt.totalPrice.as("totalPrice"),
-                        qReceipt.paymentDate.as("paymentDate"),
+                        formattedDate.as("paymentDate"),
                         qReceipt.color.as("color")
                 ))
                 .from(qReceipt)

@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -18,7 +17,7 @@ public class ReceiptFindByReceiptIdResponse {
     private String managerName;
     private String businessName;
     private Integer totalPrice;
-    private LocalDateTime paymentDate;
+    private String paymentDate;
     private Integer bookmarkId;
     private Integer color;
     private Boolean isManager;
