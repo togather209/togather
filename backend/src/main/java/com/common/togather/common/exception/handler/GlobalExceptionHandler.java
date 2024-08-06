@@ -179,4 +179,11 @@ public class GlobalExceptionHandler {
         ErrorResponseDto error = new ErrorResponseDto("Unauthorized Access", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
+
+    // 삭제 조건이 맞지 않는 경우
+    @ExceptionHandler(DeletionNotAllowedException.class)
+    public ResponseEntity<ErrorResponseDto> handleDeletionNotAllowedException(DeletionNotAllowedException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Deletion Not Allowed", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
 }
