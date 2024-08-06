@@ -23,6 +23,10 @@ public class Bookmark {
     @JoinColumn(name = "plan_id")
     private Plan plan;
 
+    // 장소 id
+    @Column(name = "place_id", nullable = false)
+    private String placeId;
+
     // 장소 사진
     @Column(name = "place_img", nullable = true)
     private String placeImg;
@@ -47,9 +51,16 @@ public class Bookmark {
     @OneToMany(mappedBy = "bookmark", cascade = CascadeType.ALL)
     private List<Receipt> receipts;
 
-    // 날짜 수정
-    public void updateDate(LocalDate date) {
+    // 날짜 해제로 찜 리스트로 이동한 경우
+    public void moveToJjim(LocalDate date) {
         this.date = date;
+        this.itemOrder = null;
+    }
+
+    // 찜 리스트에서 계획으로 이동한 경우
+    public void moveFromJjim(LocalDate date, int itemOrder) {
+        this.date = date;
+        this.itemOrder = itemOrder;
     }
 }
 
