@@ -87,12 +87,27 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    // 모임에 요청을 할 수 없는 경우
+    @ExceptionHandler(TeamJoinBlockedException.class)
+    public ResponseEntity<ErrorResponseDto> handleTeamJoinBlockedException(TeamJoinBlockedException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Join Blocked", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
     // 모임의 방장이 아닐 경우
     @ExceptionHandler(NotTeamLeaderException.class)
     public ResponseEntity<ErrorResponseDto> handleNotTeamLeaderException(NotTeamLeaderException ex) {
         ex.printStackTrace();
-        ErrorResponseDto error = new ErrorResponseDto("권한 오류", ex.getMessage());
+        ErrorResponseDto error = new ErrorResponseDto("permission error", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    // 정산 되지 않은 일정이 존재하는 경우
+    @ExceptionHandler(PlansExistException.class)
+    public ResponseEntity<ErrorResponseDto> handlePlansExistException(PlansExistException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Plans Exist", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     // 가입된 이메일이 이미 있는 경우
