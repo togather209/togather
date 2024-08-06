@@ -46,6 +46,11 @@ public class Bookmark {
     // 영수증
     @OneToMany(mappedBy = "bookmark", cascade = CascadeType.ALL)
     private List<Receipt> receipts;
+
+    // 날짜 수정
+    public void updateDate(LocalDate date) {
+        this.date = date;
+    }
 }
 
 
