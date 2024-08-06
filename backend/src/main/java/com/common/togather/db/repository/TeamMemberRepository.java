@@ -15,7 +15,8 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Integer>
     List<TeamMember> findByMember(Member member);
     // member와 team으로 TeamMember 존재 여부 확인
     boolean existsByMemberAndTeam(Member member, Team team);
-    // 유저의 팀에 대한 권한 확인
     // member와 team으로 TeamMember 조회
     TeamMember findByMemberAndTeam(Member member, Team team);
+    // teamId로 TeamMember 리스트 반환
+    List<TeamMember> findByTeamId(Integer teamId);
 }
