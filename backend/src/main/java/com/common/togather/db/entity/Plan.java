@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -58,10 +56,14 @@ public class Plan {
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bookmark> bookmarks;
 
-    public void update(String title, String description, LocalDate startDate, LocalDate endDate){
+    public void update(String title, String description, LocalDate startDate, LocalDate endDate) {
         this.title = title;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    public Boolean isManager(String email) {
+        return manager.getEmail().equals(email);
     }
 }

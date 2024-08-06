@@ -9,11 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReceiptFindAllByPlanIdResponse {
+public class PlanFindAuthAccessResponse {
 
-    private Integer receiptId;
-    private String businessName;
-    private Integer totalPrice;
-    private String paymentDate;
-    private Integer color;
+    private Boolean isManager;
 }
