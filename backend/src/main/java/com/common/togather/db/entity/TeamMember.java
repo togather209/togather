@@ -26,5 +26,6 @@ public class TeamMember {
     private Team team;
 
     // 모임 권한
+    // 0 : 일반, 1 : 방장
     private Integer role;
 }
