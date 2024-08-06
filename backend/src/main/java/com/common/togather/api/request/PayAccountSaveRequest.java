@@ -15,5 +15,6 @@ public class PayAccountSaveRequest {
     private int password;
     // 연결할 가상 계좌 번호
     private String accountNum;
-
+    // 유저의 이름
+    private String memberName;
 }

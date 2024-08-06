@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -19,6 +19,15 @@ public class Account {
     private int id;
 
     // 계좌 종류
+    /*0 : 국민은행
+    1 : 신한은행
+    2 : 하나은행
+    3 : 우리은행
+    4 : 농협은행
+    5 : 한국씨티은행
+    6 : SC제일은행
+    7 : 기업은행
+    8 : 산업은행*/
     @Column(name = "type", nullable = false)
     private int type;
 
@@ -40,7 +49,7 @@ public class Account {
 
     // 생년월일
     @Column(name = "birth", nullable = false)
-    private LocalDateTime birth;
+    private LocalDate birth;
 
     // 비밀번호
     @Column(name = "password", nullable = false)
