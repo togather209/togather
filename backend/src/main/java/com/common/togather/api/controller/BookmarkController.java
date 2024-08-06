@@ -1,6 +1,7 @@
 package com.common.togather.api.controller;
 
 import com.common.togather.api.request.BookmarkDateUpdateRequest;
+import com.common.togather.api.request.BookmarkOrderUpdateRequest;
 import com.common.togather.api.request.BookmarkSaveRequest;
 import com.common.togather.api.response.*;
 import com.common.togather.api.service.BookmarkService;
@@ -89,6 +90,20 @@ public class BookmarkController {
                 .status(HttpStatus.OK.value())
                 .message("해당 장소의 날짜를 새로 지정했습니다.")
                 .data(response)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "동일 날짜 북마크 내에서 순서 수정 (드래그앤드랍)")
+    @PatchMapping("/bookmarks/{bookmarkId}/order")
+    public ResponseEntity<ResponseDto<List<BookmarkOrderUpdateResponse>>> updateBookmarkOrder(@PathVariable("teamId") int teamId, @PathVariable("planId") int planId,@PathVariable("bookmarkId") int bookmarkId,
+                                                                                              @RequestHeader(value = "Authorization", required = false) String header,
+                                                                                              @RequestBody BookmarkOrderUpdateRequest request) {
+        ResponseDto<List<BookmarkOrderUpdateResponse>> responseDto = ResponseDto.<List<BookmarkOrderUpdateResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("북마크 순서가 변경되었습니다.")
+                .data(bookmarkService.updateOrder(teamId, planId, bookmarkId, header, request))
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
