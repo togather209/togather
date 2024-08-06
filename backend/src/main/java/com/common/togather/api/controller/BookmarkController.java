@@ -138,4 +138,18 @@ public class BookmarkController {
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
+
+    @Operation(summary = "북마크 삭제")
+    @DeleteMapping("/bookmarks/{bookmarkId}")
+    public ResponseEntity<ResponseDto<String>> deleteBookmark(@PathVariable("teamId") int teamId, @PathVariable("planId") int planId,@PathVariable("bookmarkId") int bookmarkId,
+                                                              @RequestHeader(value = "Authorization", required = false) String header){
+
+        bookmarkService.deleteBookmark(teamId, planId, bookmarkId, header);
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("찜 목록에서 삭제되었습니다.")
+                .data(null)
+                .build();
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 }

@@ -249,4 +249,11 @@ public class GlobalExceptionHandler {
         ErrorResponseDto error = new ErrorResponseDto("Place Already Exists", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
+
+    // 수정이 불가능한 경우 (영수증이 등록된 장소는 찜으로 이동 불가)
+    @ExceptionHandler(UpdateNotAllwedException.class)
+    public ResponseEntity<ErrorResponseDto> handleUpdateNotAllwedException(UpdateNotAllwedException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Update Not Allwed", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
 }
