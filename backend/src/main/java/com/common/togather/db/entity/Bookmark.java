@@ -52,15 +52,15 @@ public class Bookmark {
     private List<Receipt> receipts;
 
     // 날짜 해제로 찜 리스트로 이동한 경우
-    public void moveToJjim(LocalDate date) {
-        this.date = date;
+    public void moveToJjim() {
+        this.date = null;
         this.itemOrder = null;
     }
 
-    // 찜 리스트에서 계획으로 이동한 경우
-    public void moveFromJjim(LocalDate date, int itemOrder) {
+    // 찜 리스트에서 계획으로 이동한 경우 또는 날짜 있는데 다른 날짜로 이동한 경우
+    public void updateDate(LocalDate date, int targetSize) {
         this.date = date;
-        this.itemOrder = itemOrder;
+        this.itemOrder = targetSize;
     }
 
     // 순서를 변경한 경우
