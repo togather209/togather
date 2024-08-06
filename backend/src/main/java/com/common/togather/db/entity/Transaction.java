@@ -44,7 +44,7 @@ public class Transaction {
     private int status;
 
     // Pay 계좌
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "pay_account_id")
     private PayAccount payAccount;
 }
