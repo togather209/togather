@@ -2,11 +2,9 @@ package com.common.togather.api.service;
 
 import com.common.togather.api.error.*;
 import com.common.togather.api.request.BookmarkDateUpdateRequest;
+import com.common.togather.api.request.BookmarkOrderUpdateRequest;
 import com.common.togather.api.request.BookmarkSaveRequest;
-import com.common.togather.api.response.BookmarkFindAllByDateResponse;
-import com.common.togather.api.response.BookmarkFindAllByPlanIdResponse;
-import com.common.togather.api.response.BookmarkFindAllInJjinResponse;
-import com.common.togather.api.response.BookmarkUpdateDateResponse;
+import com.common.togather.api.response.*;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Bookmark;
 import com.common.togather.db.entity.Plan;
@@ -151,6 +149,65 @@ public class BookmarkService {
                         .placeImg(bookmark.getPlaceImg())
                         .placeName(bookmark.getPlaceName())
                         .placeAddr(bookmark.getPlaceAddr())
+                        .receiptCnt(bookmark.getReceipts() != null ? bookmark.getReceipts().size() : 0)
+                        .build())
+                .collect(Collectors.toList());
+
+    }
+
+    // 동일 날짜 내 북마크 순서 변경
+    @Transactional
+    public List<BookmarkOrderUpdateResponse> updateOrder(int teamId, int planId, int bookmarkId, String header, BookmarkOrderUpdateRequest request) {
+
+        teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, jwtUtil.getAuthMemberEmail(header))
+                .orElseThrow(() -> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
+
+        planRepository.findById(planId)
+                .orElseThrow(()-> new PlanNotFoundException("해당 일정이 존재하지 않습니다."));
+
+        Bookmark movedBookmark = bookmarkRepository.findById(bookmarkId)
+                .orElseThrow(() -> new BookmarkNotFoundException("해당 북마크가 존재하지 않습니다."));
+
+        int oldOrder = movedBookmark.getItemOrder(); // 원래 갖고 있던 순서
+        int newOrder = request.getNewOrder(); // 새로 바뀐 순서
+
+        // 순서 이동이 있었을 때만
+        if(oldOrder != newOrder) {
+
+            // 바꾼 요소의 순서를 수정
+            movedBookmark.updateOrder(request.getNewOrder());
+            bookmarkRepository.save(movedBookmark);
+
+            // 바꾼 요소와 같은 날짜인 북마크 모두 조회
+            List<Bookmark> bookmarkList = bookmarkRepository.findAllByDate(movedBookmark.getDate());
+
+            for(Bookmark bookmark : bookmarkList) {
+                // 변경한 요소가 아닌 다른 요소들 중에서만 판단
+                if(bookmark.getId() != bookmarkId) {
+                    // 새 순서가 이전 순서보다 작아졌다면, 새 순서 이상이면서 이전 순서보다 작은 요소들을 +1
+                    if(newOrder < oldOrder && bookmark.getItemOrder() >= newOrder && bookmark.getItemOrder() < oldOrder) {
+                        bookmark.updateOrder(bookmark.getItemOrder()+1);
+                    }
+                    // 새 순서가 이전 순서보다 커졌다면, 새 순서 이하면서 이전 순서보다 큰 요소들을 -1
+                    else if(newOrder > oldOrder && bookmark.getItemOrder() <= newOrder && bookmark.getItemOrder() > oldOrder) {
+                        bookmark.updateOrder(bookmark.getItemOrder()-1);
+                    }
+                    bookmarkRepository.save(movedBookmark);
+                }
+            }
+
+        }
+
+        List<Bookmark> updateList = bookmarkRepository.findAllByDate(movedBookmark.getDate());
+        return updateList.stream()
+                .sorted(((o1, o2) -> Integer.compare(o1.getItemOrder(), o2.getItemOrder())))
+                .map(bookmark -> BookmarkOrderUpdateResponse.builder()
+                        .bookmarkId(bookmark.getId())
+                        .placeId(bookmark.getPlaceId())
+                        .placeImg(bookmark.getPlaceImg())
+                        .placeName(bookmark.getPlaceName())
+                        .placeAddr(bookmark.getPlaceAddr())
+                        .itemOrder(bookmark.getItemOrder())
                         .receiptCnt(bookmark.getReceipts() != null ? bookmark.getReceipts().size() : 0)
                         .build())
                 .collect(Collectors.toList());
