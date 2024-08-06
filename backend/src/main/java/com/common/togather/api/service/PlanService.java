@@ -3,6 +3,7 @@ package com.common.togather.api.service;
 import com.common.togather.api.error.*;
 import com.common.togather.api.request.PlanSaveRequest;
 import com.common.togather.api.request.PlanUpdateRequest;
+import com.common.togather.api.response.PlanFindAuthAccessResponse;
 import com.common.togather.api.response.PlanFindByPlanIdResponse;
 import com.common.togather.api.response.PlanSaveResponse;
 import com.common.togather.api.response.ReceiptFindAllByPlanIdResponse;
@@ -43,13 +44,13 @@ public class PlanService {
     public PlanSaveResponse savePlan(int teamId, String authMemberEmail, PlanSaveRequest planSaveRequest) {
 
         Member member = memberRepository.findByEmail(authMemberEmail)
-                .orElseThrow(()-> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
 
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(()-> new TeamNotFoundException("해당 팀은 존재하지 않습니다."));
+                .orElseThrow(() -> new TeamNotFoundException("해당 팀은 존재하지 않습니다."));
 
         teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, authMemberEmail)
-                .orElseThrow(()-> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
+                .orElseThrow(() -> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
 
         Plan plan = Plan.builder()
                 .title(planSaveRequest.getTitle())
@@ -75,13 +76,13 @@ public class PlanService {
     public PlanFindByPlanIdResponse getPlanDetail(int teamId, int planId, String authMemberEmail) {
 
         Member member = memberRepository.findByEmail(authMemberEmail)
-                .orElseThrow(()-> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
 
         teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, authMemberEmail)
-                .orElseThrow(()-> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
+                .orElseThrow(() -> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
 
         Plan plan = planRepository.findById(planId)
-                .orElseThrow(()->new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
+                .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
 
         int hostId = plan.getManager().getId();
 
@@ -102,16 +103,16 @@ public class PlanService {
     public void updatePlan(int teamId, int planId, String authMemberEmail, PlanUpdateRequest planUpdateRequest) {
 
         Plan plan = planRepository.findById(planId)
-                .orElseThrow(()->new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
+                .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
 
         memberRepository.findByEmail(authMemberEmail)
-                .orElseThrow(()-> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
 
         teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, authMemberEmail)
-                .orElseThrow(()-> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
+                .orElseThrow(() -> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
 
         // 일정장만 접근 가능
-        if(!plan.getManager().getEmail().equals(authMemberEmail)) {
+        if (!plan.getManager().getEmail().equals(authMemberEmail)) {
             throw new UnauthorizedAccessException("일정장이 아니므로 수정할 수 없습니다.");
         }
 
@@ -126,22 +127,32 @@ public class PlanService {
     public void deletePlan(int teamId, int planId, String authMemberEmail) {
 
         Plan plan = planRepository.findById(planId)
-                .orElseThrow(()->new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
+                .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
 
         teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, authMemberEmail)
-                .orElseThrow(()-> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
+                .orElseThrow(() -> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
 
         // 일정장만 접근 가능
-        if(!plan.getManager().getEmail().equals(authMemberEmail)) {
+        if (!plan.getManager().getEmail().equals(authMemberEmail)) {
             throw new UnauthorizedAccessException("일정장이 아니므로 삭제할 수 없습니다.");
         }
 
         // 정산이 끝났거나 등록된 영수증이 없으면 삭제 가능
         Optional<List<ReceiptFindAllByPlanIdResponse>> receiptList = receiptRepositorySupport.findAllByPlanId(planId);
-        if(plan.getStatus()==1 || !receiptList.isPresent() || receiptList.get().isEmpty()){
+        if (plan.getStatus() == 1 || !receiptList.isPresent() || receiptList.get().isEmpty()) {
             planRepository.deleteById(planId);
-        }
-        else throw new DeletionNotAllowedException("정산이 완료 됐거나 등록된 영수증이 없어야 일정을 삭제할 수 있습니다.");
+        } else throw new DeletionNotAllowedException("정산이 완료 됐거나 등록된 영수증이 없어야 일정을 삭제할 수 있습니다.");
 
+    }
+
+    // 일정 권한 조회
+    public PlanFindAuthAccessResponse findAuthAccessPlan(String email, int planId) {
+
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
+
+        return PlanFindAuthAccessResponse.builder()
+                .isManager(plan.isManager(email))
+                .build();
     }
 }
