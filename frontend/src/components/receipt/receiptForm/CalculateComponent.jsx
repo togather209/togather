@@ -1,36 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setReceiptData } from "../../../redux/slices/receiptSlice";
+import { useSelector } from "react-redux";
 import "./CalculateComponent.css";
 import SelectParticipantsModal from "./SelectParticipantsModal";
 import AddButton from "../../../assets/icons/common/add.png";
 import Button from "../../common/Button";
-import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance";
 
 function CalculateComponent() {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // Redux 상태에서 영수증 데이터를 가져옴
   const receiptData = useSelector((state) => state.receipt);
   const { color, businessName, paymentDate, items, totalPrice, bookmarkId } =
     receiptData;
-
   const { teamId, planId } = useSelector((state) => state.receipt);
 
-  const [activeType, setActiveType] = useState("divide");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [itemParticipants, setItemParticipants] = useState({});
-  const [currentItemIndex, setCurrentItemIndex] = useState(null);
-  const [generalParticipants, setGeneralParticipants] = useState([]);
+  const [activeType, setActiveType] = useState("divide"); // 현재 계산 유형을 저장
+  const [isModalOpen, setIsModalOpen] = useState(false); // 참가자 선택 모달의 열림 상태를 저장
+  const [itemParticipants, setItemParticipants] = useState({}); // 각 품목에 대한 참가자 정보를 저장
+  const [currentItemIndex, setCurrentItemIndex] = useState(null); // 현재 선택된 품목의 인덱스를 저장
+  const [generalParticipants, setGeneralParticipants] = useState([]); // 일반적인 참가자 정보를 저장
 
   useEffect(() => {
     console.log("general", generalParticipants);
   }, [generalParticipants]);
 
+  // paymentDate를 ISO 8601 형식으로 변환
+  const formattedPaymentDate = new Date(paymentDate).toISOString();
+
   // 영수증 등록 요청
   const handleRegister = async () => {
     const receiptTempInfo = {
       businessName,
-      paymentDate,
+      paymentDate: formattedPaymentDate,
       totalPrice,
       bookmarkId,
       color,
@@ -57,11 +60,13 @@ function CalculateComponent() {
         receiptTempInfo
       );
       console.log("등록 성공:", response);
+      navigate("/receipt"); // 등록 성공 후 /receipt 페이지로 이동
     } catch (error) {
       console.error("등록 실패:", error);
     }
   };
 
+  // 계산 유형을 변경하는 함수
   const handleCalculateType = (type) => {
     setItemParticipants({});
     setGeneralParticipants([]);
@@ -69,11 +74,13 @@ function CalculateComponent() {
     setActiveType(type);
   };
 
+  // 모달을 여는 함수
   const handleOpenModal = (itemIndex) => {
     setCurrentItemIndex(itemIndex);
     setIsModalOpen(true);
   };
 
+  // 참가자를 선택하는 함수
   const handleSelectParticipants = (selected) => {
     if (currentItemIndex !== null) {
       setItemParticipants((prev) => ({
@@ -95,6 +102,7 @@ function CalculateComponent() {
     setIsModalOpen(false);
   };
 
+  // 정산 결과를 계산하는 함수
   const calculateSettlements = () => {
     const settlements = {};
     if (activeType === "personal") {
@@ -127,6 +135,7 @@ function CalculateComponent() {
 
   const settlements = calculateSettlements();
 
+  // 모든 품목에 참가자가 태그되었는지 확인
   const allItemsTagged =
     activeType === "personal"
       ? items.every(
