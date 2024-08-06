@@ -33,9 +33,10 @@ VALUES (1, 1), -- User 1 is associated with Item A
        (3, 3), -- User 3 is associated with Item C
        (4, 2); -- User 2 is associated with Item D
 
-INSERT INTO bookmark (plan_id, place_img, place_name, place_addr, day, item_order)
-VALUES (1, 'place1.jpg', 'Place A', 'Address A', 1, 1),
-       (1, 'place2.jpg', 'Place B', 'Address B', 1, 2);
+INSERT INTO bookmark (plan_id, place_img, place_name, place_addr, date, item_order)
+VALUES (1, 'place1.jpg', 'Place A', 'Address A', '2024-08-01', 1),
+       (1, 'place2.jpg', 'Place B', 'Address B', '2024-08-02', 2),
+       (1, 'null', 'Place C', 'Address C', '2024-08-01', 2);
 
 INSERT INTO team_member (member_id, team_id, role)
 VALUES (1, 1, 1), -- User 1 is a member of Team A with role 1
