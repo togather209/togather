@@ -64,15 +64,21 @@ function RecognizeComponent({ setActiveTab }) {
   };
 
   const handleSaveButton = () => {
-    const updatedResult = { ...recognizedResult, items: editedItems };
+    // 수량이나 가격이 0인 품목을 삭제
+    const filteredItems = editedItems.filter(
+      (item) => item.count > 0 && item.unitPrice > 0
+    );
+    const updatedResult = { ...recognizedResult, items: filteredItems };
+
     setRecognizedResult(updatedResult);
+    setEditedItems(filteredItems);
     setIsEditing(false);
   };
 
   const handleChange = (index, field, value) => {
     const updatedItems = [...editedItems];
     if (field === "count" || field === "unitPrice") {
-      updatedItems[index][field] = Number(value);
+      updatedItems[index][field] = value === "" ? "" : Number(value);
     } else {
       updatedItems[index][field] = value;
     }
@@ -315,7 +321,11 @@ function RecognizeComponent({ setActiveTab }) {
             <p>총액</p>
             <p>
               {editedItems
-                .reduce((total, item) => total + item.unitPrice, 0)
+                .reduce(
+                  (total, item) =>
+                    total + (item.unitPrice === "" ? 0 : item.unitPrice),
+                  0
+                )
                 .toLocaleString()}
               원
             </p>

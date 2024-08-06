@@ -60,6 +60,13 @@ function CalculateComponent() {
         receiptTempInfo
       );
       console.log("등록 성공:", response);
+
+      // 상태 초기화
+      setActiveType("divide");
+      setItemParticipants({});
+      setGeneralParticipants([]);
+      setCurrentItemIndex(null);
+
       navigate("/receipt"); // 등록 성공 후 /receipt 페이지로 이동
     } catch (error) {
       console.error("등록 실패:", error);

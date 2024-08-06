@@ -96,7 +96,7 @@ function ReceiptDetail() {
   };
 
   const handleCheck = () => {
-    navigate(-1, {
+    navigate("/receipt", {
       state: { teamId: teamId, planId: planId, receiptId: receiptId },
     });
   };

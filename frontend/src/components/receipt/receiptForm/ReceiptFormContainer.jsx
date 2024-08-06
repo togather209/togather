@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setReceiptData,
   setActiveTab,
+  resetReceipt,
 } from "../../../redux/slices/receiptSlice";
 import "./ReceiptForm.css";
 import BackButton from "../../common/BackButton";
@@ -14,8 +15,20 @@ function ReceiptRegistForm() {
   const dispatch = useDispatch();
   const activeTab = useSelector((state) => state.receipt.activeTab);
   const receiptData = useSelector((state) => state.receipt);
+  const teamId = useSelector((state) => state.receipt.teamId);
 
-  const handleSetActiveTab = (tab, items = [], storeName = "", date = "") => {
+  useEffect(() => {
+    // 컴포넌트가 마운트될 때 초기화
+    dispatch(resetReceipt());
+    console.log(teamId);
+  }, [dispatch, teamId]);
+
+  const handleSetActiveTab = (
+    tab,
+    items = [],
+    businessName = "",
+    paymentDate = ""
+  ) => {
     dispatch(setActiveTab(tab));
 
     if (items.length > 0) {
@@ -41,7 +54,6 @@ function ReceiptRegistForm() {
         <div className="tabs">
           <button
             className={`tab-button ${activeTab === "design" ? "active" : ""}`}
-            onClick={() => dispatch(setActiveTab("design"))}
           >
             디자인
           </button>
@@ -49,7 +61,6 @@ function ReceiptRegistForm() {
             className={`tab-button ${
               activeTab === "recognize" ? "active" : ""
             }`}
-            onClick={() => dispatch(setActiveTab("recognize"))}
           >
             인식
           </button>
@@ -57,7 +68,6 @@ function ReceiptRegistForm() {
             className={`tab-button ${
               activeTab === "calculate" ? "active" : ""
             }`}
-            onClick={() => dispatch(setActiveTab("calculate"))}
           >
             정산
           </button>
