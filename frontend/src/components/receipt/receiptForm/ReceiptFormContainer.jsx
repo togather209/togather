@@ -15,13 +15,11 @@ function ReceiptRegistForm() {
   const dispatch = useDispatch();
   const activeTab = useSelector((state) => state.receipt.activeTab);
   const receiptData = useSelector((state) => state.receipt);
-  const teamId = useSelector((state) => state.receipt.teamId);
 
   useEffect(() => {
     // 컴포넌트가 마운트될 때 초기화
     dispatch(resetReceipt());
-    console.log(teamId);
-  }, [dispatch, teamId]);
+  }, [dispatch]);
 
   const handleSetActiveTab = (
     tab,
@@ -54,6 +52,9 @@ function ReceiptRegistForm() {
         <div className="tabs">
           <button
             className={`tab-button ${activeTab === "design" ? "active" : ""}`}
+            onClick={() => {
+              dispatch(setActiveTab("design"));
+            }}
           >
             디자인
           </button>
@@ -61,6 +62,11 @@ function ReceiptRegistForm() {
             className={`tab-button ${
               activeTab === "recognize" ? "active" : ""
             }`}
+            onClick={() => {
+              activeTab === "calculate"
+                ? dispatch(setActiveTab("recognize"))
+                : "";
+            }}
           >
             인식
           </button>

@@ -7,16 +7,17 @@ import Delete from "../../../assets/receipt/delete.png";
 import Button from "../../common/Button";
 import axiosInstance from "../../../utils/axiosInstance";
 import DeleteReceiptModal from "./DeleteReceiptModal";
+import { useSelector } from "react-redux";
 
 function ReceiptDetail() {
-  const { receiptId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const [receipt, setReceipts] = useState(null); // 초기 상태를 null로 설정
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isManager, setIsManager] = useState(false);
 
-  const { teamId, planId } = location.state || {};
-
+  const { receiptId } = useParams();
+  const { teamId, planId } = useSelector((state) => state.receipt);
   const colorMap = {
     0: "sky",
     1: "pink",
@@ -36,6 +37,7 @@ function ReceiptDetail() {
           `teams/${teamId}/plans/${planId}/receipts/${receiptId}`
         );
         setReceipts(response.data.data);
+        setIsManager(response.data.data.isManager);
         console.log(response.data);
       } catch (error) {
         console.error("영수증 상세 조회에 실패했습니다.", error);
@@ -43,7 +45,7 @@ function ReceiptDetail() {
     };
 
     fetchReceiptDetail();
-  }, []); // 의존성 배열을 빈 배열로 설정
+  }, [teamId, planId, receiptId]); // 의존성 배열을 빈 배열로 설정
 
   // 정산액 계산
   const calculateSettlements = (items) => {
@@ -87,7 +89,7 @@ function ReceiptDetail() {
       await axiosInstance.delete(
         `teams/${teamId}/plans/${planId}/receipts/${receiptId}`
       );
-      console.log(`${receiptId}번 영수증 삭제`);
+      console.log(`${receiptId}번 영수증 삭제 완료`);
       setIsDeleteModalOpen(false);
       navigate("/receipt");
     } catch (error) {
@@ -149,10 +151,12 @@ function ReceiptDetail() {
               <p>결제자 : {receipt.managerName}</p>
               <p>결제일시 : {receipt.paymentDate}</p>
             </div>
-            <div className="receipt-manage">
-              <img src={Update} alt="update" onClick={handleUpdate} />
-              <img src={Delete} alt="delete" onClick={handleDeleteModal} />
-            </div>
+            {isManager && (
+              <div className="receipt-manage">
+                <img src={Update} alt="update" onClick={handleUpdate} />
+                <img src={Delete} alt="delete" onClick={handleDeleteModal} />
+              </div>
+            )}
           </div>
           <div className="payment-info">
             <table className="payment-table">
