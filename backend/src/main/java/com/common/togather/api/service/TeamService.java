@@ -2,14 +2,12 @@ package com.common.togather.api.service;
 
 import com.common.togather.api.error.AlreadyJoinedTeamException;
 import com.common.togather.api.error.MemberNotFoundException;
+import com.common.togather.api.error.NotTeamLeaderException;
 import com.common.togather.api.error.TeamNotFoundException;
 import com.common.togather.api.request.TeamJoinSaveRequest;
 import com.common.togather.api.request.TeamSaveRequest;
 import com.common.togather.api.request.TeamUpdateRequest;
-import com.common.togather.api.response.PlanFindAllByTeamIdResponse;
-import com.common.togather.api.response.TeamFindAllByMemberIdResponse;
-import com.common.togather.api.response.TeamFindByTeamIdResponse;
-import com.common.togather.api.response.TeamSaveResponse;
+import com.common.togather.api.response.*;
 import com.common.togather.db.entity.Member;
 import com.common.togather.db.entity.Team;
 import com.common.togather.db.entity.TeamJoin;
@@ -153,5 +151,27 @@ public class TeamService {
                 .member(member)
                 .status(0)
                 .build());
+    }
+
+    // 모임 참여 요청 조회
+    public List<TeamJoinFindAllByTeamIdResponse> findTeamJoinByTeamId(String email, Integer teamId) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new TeamNotFoundException("해당하는 모임이 없습니다."));
+        TeamMember teamMember = teamMemberRepository.findByMemberAndTeam(member, team);
+
+        if (teamMember.getRole() != 1) { // 방장이 아닌 경우
+            throw new NotTeamLeaderException("모임 방장이 아니므로 요청을 조회할 수 없습니다.");
+        }
+
+        List<TeamJoin> teamJoins = teamJoinRepository.findByTeam(team);
+        return teamJoins.stream()
+                .map(teamJoin -> TeamJoinFindAllByTeamIdResponse.builder()
+                        .teamId(teamJoin.getTeam().getId())
+                        .nickname(teamJoin.getMember().getNickname())
+                        .status(teamJoin.getStatus())
+                        .build())
+                .collect(Collectors.toList());
     }
 }
