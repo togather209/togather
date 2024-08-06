@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TeamJoinFindAllByTeamIdResponse {
     private Integer teamId;
+    private Integer memberId;
     private String nickname;
     private int status;
 }

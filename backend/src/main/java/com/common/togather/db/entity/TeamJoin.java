@@ -26,7 +26,8 @@ public class TeamJoin {
     private Member member;
 
     // 상태
-    // 0 : 요청 중, 1: 수락
+    // 0 : 요청 중, 1 : 수락, 2 : 모임 신청을 할 수 없는 상태
     @Column(name = "status", nullable = false)
     private int status;
+
 }

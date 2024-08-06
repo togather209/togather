@@ -87,6 +87,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    // 모임에 요청을 할 수 없는 경우
+    @ExceptionHandler(TeamJoinBlockedException.class)
+    public ResponseEntity<ErrorResponseDto> handleTeamJoinBlockedException(TeamJoinBlockedException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Join Blocked", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
     // 모임의 방장이 아닐 경우
     @ExceptionHandler(NotTeamLeaderException.class)
     public ResponseEntity<ErrorResponseDto> handleNotTeamLeaderException(NotTeamLeaderException ex) {
