@@ -80,7 +80,7 @@ public class TeamController {
     }
 
     // 모임 참여 요청
-    @Operation(summary = "모임 상세 조회")
+    @Operation(summary = "모임 참여 요청")
     @PostMapping("/join-requests")
     public ResponseEntity<ResponseDto<String>> joinTeamByCode(@RequestHeader(value = "Authorization", required = false) String token, @RequestBody TeamJoinSaveRequest requestDto) {
         teamService.joinTeamByCode(jwtUtil.getAuthMemberEmail(token), requestDto);
@@ -101,6 +101,19 @@ public class TeamController {
                 .status(HttpStatus.OK.value())
                 .message("모임 참여 요청 조회를 성공했습니다.")
                 .data(teamService.findTeamJoinByTeamId(jwtUtil.getAuthMemberEmail(token), teamId))
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    // 모임 참여 인원 조회
+    @Operation(summary = "모임 참여 인원 조회")
+    @GetMapping("/{teamId}/members")
+    public ResponseEntity<ResponseDto<List<TeamMemberFindAllByTeamIdResponse>>> findAllTeamMemberByTeamId(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Integer teamId) {
+        ResponseDto<List<TeamMemberFindAllByTeamIdResponse>> responseDto = ResponseDto.<List<TeamMemberFindAllByTeamIdResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("모임 참여 인원 조회를 성공했습니다.")
+                .data(teamService.findAllTeamMemberByTeamId(teamId))
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
