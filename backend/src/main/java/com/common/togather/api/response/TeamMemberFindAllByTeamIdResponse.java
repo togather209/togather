@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class TeamMemberFindAllByTeamIdResponse {
     private Integer memberId;
     private String nickname;
+    private String profileImg;
     private int role;
 }

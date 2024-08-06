@@ -19,4 +19,6 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Integer>
     TeamMember findByMemberAndTeam(Member member, Team team);
     // teamId로 TeamMember 리스트 반환
     List<TeamMember> findByTeamId(Integer teamId);
+    // 팀과 멤버로 팀 멤버 삭제
+    void deleteByMemberAndTeam(Member member, Team team);
 }
