@@ -18,7 +18,7 @@ function HomeMain() {
 
   // 전체보기 및 편집로 이동
   const handleSeeAllClick = () => {
-    navigation("/meeting", { state: { myMeetings } });
+    navigation("/home/meeting", { state: { myMeetings } });
   };
 
   // 렌더링됐을 때 나의 모임 요청
