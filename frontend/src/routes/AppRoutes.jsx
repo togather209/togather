@@ -35,6 +35,7 @@ import ReceiptUpdateContainer from "../components/receipt/receiptUpdate/ReceiptU
 import ProfileUpdate from "../components/mypage/ProfileUpdate";
 import Terms from "../components/mypage/Terms";
 import PrivateRoute from "./PrivateRoute";
+import CameraCapture from "../components/receipt/receiptForm/recognizeDetail/CameraCapture";
 
 function AppRoutes() {
   return (
@@ -139,6 +140,7 @@ function AppRoutes() {
         <Route index element={<ReceiptListContainer />} />
         <Route path=":receiptId" element={<ReceiptDetail />} />
         <Route path="regist-form" element={<ReceiptFormContainer />} />
+        <Route path="camera-capture" element={<CameraCapture />} />
         <Route path="update-form" element={<ReceiptUpdateContainer />} />
       </Route>
       <Route

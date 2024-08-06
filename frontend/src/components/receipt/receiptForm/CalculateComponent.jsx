@@ -15,8 +15,15 @@ function CalculateComponent() {
 
   // Redux 상태에서 영수증 데이터를 가져옴
   const receiptData = useSelector((state) => state.receipt);
-  const { color, businessName, paymentDate, items, totalPrice, bookmarkId } =
-    receiptData;
+  const {
+    color,
+    businessName,
+    paymentDate,
+    items,
+    totalPrice,
+    bookmarkId,
+    receiptId,
+  } = receiptData;
   let { teamId, planId } = useSelector((state) => state.receipt);
 
   const [activeType, setActiveType] = useState("divide"); // 현재 계산 유형을 저장
@@ -59,8 +66,9 @@ function CalculateComponent() {
     const fetchParticipants = async () => {
       try {
         const response = await axiosInstance.get(`teams/${teamId}/members`);
-        console.log("일정 참여자 리스트 조회 결과", response.data.data);
+        // console.log("일정 참여자 리스트 조회 결과", response.data.data);
         setParticipants(response.data.data);
+        console.log(response.data.data);
       } catch (error) {
         console.error("일정 참여자 리스트 조회 중 문제가 발생했습니다.", error);
       }
@@ -69,11 +77,12 @@ function CalculateComponent() {
     fetchParticipants();
   }, [generalParticipants]);
 
-  // paymentDate를 ISO 8601 형식으로 변환
   const formattedPaymentDate = new Date(paymentDate).toISOString();
 
   // 영수증 등록 요청
   const handleRegister = async () => {
+    // paymentDate를 ISO 8601 형식으로 변환
+
     const receiptTempInfo = {
       businessName,
       paymentDate: formattedPaymentDate,
@@ -116,6 +125,45 @@ function CalculateComponent() {
     }
   };
 
+  // 영수증 수정 요청
+  const handleUpdate = async () => {
+    const receiptTempInfo = {
+      businessName,
+      paymentDate: formattedPaymentDate,
+      totalPrice,
+      bookmarkId,
+      color,
+      items: items.map((item, index) => ({
+        name: item.name,
+        unitPrice: item.unitPrice,
+        count: item.count,
+        members:
+          activeType === "person"
+            ? (itemParticipants[index] || []).map((participant) => ({
+                memberId: participant.memberId,
+              }))
+            : generalParticipants.map((participant) => ({
+                memberId: participant.memberId,
+              })),
+      })),
+    };
+
+    console.log(receiptTempInfo);
+
+    try {
+      const response = await axiosInstance.put(
+        `teams/${teamId}/plans/${planId}/receipts/${receiptId}`,
+        receiptTempInfo
+      );
+      console.log("수정 성공", response);
+
+      // 수정 후 영수증 전체 조회 페이지로 이동
+      navigate("/receipt");
+    } catch (error) {
+      console.error("영수증 수정 중 문제가 발생했습니다.", error);
+    }
+  };
+
   // 계산 유형을 변경하는 함수
   const handleCalculateType = (type) => {
     setItemParticipants({});
@@ -138,6 +186,7 @@ function CalculateComponent() {
         [currentItemIndex]: selected.map((participant) => ({
           memberId: participant.memberId,
           nickname: participant.nickname,
+          profileImg: participant.profileImg,
         })),
       }));
     } else {
@@ -145,6 +194,7 @@ function CalculateComponent() {
         selected.map((participant) => ({
           memberId: participant.memberId,
           nickname: participant.nickname,
+          profileImg: participant.profileImg,
         }))
       );
     }
@@ -196,9 +246,10 @@ function CalculateComponent() {
 
   const haveParticipants = Object.keys(settlements).length > 0;
 
+  // TODO : 이미지 처리
   const fixProfileImgUrl = (url) => {
+    console.log("url is", url);
     if (!url) {
-      console.log("url is", url);
       return ""; // url이 undefined이거나 null일 경우 빈 문자열 반환
     }
     return url.replace("|", "");
@@ -311,14 +362,25 @@ function CalculateComponent() {
             </div>
           </div>
         )}
-        <Button
-          type={allItemsTagged ? "purple" : "gray"}
-          className="receipt-regist-button"
-          onClick={handleRegister}
-          disabled={!allItemsTagged}
-        >
-          등록
-        </Button>
+        {receiptId ? (
+          <Button
+            type={allItemsTagged ? "purple" : "gray"}
+            className="receipt-regist-button"
+            onClick={handleUpdate}
+            disabled={!allItemsTagged}
+          >
+            수정완료
+          </Button>
+        ) : (
+          <Button
+            type={allItemsTagged ? "purple" : "gray"}
+            className="receipt-regist-button"
+            onClick={handleRegister}
+            disabled={!allItemsTagged}
+          >
+            등록
+          </Button>
+        )}
       </div>
       {isModalOpen && (
         <SelectParticipantsModal
