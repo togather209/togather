@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setReceiptData } from "../../../redux/slices/receiptSlice";
 import "./ReceiptForm.css";
 import PaperReceipt from "../../../assets/receipt/paperReceipt.png";
@@ -11,6 +11,7 @@ import Picture from "../../../assets/receipt/picture.png";
 import ActivePicture from "../../../assets/receipt/activePicture.png";
 import ConnectReceiptSchedule from "./ConnectReceiptScheduleModal";
 import Close from "../../../assets/icons/common/close.png";
+import DatePicker from "react-datepicker";
 
 function RecognizeComponent({ setActiveTab, defaultReceipt }) {
   // redux 상태관리
@@ -37,8 +38,15 @@ function RecognizeComponent({ setActiveTab, defaultReceipt }) {
   // 연결된 북마크 정보
   const [bookmark, setBookmark] = useState({ id: -1, name: "" });
 
+  // 영수증 수정 상태
+  const [isEditStatus, setIsEditStatus] = useState(false);
+
   useEffect(() => {
     if (defaultReceipt !== undefined) {
+      // 영수증 수정 페이지 상태
+      setIsEditStatus(true);
+
+      // 기존 인식 데이터 가져오기
       setRecognizedResult({
         businessName: defaultReceipt.businessName,
         paymentDate: defaultReceipt.paymentDate.slice(0, 19),
@@ -130,7 +138,7 @@ function RecognizeComponent({ setActiveTab, defaultReceipt }) {
       console.log(newReceiptData);
 
       dispatch(setReceiptData(newReceiptData));
-      setActiveTab("calculate");
+      dispatch(setActiveTab("calculate"));
     }
   };
 
@@ -158,20 +166,22 @@ function RecognizeComponent({ setActiveTab, defaultReceipt }) {
 
   return (
     <div className="recognize-component">
-      <div className="receipt-type">
-        <button
-          className={`type-button ${activeType === "paper" ? "active" : ""}`}
-          onClick={() => handleReceiptType("paper")}
-        >
-          종이 영수증
-        </button>
-        <button
-          className={`type-button ${activeType === "mobile" ? "active" : ""}`}
-          onClick={() => handleReceiptType("mobile")}
-        >
-          모바일 결제내역
-        </button>
-      </div>
+      {!isEditStatus && (
+        <div className="receipt-type">
+          <button
+            className={`type-button ${activeType === "paper" ? "active" : ""}`}
+            onClick={() => handleReceiptType("paper")}
+          >
+            종이 영수증
+          </button>
+          <button
+            className={`type-button ${activeType === "mobile" ? "active" : ""}`}
+            onClick={() => handleReceiptType("mobile")}
+          >
+            모바일 결제내역
+          </button>
+        </div>
+      )}
       {recognizedResult === null && (
         <div className="reciept-type-img-container">
           <div
@@ -202,32 +212,40 @@ function RecognizeComponent({ setActiveTab, defaultReceipt }) {
             <div className="recognize-badge">영수증을 인식해보세요!</div>
           )}
           {recognizedResult !== null && (
-            <>
+            <div className="recognize-header">
               <div className="recognize-result-title">인식결과</div>
               {!isEditing && (
-                <button className="edit-result" onClick={handleEditButton}>
+                <button
+                  className={`edit-result ${isEditStatus ? "" : "not-edit"}`}
+                  onClick={handleEditButton}
+                >
                   편집
                 </button>
               )}
               {isEditing && (
-                <button className="save-result" onClick={handleSaveButton}>
+                <button
+                  className={`save-result ${isEditStatus ? "" : "not-edit"}`}
+                  onClick={handleSaveButton}
+                >
                   저장
                 </button>
               )}
-            </>
+            </div>
           )}
-          <div className="recognize-image-buttons">
-            {selectedImageType === "camera" ? (
-              <img src={ActiveCamera} alt="active-camera" />
-            ) : (
-              <img src={Camera} alt="camera" onClick={handleCameraButton} />
-            )}
-            {selectedImageType === "image" ? (
-              <img src={ActivePicture} alt="active-camera" />
-            ) : (
-              <img src={Picture} alt="image" onClick={handleImageButton} />
-            )}
-          </div>
+          {!isEditStatus && (
+            <div className="recognize-image-buttons">
+              {selectedImageType === "camera" ? (
+                <img src={ActiveCamera} alt="active-camera" />
+              ) : (
+                <img src={Camera} alt="camera" onClick={handleCameraButton} />
+              )}
+              {selectedImageType === "image" ? (
+                <img src={ActivePicture} alt="active-camera" />
+              ) : (
+                <img src={Picture} alt="image" onClick={handleImageButton} />
+              )}
+            </div>
+          )}
         </div>
       </div>
       {recognizedResult === null && (
@@ -249,16 +267,16 @@ function RecognizeComponent({ setActiveTab, defaultReceipt }) {
               })
             }
           />
-          <input
-            type="text"
-            className="recognized-payment-date edit"
-            value={recognizedResult.paymentDate}
-            onChange={(e) =>
+          <DatePicker
+            selected={recognizedResult.paymentDate}
+            onChange={(date) =>
               setRecognizedResult({
                 ...recognizedResult,
-                paymentDate: e.target.value,
+                paymentDate: date,
               })
             }
+            dateFormat="yyyy-MM-dd"
+            className="recognized-payment-date edit"
           />
         </div>
       ) : (

@@ -147,16 +147,18 @@ function ReceiptDetail() {
               <span>총액</span>
               <span>{receipt.totalPrice.toLocaleString()}원</span>
             </div>
-            <div className="receipt-meta">
-              <p>결제자 : {receipt.managerName}</p>
-              <p>결제일시 : {receipt.paymentDate}</p>
-            </div>
-            {isManager && (
-              <div className="receipt-manage">
-                <img src={Update} alt="update" onClick={handleUpdate} />
-                <img src={Delete} alt="delete" onClick={handleDeleteModal} />
+            <div className="receipt-footer">
+              <div className="receipt-meta">
+                <p>결제자 : {receipt.managerName}</p>
+                <p>결제일시 : {receipt.paymentDate}</p>
               </div>
-            )}
+              {isManager && (
+                <div className="receipt-manage">
+                  <img src={Update} alt="update" onClick={handleUpdate} />
+                  <img src={Delete} alt="delete" onClick={handleDeleteModal} />
+                </div>
+              )}
+            </div>
           </div>
           <div className="payment-info">
             <table className="payment-table">

@@ -113,6 +113,11 @@
   font-size: 24px;
 }
 
+.receipt-footer {
+  display: flex;
+  justify-content: space-between;
+}
+
 .receipt-meta {
   font-size: 14px;
   color: #575656;
@@ -122,6 +127,7 @@
   display: flex;
   justify-content: end;
 }
+
 .receipt-manage > img {
   width: 40px;
   margin-top: 10px;
