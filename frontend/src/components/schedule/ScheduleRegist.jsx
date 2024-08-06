@@ -1,15 +1,84 @@
 import React, {useState, useEffect} from "react";
-import "./ScheduleRegist.css"
+import { useParams, useNavigate } from "react-router-dom";
 
+import "./ScheduleRegist.css"
 import BackButton from "../common/BackButton"
 import Button from "../common/Button"
 import DatePicker from "./DatePicker"
+import axiosInstance from "../../utils/axiosInstance";
 
 function ScheduleRegist() {
-  
+  const navigation = useNavigate()
+  // 모임 id 파라미터 값
+  const {id} = useParams()
+
+  // 일정 이름
+  const [scheduleName, setScheduleName] = useState()
+  // 일정 설명
+  const [scheduleDescription, setScheduleDescription] = useState()
+  // 일정 시작일, 종료일
   const [startDate, setStartDate] = useState(null);
+  // console.log(typeof "new Date(startDate)")
   const [endDate, setEndDate] = useState(null);
-    useEffect(() => {console.log(startDate, endDate)}, [startDate, endDate])
+  useEffect(() => {console.log(new Date(startDate), new Date(endDate))}, [startDate, endDate])
+  
+  // 일정 이름 변경 함수
+  const handleScheduleName = (e) => {
+    setScheduleName(e.target.value)
+  }
+  // 일정 설명 변경 함수
+  const handleScheduleDescription = (e) => {
+    setScheduleDescription(e.target.value)
+  }
+
+  // 생성 클릭했을 때 일정 생성하는 요청
+  const addSchedule = async (e) => {
+
+    e.preventDefault()
+
+    // 요청 파라미터 값 생성
+    const ScheduleFormData = {}
+
+    // 제목값 갱신
+    ScheduleFormData["title"] = scheduleName
+    // 설명값 갱신
+    ScheduleFormData["description"] = scheduleDescription
+
+    if (!startDate && !endDate) {
+      console.error("Start date 또는 End date가 비어 있습니다.");
+      return; // startDate 와 endDate가 null이면 함수 종료
+    }
+
+    // 선하가 말한 형식으로 바꿔줍니다.
+    const formatDate = (date) => {
+      if (date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더함
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+    };
+
+    // 시작일 갱신
+    ScheduleFormData["startDate"] = formatDate(startDate);
+    // 종료일 갱신 (endate null이면 하루짜리 일정입니다.)
+    if (endDate) {
+      ScheduleFormData["endDate"] = formatDate(endDate)
+    } else {
+      ScheduleFormData["endDate"] = formatDate(startDate)
+    }
+
+    // console.log(ScheduleFormData)
+
+    // axios요청
+    try {
+      const response = await axiosInstance.post(`/teams/${id}/plans`, ScheduleFormData);
+      console.log(response)
+      navigation(`/meeting/${id}`)
+    } catch (error) {
+      console.error("데이터 불러오기실패", error);
+    }
+  };
 
   return (
     <div className="schedule-regist">
@@ -35,24 +104,20 @@ function ScheduleRegist() {
               setEndDate(end)
             }}
           />
-          {/* <div>
-            <p>시작일: {startDate ? startDate.toLocaleDateString() : '선택되지 않음'}</p>
-            <p>종료일: {endDate ? endDate.toLocaleDateString() : '선택되지 않음'}</p>
-          </div> */}
         </div>
 
       
         <div className="schedule-regist-input-box">
           <label htmlFor=""></label>
-          <input className="schedule-regist-input-tag" type="text" placeholder="일정명" />
+          <input onChange={handleScheduleName} className="schedule-regist-input-tag" type="text" placeholder="일정명" />
         </div>
 
         <div className="schedule-regist-input-box">
           <label htmlFor=""></label>
-          <input className="schedule-regist-input-tag" type="text" placeholder="일정 설명" />
+          <input onChange={handleScheduleDescription} className="schedule-regist-input-tag" type="text" placeholder="일정 설명" />
         </div>
 
-        <Button type={"purple"}>생성</Button>
+        <Button type={"purple"} onClick={addSchedule}>생성</Button>
       </form>
       </div>
     

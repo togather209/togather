@@ -181,3 +181,12 @@
   font-weight: 600;
   font-size: 12px;
 }
+
+.mypage-logout-button {
+  margin-top: 5px;
+  border-radius: 6px;
+  border: 1px solid #f0f0f0;
+  padding: 5px 10px;
+  background-color: white;
+  color: #9b9a9a;
+}
