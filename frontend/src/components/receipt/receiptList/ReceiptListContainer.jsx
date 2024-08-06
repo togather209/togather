@@ -34,8 +34,10 @@ function ReceiptListContainer() {
       return;
     }
 
-    // teamId와 planId를 redux에 저장
+    // teamId와 planId를 redux와 localStorage에 저장
     dispatch(setTeamPlan({ teamId, planId }));
+    localStorage.setItem("teamId", teamId);
+    localStorage.setItem("planId", planId);
 
     // 영수증 전체 조회 API 요청
     const fetchReceipt = async () => {

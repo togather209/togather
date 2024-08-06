@@ -6,15 +6,18 @@ import AddButton from "../../../assets/icons/common/add.png";
 import Button from "../../common/Button";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance";
+import { useDispatch } from "react-redux";
+import { setTeamPlan } from "../../../redux/slices/receiptSlice";
 
 function CalculateComponent() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // Redux 상태에서 영수증 데이터를 가져옴
   const receiptData = useSelector((state) => state.receipt);
   const { color, businessName, paymentDate, items, totalPrice, bookmarkId } =
     receiptData;
-  const { teamId, planId } = useSelector((state) => state.receipt);
+  let { teamId, planId } = useSelector((state) => state.receipt);
 
   const [activeType, setActiveType] = useState("divide"); // 현재 계산 유형을 저장
   const [isModalOpen, setIsModalOpen] = useState(false); // 참가자 선택 모달의 열림 상태를 저장
@@ -24,6 +27,18 @@ function CalculateComponent() {
 
   useEffect(() => {
     console.log("general", generalParticipants);
+
+    if (!teamId || !planId) {
+      teamId = localStorage.getItem("teamId");
+      planId = localStorage.getItem("planId");
+
+      if (teamId && planId) {
+        dispatch(setTeamPlan({ teamId, planId }));
+      } else {
+        console.error("teamId 또는 planId가 전달되지 않았습니다.");
+        return;
+      }
+    }
   }, [generalParticipants]);
 
   // paymentDate를 ISO 8601 형식으로 변환

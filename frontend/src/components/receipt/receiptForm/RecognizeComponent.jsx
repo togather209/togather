@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setReceiptData } from "../../../redux/slices/receiptSlice";
+import {
+  setReceiptData,
+  setActiveTab,
+  setTeamPlan,
+} from "../../../redux/slices/receiptSlice";
 import "./ReceiptForm.css";
 import PaperReceipt from "../../../assets/receipt/paperReceipt.png";
 import MobileReceipt from "../../../assets/receipt/mobileReceipt.png";
@@ -12,8 +16,9 @@ import ActivePicture from "../../../assets/receipt/activePicture.png";
 import ConnectReceiptSchedule from "./ConnectReceiptScheduleModal";
 import Close from "../../../assets/icons/common/close.png";
 import DatePicker from "react-datepicker";
+import { useSelector } from "react-redux";
 
-function RecognizeComponent({ setActiveTab, defaultReceipt }) {
+function RecognizeComponent({ defaultReceipt }) {
   // redux 상태관리
   const dispatch = useDispatch();
 
@@ -41,7 +46,22 @@ function RecognizeComponent({ setActiveTab, defaultReceipt }) {
   // 영수증 수정 상태
   const [isEditStatus, setIsEditStatus] = useState(false);
 
+  // teamId, planId 가져오기
+  let { teamId, planId } = useSelector((state) => state.receipt);
+
   useEffect(() => {
+    if (!teamId || !planId) {
+      teamId = localStorage.getItem("teamId");
+      planId = localStorage.getItem("planId");
+
+      if (teamId && planId) {
+        dispatch(setTeamPlan({ teamId, planId }));
+      } else {
+        console.error("teamId 또는 planId가 전달되지 않았습니다.");
+        return;
+      }
+    }
+
     if (defaultReceipt !== undefined) {
       // 영수증 수정 페이지 상태
       setIsEditStatus(true);

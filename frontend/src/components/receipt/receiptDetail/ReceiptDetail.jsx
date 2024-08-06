@@ -8,15 +8,18 @@ import Button from "../../common/Button";
 import axiosInstance from "../../../utils/axiosInstance";
 import DeleteReceiptModal from "./DeleteReceiptModal";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setTeamPlan } from "../../../redux/slices/receiptSlice";
 
 function ReceiptDetail() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [receipt, setReceipt] = useState(null); // 초기 상태를 null로 설정
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isManager, setIsManager] = useState(false);
 
   const { receiptId } = useParams();
-  const { teamId, planId } = useSelector((state) => state.receipt);
+  let { teamId, planId } = useSelector((state) => state.receipt);
 
   const colorMap = {
     0: "sky",
@@ -26,8 +29,15 @@ function ReceiptDetail() {
 
   useEffect(() => {
     if (!teamId || !planId) {
-      console.error("teamId 또는 planId가 전달되지 않았습니다.");
-      return;
+      teamId = localStorage.getItem("teamId");
+      planId = localStorage.getItem("planId");
+
+      if (teamId && planId) {
+        dispatch(setTeamPlan({ teamId, planId }));
+      } else {
+        console.error("teamId 또는 planId가 전달되지 않았습니다.");
+        return;
+      }
     }
 
     // 영수증 상세 조회 API 요청
