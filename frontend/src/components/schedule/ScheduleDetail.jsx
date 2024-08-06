@@ -134,11 +134,14 @@ function ScheduleDetail() {
     },
   ];
 
+
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [isHeartClicked, setIsHeartClicked] = useState(true);
   const [isCallStarted, setIsCallStarted] = useState(false);
   const [isHeadPhone, setIsHeadPhone] = useState(false);
   const [isMic, setIsMic] = useState(false);
+  const [favoritePlaces, setFavoritePlaces] = useState([])
 
   const handleCallStart = () => setIsCallStarted(!isCallStarted);
   const handleHeadPhone = () => setIsHeadPhone(!isHeadPhone);
@@ -162,6 +165,23 @@ function ScheduleDetail() {
   useEffect(() => {
     setIsOpenSearch(false)
   }, [])
+
+  // 찜목록 조회하는 요청
+  useEffect(() => {
+    if (isHeartClicked) {
+      const favoritePlace = async () => {
+        try {
+          const response = await axiosInstance.get(`/teams/${id}/plans/${schedule_id}/bookmarks/jjim`);
+          console.log(response.data.data);
+          setFavoritePlaces(response.data.data)
+          // console.log(favoritePlaces)
+        } catch (error) {
+          console.error("데이터 불러오기 실패", error);
+        }
+      }
+      favoritePlace()
+    }
+  }, [isHeartClicked, id, schedule_id, isOpenSearch])
 
   return (
     <div className="schedule-detail">
@@ -225,12 +245,12 @@ function ScheduleDetail() {
       </p>
       {isHeartClicked ? (
         <div>
-          {locations_mokup.map((item, index) => (
+          {favoritePlaces.map((item, index) => (
             <ScheduleDetailFavoritePlaces
-              key={item.id}
-              img_url={item.image}
-              name={item.name}
-              address={item.address}
+              key={item.bookmarkId}
+              img_url="없음"
+              name={item.placeName}
+              address={item.placeAddr}
               firstDate={datedata[0]?.date}
               lastDate={datedata[datedata.length - 1]?.date}
             />
