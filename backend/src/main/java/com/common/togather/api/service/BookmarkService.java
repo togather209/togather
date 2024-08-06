@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,7 +74,7 @@ public class BookmarkService {
 
     // 북마크 날짜 지정 및 수정
     @Transactional
-    public BookmarkUpdateDateResponse updateDate(int teamId, int planId, int bookmarkId, String header, BookmarkDateUpdateRequest request) {
+    public List<BookmarkDateUpdateResponse> updateDate(int teamId, int planId, int bookmarkId, String header, BookmarkDateUpdateRequest request) {
 
         teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, jwtUtil.getAuthMemberEmail(header))
                 .orElseThrow(() -> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
@@ -83,27 +82,70 @@ public class BookmarkService {
         planRepository.findById(planId)
                 .orElseThrow(()-> new PlanNotFoundException("해당 일정이 존재하지 않습니다."));
 
-        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
+        // 수정된 북마크
+        Bookmark updatedBookmark = bookmarkRepository.findById(bookmarkId)
                 .orElseThrow(() -> new BookmarkNotFoundException("해당 북마크가 존재하지 않습니다."));
 
-        LocalDate requestDate = request.getDate();
-        BookmarkUpdateDateResponse response = new BookmarkUpdateDateResponse();
+        LocalDate oldDate = updatedBookmark.getDate(); // 기존 날짜
+        LocalDate newDate = request.getDate(); // 새로운 날짜
 
-        // 지정된 날짜가 null이면 찜 목록으로 이동
-        if (requestDate == null) {
-            response.setIsJjim(true);
-            bookmark.moveToJjim(requestDate);
+        // 날짜 정보가 있던 장소가 찜으로 이동하는 경우
+        if (oldDate != null && newDate == null) {
+            int oldOrder = updatedBookmark.getItemOrder();
+            // 날짜와 순서 모두 null로 변경
+            updatedBookmark.moveToJjim();
+            bookmarkRepository.save(updatedBookmark);
+
+            // 수정된 요소와 같은 날짜에 있던 요소들 순서 바꿔주기
+            List<Bookmark> oldBookmarkList = bookmarkRepository.findAllByDate(oldDate);
+            for(Bookmark bookmark : oldBookmarkList){
+                // 수정된 요소가 가지고 있던 순서보다 더 뒷 순서면 -1
+                if(bookmark.getItemOrder() > oldOrder){
+                    bookmark.updateOrder(bookmark.getItemOrder() - 1);
+                }
+            }
+            bookmarkRepository.save(updatedBookmark); // 변경사항 저장
         }
-        // 지정된 날짜가 있을 경우
+        // 찜에 있던 장소에 날짜를 지정해준 경우, 날짜 변경하고 순서는 그 날짜의 가장 마지막으로 설정
+        else if (oldDate == null && newDate != null) {
+            updatedBookmark.updateDate(newDate, bookmarkRepository.findAllByDate(newDate).size());
+            bookmarkRepository.save(updatedBookmark);
+        }
+
+        // 날짜 정보가 있던 장소를 다른 날짜로 이동하는 경우 양쪽 모두 순서 재정렬
         else {
-            response.setIsJjim(false);
-            bookmark.moveFromJjim(requestDate, bookmarkRepository.findAllByDate(requestDate).size());
+            int oldOrder = updatedBookmark.getItemOrder();
+            updatedBookmark.updateDate(newDate, bookmarkRepository.findAllByDate(newDate).size());
+            bookmarkRepository.save(updatedBookmark);
+
+            // 수정된 요소와 같은 날짜에 있던 요소들 순서 바꿔주기
+            List<Bookmark> oldBookmarkList = bookmarkRepository.findAllByDate(oldDate);
+            for(Bookmark bookmark : oldBookmarkList){
+                // 수정된 요소가 가지고 있던 순서보다 더 뒷 순서면 -1
+                if(bookmark.getItemOrder() > oldOrder){
+                    bookmark.updateOrder(bookmark.getItemOrder() - 1);
+                }
+            }
+            bookmarkRepository.save(updatedBookmark); // 변경사항 저장
         }
 
-        // 해당 북마크 date값 수정
-        bookmarkRepository.save(bookmark);
+        // 해당 날짜인 모든 북마크 리스트
+        List<Bookmark> bookmarkList = bookmarkRepository.findAllByDate(oldDate);
 
-        return response;
+        return bookmarkList.stream()
+                .sorted(((o1, o2) -> Integer.compare(o1.getItemOrder(), o2.getItemOrder())))
+                .map(bookmark -> BookmarkDateUpdateResponse.builder()
+                        .bookmarkId(bookmark.getId())
+                        .placeId(bookmark.getPlaceId())
+                        .placeImg(bookmark.getPlaceImg())
+                        .placeName(bookmark.getPlaceName())
+                        .placeAddr(bookmark.getPlaceAddr())
+                        .itemOrder(bookmark.getItemOrder())
+                        .receiptCnt(bookmark.getReceipts() != null ? bookmark.getReceipts().size() : 0)
+                        .build())
+                .collect(Collectors.toList());
+
+
     }
 
     // 날짜가 정해진 북마크 조회

@@ -81,15 +81,15 @@ public class BookmarkController {
 
     @Operation(summary = "북마크 날짜 지정 및 수정")
     @PatchMapping("/bookmakrs/{bookmarkId}/date")
-    public ResponseEntity<ResponseDto<BookmarkUpdateDateResponse>> updateBookmarkDate(@PathVariable("teamId") int teamId, @PathVariable("planId") int planId, @PathVariable("bookmarkId") int bookmarkId,
+    public ResponseEntity<ResponseDto<List<BookmarkDateUpdateResponse>>> updateBookmarkDate(@PathVariable("teamId") int teamId, @PathVariable("planId") int planId, @PathVariable("bookmarkId") int bookmarkId,
                                                                                       @RequestHeader(value = "Authorization", required = false) String header,
                                                                                       @RequestBody BookmarkDateUpdateRequest request) {
 
-        BookmarkUpdateDateResponse response = bookmarkService.updateDate(teamId, planId, bookmarkId, header, request);
-        ResponseDto<BookmarkUpdateDateResponse> responseDto = ResponseDto.<BookmarkUpdateDateResponse>builder()
+
+        ResponseDto<List<BookmarkDateUpdateResponse>> responseDto = ResponseDto.<List<BookmarkDateUpdateResponse>>builder()
                 .status(HttpStatus.OK.value())
                 .message("해당 장소의 날짜를 새로 지정했습니다.")
-                .data(response)
+                .data(bookmarkService.updateDate(teamId, planId, bookmarkId, header, request))
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
