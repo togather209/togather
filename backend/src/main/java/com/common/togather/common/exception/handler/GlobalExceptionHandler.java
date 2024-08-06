@@ -71,6 +71,22 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    // 모임 요청을 벌써 했을 경우
+    @ExceptionHandler(TeamJoinRequestAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleTeamJoinRequestAlreadyExistsException(TeamJoinRequestAlreadyExistsException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Join Request Already Exists", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+    
+    // 모임에 벌써 가입된 경우
+    @ExceptionHandler(AlreadyJoinedTeamException.class)
+    public ResponseEntity<ErrorResponseDto> handleAlreadyJoinedTeamException(AlreadyJoinedTeamException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Already Joined Team", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
     // 가입된 이메일이 이미 있는 경우
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex) {
