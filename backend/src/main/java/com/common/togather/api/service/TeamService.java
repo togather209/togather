@@ -5,10 +5,7 @@ import com.common.togather.api.request.TeamJoinSaveRequest;
 import com.common.togather.api.request.TeamSaveRequest;
 import com.common.togather.api.request.TeamUpdateRequest;
 import com.common.togather.api.response.*;
-import com.common.togather.db.entity.Member;
-import com.common.togather.db.entity.Team;
-import com.common.togather.db.entity.TeamJoin;
-import com.common.togather.db.entity.TeamMember;
+import com.common.togather.db.entity.*;
 import com.common.togather.db.repository.MemberRepository;
 import com.common.togather.db.repository.TeamJoinRepository;
 import com.common.togather.db.repository.TeamMemberRepository;
@@ -205,7 +202,7 @@ public class TeamService {
         TeamMember teamMemberHost = teamMemberRepository.findByMemberAndTeam(host, team);
         TeamJoin teamJoin = teamJoinRepository.findByMemberAndTeam(guest, team);
 
-        if (teamMemberHost.getRole() != 1) { // 방장이 아닌 경우
+        if (teamMemberHost.getRole() != 1) {
             throw new NotTeamLeaderException("모임 방장이 아닙니다.");
         }
 
@@ -231,5 +228,28 @@ public class TeamService {
 
         teamMemberRepository.deleteByMemberAndTeam(member, team);
         teamMemberRepository.flush();
+    }
+
+    // 모임 삭제
+    public void deleteTeamByTeamId(String email, Integer teamId) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new TeamNotFoundException("해당 모임이 존재하지 않습니다."));
+        TeamMember teamMember = teamMemberRepository.findByMemberAndTeam(member, team);
+
+        if (teamMember == null || teamMember.getRole() != 1) {
+            throw new NotTeamLeaderException("모임 삭제는 방장만 가능합니다.");
+        }
+
+        boolean hasActivePlans = team.getPlans().stream()
+                .anyMatch(plan -> plan.getStatus() == 0);
+
+        if (hasActivePlans) {
+            throw new PlansExistException("모임에 활성화된 일정이 있어 삭제할 수 없습니다.");
+        }
+
+        teamRepository.delete(team);
+        teamRepository.flush();
     }
 }
