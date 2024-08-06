@@ -221,4 +221,15 @@ public class TeamService {
         }
     }
 
+    // 모임 나가기 구현
+    public void deleteTeamMember(String email, Integer teamId) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new TeamNotFoundException("해당 모임이 존재하지 않습니다."));
+        TeamMember teamMember = teamMemberRepository.findByMemberAndTeam(member, team);
+
+        teamMemberRepository.deleteByMemberAndTeam(member, team);
+        teamMemberRepository.flush();
+    }
 }
