@@ -1,6 +1,10 @@
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setReceiptData } from "../../../redux/slices/receiptSlice";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import {
+  setReceiptData,
+  setActiveTab,
+  setTeamPlan,
+} from "../../../redux/slices/receiptSlice";
 import "./ReceiptForm.css";
 import PaperReceipt from "../../../assets/receipt/paperReceipt.png";
 import MobileReceipt from "../../../assets/receipt/mobileReceipt.png";
@@ -11,11 +15,12 @@ import Picture from "../../../assets/receipt/picture.png";
 import ActivePicture from "../../../assets/receipt/activePicture.png";
 import ConnectReceiptSchedule from "./ConnectReceiptScheduleModal";
 import Close from "../../../assets/icons/common/close.png";
+import DatePicker from "react-datepicker";
+import { useSelector } from "react-redux";
 
-function RecognizeComponent({ setActiveTab }) {
+function RecognizeComponent({ defaultReceipt }) {
   // redux 상태관리
   const dispatch = useDispatch();
-  const receiptData = useSelector((state) => state.receipt);
 
   // 영수증 타입 선택 (종이 or 모바일 내역)
   const [activeType, setActiveType] = useState("paper");
@@ -37,6 +42,37 @@ function RecognizeComponent({ setActiveTab }) {
 
   // 연결된 북마크 정보
   const [bookmark, setBookmark] = useState({ id: -1, name: "" });
+
+  // 영수증 수정 상태
+  const [isEditStatus, setIsEditStatus] = useState(false);
+
+  // teamId, planId 가져오기
+  let { teamId, planId } = useSelector((state) => state.receipt);
+
+  useEffect(() => {
+    if (!teamId || !planId) {
+      teamId = localStorage.getItem("teamId");
+      planId = localStorage.getItem("planId");
+
+      if (teamId && planId) {
+        dispatch(setTeamPlan({ teamId, planId }));
+      } else {
+        console.error("teamId 또는 planId가 전달되지 않았습니다.");
+        return;
+      }
+    }
+
+    if (defaultReceipt !== undefined) {
+      // 영수증 수정 페이지 상태
+      setIsEditStatus(true);
+
+      // 기존 인식 데이터 가져오기
+      setRecognizedResult(defaultReceipt);
+      setEditedItems(defaultReceipt.items);
+
+      console.log(defaultReceipt.items);
+    }
+  }, [defaultReceipt]);
 
   const handleReceiptType = (type) => {
     setSelectedImageType(null);
@@ -64,15 +100,21 @@ function RecognizeComponent({ setActiveTab }) {
   };
 
   const handleSaveButton = () => {
-    const updatedResult = { ...recognizedResult, items: editedItems };
+    // 수량이나 가격이 0인 품목을 삭제
+    const filteredItems = editedItems.filter(
+      (item) => item.count > 0 && item.unitPrice > 0
+    );
+    const updatedResult = { ...recognizedResult, items: filteredItems };
+
     setRecognizedResult(updatedResult);
+    setEditedItems(filteredItems);
     setIsEditing(false);
   };
 
   const handleChange = (index, field, value) => {
     const updatedItems = [...editedItems];
     if (field === "count" || field === "unitPrice") {
-      updatedItems[index][field] = Number(value);
+      updatedItems[index][field] = value === "" ? "" : Number(value);
     } else {
       updatedItems[index][field] = value;
     }
@@ -113,7 +155,7 @@ function RecognizeComponent({ setActiveTab }) {
       console.log(newReceiptData);
 
       dispatch(setReceiptData(newReceiptData));
-      setActiveTab("calculate");
+      dispatch(setActiveTab("calculate"));
     }
   };
 
@@ -141,20 +183,22 @@ function RecognizeComponent({ setActiveTab }) {
 
   return (
     <div className="recognize-component">
-      <div className="receipt-type">
-        <button
-          className={`type-button ${activeType === "paper" ? "active" : ""}`}
-          onClick={() => handleReceiptType("paper")}
-        >
-          종이 영수증
-        </button>
-        <button
-          className={`type-button ${activeType === "mobile" ? "active" : ""}`}
-          onClick={() => handleReceiptType("mobile")}
-        >
-          모바일 결제내역
-        </button>
-      </div>
+      {!isEditStatus && (
+        <div className="receipt-type">
+          <button
+            className={`type-button ${activeType === "paper" ? "active" : ""}`}
+            onClick={() => handleReceiptType("paper")}
+          >
+            종이 영수증
+          </button>
+          <button
+            className={`type-button ${activeType === "mobile" ? "active" : ""}`}
+            onClick={() => handleReceiptType("mobile")}
+          >
+            모바일 결제내역
+          </button>
+        </div>
+      )}
       {recognizedResult === null && (
         <div className="reciept-type-img-container">
           <div
@@ -185,32 +229,40 @@ function RecognizeComponent({ setActiveTab }) {
             <div className="recognize-badge">영수증을 인식해보세요!</div>
           )}
           {recognizedResult !== null && (
-            <>
+            <div className="recognize-header">
               <div className="recognize-result-title">인식결과</div>
               {!isEditing && (
-                <button className="edit-result" onClick={handleEditButton}>
+                <button
+                  className={`edit-result ${isEditStatus ? "" : "not-edit"}`}
+                  onClick={handleEditButton}
+                >
                   편집
                 </button>
               )}
               {isEditing && (
-                <button className="save-result" onClick={handleSaveButton}>
+                <button
+                  className={`save-result ${isEditStatus ? "" : "not-edit"}`}
+                  onClick={handleSaveButton}
+                >
                   저장
                 </button>
               )}
-            </>
+            </div>
           )}
-          <div className="recognize-image-buttons">
-            {selectedImageType === "camera" ? (
-              <img src={ActiveCamera} alt="active-camera" />
-            ) : (
-              <img src={Camera} alt="camera" onClick={handleCameraButton} />
-            )}
-            {selectedImageType === "image" ? (
-              <img src={ActivePicture} alt="active-camera" />
-            ) : (
-              <img src={Picture} alt="image" onClick={handleImageButton} />
-            )}
-          </div>
+          {!isEditStatus && (
+            <div className="recognize-image-buttons">
+              {selectedImageType === "camera" ? (
+                <img src={ActiveCamera} alt="active-camera" />
+              ) : (
+                <img src={Camera} alt="camera" onClick={handleCameraButton} />
+              )}
+              {selectedImageType === "image" ? (
+                <img src={ActivePicture} alt="active-camera" />
+              ) : (
+                <img src={Picture} alt="image" onClick={handleImageButton} />
+              )}
+            </div>
+          )}
         </div>
       </div>
       {recognizedResult === null && (
@@ -232,16 +284,16 @@ function RecognizeComponent({ setActiveTab }) {
               })
             }
           />
-          <input
-            type="text"
-            className="recognized-payment-date edit"
-            value={recognizedResult.paymentDate}
-            onChange={(e) =>
+          <DatePicker
+            selected={recognizedResult.paymentDate}
+            onChange={(date) =>
               setRecognizedResult({
                 ...recognizedResult,
-                paymentDate: e.target.value,
+                paymentDate: date,
               })
             }
+            dateFormat="yyyy-MM-dd"
+            className="recognized-payment-date edit"
           />
         </div>
       ) : (
@@ -315,7 +367,11 @@ function RecognizeComponent({ setActiveTab }) {
             <p>총액</p>
             <p>
               {editedItems
-                .reduce((total, item) => total + item.unitPrice, 0)
+                .reduce(
+                  (total, item) =>
+                    total + (item.unitPrice === "" ? 0 : item.unitPrice),
+                  0
+                )
                 .toLocaleString()}
               원
             </p>

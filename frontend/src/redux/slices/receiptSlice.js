@@ -30,7 +30,13 @@ const receiptSlice = createSlice({
       state.teamId = action.payload.teamId;
       state.planId = action.payload.planId;
     },
-    resetReceipt: () => initialState,
+    resetReceipt: (state) => {
+      return {
+        ...initialState,
+        teamId: state.teamId,
+        planId: state.planId,  
+      }
+    },
   },
 });
 
