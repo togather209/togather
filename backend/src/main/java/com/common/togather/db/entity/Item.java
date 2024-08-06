@@ -38,7 +38,7 @@ public class Item {
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemMember> itemMembers;
 
-    public void setItemMembers(List<ItemMember> itemMembers) {
+    public void saveItemMembers(List<ItemMember> itemMembers) {
         this.itemMembers = itemMembers;
     }
 }

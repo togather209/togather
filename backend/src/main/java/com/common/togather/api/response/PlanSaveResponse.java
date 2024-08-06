@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PlanUpdateResponse {
-    private int planId;
+public class PlanSaveResponse {
+    int teamId;
+    int planId;
 }

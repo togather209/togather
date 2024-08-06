@@ -455,7 +455,7 @@ function SignUpForm() {
           )}
           <div className="nickname-form">
             <CommonInput
-              id="nickName"
+              id="nickname"
               type="text"
               placeholder="닉네임"
               value={nickname}

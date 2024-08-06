@@ -1,18 +1,14 @@
 package com.common.togather.api.controller;
 
-import com.common.togather.api.request.LogoutRequest;
 import com.common.togather.api.request.MemberUpdateRequest;
-import com.common.togather.api.response.MemberUpdateResponse;
+import com.common.togather.api.response.MemberFindByIdResponse;
 import com.common.togather.api.response.ResponseDto;
 import com.common.togather.api.service.MemberService;
-import com.common.togather.common.auth.TokenInfo;
 import com.common.togather.common.util.JwtUtil;
-import com.common.togather.db.entity.Member;
 import com.common.togather.db.repository.MemberRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -62,15 +58,16 @@ public class MemberController {
 
     @Operation(summary = "로그인 유저 정보 조회")
     @GetMapping("/me")
-    public ResponseEntity<ResponseDto<Member>> getAuthMember(@RequestHeader(value = "Authorization", required = false) String header) {
+    public ResponseEntity<ResponseDto<MemberFindByIdResponse>> getAuthMember(@RequestHeader(value = "Authorization", required = false) String header) {
 
         String authEmail = jwtUtil.getAuthMemberEmail(header);
-        Member member = memberRepository.findByEmail(authEmail).get();
 
-        ResponseDto<Member> responseDto = ResponseDto.<Member>builder()
+        MemberFindByIdResponse response = memberService.getAuthMember(authEmail);
+
+        ResponseDto<MemberFindByIdResponse> responseDto = ResponseDto.<MemberFindByIdResponse>builder()
                 .status(HttpStatus.OK.value())
                 .message("로그인 유저 조회 성공")
-                .data(member)
+                .data(response)
                 .build();
 
         return new ResponseEntity<>(responseDto,HttpStatus.OK);
@@ -78,18 +75,18 @@ public class MemberController {
 
     @Operation(summary = "회원정보 수정")
     @PatchMapping("/me")
-    public ResponseEntity<ResponseDto<MemberUpdateResponse>> updateMember(@RequestHeader(value = "Authorization", required = false) String header,
+    public ResponseEntity<ResponseDto<String>> updateMember(@RequestHeader(value = "Authorization", required = false) String header,
                                                                           @RequestBody MemberUpdateRequest memberUpdateRequest) {
         // 로그인 유저 이메일 추출
         String authEmail = jwtUtil.getAuthMemberEmail(header);
         
         // 새로 입력한 정보로 업데이트
-        MemberUpdateResponse response = memberService.updateMember(authEmail, memberUpdateRequest);
+        memberService.updateMember(authEmail, memberUpdateRequest);
 
-        ResponseDto<MemberUpdateResponse> responseDto = ResponseDto.<MemberUpdateResponse>builder()
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
                 .message("회원 정보 수정 성공")
-                .data(response)
+                .data(null)
                 .build();
 
         return new ResponseEntity<>(responseDto,HttpStatus.OK);
@@ -97,9 +94,25 @@ public class MemberController {
 
     @Operation(summary = "회원 탈퇴")
     @DeleteMapping("/me")
-    public ResponseEntity<ResponseDto<String>> removeMember(@RequestHeader(value = "Authorization") String header) {
+    public ResponseEntity<ResponseDto<String>> removeMember(@RequestHeader(value = "Authorization", required = false) String header,
+                                                            @CookieValue(value = "refreshToken", required = false) Cookie cookie,
+                                                            HttpServletResponse response) {
         String authEmail = jwtUtil.getAuthMemberEmail(header);
-        memberService.deleteMember(authEmail);
+        String accessToken = header.substring(7);
+        String refreshToken = cookie.getValue();
+
+        memberService.deleteMember(authEmail, accessToken, refreshToken);
+
+        // refresh token 쿠키 삭제
+        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+
+        response.setHeader("Set-Cookie", deleteCookie.toString());
 
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())

@@ -1,5 +1,6 @@
 package com.common.togather.api.controller;
 
+import com.common.togather.api.request.TeamJoinSaveRequest;
 import com.common.togather.api.request.TeamSaveRequest;
 import com.common.togather.api.request.TeamUpdateRequest;
 import com.common.togather.api.response.ResponseDto;
@@ -59,7 +60,6 @@ public class TeamController {
     @Operation(summary = "내가 속한 모임 조회")
     @GetMapping("/members/me")
     public ResponseEntity<ResponseDto<List<TeamFindAllByMemberIdResponse>>> findAllTeamByMemberId(@RequestHeader(value = "Authorization", required = false) String token) {
-
         ResponseDto<List<TeamFindAllByMemberIdResponse>> responseDto = ResponseDto.<List<TeamFindAllByMemberIdResponse>>builder()
                 .status(HttpStatus.OK.value())
                 .message("내가 속한 모임 조회를 성공했습니다.")
@@ -73,11 +73,25 @@ public class TeamController {
     @Operation(summary = "모임 상세 조회")
     @GetMapping("/{teamId}")
     public ResponseEntity<ResponseDto<TeamFindByTeamIdResponse>> findTeamByTeamId(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Integer teamId) {
-
         ResponseDto<TeamFindByTeamIdResponse> responseDto = ResponseDto.<TeamFindByTeamIdResponse>builder()
                 .status(HttpStatus.OK.value())
                 .message("내가 속한 모임 조회를 성공했습니다.")
                 .data(teamService.findTeamByTeamId(jwtUtil.getAuthMemberEmail(token), teamId))
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    // 모임 참여 요청
+    @Operation(summary = "모임 상세 조회")
+    @PostMapping("/join-requests")
+    public ResponseEntity<ResponseDto<String>> joinTeamByCode(@RequestHeader(value = "Authorization", required = false) String token, @RequestBody TeamJoinSaveRequest requestDto) {
+        teamService.joinTeamByCode(jwtUtil.getAuthMemberEmail(token), requestDto);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("모임 참여 요청을 성공했습니다.")
+                .data(null)
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);

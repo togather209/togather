@@ -53,7 +53,23 @@ public class Receipt {
     @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Item> items;
 
-    public void setItems(List<Item> items) {
+    public void saveItems(List<Item> items) {
         this.items = items;
+    }
+
+    public void addItems(List<Item> items) {
+        this.items.addAll(items);
+    }
+
+    public Boolean isManager(String email) {
+        return manager.getEmail().equals(email);
+    }
+
+    public void updateReceipt(Bookmark bookmark, String businessName, LocalDateTime paymentDate, Integer totalPrice, Integer color) {
+        this.bookmark = bookmark;
+        this.businessName = businessName;
+        this.paymentDate = paymentDate;
+        this.totalPrice = totalPrice;
+        this.color = color;
     }
 }

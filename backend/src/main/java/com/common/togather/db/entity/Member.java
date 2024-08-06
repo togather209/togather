@@ -1,19 +1,17 @@
 package com.common.togather.db.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 
 @Entity
 @Table(name = "member")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Member {
 
     // pk
@@ -45,7 +43,7 @@ public class Member {
     @Column(name = "type", nullable = true)
     int type;
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "member", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private PayAccount payAccount;
 
     // 유저 모임
@@ -68,5 +66,27 @@ public class Member {
         this.password = password;
         this.nickname = nickname;
         this.profileImg = profileImg;
+    }
+    
+    // 닉네임 변경
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+    
+    // 프로필 이미지 변경
+    public void updateProfileImg(String profileImg) {
+        this.profileImg = profileImg;
+    }
+    
+    // 비밀번호 변경
+    public void updatePassword(String password, BCryptPasswordEncoder encoder) {
+        this.password = encoder.encode(password);
+    }
+
+    // PayAccount와 연관 끊기 메서드
+    public void removePayAccount() {
+        if (this.payAccount != null) {
+            this.payAccount = null;
+        }
     }
 }
