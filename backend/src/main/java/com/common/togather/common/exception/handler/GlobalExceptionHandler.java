@@ -87,6 +87,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    // 모임의 방장이 아닐 경우
+    @ExceptionHandler(NotTeamLeaderException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotTeamLeaderException(NotTeamLeaderException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("권한 오류", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
     // 가입된 이메일이 이미 있는 경우
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex) {
