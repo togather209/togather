@@ -49,7 +49,7 @@ function SchedulePlaceCal({ handleCloseModal, onClose, onConfirm, firstDate, las
       console.log("ddddd")
     }
     try {
-      const response = await axiosInstance.patch(`/teams/${meetingId}/plans/${scheduleId}/bookmarks/${bookmarkId}/date`, formDateData);
+      const response = await axiosInstance.patch(`/teams/${meetingId}/plans/${scheduleId}/bookmakrs/${bookmarkId}/date`, formDateData);
       console.log(response)
       handleCloseModal()
     } catch (error) {
