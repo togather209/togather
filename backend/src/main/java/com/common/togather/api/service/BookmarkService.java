@@ -66,6 +66,7 @@ public class BookmarkService {
                 .placeImg(request.getPlaceImg())
                 .placeName(request.getPlaceName())
                 .placeAddr(request.getPlaceAddr())
+                .itemOrder(0)
                 .build();
 
         bookmarkRepository.save(bookmark);
@@ -79,7 +80,7 @@ public class BookmarkService {
         teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, jwtUtil.getAuthMemberEmail(header))
                 .orElseThrow(() -> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
 
-        planRepository.findById(planId)
+        Plan plan = planRepository.findById(planId)
                 .orElseThrow(()-> new PlanNotFoundException("해당 일정이 존재하지 않습니다."));
 
         // 수정된 북마크
@@ -88,6 +89,14 @@ public class BookmarkService {
 
         LocalDate oldDate = updatedBookmark.getDate(); // 기존 날짜
         LocalDate newDate = request.getDate(); // 새로운 날짜
+
+        // 일정 날짜 범위를 벗어나면 안됨
+        if(newDate != null){
+            if( !((newDate.isBefore(plan.getEndDate()) || newDate.isEqual(plan.getEndDate())) &&
+                    (newDate.isAfter(plan.getStartDate())|| newDate.isEqual(plan.getStartDate()))))  {
+                throw new UpdateNotAllwedException("가능한 날짜 범위를 벗어났습니다.");
+            }
+        }
 
         // 날짜 정보가 있던 장소가 찜으로 이동하는 경우
         if (oldDate != null && newDate == null) {
@@ -113,7 +122,7 @@ public class BookmarkService {
         }
         // 찜에 있던 장소에 날짜를 지정해준 경우, 날짜 변경하고 순서는 그 날짜의 가장 마지막으로 설정
         else if (oldDate == null && newDate != null) {
-            updatedBookmark.updateDate(newDate, bookmarkRepository.findAllByDate(newDate).size());
+            updatedBookmark.updateDate(newDate, bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, newDate).size());
             bookmarkRepository.save(updatedBookmark);
         }
 
@@ -134,13 +143,20 @@ public class BookmarkService {
             bookmarkRepository.save(updatedBookmark); // 변경사항 저장
         }
 
+        List<Bookmark> bookmarkList;
         // 해당 날짜인 모든 북마크 리스트
-        List<Bookmark> bookmarkList = bookmarkRepository.findAllByDate(oldDate);
+        if(oldDate == null){ // 찜에서 이동한거면 변경된 찜 리스트 보여주기
+            bookmarkList = bookmarkRepositorySupport.findAllBookmarkByNullDateInSamePlan(planId);
+        }
+        else{ // 변경된 기존 날짜 북마크 보여주기
+            bookmarkList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, oldDate);
+        }
 
         return bookmarkList.stream()
                 .sorted(((o1, o2) -> Integer.compare(o1.getItemOrder(), o2.getItemOrder())))
                 .map(bookmark -> BookmarkDateUpdateResponse.builder()
                         .bookmarkId(bookmark.getId())
+                        .date(bookmark.getDate())
                         .placeId(bookmark.getPlaceId())
                         .placeImg(bookmark.getPlaceImg())
                         .placeName(bookmark.getPlaceName())
@@ -154,20 +170,30 @@ public class BookmarkService {
     }
 
     // 날짜가 정해진 북마크 조회
-    public List<BookmarkFindAllByDateResponse> findAllBookmarkByDate(int teamId, int planId, String date, String header) {
+    public List<BookmarkFindAllByDateResponse> findAllBookmarkByDate(int teamId, int planId, LocalDate date, String header) {
         teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, jwtUtil.getAuthMemberEmail(header))
                 .orElseThrow(() -> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
 
-        planRepository.findById(planId)
+        Plan plan = planRepository.findById(planId)
                 .orElseThrow(()-> new PlanNotFoundException("해당 일정이 존재하지 않습니다."));
 
-        // 해당 날짜인 모든 북마크 리스트
-        List<Bookmark> bookmarkList = bookmarkRepository.findAllByDate(LocalDate.parse(date, DateTimeFormatter.ofPattern("yyMMdd")));
+
+        // 일정 날짜 범위를 벗어나면 안됨
+        if(date != null){
+            if( !((date.isBefore(plan.getEndDate()) || date.isEqual(plan.getEndDate())) &&
+                    (date.isAfter(plan.getStartDate())|| date.isEqual(plan.getStartDate()))))  {
+                throw new BookmarkNotFoundException("해당 날짜의 북마크를 찾을 수 없습니다.");
+            }
+        }
+
+        // 해당 일정 중 해당 날짜를 갖는 모든 북마크 리스트
+        List<Bookmark> bookmarkList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId,date);
 
         return bookmarkList.stream()
                 .sorted(((o1, o2) -> Integer.compare(o1.getItemOrder(), o2.getItemOrder())))
                 .map(bookmark -> BookmarkFindAllByDateResponse.builder()
                         .bookmarkId(bookmark.getId())
+                        .date(bookmark.getDate())
                         .placeId(bookmark.getPlaceId())
                         .placeImg(bookmark.getPlaceImg())
                         .placeName(bookmark.getPlaceName())
@@ -187,15 +213,17 @@ public class BookmarkService {
         planRepository.findById(planId)
                 .orElseThrow(()-> new PlanNotFoundException("해당 일정이 존재하지 않습니다."));
 
-        // 해당 날짜인 모든 북마크 리스트
-        List<Bookmark> bookmarkList = bookmarkRepository.findByDateIsNull();
+        // 해당 일정 찜 리스트
+        List<Bookmark> bookmarkList = bookmarkRepositorySupport.findAllBookmarkByNullDateInSamePlan(planId);
         return bookmarkList.stream()
                 .map(bookmark -> BookmarkFindAllInJjinResponse.builder()
                         .bookmarkId(bookmark.getId())
+                        .date(bookmark.getDate())
                         .placeId(bookmark.getPlaceId())
                         .placeImg(bookmark.getPlaceImg())
                         .placeName(bookmark.getPlaceName())
                         .placeAddr(bookmark.getPlaceAddr())
+                        .itemOrder(bookmark.getItemOrder())
                         .receiptCnt(bookmark.getReceipts() != null ? bookmark.getReceipts().size() : 0)
                         .build())
                 .collect(Collectors.toList());
@@ -226,7 +254,7 @@ public class BookmarkService {
             bookmarkRepository.save(movedBookmark);
 
             // 바꾼 요소와 같은 날짜인 북마크 모두 조회
-            List<Bookmark> bookmarkList = bookmarkRepository.findAllByDate(movedBookmark.getDate());
+            List<Bookmark> bookmarkList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, movedBookmark.getDate());
 
             for(Bookmark bookmark : bookmarkList) {
                 // 변경한 요소가 아닌 다른 요소들 중에서만 판단
@@ -245,11 +273,12 @@ public class BookmarkService {
 
         }
 
-        List<Bookmark> updateList = bookmarkRepository.findAllByDate(movedBookmark.getDate());
+        List<Bookmark> updateList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, movedBookmark.getDate());
         return updateList.stream()
                 .sorted(((o1, o2) -> Integer.compare(o1.getItemOrder(), o2.getItemOrder())))
                 .map(bookmark -> BookmarkOrderUpdateResponse.builder()
                         .bookmarkId(bookmark.getId())
+                        .date(bookmark.getDate())
                         .placeId(bookmark.getPlaceId())
                         .placeImg(bookmark.getPlaceImg())
                         .placeName(bookmark.getPlaceName())
@@ -263,7 +292,7 @@ public class BookmarkService {
 
     // 찜 목록에서 삭제
     @Transactional
-    public void deleteBookmark(int teamId, int planId, int bookmarkId, String header) {
+    public List<BookmarkFindAllInJjinResponse> deleteBookmark(int teamId, int planId, int bookmarkId, String header) {
 
         teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, jwtUtil.getAuthMemberEmail(header))
                 .orElseThrow(() -> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
@@ -271,14 +300,29 @@ public class BookmarkService {
         planRepository.findById(planId)
                 .orElseThrow(()-> new PlanNotFoundException("해당 일정이 존재하지 않습니다."));
 
-        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
+        Bookmark targetBookmark = bookmarkRepository.findById(bookmarkId)
                 .orElseThrow(() -> new BookmarkNotFoundException("해당 북마크가 존재하지 않습니다."));
 
-        if(bookmark.getDate() != null){
+        if(targetBookmark.getDate() != null){
             throw new DeletionNotAllowedException("날짜가 지정된 장소는 삭제할 수 없습니다.(찜 목록에서만 가능)");
         }
 
-        bookmarkRepository.delete(bookmark);
+        bookmarkRepository.delete(targetBookmark);
+
+        // 해당 일정 찜 리스트
+        List<Bookmark> bookmarkList = bookmarkRepositorySupport.findAllBookmarkByNullDateInSamePlan(planId);
+        return bookmarkList.stream()
+                .map(bookmark -> BookmarkFindAllInJjinResponse.builder()
+                        .bookmarkId(bookmark.getId())
+                        .date(bookmark.getDate())
+                        .placeId(bookmark.getPlaceId())
+                        .placeImg(bookmark.getPlaceImg())
+                        .placeName(bookmark.getPlaceName())
+                        .placeAddr(bookmark.getPlaceAddr())
+                        .itemOrder(bookmark.getItemOrder())
+                        .receiptCnt(bookmark.getReceipts() != null ? bookmark.getReceipts().size() : 0)
+                        .build())
+                .collect(Collectors.toList());
 
     }
 }

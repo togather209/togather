@@ -11,8 +11,6 @@ public class TeamUpdateRequest {
 
     private String title;
 
-    private String teamImg;
-
     private String description;
 
 }
