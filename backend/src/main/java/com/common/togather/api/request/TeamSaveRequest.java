@@ -9,6 +9,5 @@ import lombok.*;
 @Builder
 public class TeamSaveRequest {
     private String title;
-    private String teamImg;
     private String description;
 }
