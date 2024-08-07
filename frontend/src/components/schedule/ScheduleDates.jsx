@@ -9,8 +9,6 @@ function ScheduleDates ({ children, onClick, isSelected }) {
             onClick={onClick}
         >
             { children }
-        
-        
         </button>
     )
 }
