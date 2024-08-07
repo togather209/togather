@@ -143,8 +143,14 @@ public class BookmarkService {
             bookmarkRepository.save(updatedBookmark); // 변경사항 저장
         }
 
+        List<Bookmark> bookmarkList;
         // 해당 날짜인 모든 북마크 리스트
-        List<Bookmark> bookmarkList = bookmarkRepository.findAllByDate(oldDate);
+        if(oldDate == null){ // 찜에서 이동한거면 변경된 찜 리스트 보여주기
+            bookmarkList = bookmarkRepositorySupport.findAllBookmarkByNullDateInSamePlan(planId);
+        }
+        else{ // 변경된 기존 날짜 북마크 보여주기
+            bookmarkList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, oldDate);
+        }
 
         return bookmarkList.stream()
                 .sorted(((o1, o2) -> Integer.compare(o1.getItemOrder(), o2.getItemOrder())))
@@ -248,7 +254,7 @@ public class BookmarkService {
             bookmarkRepository.save(movedBookmark);
 
             // 바꾼 요소와 같은 날짜인 북마크 모두 조회
-            List<Bookmark> bookmarkList = bookmarkRepository.findAllByDate(movedBookmark.getDate());
+            List<Bookmark> bookmarkList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, movedBookmark.getDate());
 
             for(Bookmark bookmark : bookmarkList) {
                 // 변경한 요소가 아닌 다른 요소들 중에서만 판단
@@ -267,7 +273,7 @@ public class BookmarkService {
 
         }
 
-        List<Bookmark> updateList = bookmarkRepository.findAllByDate(movedBookmark.getDate());
+        List<Bookmark> updateList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, movedBookmark.getDate());
         return updateList.stream()
                 .sorted(((o1, o2) -> Integer.compare(o1.getItemOrder(), o2.getItemOrder())))
                 .map(bookmark -> BookmarkOrderUpdateResponse.builder()
