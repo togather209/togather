@@ -9,6 +9,8 @@ import { clearUser, setUser } from "../../redux/slices/userSlice";
 import { clearToken } from "../../redux/slices/authSlice";
 import axiosInstance from "../../utils/axiosInstance";
 import { clearAccount, setAccount } from "../../redux/slices/accountSlice";
+import { clearLinkedAccount } from "../../redux/slices/linkedAccount";
+import { resetReceipt } from "../../redux/slices/receiptSlice";
 
 function MyPageMain() {
   const [secessionModalOpen, setSecessionModalOpen] = useState(false);
@@ -59,6 +61,9 @@ function MyPageMain() {
       await axiosInstance.post("/members/logout");
       dispatch(clearUser());
       dispatch(clearToken());
+      dispatch(clearAccount());
+      dispatch(clearLinkedAccount());
+      dispatch(resetReceipt());
       alert("로그아웃 되었습니다.");
     } catch (error) {
       console.error("로그인 실패", error);

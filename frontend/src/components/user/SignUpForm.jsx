@@ -79,11 +79,14 @@ function SignUpForm() {
       return;
     }
 
-    const memberData = {
-      email,
-      password,
-      nickname,
-    };
+    const memberData = new FormData();
+    memberData.append(
+      "member",
+      new Blob([JSON.stringify({ email, password, nickname })], {
+        type: "application/json",
+      })
+    );
+    memberData.append("image", profileImage);
 
     if (email === "" || password === "" || nickname === "") {
       return;
@@ -97,7 +100,7 @@ function SignUpForm() {
         memberData,
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
