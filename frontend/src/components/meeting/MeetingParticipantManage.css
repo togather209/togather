@@ -1,0 +1,12 @@
+.meeting-participant-request-box {
+    width: 330px;
+    display: flex;
+    justify-content: space-between;
+    /* align-items: center; */
+    margin-bottom: 10px;
+}
+
+.meeting-request-icon {
+    width: 28px;
+    height: 28px;
+}

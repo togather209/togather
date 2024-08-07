@@ -24,10 +24,11 @@
   flex-direction: column;
   align-items: center;
 }
-  
+
 .tabs {
   display: flex;
   height: 40px;
+  margin-bottom: 20px;
   background-color: #f0f0f0;
   border-radius: 14px;
   overflow: hidden;
@@ -55,7 +56,6 @@
 }
 
 .tab-content {
-  margin-top: 20px;
   width: 100%;
   text-align: center;
 }
@@ -90,6 +90,7 @@
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
+  margin-top: 20px;
 }
 
 .type-button {
@@ -119,7 +120,7 @@
 .receipt-type-img{
   display: inline-block;
   transform: translateY(-70%);
-  transition: transform 0.8s ease, clip-path 0.8s ease;
+  transition: transform 1s ease, clip-path 1s ease;
   margin-right: 10px;
 }
 
@@ -131,6 +132,7 @@
 .receipt-type-img.active {
   transform: translateY(0);
   clip-path: inset(0 0 0 0);
+  margin-bottom: 5px;
 }
 
 .receipt-type-img:nth-child(1) img {
@@ -170,22 +172,32 @@
   font-weight: bold;
 }
 
+.recognize-header {
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .recognize-result-title {
-  position: absolute;
-  left: 20px;
-  top: 20px;
+  position: relative;
+  top: 10px;
   font-size: 16px;
   font-weight: bold;
 }
 
 .edit-result, .save-result {
-  position: absolute;
-  top: 15px;
-  right: 130px;
+  position: relative;
+  top: 5px;
+  margin-right: 5px;
   border: 1px solid #D7D7D7;
   padding: 5px 20px;
   border-radius: 8px;
   background-color: white;
+}
+
+.not-edit {
+  right: 105px;
 }
 
 .recognize-options {
@@ -212,7 +224,7 @@
 }
 
 .recognized-store-name {
-  margin: 70px 10px 20px 10px;
+  margin: 20px 10px 20px 10px;
   font-size: 16px;
   font-weight: bold;
   background-color: #F9F9F9;
