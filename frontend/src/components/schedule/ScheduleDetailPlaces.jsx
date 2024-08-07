@@ -1,14 +1,50 @@
-import React from "react";
-
+import React, {useState} from "react";
 import "./ScheduleDetailPlaces.css";
 import ScheduleReceiptPurple from "../../assets/schedule/schedulereceiptpurple.png";
 import SideStick from "../../assets/schedule/sidestick.png";
 import matjip from "../../assets/schedule/mayjip.jpg";
+import SchedulePlaceCal from "./SchedulePlaceCal";
 
-function ScheduleDetailPlaces({ img_url, name, address }) {
+function ScheduleDetailPlaces({ img_url, name, address, meetingId, scheduleId, bookmarkId, datedate, firstDate, lastDate, forRendering, setForRendering }) {
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModalFunction = () => {
+    setIsModalOpen(true);
+    console.log(isModalOpen);
+    // console.log("어렵다");
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setForRendering(!forRendering)
+  };
+  
   return (
     <div className="schedule-detail-list-box">
-      <div className="schedule-detail-section1">
+
+
+
+      {isModalOpen && (
+        <div className="schedule-date-setting-modal">
+          <div className="date-setting-modal-content">
+            <SchedulePlaceCal
+              onClose={handleCloseModal}
+              meetingId={meetingId}
+              bookmarkId={bookmarkId}
+              scheduleId={scheduleId}
+              firstDate={firstDate}
+              lastDate={lastDate}
+              datedate={datedate}
+              name={name}
+              handleCloseModal={handleCloseModal}
+            />
+          </div>
+        </div>
+      )}
+
+
+      <div className="schedule-detail-section1" onClick={openModalFunction}>
         <div>
           <img className="side-stick" src={SideStick} alt="sidestick" />
         </div>

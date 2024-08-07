@@ -1,19 +1,22 @@
 import React, { useState } from "react";
-
 import "./ScheduleDetailFavoritePlaces.css";
 import heart from "../../assets/schedule/scheduleheartimg.png";
 import heartpurple from "../../assets/schedule/scheduleheartpurple.png";
-
 import matjip from "../../assets/schedule/mayjip.jpg";
-
 import SchedulePlaceCal from "./SchedulePlaceCal";
 
 function ScheduleDetailFavoritePlaces({
   name,
+  meetingId,
+  scheduleId,
+  bookmarkId,
   img_url,
   address,
+  datedate,
   firstDate,
   lastDate,
+  setForRendering,
+  forRendering,
 }) {
   const [isHeartPurple, setIsHeartPurple] = useState(false);
 
@@ -26,12 +29,13 @@ function ScheduleDetailFavoritePlaces({
   const openModalFunction = () => {
     setIsModalOpen(true);
     console.log(isModalOpen);
-    console.log("어렵다");
+    // console.log("어렵다");
   };
 
   // 모달 닫기 버튼
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setForRendering(!forRendering)
   };
 
   return (
@@ -41,9 +45,14 @@ function ScheduleDetailFavoritePlaces({
           <div className="date-setting-modal-content">
             <SchedulePlaceCal
               onClose={handleCloseModal}
+              meetingId={meetingId}
+              bookmarkId={bookmarkId}
+              scheduleId={scheduleId}
               firstDate={firstDate}
               lastDate={lastDate}
+              datedate={datedate}
               name={name}
+              handleCloseModal={handleCloseModal}
             />
           </div>
         </div>
