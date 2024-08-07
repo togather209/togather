@@ -1,28 +1,55 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setActiveTab,
+  setReceiptData,
+} from "../../../redux/slices/receiptSlice";
 import Receipt from "./ReceiptSelect";
 import Button from "../../common/Button";
+import Pink from "../../../assets/receipt/pinkReceipt.png";
+import Sky from "../../../assets/receipt/skyReceipt.png";
+import Yellow from "../../../assets/receipt/yellowReceipt.png";
 
-// import receipt img
-import Pink from '../../../assets/receipt/pinkReceipt.png';
-import Sky from '../../../assets/receipt/skyReceipt.png';
-import Yellow from '../../../assets/receipt/yellowReceipt.png';
+function DesignComponent({ defaultColor }) {
+  const dispatch = useDispatch();
+  const receiptData = useSelector((state) => state.receipt);
+  const [localReceiptColor, setLocalReceiptColor] = useState(receiptData.color);
 
-function DesignComponent({setActiveTab}) {
-  const [receiptColor, setReceiptColor] = useState('sky');
+  useEffect(() => {
+    if (defaultColor !== undefined) {
+      setLocalReceiptColor(defaultColor);
+    }
+  }, [defaultColor]);
 
   return (
     <>
-      <Receipt setReceiptColor={setReceiptColor} />
+      <Receipt setLocalReceiptColor={setLocalReceiptColor} />
       <div className="selectedReceipt">
-        {receiptColor === 'pink' && <img src={Pink} alt="pink-receipt" className="color-receipt" />}
-        {receiptColor === 'sky' &&<img src={Sky} alt="sky-receipt" className="color-receipt" />}
-        {receiptColor === 'yellow' &&<img src={Yellow} alt="yellow-receipt" className="color-receipt" />}
+        {localReceiptColor === 0 && (
+          <img src={Sky} alt="sky-receipt" className="color-receipt" />
+        )}
+        {localReceiptColor === 1 && (
+          <img src={Pink} alt="pink-receipt" className="color-receipt" />
+        )}
+        {localReceiptColor === 2 && (
+          <img src={Yellow} alt="yellow-receipt" className="color-receipt" />
+        )}
       </div>
       <div className="component-button">
-        <Button type='purple' onClick={() => {setActiveTab('recognize')}}>다음</Button>
+        <Button
+          type="purple"
+          onClick={() => {
+            dispatch(
+              setReceiptData({ ...receiptData, color: localReceiptColor })
+            );
+            dispatch(setActiveTab("recognize"));
+          }}
+        >
+          다음
+        </Button>
       </div>
     </>
-  )
+  );
 }
 
 export default DesignComponent;

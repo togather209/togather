@@ -9,10 +9,11 @@ import { Link } from "react-router-dom";
 import kakao from "../../assets/icons/common/kakao.png";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { loginSuccess } from "../../redux/slices/authSlice";
+import { setUser } from "../../redux/slices/userSlice";
+import { setToken } from "../../redux/slices/authSlice";
 
 function LoginForm() {
-  const API_LINK = "http://localhost:8080/api";
+  const API_LINK = import.meta.env.VITE_API_URL;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,18 +41,22 @@ function LoginForm() {
         withCredentials: true,
       });
 
-      console.log("로그인 성공!");
+      console.log("로그인 성공!", response.data);
+
+      //토큰 가져오기
+      const { accessToken, refreshToken } = response.data.data;
+
       dispatch(
-        loginSuccess({
-          member: response.data.member,
-          accessToken: response.data.accessToken,
-          refreshToken: response.data.refreshToken,
+        setToken({
+          accessToken,
+          refreshToken,
         })
       );
 
       navigate("/");
     } catch (error) {
       console.log("로그인 에러", error);
+      alert("존재하지 않는 아이디입니다. 아이디와 비밀번호를 확인해주세요.");
     }
   };
 

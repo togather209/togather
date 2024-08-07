@@ -1,16 +1,16 @@
 package com.common.togather.api.service;
 
-import com.common.togather.api.error.EmailAlreadyExistsException;
-import com.common.togather.api.error.EmailNotFoundException;
-import com.common.togather.api.error.InvalidPasswordException;
-import com.common.togather.api.error.NicknameAlreadyExistsException;
+import com.common.togather.api.error.*;
 import com.common.togather.api.request.LoginRequest;
 import com.common.togather.api.request.MemberSaveRequest;
 import com.common.togather.common.auth.TokenInfo;
 import com.common.togather.common.exception.handler.NotFoundHandler;
+import com.common.togather.common.util.ImageUtil;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
 import com.common.togather.db.repository.MemberRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +20,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -31,10 +32,11 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final RedisService redisService;
     private final JwtUtil jwtUtil;
+    private final ImageUtil imageUtil;
 
     // 회원가입
     @Transactional
-    public void signup(MemberSaveRequest memberSaveRequest) {
+    public void signup(MemberSaveRequest memberSaveRequest, MultipartFile profileImg) {
 
         String email = memberSaveRequest.getEmail();
         String password = memberSaveRequest.getPassword();
@@ -48,10 +50,18 @@ public class AuthService {
             throw new NicknameAlreadyExistsException("이미 사용중인 닉네임입니다.");
         }
 
-        Member member = new Member();
-        member.setEmail(email);
-        member.setPassword(bCryptPasswordEncoder.encode(password));
-        member.setNickname(nickname);
+        String imageUrl = null;
+
+        if(profileImg != null && !profileImg.isEmpty()) {
+            imageUrl = imageUtil.uploadImage(profileImg);
+        }
+
+        Member member = Member.builder()
+                .email(email)
+                .password(bCryptPasswordEncoder.encode(password))
+                .nickname(nickname)
+                .profileImg(imageUrl)
+                .build();
 
         memberRepository.save(member);
 
@@ -88,17 +98,20 @@ public class AuthService {
     // 토큰 재발급
     @Transactional
     public TokenInfo refreshToken(String email) {
-        String accessToken = redisService.getRefreshToken(email);
-        String refreshToken = redisService.getRefreshToken(email);
+        String accessToken = jwtUtil.generateAccessToken(email);
+        String refreshToken = jwtUtil.generateRefreshToken(email);
 
-        redisService.saveRefreshToken(email, refreshToken);
+        redisService.updateRefreshToken(email, refreshToken);
         TokenInfo tokenInfo = new TokenInfo(accessToken, refreshToken);
 
         return tokenInfo;
     }
-
-
-
-
+    
+    // 임시 비밀번호로 변경
+    @Transactional
+    public void updatePassword(String email, String temporaryPassword) {
+        Member member = memberRepository.findByEmail(email).get();
+        member.updatePassword(temporaryPassword, bCryptPasswordEncoder);
+    }
 
 }
