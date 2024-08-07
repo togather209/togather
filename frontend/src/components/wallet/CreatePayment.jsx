@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./CreatePayment.css";
+import "./SendForm.css";
 import CommonInput from "../common/CommonInput";
 import BackButton from "../../components/common/BackButton";
 import CustomSelect from "../common/CustomSelect";
@@ -12,8 +13,14 @@ import citi from "../../assets/bank/한국씨티은행.png";
 import sc from "../../assets/bank/SC제일은행.png";
 import ibk from "../../assets/bank/기업은행.png";
 import kdb from "../../assets/bank/산업은행.png";
+import axiosInstance from "../../utils/axiosInstance";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { setAccount } from "../../redux/slices/accountSlice";
 
 function CreatePayment() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [accountName, setAccountName] = useState("");
   const [password, setPassword] = useState("");
   const [accountNum, setAccountNum] = useState("");
@@ -21,7 +28,19 @@ function CreatePayment() {
   const [memberName, setMemberName] = useState("");
   const [birth, setBirth] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tempPassword, setTempPassword] = useState(""); // Temporary password state for the modal
+  const [tempPassword, setTempPassword] = useState("");
+  const [passwordModal, setPasswordModal] = useState(false);
+  const [accountPassword, setAccountPassword] = useState("");
+  //인증 되었다.
+  const [isVerification, setIsVerification] = useState(false);
+
+  useEffect(() => {
+    //6자리가되는 순간!
+    if (accountPassword.length >= 6) {
+      //인증
+      userVerification();
+    }
+  }, [accountPassword]);
 
   const bankOptions = [
     { value: "0", label: "국민은행", image: kbbank },
@@ -47,8 +66,25 @@ function CreatePayment() {
 
   const handlePasswordChange = (e) => {
     const value = e.target.value;
-    if (/^\d*$/.test(value)) { // 숫자만 허용
+    if (/^\d*$/.test(value)) {
+      // 숫자만 허용
       setTempPassword(value);
+    }
+  };
+
+  const handleBirthChange = (e) => {
+    let value = e.target.value;
+    //숫자 제거
+    value = value.replace(/\D/g, "");
+
+    if (value.length >= 8) {
+      const year = value.substring(0, 4);
+      const month = value.substring(4, 6);
+      const day = value.substring(6, 8);
+      //형식 지정해서 변경하기
+      setBirth(`${year}-${month}-${day}`);
+    } else {
+      setBirth(value);
     }
   };
 
@@ -57,19 +93,88 @@ function CreatePayment() {
     setIsModalOpen(false);
   };
 
-  //인증 누를 시!
-  const userVerification = () => {
+  const handlePasswordInput = (value) => {
+    if (accountPassword.length < 6) {
+      setAccountPassword((prevAccountPassword) => prevAccountPassword + value);
+    }
+  };
 
+  const handlePasswordBackspace = () => {
+    setAccountPassword((prevAccountPassword) =>
+      prevAccountPassword.slice(0, -1)
+    );
+  };
+
+  const handlePasswordClear = () => {
+    setAccountPassword("");
+  };
+
+  const openPasswordModal = (e) => {
+    e.preventDefault();
+    setPasswordModal(true);
+  };
+
+  const closePasswordModal = (e) => {
+    e.preventDefault();
+    setPasswordModal(false);
+  };
+
+  //인증 누를 시!
+  const userVerification = async () => {
     //사용자 연동 계좌 정보
     const userPayData = {
-      accountNum: accountNum,
-      bank: bank,
+      accountNumber: accountNum,
+      type: bank,
       memberName: memberName,
       birth: birth,
+      password: accountPassword,
+    };
+
+    try {
+      const userPayDataResponse = await axiosInstance.post(
+        "/accounts/verify",
+        userPayData
+      );
+      console.log(userPayDataResponse.data);
+
+      //인증 성공했으면! 
+      setIsVerification(true);
+      //모달 닫기
+      console.log("도달")
+      setPasswordModal(false);
+
+    } catch (error) {
+      console.log("입력에 이상이 있는 것 같은데", error);
+    }
+  };
+
+  //인증이 끝난 상태에서 페이계좌 생성하는거임
+  const createPay = async () => {
+    //칸이 비어있다면 실명으로 설정
+    if(accountName === null || accountName === ""){
+      setAccountName(memberName);
+      console.log(accountName);
     }
 
-    console.log(userPayData);
+    const payData = {
+      accountName : accountName,
+      password: password,
+      accountNum: accountNum,
+      memberName: memberName,
+    }
 
+
+    try {
+      const payDataResponse = await axiosInstance.post("/pay-accounts", payData);
+      
+      alert("계좌가 성공적으로 생성 되었습니다.");
+      dispatch(setAccount({account : payDataResponse.data.data}));
+      //지갑 페이지로 이동하면... 다른페이지가 뜰거다.
+      navigate("/wallet");
+      
+    } catch (error) {
+      console.log("데이터 이상");
+    }
   }
 
   return (
@@ -89,7 +194,7 @@ function CreatePayment() {
           <CommonInput
             id="accountName"
             type="text"
-            placeholder="계좌 별칭"
+            placeholder="계좌 별칭(미입력시 실명)"
             value={accountName}
             onChange={(e) => setAccountName(e.target.value)}
           />
@@ -116,7 +221,7 @@ function CreatePayment() {
           <CommonInput
             id="accountNum"
             type="text"
-            placeholder="나의 연동 계좌 정보"
+            placeholder="나의 연동 계좌 번호"
             value={accountNum}
             onChange={(e) => setAccountNum(e.target.value)}
           />
@@ -138,14 +243,14 @@ function CreatePayment() {
           />
           <CommonInput
             id="birth"
-            type="date"
-            placeholder="생년월일"
+            type="text"
+            placeholder="생년월일 8자리"
             value={birth}
-            onChange={(e) => setBirth(e.target.value)}
+            onChange={handleBirthChange}
           />
           <div className="btn">
             <button onClick={prevStep}>이전</button>
-            <button onClick={userVerification}>인증</button>
+            {!isVerification ? <button onClick={openPasswordModal}>인증</button> : <button onClick={createPay}>생성</button>}
           </div>
         </div>
       )}
@@ -162,6 +267,39 @@ function CreatePayment() {
               maxLength={6}
             />
             <button onClick={handlePasswordConfirm}>확인</button>
+          </div>
+        </div>
+      )}
+
+      {passwordModal && (
+        <div className="password-modal">
+          <div className="password-modal-content">
+            <button className="close" onClick={closePasswordModal}>
+              ×
+            </button>
+            <p className="modal-title">비밀번호를 입력해주세요</p>
+            <div className="password-display">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <span key={index} className="dot">
+                  {typeof accountPassword[index] !== "undefined" ? "●" : "○"}
+                </span>
+              ))}
+            </div>
+            <div className="keypad">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
+                <button
+                  key={number}
+                  onClick={() => handlePasswordInput(number)}
+                >
+                  {number}
+                </button>
+              ))}
+              <button onClick={handlePasswordClear} className="remove-button">
+                전체 삭제
+              </button>
+              <button onClick={() => handlePasswordInput(0)}>0</button>
+              <button onClick={handlePasswordBackspace}>←</button>
+            </div>
           </div>
         </div>
       )}
