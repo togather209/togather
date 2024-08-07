@@ -91,14 +91,13 @@ public class MemberService {
         Member member = memberRepository.findByEmail(authEmail)
                 .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원을 찾을 수 없습니다."));
 
-        MemberFindByIdResponse memberFindByIdResponse = MemberFindByIdResponse.builder()
+        return MemberFindByIdResponse.builder()
                 .memberId(member.getId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .name(member.getName())
                 .profileImg(member.getProfileImg())
                 .build();
-        return memberFindByIdResponse;
 
     }
 }
