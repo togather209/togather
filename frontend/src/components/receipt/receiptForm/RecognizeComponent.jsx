@@ -51,6 +51,7 @@ function RecognizeComponent({ defaultReceipt }) {
     }
 
     if (defaultReceipt !== undefined) {
+      console.log("defaultReceipt is not null");
       setIsEditStatus(true);
       setRecognizedResult(defaultReceipt);
       setEditedItems(defaultReceipt.items);
@@ -75,6 +76,7 @@ function RecognizeComponent({ defaultReceipt }) {
   const handleCameraButton = () => {
     console.log("카메라 버튼 클릭");
     setSelectedImageType(null);
+    setSelectedImage(null);
     setIsCameraOpen(true);
   };
 
@@ -84,6 +86,7 @@ function RecognizeComponent({ defaultReceipt }) {
 
   const handleImageButton = () => {
     setSelectedImageType(null);
+    setSelectedImage(null);
     console.log("image 버튼 클릭");
     document.getElementById("file-input").click();
   };
@@ -172,27 +175,27 @@ function RecognizeComponent({ defaultReceipt }) {
     }
   };
 
-  const tempRecognizedItems = {
-    businessName: "How Cafe",
-    paymentDate: "2024-07-31",
-    items: [
-      {
-        name: "3루 입장권",
-        count: 1,
-        unitPrice: 15000,
-      },
-      {
-        name: "1루 입장권",
-        count: 2,
-        unitPrice: 26000,
-      },
-      {
-        name: "외야 지정석",
-        count: 3,
-        unitPrice: 30000,
-      },
-    ],
-  };
+  // const tempRecognizedItems = {
+  //   businessName: "How Cafe",
+  //   paymentDate: "2024-07-31",
+  //   items: [
+  //     {
+  //       name: "3루 입장권",
+  //       count: 1,
+  //       unitPrice: 15000,
+  //     },
+  //     {
+  //       name: "1루 입장권",
+  //       count: 2,
+  //       unitPrice: 26000,
+  //     },
+  //     {
+  //       name: "외야 지정석",
+  //       count: 3,
+  //       unitPrice: 30000,
+  //     },
+  //   ],
+  // };
 
   return (
     <div className="recognize-component">
@@ -201,6 +204,7 @@ function RecognizeComponent({ defaultReceipt }) {
           onCapture={(image) => {
             setSelectedImage(image);
             setSelectedImageType("camera");
+            setIsOcrLoading(true);
             setIsCameraOpen(false);
           }}
           onClose={handleCloseCamera}
@@ -328,15 +332,6 @@ function RecognizeComponent({ defaultReceipt }) {
                 setIsOcrLoading(false);
               }}
             />
-          )}
-          {selectedImage && !isOcrLoading && (
-            <div className="recognized-image">
-              <img
-                src={selectedImage}
-                alt="recognized"
-                style={{ width: "320px", height: "480px" }}
-              />
-            </div>
           )}
           {recognizedResult === null && (
             <div className="recognized-content no-content">

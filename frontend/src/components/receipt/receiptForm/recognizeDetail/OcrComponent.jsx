@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
+import { parse, v4 as uuidv4 } from "uuid";
 
 const API_URL =
   "/api/custom/v1/33255/abfa332191b2a5beddd3e52a02738361b81c71214c0ff13d894c8042d6229297/document/receipt";
@@ -31,11 +31,32 @@ function OcrComponent({ image, onOcrResult }) {
           }
         );
 
-        console.log(response);
-        onOcrResult(response.data);
+        // console.log(response.data.images);
+        const parsedResult = parseOcrResult(response.data);
+        console.log(parsedResult);
+        onOcrResult(parsedResult);
       } catch (error) {
         console.error("ocr 처리 중 문제가 발생하였습니다.", error);
       }
+    };
+
+    const parseOcrResult = (data) => {
+      const result = data.images[0].receipt.result;
+
+      const businessName = result.storeInfo?.name?.text || "장소명";
+      const paymentDate = result.paymentInfo?.date?.text || "결제일시";
+      const items =
+        result.subResults[0]?.items.map((item) => ({
+          name: item.name?.text || "품목명",
+          count: parseInt(item?.count?.text || 0) || 0,
+          unitPrice: parseInt(item?.price?.price?.formatted.value, 0) || 0,
+        })) || [];
+
+      return {
+        businessName,
+        paymentDate,
+        items,
+      };
     };
 
     if (image) {
