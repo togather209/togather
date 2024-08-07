@@ -10,11 +10,6 @@ const CustomDatePickerWrapper = styled.div`
     border-radius: 10px;
   }
 
-  .react-datepicker__day--highlighted {
-    background-color: black !important; /* 강조 색상 */
-    color: white !important; /* 강조된 날짜의 글자 색상 */
-  }
-
   .react-datepicker__header {
     background-color: #ffffff;
     color: white;
@@ -62,26 +57,33 @@ const CustomDatePickerWrapper = styled.div`
   }
 `;
 
+// 날짜를 YYYY-MM-DD 형식으로 변환하는 함수
+const formatDateToYYYYMMDD = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더함
+  const day = String(date.getDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
+};
+
 const CalendarComponent = ({ onChange, firstDate, lastDate }) => {
   const [selectedDate, setSelectedDate] = useState(null);
 
   const handleDateChange = (date) => {
-    setSelectedDate(date);
-    onChange(date);
-  };
+    const formattedDate = formatDateToYYYYMMDD(date);
 
-  const highlightDates = [
-    new Date(2024, 8, 27),
-    new Date(2024, 8, 28),
-    // new Date(2024, 7, 25)
-  ];
+    // console.log(formattedDate)
 
-  const isHighlighted = (date) => {
-    return highlightDates.some(d => 
-      d.getFullYear() === date.getFullYear() &&
-      d.getMonth() === date.getMonth() &&
-      d.getDate() === date.getDate()
-    );
+    // 이미 선택된 날짜와 같으면 선택 해제, 다르면 선택
+    if (selectedDate === formattedDate) {
+      setSelectedDate(null);
+      console.log(selectedDate)
+      // onChange(null);
+    } else {
+      setSelectedDate(formattedDate);
+      console.log(selectedDate)
+      // onChange(date);
+    }
   };
 
   return (
@@ -89,13 +91,8 @@ const CalendarComponent = ({ onChange, firstDate, lastDate }) => {
       <DatePicker
         selected={selectedDate}
         onChange={handleDateChange}
-        // highlightDates={["20240827"]}
-        // highlightDates={highlightDates}
         minDate={firstDate}
         maxDate={lastDate}
-        dayClassName={date =>
-          highlightDates.some(d => d.getTime() === date.getTime()) ? 'react-datepicker__day--highlighted' : undefined
-        }
         inline
       />
     </CustomDatePickerWrapper>
