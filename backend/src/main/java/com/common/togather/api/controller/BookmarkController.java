@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -112,7 +113,7 @@ public class BookmarkController {
     @Operation(summary = "날짜가 정해진 북마크 조회")
     @GetMapping("/bookmarks/{date}")
     public ResponseEntity<ResponseDto<List<BookmarkFindAllByDateResponse>>> findAllBookmarkByDate(
-            @PathVariable("teamId") int teamId, @PathVariable("planId") int planId, @PathVariable("date") String date,
+            @PathVariable("teamId") int teamId, @PathVariable("planId") int planId, @PathVariable("date") LocalDate date,
             @RequestHeader(value = "Authorization", required = false) String header){
 
         ResponseDto<List<BookmarkFindAllByDateResponse>> responseDto = ResponseDto.<List<BookmarkFindAllByDateResponse>>builder()
@@ -141,14 +142,13 @@ public class BookmarkController {
 
     @Operation(summary = "북마크 삭제")
     @DeleteMapping("/bookmarks/{bookmarkId}")
-    public ResponseEntity<ResponseDto<String>> deleteBookmark(@PathVariable("teamId") int teamId, @PathVariable("planId") int planId,@PathVariable("bookmarkId") int bookmarkId,
+    public ResponseEntity<ResponseDto<List<BookmarkFindAllInJjinResponse>>> deleteBookmark(@PathVariable("teamId") int teamId, @PathVariable("planId") int planId,@PathVariable("bookmarkId") int bookmarkId,
                                                               @RequestHeader(value = "Authorization", required = false) String header){
 
-        bookmarkService.deleteBookmark(teamId, planId, bookmarkId, header);
-        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+        ResponseDto<List<BookmarkFindAllInJjinResponse>> responseDto = ResponseDto.<List<BookmarkFindAllInJjinResponse>>builder()
                 .status(HttpStatus.OK.value())
                 .message("찜 목록에서 삭제되었습니다.")
-                .data(null)
+                .data(bookmarkService.deleteBookmark(teamId, planId, bookmarkId, header))
                 .build();
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
