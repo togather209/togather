@@ -16,7 +16,6 @@ import ScheduleDetailFavoritePlaces from "./ScheduleDetailFavoritePlaces";
 import headphone from "../../assets/schedule/headphone.png";
 import mic from "../../assets/schedule/mic.png";
 import backImage from '../../assets/icons/common/back.png'
-
 import SearchForm from "../kakao/SearchForm";
 import PlacesList from "../kakao/PlacesList";
 import Pagination from "../kakao/Pagination";
@@ -29,7 +28,6 @@ function ScheduleDetail() {
 
   console.log(id)
   console.log(schedule_id)
-
 
     // 카카오 API가 로드되었는지 확인
   useEffect(() => {
@@ -139,8 +137,6 @@ function ScheduleDetail() {
     },
   ];
 
-
-
   const [selectedDate, setSelectedDate] = useState(null);
   const [isHeartClicked, setIsHeartClicked] = useState(true);
   const [isCallStarted, setIsCallStarted] = useState(false);
@@ -149,7 +145,6 @@ function ScheduleDetail() {
   const [favoritePlaces, setFavoritePlaces] = useState([])
   // 날짜별 장소 배열 상태
   const [datePlaces, setDatePlaces] = useState([])
-
 
   const handleCallStart = () => setIsCallStarted(!isCallStarted);
   const handleHeadPhone = () => setIsHeadPhone(!isHeadPhone);
@@ -175,6 +170,8 @@ function ScheduleDetail() {
     setIsOpenSearch(false)
   }, [])
 
+  const [forRendering, setForRendering] = useState(true)
+
   // 찜목록 조회하는 요청
   useEffect(() => {
     if (isHeartClicked) {
@@ -183,6 +180,7 @@ function ScheduleDetail() {
           // console.log(`/teams/${id}/plans/${schedule_id}/bookmarks/jjim`)
           const response = await axiosInstance.get(`/teams/${id}/plans/${schedule_id}/bookmarks/jjim`);
           console.log(response);
+          console.log("dddd")
           // console.log("dychdsfhasdfkljalfj")
           setFavoritePlaces(response.data.data)
           // console.log(favoritePlaces)
@@ -192,15 +190,18 @@ function ScheduleDetail() {
       }
       favoritePlace()
     }
-  }, [isHeartClicked, id, schedule_id, isOpenSearch])
+  }, [isHeartClicked, id, schedule_id, isOpenSearch, forRendering])
 
 
   // 날짜가 정해진 장소들 요청하는 axios
   useEffect(() => {
-    // console.log(selectedDate)
+    console.log(selectedDate)
+    if (!selectedDate) {
+      return
+    }
     const getDatePlaces = async () => {
       try {
-        const response = await axiosInstance.get(`/teams/${id}/plans/${schedule_id}/bookmarks/${240815}`);
+        const response = await axiosInstance.get(`/teams/${id}/plans/${schedule_id}/bookmarks/${selectedDate}`);
         console.log(response);
         setDatePlaces(response.data.data)
       } catch (error) {
@@ -208,7 +209,7 @@ function ScheduleDetail() {
       }
     }
     getDatePlaces()
-  }, [selectedDate])
+  }, [selectedDate, forRendering])
 
   return (
     <div className="schedule-detail">
@@ -271,12 +272,18 @@ function ScheduleDetail() {
         <div>
           {favoritePlaces.map((item, index) => (
             <ScheduleDetailFavoritePlaces
-              key={item.bookmarkId}
+              key={item.placeId}
+              meetingId={id}
+              scheduleId={schedule_id}
+              bookmarkId={item.bookmarkId}
               img_url="없음"
               name={item.placeName}
               address={item.placeAddr}
+              datedate={item.date}
               firstDate={datedata[0]?.date}
               lastDate={datedata[datedata.length - 1]?.date}
+              forRendering={forRendering}
+              setForRendering={setForRendering}
             />
           ))}
         </div>
@@ -284,18 +291,23 @@ function ScheduleDetail() {
         <div>
           {datePlaces.map((item, index) => (
             <ScheduleDetailPlaces
-              key={item.id}
-              img_url={item.image}
-              name={item.name}
-              address={item.address}
+              key={item.placeId}
+              meetingId={id}
+              scheduleId={schedule_id}
+              bookmarkId={item.bookmarkId}
+              // img_url={item.image}
+              name={item.placeName}
+              address={item.placeAddr}
+              datedate={item.date}
+              firstDate={datedata[0]?.date}
+              lastDate={datedata[datedata.length - 1]?.date}
+              forRendering={forRendering}
+              setForRendering={setForRendering}
             />
           ))}
         </div>
       )}
     </div>
-
-
-
 
     <div className="schedule-detail-button">
       {isCallStarted ? (
