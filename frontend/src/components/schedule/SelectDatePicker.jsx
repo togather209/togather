@@ -10,11 +10,6 @@ const CustomDatePickerWrapper = styled.div`
     border-radius: 10px;
   }
 
-  .react-datepicker__day--highlighted {
-    background-color: black !important; /* 강조 색상 */
-    color: white !important; /* 강조된 날짜의 글자 색상 */
-  }
-
   .react-datepicker__header {
     background-color: #ffffff;
     color: white;
@@ -62,40 +57,17 @@ const CustomDatePickerWrapper = styled.div`
   }
 `;
 
-const CalendarComponent = ({ onChange, firstDate, lastDate }) => {
-  const [selectedDate, setSelectedDate] = useState(null);
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    onChange(date);
-  };
+const CalendarComponent = ({ onChange, firstDate, lastDate, datedate, handleDateChange, selectedDate }) => {
 
-  const highlightDates = [
-    new Date(2024, 8, 27),
-    new Date(2024, 8, 28),
-    // new Date(2024, 7, 25)
-  ];
-
-  const isHighlighted = (date) => {
-    return highlightDates.some(d => 
-      d.getFullYear() === date.getFullYear() &&
-      d.getMonth() === date.getMonth() &&
-      d.getDate() === date.getDate()
-    );
-  };
 
   return (
     <CustomDatePickerWrapper>
       <DatePicker
         selected={selectedDate}
         onChange={handleDateChange}
-        // highlightDates={["20240827"]}
-        // highlightDates={highlightDates}
         minDate={firstDate}
         maxDate={lastDate}
-        dayClassName={date =>
-          highlightDates.some(d => d.getTime() === date.getTime()) ? 'react-datepicker__day--highlighted' : undefined
-        }
         inline
       />
     </CustomDatePickerWrapper>

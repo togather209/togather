@@ -5,6 +5,7 @@ import com.common.togather.api.error.MemberNotFoundException;
 import com.common.togather.api.error.PayAccountBalanceNotEmptyException;
 import com.common.togather.api.error.PayAccountNotFoundException;
 import com.common.togather.api.request.*;
+import com.common.togather.api.response.AccountFindByPayAccountIdResponse;
 import com.common.togather.api.response.PayAccountFindByMemberIdResponse;
 import com.common.togather.db.entity.Account;
 import com.common.togather.db.entity.Member;
@@ -190,5 +191,21 @@ public class PayAccountService {
                 .build();
 
         transactionService.saveTransaction(transactionSaveRequest);
+    }
+
+    public AccountFindByPayAccountIdResponse findAccountByPayAccountId(Integer payAccountId) {
+        PayAccount payAccount = payAccountRepository.findById(payAccountId)
+                .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
+        Account account = payAccount.getAccount();
+
+        if (account == null) {
+            throw new PayAccountNotFoundException("계좌가 존재하지 않습니다.");
+        }
+
+        return AccountFindByPayAccountIdResponse.builder()
+                .AccountName(payAccount.getAccountName())
+                .accountNumber(account.getAccountNumber())
+                .type(account.getType())
+                .build();
     }
 }

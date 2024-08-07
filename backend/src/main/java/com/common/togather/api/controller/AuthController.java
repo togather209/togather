@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -41,9 +42,10 @@ public class AuthController {
     // 회원가입
     @Operation(summary = "회원가입")
     @PostMapping("/register")
-    public ResponseEntity<ResponseDto<String>> signup(@Valid @RequestBody MemberSaveRequest memberSaveRequest){
+    public ResponseEntity<ResponseDto<String>> signup(@Valid @RequestPart(value = "member") MemberSaveRequest memberSaveRequest,
+                                                      @RequestPart(value = "image", required = false) MultipartFile profileImage){
 
-        authService.signup(memberSaveRequest);
+        authService.signup(memberSaveRequest, profileImage);
 
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.CREATED.value())

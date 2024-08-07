@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,8 +26,12 @@ public class TeamController {
 
     @Operation(summary = "모임 생성")
     @PostMapping("")
-    public  ResponseEntity<ResponseDto<TeamSaveResponse>> createTeam(@RequestHeader(value = "Authorization", required = false) String token, @RequestBody TeamSaveRequest requestDto) {
-        TeamSaveResponse teamSaveResponseDto = teamService.saveTeam(jwtUtil.getAuthMemberEmail(token), requestDto);
+    public ResponseEntity<ResponseDto<TeamSaveResponse>> createTeam(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestPart(value = "member") TeamSaveRequest requestDto,
+            @RequestPart(value = "image", required = false) MultipartFile profileImage) {
+
+        TeamSaveResponse teamSaveResponseDto = teamService.saveTeam(jwtUtil.getAuthMemberEmail(token), requestDto, profileImage);
 
         ResponseDto<TeamSaveResponse> responseDto = ResponseDto.<TeamSaveResponse>builder()
                 .status(HttpStatus.OK.value())
@@ -35,14 +40,18 @@ public class TeamController {
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
-
     }
 
     // 모임 수정
     @Operation(summary = "모임 수정")
     @PatchMapping("/{teamId}")
-    public ResponseEntity<ResponseDto<String>> updateTeam(@PathVariable int teamId, @RequestBody TeamUpdateRequest requestDto) {
-        teamService.updateTeam(teamId, requestDto);
+    public ResponseEntity<ResponseDto<String>> updateTeam(
+            @PathVariable Integer teamId,
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestPart(value = "team") TeamUpdateRequest requestDto,
+            @RequestPart(value = "image", required = false) MultipartFile newImage) {
+
+        teamService.updateTeam(teamId, jwtUtil.getAuthMemberEmail(token), requestDto, newImage);
 
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
@@ -52,6 +61,7 @@ public class TeamController {
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
+
 
     // 내가 속한 모임 조회
     @Operation(summary = "내가 속한 모임 조회")

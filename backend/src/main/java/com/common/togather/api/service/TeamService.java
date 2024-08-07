@@ -5,6 +5,7 @@ import com.common.togather.api.request.TeamJoinSaveRequest;
 import com.common.togather.api.request.TeamSaveRequest;
 import com.common.togather.api.request.TeamUpdateRequest;
 import com.common.togather.api.response.*;
+import com.common.togather.common.util.ImageUtil;
 import com.common.togather.db.entity.*;
 import com.common.togather.db.repository.MemberRepository;
 import com.common.togather.db.repository.TeamJoinRepository;
@@ -13,6 +14,7 @@ import com.common.togather.db.repository.TeamRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.SecureRandom;
 import java.util.List;
@@ -27,14 +29,14 @@ public class TeamService {
     private static final int CODE_LENGTH = 8;
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    private final ImageUtil imageUtil;
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final TeamJoinRepository teamJoinRepository;
 
     // 모임 생성
-    public TeamSaveResponse saveTeam(String email, TeamSaveRequest requestDto) {
-
+    public TeamSaveResponse saveTeam(String email, TeamSaveRequest requestDto, MultipartFile profileImage) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
 
@@ -43,10 +45,15 @@ public class TeamService {
             code = generateCode();
         } while (teamRepository.existsByCode(code));
 
+        String teamImgUrl = "https://trip-bucket-0515.s3.ap-northeast-2.amazonaws.com/|2ce6b798-4af7-4e74-a9de-809f7d9c9335.jpg";
+        if (profileImage != null && !profileImage.isEmpty()) {
+            teamImgUrl = imageUtil.uploadImage(profileImage);
+        }
+
         Team team = Team.builder()
                 .title(requestDto.getTitle())
                 .description(requestDto.getDescription())
-                .teamImg(requestDto.getTeamImg())
+                .teamImg(teamImgUrl)
                 .code(code)
                 .build();
         teamRepository.save(team);
@@ -63,14 +70,30 @@ public class TeamService {
     }
 
     // 모임 수정
-    public void updateTeam(int teamId, TeamUpdateRequest requestDto) {
-
+    public void updateTeam(Integer teamId, String email, TeamUpdateRequest requestDto, MultipartFile newImage) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new TeamNotFoundException("해당 모임이 존재하지 않습니다."));
+        TeamMember teamMember = teamMemberRepository.findByMemberAndTeam(member, team);
 
-        team.updateTeam(requestDto.getTitle(), requestDto.getDescription(), requestDto.getTeamImg());
+        if (teamMember.getRole() != 1) {
+            throw new NotTeamLeaderException("모임 수정은 방장만 가능합니다.");
+        }
+
+        if (team.getTeamImg() != null && !team.getTeamImg().isEmpty()) {
+            imageUtil.deleteImage(team.getTeamImg());
+        }
+
+        String newTeamImgUrl = null;
+        if (newImage != null && !newImage.isEmpty()) {
+            newTeamImgUrl = imageUtil.uploadImage(newImage);
+        }
+
+        team.updateTeam(requestDto.getTitle(), requestDto.getDescription(), newTeamImgUrl);
         teamRepository.save(team);
     }
+
 
     // 랜덤 코드 생성
     public static String generateCode() {
@@ -248,6 +271,10 @@ public class TeamService {
 
         if (hasActivePlans) {
             throw new PlansExistException("모임에 활성화된 일정이 있어 삭제할 수 없습니다.");
+        }
+
+        if (team.getTeamImg() != null && !team.getTeamImg().isEmpty()) {
+            imageUtil.deleteImage(team.getTeamImg());
         }
 
         teamRepository.delete(team);
