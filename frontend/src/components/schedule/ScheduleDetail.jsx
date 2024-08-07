@@ -273,6 +273,7 @@ function ScheduleDetail() {
           {favoritePlaces.map((item, index) => (
             <ScheduleDetailFavoritePlaces
               key={item.placeId}
+              placeId={item.placeId}
               meetingId={id}
               scheduleId={schedule_id}
               bookmarkId={item.bookmarkId}
