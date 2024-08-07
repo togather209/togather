@@ -1,5 +1,6 @@
 import React from 'react';
 import axiosInstance from '../../utils/axiosInstance';
+import './PlacesList.css'
 
 const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
 
@@ -8,16 +9,12 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
 
     // 요청 파라미터 값 생성
     const favoriteFormData = {
+      placeId: place.id,
       placeName: place.place_name,
       placeAddr: place.address_name,
       placeImg: "아니 없어요" // 여기에 실제 이미지 URL을 넣어야 할 수 있습니다.
-      // 아이디도 줘야한다.
+      
     };
-
-    console.log(place)
-
-    console.log(favoriteFormData)
-    console.log(id, schedule_id)
 
     // axios 요청
     try {
@@ -33,16 +30,14 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
       <li key={index} className="item" onClick={() => onPlaceClick(place)}>
         <span className={`markerbg marker_${index + 1}`}></span>
         <div className="info">
-          <h5>{place.place_name}</h5>
+          <h5 className="place-list-name">{place.place_name}</h5>
           {place.road_address_name ? (
             <>
-              <span>{place.road_address_name}</span>
-              <span className="jibun gray">{place.address_name}</span>
+              <div className="jibun">{place.road_address_name}</div>
             </>
           ) : (
-            <span>{place.address_name}</span>
+            <span className="jibun">{place.address_name}</span>
           )}
-          <span className="tel">{place.phone}</span>
         </div>
         <button onClick={onButtonClick(place)}>찜하기</button> {/* 버튼 클릭 시 onButtonClick 함수 실행 */}
       </li>
