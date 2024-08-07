@@ -119,6 +119,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    // 계좌 인증이 실패한 경우
+    @ExceptionHandler(AccountVerificationException.class)
+    public ResponseEntity<ErrorResponseDto> handleAccountVerificationException(AccountVerificationException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Account verification failed", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
     // 가입된 이메일이 이미 있는 경우
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex) {
@@ -240,5 +248,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handlePlaceAlreadyExistsException(PlaceAlreadyExistsException ex) {
         ErrorResponseDto error = new ErrorResponseDto("Place Already Exists", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    // 수정이 불가능한 경우 (영수증이 등록된 장소는 찜으로 이동 불가)
+    @ExceptionHandler(UpdateNotAllwedException.class)
+    public ResponseEntity<ErrorResponseDto> handleUpdateNotAllwedException(UpdateNotAllwedException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Update Not Allwed", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 }

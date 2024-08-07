@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./SelectParticipantsModal.css";
 import Close from "../../../assets/icons/common/close.png";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setTeamPlan } from "../../../redux/slices/receiptSlice";
+import axiosInstance from "../../../utils/axiosInstance";
+import localStorage from "redux-persist/es/storage";
 
 function SelectParticipantsModal({
   participants,
@@ -9,6 +14,7 @@ function SelectParticipantsModal({
   onClose,
   isSingleSelect,
 }) {
+  const dispatch = useDispatch();
   const [selected, setSelected] = useState(selectedParticipants || []);
 
   useEffect(() => {
@@ -19,8 +25,10 @@ function SelectParticipantsModal({
     if (isSingleSelect) {
       setSelected([participant]);
     } else {
-      if (selected.some((p) => p.id === participant.id)) {
-        setSelected(selected.filter((p) => p.id !== participant.id));
+      if (selected.some((p) => p.memberId === participant.memberId)) {
+        setSelected(
+          selected.filter((p) => p.memberId !== participant.memberId)
+        );
       } else {
         setSelected([...selected, participant]);
       }
@@ -46,15 +54,17 @@ function SelectParticipantsModal({
         />
         <div className="select-participants-modal-detail">
           {participants.map((participant, idx) => (
-            <div key={participant.id} className="participant-item">
+            <div key={participant.memberId} className="participant-item">
               <input
                 type={isSingleSelect ? "radio" : "checkbox"}
-                id={`participant-${participant.id}`}
-                checked={selected.some((p) => p.id === participant.id)}
+                id={`participant-${participant.memberId}`}
+                checked={selected.some(
+                  (p) => p.memberId === participant.memberId
+                )}
                 onChange={() => handleToggle(participant)}
               />
-              <label htmlFor={`participant-${participant.id}`}>
-                {participant.name}
+              <label htmlFor={`participant-${participant.memberId}`}>
+                {participant.nickname}
               </label>
             </div>
           ))}

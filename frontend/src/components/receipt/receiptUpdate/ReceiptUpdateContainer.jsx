@@ -5,21 +5,35 @@ import {
   setActiveTab,
   resetReceipt,
 } from "../../../redux/slices/receiptSlice";
-import "./ReceiptForm.css";
+import "../receiptForm/ReceiptForm.css";
 import BackButton from "../../common/BackButton";
-import Design from "./DesignComponent";
-import Recognize from "./RecognizeComponent";
-import Calculate from "./CalculateComponent";
+import Design from "../receiptForm/DesignComponent";
+import Recognize from "../receiptForm/RecognizeComponent";
+import Calculate from "../receiptForm/CalculateComponent";
+import { useLocation } from "react-router-dom";
 
-function ReceiptRegistForm() {
+function ReceiptUpdateContainer() {
   const dispatch = useDispatch();
   const activeTab = useSelector((state) => state.receipt.activeTab);
   const receiptData = useSelector((state) => state.receipt);
+  const location = useLocation();
 
   useEffect(() => {
+    const { teamId, planId, receiptId, receiptData } = location.state || {};
+
     // 컴포넌트가 마운트될 때 초기화
     dispatch(resetReceipt());
-  }, [dispatch]);
+    if (receiptData) {
+      dispatch(
+        setReceiptData({
+          teamId,
+          planId,
+          receiptId,
+          ...receiptData,
+        })
+      );
+    }
+  }, [dispatch, location.state]);
 
   const handleSetActiveTab = (
     tab,
@@ -46,7 +60,7 @@ function ReceiptRegistForm() {
     <div className="form-container">
       <header className="form-header">
         <BackButton />
-        <div className="form-title">어떤 영수증인가요?</div>
+        <div className="form-title">영수증 수정</div>
       </header>
       <div className="tab-container">
         <div className="tabs">
@@ -80,9 +94,9 @@ function ReceiptRegistForm() {
         </div>
       </div>
       <div className="tab-content">
-        {activeTab === "design" && <Design />}
+        {activeTab === "design" && <Design defaultColor={receiptData.color} />}
         {activeTab === "recognize" && (
-          <Recognize setActiveTab={handleSetActiveTab} />
+          <Recognize defaultReceipt={receiptData} />
         )}
         {activeTab === "calculate" && <Calculate />}
       </div>
@@ -90,4 +104,4 @@ function ReceiptRegistForm() {
   );
 }
 
-export default ReceiptRegistForm;
+export default ReceiptUpdateContainer;

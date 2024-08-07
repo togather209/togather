@@ -89,4 +89,9 @@ public class Member {
             this.payAccount = null;
         }
     }
+
+    // 이름 변경
+    public void updateName(String name) {
+        this.name = name;
+    }
 }

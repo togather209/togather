@@ -11,9 +11,8 @@
 }
 
 .schedule-finish-button {
-  position: fixed;
-  right: 24px;
-  top:20px
+  position: relative;
+  top:5px
 }
 
 .receipt-list {

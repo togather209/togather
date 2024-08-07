@@ -16,8 +16,10 @@ const PrivateRoute = ({ children }) => {
           const memberResponse = await axiosInstance.get("/members/me");
           dispatch(setUser({ member: memberResponse.data.data }));
 
-          // const accountResponse = await axiosInstance.get('/pay-accounts/members/me');
-          // dispatch(setAccount({account : accountResponse.data.data}));
+          // const accountResponse = await axiosInstance.get(
+          //   "/pay-accounts/members/me"
+          // );
+          // dispatch(setAccount({ account: accountResponse.data.data }));
         } catch (error) {
           console.log("데이터 불러오기 에러", error);
         }
