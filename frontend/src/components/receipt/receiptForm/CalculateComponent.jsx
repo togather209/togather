@@ -300,7 +300,16 @@ function CalculateComponent() {
                   {items.map((item, index) => (
                     <React.Fragment key={index}>
                       <tr>
-                        <td>{item.name}</td>
+                        <td>
+                          {item.name.length > 10
+                            ? item.name.match(/.{1,10}/g).map((part, idx) => (
+                                <span key={idx}>
+                                  {part}
+                                  <br />
+                                </span>
+                              ))
+                            : item.name}
+                        </td>
                         <td>{item.count}</td>
                         <td>{item.unitPrice.toLocaleString()}원</td>
                       </tr>
