@@ -1,0 +1,98 @@
+.custom-select-container {
+    position: relative;
+    width: 100%;
+    margin: 10px 0;
+}
+
+.custom-select {
+    width: 100%;
+    padding: 10px;
+    padding-top: 18px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: left;
+    position: relative;
+    padding: 20px;
+}
+
+.select-label {
+    color: #ccc;
+    font-size: 16px;
+    transition: 0.2s;
+    pointer-events: none;
+    position: absolute;
+    left: 10px; /* Align label with the padding */
+    top: 50%; /* Initial position */
+    transform: translateY(-50%);
+    background: white; /* Background to cover the border */
+    padding: 0 5px; /* Padding to cover border */
+}
+
+.custom-select.open .select-label, .select-label.focused {
+    top: -7px; /* Adjust this value to position the label correctly */
+    transform: translateY(0);
+    font-size: 12px;
+    color: #712FFF;
+}
+
+.custom-select.open {
+    border-color: #712FFF;
+}
+
+.select-arrow {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+.custom-select-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 0 0 10px 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+.custom-select-option {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.custom-select-option:hover {
+    background-color: #f0f0f0;
+}
+
+.option-image {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border-radius: 50%;
+}
+.select-value {
+    color: black;
+    font-size: 16px;
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.select-value.selected {
+    color: black;
+}
+
+.custom-select.open .select-value {
+    color: #000; /* Maintain black color when open */
+}
