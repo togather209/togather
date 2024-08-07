@@ -7,6 +7,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PlanUpdateResponse {
-    private int planId;
+public class BookmarkUpdateDateResponse {
+    private Boolean isJjim;
 }

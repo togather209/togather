@@ -71,6 +71,62 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    // 모임 요청을 벌써 했을 경우
+    @ExceptionHandler(TeamJoinRequestAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleTeamJoinRequestAlreadyExistsException(TeamJoinRequestAlreadyExistsException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Join Request Already Exists", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+    
+    // 모임에 벌써 가입된 경우
+    @ExceptionHandler(AlreadyJoinedTeamException.class)
+    public ResponseEntity<ErrorResponseDto> handleAlreadyJoinedTeamException(AlreadyJoinedTeamException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Already Joined Team", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    // 모임에 요청을 할 수 없는 경우
+    @ExceptionHandler(TeamJoinBlockedException.class)
+    public ResponseEntity<ErrorResponseDto> handleTeamJoinBlockedException(TeamJoinBlockedException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Join Blocked", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    // 모임의 방장이 아닐 경우
+    @ExceptionHandler(NotTeamLeaderException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotTeamLeaderException(NotTeamLeaderException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("permission error", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    // 정산 되지 않은 일정이 존재하는 경우
+    @ExceptionHandler(PlansExistException.class)
+    public ResponseEntity<ErrorResponseDto> handlePlansExistException(PlansExistException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Plans Exist", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    // 멤버가 팀에 없을 경우
+    @ExceptionHandler(MemberNotInTeamException.class)
+    public ResponseEntity<ErrorResponseDto> handleMemberNotInTeamException(MemberNotInTeamException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Member Not in Team", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    // 계좌 인증이 실패한 경우
+    @ExceptionHandler(AccountVerificationException.class)
+    public ResponseEntity<ErrorResponseDto> handleAccountVerificationException(AccountVerificationException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Account verification failed", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
     // 가입된 이메일이 이미 있는 경우
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex) {
@@ -177,6 +233,27 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedAccessException.class)
     public ResponseEntity<ErrorResponseDto> handleUnauthorizedAccessException(UnauthorizedAccessException ex) {
         ErrorResponseDto error = new ErrorResponseDto("Unauthorized Access", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    // 삭제 조건이 맞지 않는 경우
+    @ExceptionHandler(DeletionNotAllowedException.class)
+    public ResponseEntity<ErrorResponseDto> handleDeletionNotAllowedException(DeletionNotAllowedException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Deletion Not Allowed", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    // 이미 북마크에 있는 장소인 경우
+    @ExceptionHandler(PlaceAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handlePlaceAlreadyExistsException(PlaceAlreadyExistsException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Place Already Exists", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    // 수정이 불가능한 경우 (영수증이 등록된 장소는 찜으로 이동 불가)
+    @ExceptionHandler(UpdateNotAllwedException.class)
+    public ResponseEntity<ErrorResponseDto> handleUpdateNotAllwedException(UpdateNotAllwedException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Update Not Allwed", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 }

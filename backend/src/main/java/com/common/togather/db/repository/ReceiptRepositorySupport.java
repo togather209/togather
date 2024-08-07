@@ -4,12 +4,13 @@ import com.common.togather.api.response.ReceiptFindAllByPlanIdResponse;
 import com.common.togather.api.response.ReceiptFindByReceiptIdResponse;
 import com.common.togather.api.response.ReceiptFindByReceiptIdResponse.ItemFindByReceipt;
 import com.common.togather.api.response.ReceiptFindByReceiptIdResponse.ItemFindByReceipt.MemberFindByReceipt;
-import com.common.togather.db.entity.QItem;
-import com.common.togather.db.entity.QItemMember;
-import com.common.togather.db.entity.QMember;
-import com.common.togather.db.entity.QReceipt;
+import com.common.togather.db.entity.*;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -25,6 +26,7 @@ public class ReceiptRepositorySupport {
     QMember qMember = QMember.member;
     QItem qItem = QItem.item;
     QItemMember qItemMember = QItemMember.itemMember;
+    QBookmark qBookmark = QBookmark.bookmark;
 
     public Optional<ReceiptFindByReceiptIdResponse> findReceiptByReceiptId(String email, int receiptId) {
         ReceiptFindByReceiptIdResponse response = jpaQueryFactory
@@ -33,11 +35,18 @@ public class ReceiptRepositorySupport {
                         qReceipt.manager.nickname.as("managerName"),
                         qReceipt.businessName.as("businessName"),
                         qReceipt.totalPrice.as("totalPrice"),
-                        qReceipt.paymentDate.as("paymentDate"),
+                        formattedDate.as("paymentDate"),
+                        qReceipt.bookmark.id.as("bookmarkId"),
+                        new CaseBuilder()
+                                .when(qReceipt.bookmark.isNotNull())
+                                .then(qReceipt.bookmark.placeName)
+                                .otherwise((String) null)
+                                .as("bookmarkName"),
                         qReceipt.color.as("color"),
                         qReceipt.manager.email.eq(email).as("isManager")
                 ))
                 .from(qReceipt)
+                .leftJoin(qReceipt.bookmark, qBookmark)
                 .where(qReceipt.id.eq(receiptId))
                 .fetchOne();
 
@@ -91,7 +100,7 @@ public class ReceiptRepositorySupport {
                         qReceipt.id.as("receiptId"),
                         qReceipt.businessName.as("businessName"),
                         qReceipt.totalPrice.as("totalPrice"),
-                        qReceipt.paymentDate.as("paymentDate"),
+                        formattedDate.as("paymentDate"),
                         qReceipt.color.as("color")
                 ))
                 .from(qReceipt)
@@ -100,4 +109,9 @@ public class ReceiptRepositorySupport {
 
         return Optional.of(response);
     }
+
+    StringTemplate formattedDate = Expressions.stringTemplate(
+            "DATE_FORMAT({0}, {1})",
+            qReceipt.paymentDate,
+            ConstantImpl.create("%Y/%m/%d"));
 }

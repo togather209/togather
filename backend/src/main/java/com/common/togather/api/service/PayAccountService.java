@@ -61,6 +61,8 @@ public class PayAccountService {
                 .member(member)
                 .account(account)
                 .build());
+
+        member.updateName(requestDto.getMemberName());
     }
 
     // Pay 계좌 충전하기

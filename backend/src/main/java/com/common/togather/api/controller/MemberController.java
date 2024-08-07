@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -53,7 +54,7 @@ public class MemberController {
                 .message("로그아웃 성공")
                 .data(null)
                 .build();
-        return new ResponseEntity<>(responseDto,HttpStatus.OK);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @Operation(summary = "로그인 유저 정보 조회")
@@ -70,18 +71,20 @@ public class MemberController {
                 .data(response)
                 .build();
 
-        return new ResponseEntity<>(responseDto,HttpStatus.OK);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @Operation(summary = "회원정보 수정")
     @PatchMapping("/me")
-    public ResponseEntity<ResponseDto<String>> updateMember(@RequestHeader(value = "Authorization", required = false) String header,
-                                                                          @RequestBody MemberUpdateRequest memberUpdateRequest) {
+    public ResponseEntity<ResponseDto<String>> updateMember(
+            @RequestHeader(value = "Authorization", required = false) String header,
+            @RequestPart(value = "member") MemberUpdateRequest memberUpdateRequest,
+            @RequestPart(value = "image", required = false) MultipartFile profileImage) {
         // 로그인 유저 이메일 추출
         String authEmail = jwtUtil.getAuthMemberEmail(header);
-        
+
         // 새로 입력한 정보로 업데이트
-        memberService.updateMember(authEmail, memberUpdateRequest);
+        memberService.updateMember(authEmail, memberUpdateRequest, profileImage);
 
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
@@ -89,7 +92,7 @@ public class MemberController {
                 .data(null)
                 .build();
 
-        return new ResponseEntity<>(responseDto,HttpStatus.OK);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @Operation(summary = "회원 탈퇴")
@@ -120,6 +123,6 @@ public class MemberController {
                 .data(null)
                 .build();
 
-        return new ResponseEntity<>(responseDto,HttpStatus.OK);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }

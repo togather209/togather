@@ -32,7 +32,7 @@ public class ReceiptSaveRequest {
     private LocalDateTime paymentDate;
 
     // 북마크
-    private Integer bookMarkId;
+    private Integer bookmarkId;
 
     // 색
     @NotNull(message = "색은 필수 입력값입니다.")

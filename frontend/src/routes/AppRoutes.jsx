@@ -1,8 +1,8 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Landing from "../pages/Landing";
+
 import MyPageMain from "../components/mypage/MyPageMain";
-import Game from "../pages/Game";
 import User from "../pages/User";
 import SignUpForm from "../components/user/SignUpForm";
 import Wallet from "../pages/Wallet";
@@ -21,14 +21,21 @@ import MeetingDetail from "../components/meeting/MeetingDetail";
 import MeetingDetailContainer from "../components/meeting/MeetingDetailContainer";
 import ScheduleRegist from "../components/schedule/ScheduleRegist";
 import ScheduleDetail from "../components/schedule/ScheduleDetail";
+
+// 게임 페이지
+import Game from "../pages/Game";
+
+// 영수증 페이지
 import Receipt from "../pages/Receipt";
 import ReceiptListContainer from "../components/receipt/receiptList/ReceiptListContainer";
 import ReceiptFormContainer from "../components/receipt/receiptForm/ReceiptFormContainer";
 import ReceiptDetail from "../components/receipt/receiptDetail/ReceiptDetail";
+import ReceiptUpdateContainer from "../components/receipt/receiptUpdate/ReceiptUpdateContainer";
 
 import ProfileUpdate from "../components/mypage/ProfileUpdate";
 import Terms from "../components/mypage/Terms";
 import PrivateRoute from "./PrivateRoute";
+import CameraCapture from "../components/receipt/receiptForm/recognizeDetail/CameraCapture";
 
 function AppRoutes() {
   return (
@@ -52,27 +59,17 @@ function AppRoutes() {
           </PrivateRoute>
         }
       >
-        <Route
-          path=""
-          element={
-            <HomeMainContainer />
-          }
-        >
+        <Route path="" element={<HomeMainContainer />}>
           <Route index element={<HomeMain />} />
           <Route path="regist_form" element={<RegistForm />} />
           <Route path="join_form" element={<JoinForm />} />
         </Route>
-        <Route
-          path="meeting"
-          element={
-            <MeetingContainer />
-          }
-        >
+        <Route path="meeting" element={<MeetingContainer />}>
           <Route index element={<Meetings />} />
           <Route path=":id" element={<MeetingDetailContainer />}>
             <Route index element={<MeetingDetail />} />
             <Route path="schedule-regist" element={<ScheduleRegist />} />
-            <Route path="schedule/:id" element={<ScheduleDetail />} />
+            <Route path="schedule/:schedule_id" element={<ScheduleDetail />} />
           </Route>
         </Route>
       </Route>
@@ -141,8 +138,10 @@ function AppRoutes() {
         }
       >
         <Route index element={<ReceiptListContainer />} />
-        <Route path=":id" element={<ReceiptDetail />} />
+        <Route path=":receiptId" element={<ReceiptDetail />} />
         <Route path="regist-form" element={<ReceiptFormContainer />} />
+        <Route path="camera-capture" element={<CameraCapture />} />
+        <Route path="update-form" element={<ReceiptUpdateContainer />} />
       </Route>
       <Route
         path="/game"
