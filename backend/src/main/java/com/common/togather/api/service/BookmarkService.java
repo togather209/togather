@@ -66,6 +66,7 @@ public class BookmarkService {
                 .placeImg(request.getPlaceImg())
                 .placeName(request.getPlaceName())
                 .placeAddr(request.getPlaceAddr())
+                .itemOrder(0)
                 .build();
 
         bookmarkRepository.save(bookmark);
@@ -91,6 +92,7 @@ public class BookmarkService {
 
         // 날짜 정보가 있던 장소가 찜으로 이동하는 경우
         if (oldDate != null && newDate == null) {
+            System.out.println("날짜 정보가 있던 장소를 찜으로 이동");
             // 영수증 등록된 장소는 찜으로 이동 불가능
             if(!updatedBookmark.getReceipts().isEmpty()){
                 throw new UpdateNotAllwedException("영수증이 등록된 장소는 찜목록으로 이동할 수 없습니다.");
@@ -113,12 +115,14 @@ public class BookmarkService {
         }
         // 찜에 있던 장소에 날짜를 지정해준 경우, 날짜 변경하고 순서는 그 날짜의 가장 마지막으로 설정
         else if (oldDate == null && newDate != null) {
-            updatedBookmark.updateDate(newDate, bookmarkRepository.findAllByDate(newDate).size());
+            System.out.println("찜에 있던 장소를 날짜 지정");
+            updatedBookmark.updateDate(newDate, bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, newDate).size());
             bookmarkRepository.save(updatedBookmark);
         }
 
         // 날짜 정보가 있던 장소를 다른 날짜로 이동하는 경우 양쪽 모두 순서 재정렬
         else {
+            System.out.println("날짜 있던 거를 다른 날짜로 이동");
             int oldOrder = updatedBookmark.getItemOrder();
             updatedBookmark.updateDate(newDate, bookmarkRepository.findAllByDate(newDate).size());
             bookmarkRepository.save(updatedBookmark);
@@ -161,8 +165,9 @@ public class BookmarkService {
         planRepository.findById(planId)
                 .orElseThrow(()-> new PlanNotFoundException("해당 일정이 존재하지 않습니다."));
 
-        // 해당 날짜인 모든 북마크 리스트
-        List<Bookmark> bookmarkList = bookmarkRepository.findAllByDate(LocalDate.parse(date, DateTimeFormatter.ofPattern("yyMMdd")));
+        // 해당 일정 중 해당 날짜를 갖는 모든 북마크 리스트
+        List<Bookmark> bookmarkList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(
+                planId,LocalDate.parse(date, DateTimeFormatter.ofPattern("yyMMdd")));
 
         return bookmarkList.stream()
                 .sorted(((o1, o2) -> Integer.compare(o1.getItemOrder(), o2.getItemOrder())))
@@ -188,7 +193,7 @@ public class BookmarkService {
                 .orElseThrow(()-> new PlanNotFoundException("해당 일정이 존재하지 않습니다."));
 
         // 해당 날짜인 모든 북마크 리스트
-        List<Bookmark> bookmarkList = bookmarkRepository.findByDateIsNull();
+        List<Bookmark> bookmarkList = bookmarkRepositorySupport.findAllBookmarkByNullDateInSamePlan(planId);
         return bookmarkList.stream()
                 .map(bookmark -> BookmarkFindAllInJjinResponse.builder()
                         .bookmarkId(bookmark.getId())

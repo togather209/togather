@@ -12,6 +12,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Repository
@@ -73,5 +74,29 @@ public class BookmarkRepositorySupport {
 
         // 조회된 북마크가 있다면 true 반환
         return true;
+    }
+
+    // 같은 일정과 같은 날짜를 갖는 북마크 리스트 조회
+    public List<Bookmark> findAllBookmarkByDateInSamePlan(int planId, LocalDate date) {
+        QBookmark qBookmark = QBookmark.bookmark;
+
+        List<Bookmark> result = jpaQueryFactory.selectFrom(qBookmark)
+                .where(qBookmark.plan.id.eq(planId)
+                        .and(qBookmark.date.eq(date)))
+                .fetch();
+
+        return result;
+    }
+
+    // 같은 일정에 북마크 찜 리스트 조회
+    public List<Bookmark> findAllBookmarkByNullDateInSamePlan(int planId) {
+        QBookmark qBookmark = QBookmark.bookmark;
+
+        List<Bookmark> result = jpaQueryFactory.selectFrom(qBookmark)
+                .where(qBookmark.plan.id.eq(planId)
+                        .and(qBookmark.date.isNull()))
+                .fetch();
+
+        return result;
     }
 }
