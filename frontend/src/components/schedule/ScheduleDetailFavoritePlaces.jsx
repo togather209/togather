@@ -50,14 +50,7 @@ function ScheduleDetailFavoritePlaces({
   const deleteJjimPlace = async () => {
     try {
       const response = await axiosInstance.delete(`/teams/${meetingId}/plans/${scheduleId}/bookmarks/${bookmarkId}`);
-      // const data = response.data.data;
       console.log(response.data)
-      // setScheduleDetail(data);
-      // const start = new Date(data.startDate);
-      // const end = new Date(data.endDate);
-      // console.log("Fetched Schedule Detail:", data);
-      // setStartDate(start);
-      // setEndDate(end);
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
     }
@@ -65,13 +58,11 @@ function ScheduleDetailFavoritePlaces({
 
   // 찜하기 목록 추가 axios 요청
   const addJjimPlace = async () => {
-
     const addJjimFormData = {}
     addJjimFormData["placeId"] = placeId
     addJjimFormData["placeImg"] = "이미지없음"
     addJjimFormData["placeName"] = name
     addJjimFormData["placeAddr"] = address
-
     // console.log(addJjimFormData)
  
     try {

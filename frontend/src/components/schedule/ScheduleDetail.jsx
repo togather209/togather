@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "./ScheduleDetail.css";
 import axiosInstance from "../../utils/axiosInstance";
 import meetingimg from "../../../public/다운로드.jpg";
@@ -7,6 +7,8 @@ import alarm from "../../assets/icons/common/alarm.png";
 import exit from "../../assets/schedule/scheduleexit.png";
 import heart from "../../assets/schedule/scheduleheartimg.png";
 import heartpurple from "../../assets/schedule/scheduleheartpurple.png";
+import update from "../../assets/schedule/update.png";
+import deleteimg from "../../assets/schedule/deleteimg.png"
 import BackButton from "../common/BackButton";
 import ScheduleButton from "./ScheduleButton";
 import ScheduleDates from "./ScheduleDates";
@@ -25,6 +27,7 @@ function ScheduleDetail() {
   const [places, setPlaces] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [kakaoLoaded, setKakaoLoaded] = useState(false);
+  const navigation = useNavigate()
 
   console.log(id)
   console.log(schedule_id)
@@ -74,6 +77,7 @@ function ScheduleDetail() {
       const response = await axiosInstance.get(`/teams/${id}/plans/${schedule_id}`);
       const data = response.data.data;
       setScheduleDetail(data);
+      console.log(data)
 
       const start = new Date(data.startDate);
       const end = new Date(data.endDate);
@@ -211,6 +215,16 @@ function ScheduleDetail() {
     getDatePlaces()
   }, [selectedDate, forRendering])
 
+  // 일정 나가기 axios 요청
+  const scheduleExit = async () => {
+    try {
+      const response = await axiosInstance.delete(`/teams/${id}/plans/${schedule_id}`);
+      console.log(response.data);
+      navigation(`/home/meeting/${id}`)
+    } catch (error) {
+      console.error("데이터 불러오기 실패", error);
+    }}
+
   return (
     <div className="schedule-detail">
       {!isOpenSearch ? (
@@ -229,7 +243,19 @@ function ScheduleDetail() {
             <p className="schedule-detail-meeting-name">모임명</p>
             <p className="schedule-detail-schedule-name">일정명</p>
           </div>
-          <img className="schedule-exit-img" src={exit} alt="일정 나가기" />
+
+          {scheduleDetail.isManager ? (
+            <div>
+              <img className="schedule-exit-img" src={update} alt="일정수정" />
+              <img onClick={scheduleExit} className="schedule-exit-img" src={deleteimg} alt="일정삭제" />
+            </div>
+          ) : (
+
+            <img className="schedule-exit-img" src={exit} alt="일정 나가기" />
+          )
+          }
+        
+        
         </div>
       </div>
       <div className="schedule-detail-second-section">
