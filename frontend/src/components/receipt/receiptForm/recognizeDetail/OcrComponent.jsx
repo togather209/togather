@@ -1,12 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
+import Loading from "../../../common/Loading";
 
 const RECEIPT_API_URL = "/ocr/receipt";
 
 function OcrComponent({ image, onOcrResult }) {
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     const fetchOcrResult = async () => {
+      // OCR 인식 시에 Loading 화면
+      setIsLoading(true);
       try {
         const response = await axios.post(
           RECEIPT_API_URL,
@@ -116,11 +121,7 @@ function OcrComponent({ image, onOcrResult }) {
     }
   }, [image, onOcrResult]);
 
-  return (
-    <div>
-      <p>OCR 요청 중 ...</p>
-    </div>
-  );
+  return <div>{isLoading && <Loading>열심히 분석 중이에요</Loading>}</div>;
 }
 
 export default OcrComponent;

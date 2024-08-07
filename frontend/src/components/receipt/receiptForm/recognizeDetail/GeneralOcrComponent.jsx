@@ -1,12 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
+import Loading from "../../../common/Loading";
 
 const GENERAL_API_URL = "/ocr/general";
 
 function GeneralOcrComponent({ image, onOcrResult }) {
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     const fetchOcrResult = async () => {
+      // 로딩 화면 시작
+      setIsLoading(true);
       try {
         const response = await axios.post(
           GENERAL_API_URL,
@@ -37,6 +42,9 @@ function GeneralOcrComponent({ image, onOcrResult }) {
         onOcrResult(analyzedResult);
       } catch (error) {
         console.error("OCR 처리 중 문제가 발생하였습니다.", error);
+      } finally {
+        // 요청 종료 시 로딩화면 종료
+        setIsLoading(false);
       }
     };
 
@@ -131,9 +139,7 @@ function GeneralOcrComponent({ image, onOcrResult }) {
   }, [image, onOcrResult]);
 
   return (
-    <div>
-      <p>OCR 요청 중 ...</p>
-    </div>
+    <div>{isLoading && <Loading>결제 내역을 분석하고 있어요</Loading>}</div>
   );
 }
 
