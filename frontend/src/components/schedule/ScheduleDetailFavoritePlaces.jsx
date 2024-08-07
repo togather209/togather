@@ -62,16 +62,17 @@ function ScheduleDetailFavoritePlaces({
           <img
             className="heart-size"
             onClick={handleHeartPurple}
-            src={heartpurple}
-            alt="full-heart"
+            src={heart}
+            alt="empty-heart"
           />
         ) : (
           <img
             className="heart-size"
             onClick={handleHeartPurple}
-            src={heart}
-            alt="empty-heart"
+            src={heartpurple}
+            alt="full-heart"
           />
+  
         )}
       </div>
     </div>
