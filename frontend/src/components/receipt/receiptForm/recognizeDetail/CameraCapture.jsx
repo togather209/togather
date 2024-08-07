@@ -1,12 +1,15 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./CameraCapture.css";
+import CloseIcon from "../../../../assets/receipt/closeCamera.png"; // 닫기 아이콘 이미지 경로
+import CaptureIcon from "../../../../assets/receipt/capture.png"; // 촬영 버튼 이미지 경로
+import CornerIcon from "../../../../assets/receipt/cameraFocus.png"; // 네모 모서리 아이콘 이미지 경로
 
 function CameraCapture({ onCapture, onClose }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const [showInstruction, setShowInstruction] = useState(true);
 
   useEffect(() => {
-    console.log("카메라 캡쳐 페이지 mount");
     const startCamera = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -20,12 +23,15 @@ function CameraCapture({ onCapture, onClose }) {
 
     startCamera();
 
+    const timer = setTimeout(() => setShowInstruction(false), 2000);
+
     return () => {
       // 컴포넌트가 언마운트될 때 스트림을 정리합니다.
       if (videoRef.current && videoRef.current.srcObject) {
         const tracks = videoRef.current.srcObject.getTracks();
         tracks.forEach((track) => track.stop());
       }
+      clearTimeout(timer);
     };
   }, []);
 
@@ -41,18 +47,26 @@ function CameraCapture({ onCapture, onClose }) {
     const image = canvasRef.current.toDataURL("image/png");
 
     // 스트림 종료
-    // if (videoRef.current && videoRef.current.srcObject) {
-    const tracks = videoRef.current.srcObject.getTracks();
-    tracks.forEach((track) => track.stop());
-    // }
+    if (videoRef.current && videoRef.current.srcObject) {
+      const tracks = videoRef.current.srcObject.getTracks();
+      tracks.forEach((track) => track.stop());
+    }
 
     onCapture(image);
   };
 
+  const handleClose = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const tracks = videoRef.current.srcObject.getTracks();
+      tracks.forEach((track) => track.stop());
+    }
+    onClose();
+  };
+
   return (
     <div className="camera-capture-container">
-      <button onClick={onClose} className="close-button">
-        닫기
+      <button onClick={handleClose} className="close-button">
+        <img src={CloseIcon} alt="닫기" />
       </button>
       <div className="camera">
         <video ref={videoRef} autoPlay className="camera-video" />
@@ -63,9 +77,15 @@ function CameraCapture({ onCapture, onClose }) {
           className="camera-canvas"
         />
         <button onClick={handleCapture} className="capture-button">
-          사진 찍기
+          <img src={CaptureIcon} alt="촬영" />
         </button>
+        <div className="camera-overlay">
+          <img src={CornerIcon} alt="corner" className="focus-corners" />
+        </div>
       </div>
+      {showInstruction && (
+        <p className="instruction">영수증을 촬영해 쉽게 인식해보세요.</p>
+      )}
     </div>
   );
 }
