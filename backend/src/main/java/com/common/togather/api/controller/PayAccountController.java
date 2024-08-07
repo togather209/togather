@@ -1,6 +1,7 @@
 package com.common.togather.api.controller;
 
 import com.common.togather.api.request.*;
+import com.common.togather.api.response.AccountFindByPayAccountIdResponse;
 import com.common.togather.api.response.PayAccountFindByMemberIdResponse;
 import com.common.togather.api.response.ResponseDto;
 import com.common.togather.api.service.PayAccountService;
@@ -106,6 +107,20 @@ public class PayAccountController {
                 .status(HttpStatus.OK.value())
                 .message("출금을 성공했습니다.")
                 .data(null)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    // 연동 계좌 조회
+    @Operation(summary = "연동 계좌 조회")
+    @GetMapping("/{payAccountId}/find-account")
+    public ResponseEntity<ResponseDto<AccountFindByPayAccountIdResponse>> findAccountByPayAccountId(@PathVariable Integer payAccountId) {
+
+        ResponseDto<AccountFindByPayAccountIdResponse> responseDto = ResponseDto.<AccountFindByPayAccountIdResponse>builder()
+                .status(HttpStatus.OK.value())
+                .message("가상 계좌 조회를 성공했습니다.")
+                .data(payAccountService.findAccountByPayAccountId(payAccountId))
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
