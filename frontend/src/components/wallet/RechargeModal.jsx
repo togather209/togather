@@ -1,9 +1,15 @@
 import React, { useState } from "react";
 import "./RechargeModal.css";
 import bank from "../../assets/icons/common/kb.png";
+import { useDispatch, useSelector } from "react-redux";
+import axiosInstance from "../../utils/axiosInstance";
+import { setAccount } from "../../redux/slices/accountSlice";
+import { useNavigate } from "react-router-dom";
 
 function RechargeModal({ closeModal }) {
   const [amount, setAmount] = useState(0);
+  const account = useSelector((state) => state.account.account);
+  const navigate = useNavigate();
 
   const handleAmountChange = (value) => {
     setAmount((prevAmount) => prevAmount + value);
@@ -24,6 +30,30 @@ function RechargeModal({ closeModal }) {
 
   const handleClear = () => {
     setAmount(0);
+  };
+
+  //충전하는 함수
+  const handlerRechargePay = async () => {
+    //0원은 충전할 수 없다.
+    if(amount === 0){
+      return;
+    }
+
+    //충전 금액
+    const rechargeData = {
+      price: amount,
+    };
+
+    try {
+      await axiosInstance.post("/pay-accounts/recharge", rechargeData).then((res) => {
+        console.log(res.data);
+        alert("충전이 완료 되었습니다.");
+        navigate("/wallet");
+      });
+    } catch (error) {
+      alert("잔액이 부족합니다. 연동 계좌 잔액을 확인해주세요.");
+      closeModal();
+    }
   };
 
   return (
@@ -62,7 +92,9 @@ function RechargeModal({ closeModal }) {
           <button onClick={() => handleKeypadInput(0)}>0</button>
           <button onClick={handleBackspace}>←</button>
         </div>
-        <button className="confirm-button">충전</button>
+        <button className="confirm-button" onClick={handlerRechargePay}>
+          충전
+        </button>
       </div>
     </div>
   );
