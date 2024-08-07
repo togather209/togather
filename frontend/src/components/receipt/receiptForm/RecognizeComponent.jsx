@@ -18,6 +18,7 @@ import Close from "../../../assets/icons/common/close.png";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import CameraCapture from "./recognizeDetail/CameraCapture";
+import OcrComponent from "./recognizeDetail/OcrComponent";
 
 function RecognizeComponent({ defaultReceipt }) {
   const dispatch = useDispatch();
@@ -32,6 +33,7 @@ function RecognizeComponent({ defaultReceipt }) {
   const [bookmark, setBookmark] = useState({ id: -1, name: "" });
   const [isEditStatus, setIsEditStatus] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [isOcrLoading, setIsOcrLoading] = useState(false);
 
   let { teamId, planId, color } = useSelector((state) => state.receipt);
 
@@ -49,6 +51,7 @@ function RecognizeComponent({ defaultReceipt }) {
     }
 
     if (defaultReceipt !== undefined) {
+      console.log("defaultReceipt is not null");
       setIsEditStatus(true);
       setRecognizedResult(defaultReceipt);
       setEditedItems(defaultReceipt.items);
@@ -67,17 +70,25 @@ function RecognizeComponent({ defaultReceipt }) {
     setRecognizedResult(null);
     setIsEditing(false);
     setActiveType(type);
+    setSelectedImage(null);
   };
 
   const handleCameraButton = () => {
     console.log("카메라 버튼 클릭");
+    setSelectedImageType(null);
+    setSelectedImage(null);
     setIsCameraOpen(true);
   };
 
+  const handleCloseCamera = () => {
+    setIsCameraOpen(false);
+  };
+
   const handleImageButton = () => {
+    setSelectedImageType(null);
+    setSelectedImage(null);
     console.log("image 버튼 클릭");
     document.getElementById("file-input").click();
-    setSelectedImageType("image");
   };
 
   const handleFileChange = (event) => {
@@ -85,9 +96,13 @@ function RecognizeComponent({ defaultReceipt }) {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        console.log(file);
-        setSelectedImage(reader.result);
+        const imageBase64 = reader.result;
+        setSelectedImage(imageBase64);
         setSelectedImageType("image");
+        setIsOcrLoading(true);
+        // console.log(file);
+        // setSelectedImage(reader.result);
+        // setSelectedImageType("image");
       };
       reader.readAsDataURL(file);
     }
@@ -160,27 +175,27 @@ function RecognizeComponent({ defaultReceipt }) {
     }
   };
 
-  const tempRecognizedItems = {
-    businessName: "How Cafe",
-    paymentDate: "2024-07-31",
-    items: [
-      {
-        name: "3루 입장권",
-        count: 1,
-        unitPrice: 15000,
-      },
-      {
-        name: "1루 입장권",
-        count: 2,
-        unitPrice: 26000,
-      },
-      {
-        name: "외야 지정석",
-        count: 3,
-        unitPrice: 30000,
-      },
-    ],
-  };
+  // const tempRecognizedItems = {
+  //   businessName: "How Cafe",
+  //   paymentDate: "2024-07-31",
+  //   items: [
+  //     {
+  //       name: "3루 입장권",
+  //       count: 1,
+  //       unitPrice: 15000,
+  //     },
+  //     {
+  //       name: "1루 입장권",
+  //       count: 2,
+  //       unitPrice: 26000,
+  //     },
+  //     {
+  //       name: "외야 지정석",
+  //       count: 3,
+  //       unitPrice: 30000,
+  //     },
+  //   ],
+  // };
 
   return (
     <div className="recognize-component">
@@ -189,9 +204,10 @@ function RecognizeComponent({ defaultReceipt }) {
           onCapture={(image) => {
             setSelectedImage(image);
             setSelectedImageType("camera");
+            setIsOcrLoading(true);
             setIsCameraOpen(false);
           }}
-          onClose={() => setIsCameraOpen(false)}
+          onClose={handleCloseCamera}
         />
       ) : (
         <>
@@ -308,14 +324,14 @@ function RecognizeComponent({ defaultReceipt }) {
               )}
             </div>
           </div>
-          {selectedImage && (
-            <div className="recognized-image">
-              <img
-                src={selectedImage}
-                alt="recognized"
-                style={{ width: "320px", height: "480px" }}
-              />
-            </div>
+          {selectedImage && isOcrLoading && (
+            <OcrComponent
+              image={selectedImage}
+              onOcrResult={(result) => {
+                setRecognizedResult(result);
+                setIsOcrLoading(false);
+              }}
+            />
           )}
           {recognizedResult === null && (
             <div className="recognized-content no-content">
