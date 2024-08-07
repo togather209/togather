@@ -2,6 +2,8 @@ package com.common.togather.api.response;
 
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -9,6 +11,7 @@ import lombok.*;
 @Builder
 public class BookmarkDateUpdateResponse {
     private int bookmarkId; // 북마크 아이디
+    private LocalDate date; // 북마크 날짜
     private String placeId; // 장소 아이디
     private String placeImg; // 장소 이미지
     private String placeName; // 장소 이름
