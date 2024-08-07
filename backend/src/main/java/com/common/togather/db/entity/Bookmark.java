@@ -54,7 +54,7 @@ public class Bookmark {
     // 날짜 해제로 찜 리스트로 이동한 경우
     public void moveToJjim() {
         this.date = null;
-        this.itemOrder = null;
+        this.itemOrder = 0;
     }
 
     // 찜 리스트에서 계획으로 이동한 경우 또는 날짜 있는데 다른 날짜로 이동한 경우

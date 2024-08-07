@@ -27,6 +27,10 @@ function ScheduleDetail() {
   const [pagination, setPagination] = useState(null);
   const [kakaoLoaded, setKakaoLoaded] = useState(false);
 
+  console.log(id)
+  console.log(schedule_id)
+
+
     // 카카오 API가 로드되었는지 확인
   useEffect(() => {
     if (window.kakao && window.kakao.maps) {
@@ -65,6 +69,7 @@ function ScheduleDetail() {
   const [endDate, setEndDate] = useState(null);
   const [datedata, setDatedata] = useState([]);
 
+  
   // 일정 상세 요청
   const fetchScheduleDetail = async () => {
     try {
@@ -134,11 +139,17 @@ function ScheduleDetail() {
     },
   ];
 
+
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [isHeartClicked, setIsHeartClicked] = useState(true);
   const [isCallStarted, setIsCallStarted] = useState(false);
   const [isHeadPhone, setIsHeadPhone] = useState(false);
   const [isMic, setIsMic] = useState(false);
+  const [favoritePlaces, setFavoritePlaces] = useState([])
+  // 날짜별 장소 배열 상태
+  const [datePlaces, setDatePlaces] = useState([])
+
 
   const handleCallStart = () => setIsCallStarted(!isCallStarted);
   const handleHeadPhone = () => setIsHeadPhone(!isHeadPhone);
@@ -146,6 +157,7 @@ function ScheduleDetail() {
   const handleDateClick = (date) => {
     setSelectedDate(date);
     setIsHeartClicked(false);
+    console.log(date)
   };
   const handleHeartClick = () => {
     setSelectedDate(null);
@@ -163,11 +175,43 @@ function ScheduleDetail() {
     setIsOpenSearch(false)
   }, [])
 
+  // 찜목록 조회하는 요청
+  useEffect(() => {
+    if (isHeartClicked) {
+      const favoritePlace = async () => {
+        try {
+          // console.log(`/teams/${id}/plans/${schedule_id}/bookmarks/jjim`)
+          const response = await axiosInstance.get(`/teams/${id}/plans/${schedule_id}/bookmarks/jjim`);
+          console.log(response);
+          // console.log("dychdsfhasdfkljalfj")
+          setFavoritePlaces(response.data.data)
+          // console.log(favoritePlaces)
+        } catch (error) {
+          console.error("데이터 불러오기 실패", error);
+        }
+      }
+      favoritePlace()
+    }
+  }, [isHeartClicked, id, schedule_id, isOpenSearch])
+
+
+  // 날짜가 정해진 장소들 요청하는 axios
+  useEffect(() => {
+    // console.log(selectedDate)
+    const getDatePlaces = async () => {
+      try {
+        const response = await axiosInstance.get(`/teams/${id}/plans/${schedule_id}/bookmarks/${240815}`);
+        console.log(response);
+        setDatePlaces(response.data.data)
+      } catch (error) {
+        console.error("데이터 불러오기 실패", error);
+      }
+    }
+    getDatePlaces()
+  }, [selectedDate])
+
   return (
     <div className="schedule-detail">
- 
-
-
       {!isOpenSearch ? (
         <div>
           <div className="schedule-detail-header">
@@ -225,12 +269,12 @@ function ScheduleDetail() {
       </p>
       {isHeartClicked ? (
         <div>
-          {locations_mokup.map((item, index) => (
+          {favoritePlaces.map((item, index) => (
             <ScheduleDetailFavoritePlaces
-              key={item.id}
-              img_url={item.image}
-              name={item.name}
-              address={item.address}
+              key={item.bookmarkId}
+              img_url="없음"
+              name={item.placeName}
+              address={item.placeAddr}
               firstDate={datedata[0]?.date}
               lastDate={datedata[datedata.length - 1]?.date}
             />
@@ -238,7 +282,7 @@ function ScheduleDetail() {
         </div>
       ) : (
         <div>
-          {locations_mokup.map((item, index) => (
+          {datePlaces.map((item, index) => (
             <ScheduleDetailPlaces
               key={item.id}
               img_url={item.image}
@@ -249,6 +293,10 @@ function ScheduleDetail() {
         </div>
       )}
     </div>
+
+
+
+
     <div className="schedule-detail-button">
       {isCallStarted ? (
         <ScheduleButton type={"purple"} onClick={handleCallStart}>
