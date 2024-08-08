@@ -1,0 +1,60 @@
+/* Modal.css */
+.exit-check-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .exit-check-modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    width: 240px;
+    height: 140px;
+    text-align: center;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .exit-check-modal-buttons {
+    margin-top: 20px;
+  }
+  
+  .exit-check-modal-buttons button {
+    margin: 0 10px;
+  }
+  
+  .exit-check-modal-text {
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+
+  .exit-check-cancle {
+      width: 90px;
+      height: 27px;
+      border-radius: 8px;
+      color: white;
+      background: linear-gradient(45deg, #712FFF, #A074FF);
+      box-shadow: 5px 10px 20px #b08cff;
+      border: none;
+    }
+    
+    .exit-check-confirm {
+    width: 90px;
+    height: 27px;
+    border-radius: 8px;
+    color: #712FFF;
+    border: 1px solid #712FFF;
+    background-color: white;
+    box-shadow: 5px 10px 20px #b08cff;
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "./ScheduleDetail.css";
 import axiosInstance from "../../utils/axiosInstance";
 import meetingimg from "../../../public/다운로드.jpg";
@@ -7,6 +7,8 @@ import alarm from "../../assets/icons/common/alarm.png";
 import exit from "../../assets/schedule/scheduleexit.png";
 import heart from "../../assets/schedule/scheduleheartimg.png";
 import heartpurple from "../../assets/schedule/scheduleheartpurple.png";
+import update from "../../assets/schedule/update.png";
+import deleteimg from "../../assets/schedule/deleteimg.png"
 import BackButton from "../common/BackButton";
 import ScheduleButton from "./ScheduleButton";
 import ScheduleDates from "./ScheduleDates";
@@ -19,12 +21,16 @@ import backImage from '../../assets/icons/common/back.png'
 import SearchForm from "../kakao/SearchForm";
 import PlacesList from "../kakao/PlacesList";
 import Pagination from "../kakao/Pagination";
+import ExitCheckModal from "./ExitCheckModal";
 
 function ScheduleDetail() {
   const { id, schedule_id } = useParams();
   const [places, setPlaces] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [kakaoLoaded, setKakaoLoaded] = useState(false);
+  const navigation = useNavigate()
+
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
   console.log(id)
   console.log(schedule_id)
@@ -74,6 +80,7 @@ function ScheduleDetail() {
       const response = await axiosInstance.get(`/teams/${id}/plans/${schedule_id}`);
       const data = response.data.data;
       setScheduleDetail(data);
+      console.log(data)
 
       const start = new Date(data.startDate);
       const end = new Date(data.endDate);
@@ -211,6 +218,19 @@ function ScheduleDetail() {
     getDatePlaces()
   }, [selectedDate, forRendering])
 
+  // 일정 삭제 axios 요청
+  const scheduleExit = async () => {
+    try {
+      const response = await axiosInstance.delete(`/teams/${id}/plans/${schedule_id}`);
+      console.log(response.data);
+      navigation(`/home/meeting/${id}`)
+    } catch (error) {
+      console.error("데이터 불러오기 실패", error);
+    }}
+
+  // 일정 수정 axios 요청
+  // const scheduleUpdate = async () =>
+
   return (
     <div className="schedule-detail">
       {!isOpenSearch ? (
@@ -227,13 +247,25 @@ function ScheduleDetail() {
         <div className="schedule-detail-first-section">
           <div>
             <p className="schedule-detail-meeting-name">모임명</p>
-            <p className="schedule-detail-schedule-name">일정명</p>
+            <p className="schedule-detail-schedule-name">{scheduleDetail.title}</p>
           </div>
-          <img className="schedule-exit-img" src={exit} alt="일정 나가기" />
+
+          {scheduleDetail.isManager ? (
+            <div>
+              <img onClick={() => navigation(`/home/meeting/${id}/schedule/${schedule_id}/update`, { state: { title: scheduleDetail.title, description: scheduleDetail.description } })} className="schedule-exit-img" src={update} alt="일정수정" />
+              <img onClick={() => setIsExitModalOpen(true)} className="schedule-exit-img" src={deleteimg} alt="일정삭제" />
+            </div>
+          ) : (
+
+            <img className="schedule-exit-img" src={exit} alt="일정 나가기" />
+          )
+          }
+        
+        
         </div>
       </div>
       <div className="schedule-detail-second-section">
-        <p className="schedule-detail-schedule-name">일정 설명</p>
+        <p className="schedule-detail-schedule-name">{scheduleDetail.description}</p>
         <ScheduleButton type={"purple"} onClick={() => {}}>
           영수증 조회
         </ScheduleButton>
@@ -273,6 +305,7 @@ function ScheduleDetail() {
           {favoritePlaces.map((item, index) => (
             <ScheduleDetailFavoritePlaces
               key={item.placeId}
+              placeId={item.placeId}
               meetingId={id}
               scheduleId={schedule_id}
               bookmarkId={item.bookmarkId}
@@ -334,6 +367,15 @@ function ScheduleDetail() {
         </div>
       )}
     </div>
+
+
+    <ExitCheckModal 
+      isOpen={isExitModalOpen}
+      isClose={() => setIsExitModalOpen(false)}
+      onConfirm={scheduleExit}
+    />
+
+
     </div>
       ) : (
         <div>
