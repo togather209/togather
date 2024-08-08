@@ -218,7 +218,7 @@ function ScheduleDetail() {
     getDatePlaces()
   }, [selectedDate, forRendering])
 
-  // 일정 나가기 axios 요청
+  // 일정 삭제 axios 요청
   const scheduleExit = async () => {
     try {
       const response = await axiosInstance.delete(`/teams/${id}/plans/${schedule_id}`);
@@ -227,6 +227,9 @@ function ScheduleDetail() {
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
     }}
+
+  // 일정 수정 axios 요청
+  // const scheduleUpdate = async () =>
 
   return (
     <div className="schedule-detail">
@@ -249,7 +252,7 @@ function ScheduleDetail() {
 
           {scheduleDetail.isManager ? (
             <div>
-              <img className="schedule-exit-img" src={update} alt="일정수정" />
+              <img onClick={() => navigation(`/home/meeting/${id}/schedule/${schedule_id}/update`, { state: { title: scheduleDetail.title, description: scheduleDetail.description } })} className="schedule-exit-img" src={update} alt="일정수정" />
               <img onClick={() => setIsExitModalOpen(true)} className="schedule-exit-img" src={deleteimg} alt="일정삭제" />
             </div>
           ) : (
