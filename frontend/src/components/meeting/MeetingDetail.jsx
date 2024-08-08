@@ -116,8 +116,8 @@ function MeetingDetail() {
         <div className="meeting-info-container">
           <img className="meetingdetail-img" src={promimg} alt="모임 이미지" />
           <div className="overlay">
-            <p className="meeting-name-in-detail">모임명</p>
-            <p className="meeting-desc-in-detail">모임 설명</p>
+            <p className="meeting-name-in-detail">{meetingDetail.title}</p>
+            <p className="meeting-desc-in-detail">{meetingDetail.description}</p>
           </div>
         </div>
 
