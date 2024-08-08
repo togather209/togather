@@ -24,8 +24,15 @@ function ConnectReceiptScheduleModal({ onClose, onConfirm }) {
         const response = await axiosInstance.get(
           `teams/${teamId}/plans/${planId}/bookmarks`
         );
-        setBookmarks(response.data.data);
-        console.log(response.data);
+
+        const sortedBookmarks = response.data.data.sort((a, b) => {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          return dateA - dateB;
+        });
+
+        setBookmarks(sortedBookmarks);
+        console.log(sortedBookmarks);
       } catch (error) {
         console.error("북마크를 가져오는 중 문제가 발생했습니다", error);
       }
@@ -50,25 +57,6 @@ function ConnectReceiptScheduleModal({ onClose, onConfirm }) {
     onConfirm(selectedPlace);
     onClose();
   };
-
-  // // 임시 데이터
-  // const tempData = [
-  //   {
-  //     date: "2023/07/30",
-  //     places: [
-  //       { id: 1, name: "일미 닭갈비" },
-  //       { id: 2, name: "네네 치킨 유성점" },
-  //     ],
-  //   },
-  //   {
-  //     date: "2023/07/31",
-  //     places: [
-  //       { id: 3, name: "시림 미술관" },
-  //       { id: 4, name: "How Cafe" },
-  //       { id: 5, name: "한화 이글스 파크" },
-  //     ],
-  //   },
-  // ];
 
   return (
     <div className="connect-schedule-modal-overlay">

@@ -15,5 +15,5 @@ public class TeamFindAllByMemberIdResponse {
     private String title;
     private String teamImg;
     private String description;
-
+    private boolean isAdmin;
 }
