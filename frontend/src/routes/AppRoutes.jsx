@@ -22,6 +22,10 @@ import MeetingDetailContainer from "../components/meeting/MeetingDetailContainer
 import ScheduleRegist from "../components/schedule/ScheduleRegist";
 import ScheduleDetail from "../components/schedule/ScheduleDetail";
 
+import ScheduleDetailContainer from "../components/schedule/ScheduleDetailContainer";
+import ScheduleUpdate from "../components/schedule/ScheduleUpdate";
+
+
 // 게임 페이지
 import Game from "../pages/Game";
 
@@ -35,6 +39,7 @@ import ReceiptUpdateContainer from "../components/receipt/receiptUpdate/ReceiptU
 import ProfileUpdate from "../components/mypage/ProfileUpdate";
 import Terms from "../components/mypage/Terms";
 import PrivateRoute from "./PrivateRoute";
+import CameraCapture from "../components/receipt/receiptForm/recognizeDetail/CameraCapture";
 
 function AppRoutes() {
   return (
@@ -68,7 +73,10 @@ function AppRoutes() {
           <Route path=":id" element={<MeetingDetailContainer />}>
             <Route index element={<MeetingDetail />} />
             <Route path="schedule-regist" element={<ScheduleRegist />} />
-            <Route path="schedule/:schedule_id" element={<ScheduleDetail />} />
+            <Route path="schedule/:schedule_id" element={<ScheduleDetailContainer />}>
+              <Route index element={<ScheduleDetail />} />
+              <Route path="update" element={<ScheduleUpdate />} />
+            </Route>
           </Route>
         </Route>
       </Route>
@@ -139,6 +147,7 @@ function AppRoutes() {
         <Route index element={<ReceiptListContainer />} />
         <Route path=":receiptId" element={<ReceiptDetail />} />
         <Route path="regist-form" element={<ReceiptFormContainer />} />
+        <Route path="camera-capture" element={<CameraCapture />} />
         <Route path="update-form" element={<ReceiptUpdateContainer />} />
       </Route>
       <Route

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   setReceiptData,
   setActiveTab,
@@ -16,38 +16,32 @@ import ActivePicture from "../../../assets/receipt/activePicture.png";
 import ConnectReceiptSchedule from "./ConnectReceiptScheduleModal";
 import Close from "../../../assets/icons/common/close.png";
 import DatePicker from "react-datepicker";
-import { useSelector } from "react-redux";
+import "react-datepicker/dist/react-datepicker.css";
+import CameraCapture from "./recognizeDetail/CameraCapture";
+import OcrComponent from "./recognizeDetail/OcrComponent";
+import GeneralOcrComponent from "./recognizeDetail/GeneralOcrComponent"; // GeneralOcrComponent를 import합니다.
+
+import Modal from "../../common/Modal";
 
 function RecognizeComponent({ defaultReceipt }) {
-  // redux 상태관리
   const dispatch = useDispatch();
 
-  // 영수증 타입 선택 (종이 or 모바일 내역)
   const [activeType, setActiveType] = useState("paper");
-
-  // 인식 결과
   const [recognizedResult, setRecognizedResult] = useState(null);
-
-  // 선택된 이미지 타입
   const [selectedImageType, setSelectedImageType] = useState(null);
-
-  // 인식 결과 수정 상태
+  const [selectedImage, setSelectedImage] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-
-  // 품목리스트
   const [editedItems, setEditedItems] = useState([]);
-
-  // 일정 연결 모달
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // 연결된 북마크 정보
   const [bookmark, setBookmark] = useState({ id: -1, name: "" });
-
-  // 영수증 수정 상태
   const [isEditStatus, setIsEditStatus] = useState(false);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [isOcrLoading, setIsOcrLoading] = useState(false);
 
-  // teamId, planId 가져오기
-  let { teamId, planId } = useSelector((state) => state.receipt);
+  // 에러 상황
+  const [error, setError] = useState(false);
+
+  let { teamId, planId, color } = useSelector((state) => state.receipt);
 
   useEffect(() => {
     if (!teamId || !planId) {
@@ -58,19 +52,23 @@ function RecognizeComponent({ defaultReceipt }) {
         dispatch(setTeamPlan({ teamId, planId }));
       } else {
         console.error("teamId 또는 planId가 전달되지 않았습니다.");
+        setError(true);
         return;
       }
     }
 
     if (defaultReceipt !== undefined) {
-      // 영수증 수정 페이지 상태
+      console.log("defaultReceipt is not null");
       setIsEditStatus(true);
-
-      // 기존 인식 데이터 가져오기
       setRecognizedResult(defaultReceipt);
       setEditedItems(defaultReceipt.items);
 
-      console.log(defaultReceipt.items);
+      if (defaultReceipt.bookmarkId !== null) {
+        setBookmark({
+          id: defaultReceipt.bookmarkId,
+          name: defaultReceipt.bookmarkName,
+        });
+      }
     }
   }, [defaultReceipt]);
 
@@ -79,20 +77,54 @@ function RecognizeComponent({ defaultReceipt }) {
     setRecognizedResult(null);
     setIsEditing(false);
     setActiveType(type);
+    setSelectedImage(null);
   };
 
   const handleCameraButton = () => {
-    console.log("camera 버튼 클릭");
-    setRecognizedResult(tempRecognizedItems);
-    setSelectedImageType("camera");
-    setEditedItems(tempRecognizedItems.items);
+    console.log("카메라 버튼 클릭");
+    setSelectedImageType(null);
+    setSelectedImage(null);
+    setIsCameraOpen(true);
+  };
+
+  const handleCloseCamera = () => {
+    setIsCameraOpen(false);
   };
 
   const handleImageButton = () => {
+    setSelectedImageType(null);
+    setSelectedImage(null);
     console.log("image 버튼 클릭");
-    setRecognizedResult(tempRecognizedItems);
-    setSelectedImageType("image");
-    setEditedItems(tempRecognizedItems.items);
+    document.getElementById("file-input").click();
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const imageBase64 = reader.result;
+
+        // 이미지 로드를 위해 새로운 이미지 객체를 생성합니다.
+        const img = new Image();
+        img.src = imageBase64;
+        img.onload = () => {
+          // Canvas를 생성하여 이미지를 그립니다.
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+
+          // Canvas를 JPG 형식의 base64 문자열로 변환합니다.
+          const jpgBase64 = canvas.toDataURL("image/jpeg");
+          setSelectedImage(jpgBase64);
+          setSelectedImageType("image");
+          setIsOcrLoading(true);
+        };
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleEditButton = () => {
@@ -100,7 +132,6 @@ function RecognizeComponent({ defaultReceipt }) {
   };
 
   const handleSaveButton = () => {
-    // 수량이나 가격이 0인 품목을 삭제
     const filteredItems = editedItems.filter(
       (item) => item.count > 0 && item.unitPrice > 0
     );
@@ -112,12 +143,15 @@ function RecognizeComponent({ defaultReceipt }) {
   };
 
   const handleChange = (index, field, value) => {
-    const updatedItems = [...editedItems];
-    if (field === "count" || field === "unitPrice") {
-      updatedItems[index][field] = value === "" ? "" : Number(value);
-    } else {
-      updatedItems[index][field] = value;
-    }
+    const updatedItems = editedItems.map((item, i) =>
+      i === index
+        ? {
+            ...item,
+            [field]:
+              field === "name" ? value : value === "" ? "" : Number(value),
+          }
+        : item
+    );
     setEditedItems(updatedItems);
   };
 
@@ -151,6 +185,7 @@ function RecognizeComponent({ defaultReceipt }) {
           (total, item) => total + item.unitPrice,
           0
         ),
+        color,
       };
       console.log(newReceiptData);
 
@@ -159,254 +194,321 @@ function RecognizeComponent({ defaultReceipt }) {
     }
   };
 
-  const tempRecognizedItems = {
-    businessName: "How Cafe",
-    paymentDate: "2024.07.31",
-    items: [
-      {
-        name: "3루 입장권",
-        count: 1,
-        unitPrice: 15000,
-      },
-      {
-        name: "1루 입장권",
-        count: 2,
-        unitPrice: 26000,
-      },
-      {
-        name: "외야 지정석",
-        count: 3,
-        unitPrice: 30000,
-      },
-    ],
-  };
-
   return (
     <div className="recognize-component">
-      {!isEditStatus && (
-        <div className="receipt-type">
-          <button
-            className={`type-button ${activeType === "paper" ? "active" : ""}`}
-            onClick={() => handleReceiptType("paper")}
-          >
-            종이 영수증
-          </button>
-          <button
-            className={`type-button ${activeType === "mobile" ? "active" : ""}`}
-            onClick={() => handleReceiptType("mobile")}
-          >
-            모바일 결제내역
-          </button>
-        </div>
-      )}
-      {recognizedResult === null && (
-        <div className="reciept-type-img-container">
-          <div
-            className={`receipt-type-img ${
-              activeType === "paper" ? "active" : "inactive"
-            }`}
-            onClick={() => {
-              setActiveType("paper");
-            }}
-          >
-            <img src={PaperReceipt} alt="paper" />
-          </div>
-          <div
-            className={`receipt-type-img ${
-              activeType === "mobile" ? "active" : "inactive"
-            }`}
-            onClick={() => {
-              setActiveType("mobile");
-            }}
-          >
-            <img src={MobileReceipt} alt="mobile" />
-          </div>
-        </div>
-      )}
-      <div className="recognition-section">
-        <div className="recognize-options">
+      {isCameraOpen ? (
+        <CameraCapture
+          onCapture={(image) => {
+            setSelectedImage(image);
+            setSelectedImageType("camera");
+            setIsOcrLoading(true);
+            setIsCameraOpen(false);
+          }}
+          onClose={handleCloseCamera}
+        />
+      ) : (
+        <>
+          {!isEditStatus && (
+            <div className="receipt-type">
+              <button
+                className={`type-button ${
+                  activeType === "paper" ? "active" : ""
+                }`}
+                onClick={() => handleReceiptType("paper")}
+              >
+                종이 영수증
+              </button>
+              <button
+                className={`type-button ${
+                  activeType === "mobile" ? "active" : ""
+                }`}
+                onClick={() => handleReceiptType("mobile")}
+              >
+                모바일 결제내역
+              </button>
+            </div>
+          )}
           {recognizedResult === null && (
-            <div className="recognize-badge">영수증을 인식해보세요!</div>
+            <div className="reciept-type-img-container">
+              <div
+                className={`receipt-type-img ${
+                  activeType === "paper" ? "active" : "inactive"
+                }`}
+                onClick={() => {
+                  setActiveType("paper");
+                }}
+              >
+                <img src={PaperReceipt} alt="paper" />
+              </div>
+              <div
+                className={`receipt-type-img ${
+                  activeType === "mobile" ? "active" : "inactive"
+                }`}
+                onClick={() => {
+                  setActiveType("mobile");
+                }}
+              >
+                <img src={MobileReceipt} alt="mobile" />
+              </div>
+            </div>
+          )}
+          <div className="recognition-section">
+            <div className="recognize-options">
+              {recognizedResult === null && (
+                <div className="recognize-badge">영수증을 인식해보세요!</div>
+              )}
+              {recognizedResult !== null && (
+                <div className="recognize-header">
+                  <div className="recognize-result-title">인식결과</div>
+                  {!isEditing && (
+                    <button
+                      className={`edit-result ${
+                        isEditStatus ? "" : "not-edit"
+                      }`}
+                      onClick={handleEditButton}
+                    >
+                      편집
+                    </button>
+                  )}
+                  {isEditing && (
+                    <button
+                      className={`save-result ${
+                        isEditStatus ? "" : "not-edit"
+                      }`}
+                      onClick={handleSaveButton}
+                    >
+                      저장
+                    </button>
+                  )}
+                </div>
+              )}
+              {!isEditStatus && (
+                <div className="recognize-image-buttons">
+                  {selectedImageType === "camera" ? (
+                    <img
+                      src={ActiveCamera}
+                      alt="active-camera"
+                      onClick={handleCameraButton}
+                    />
+                  ) : (
+                    <img
+                      src={Camera}
+                      alt="camera"
+                      onClick={handleCameraButton}
+                    />
+                  )}
+                  {selectedImageType === "image" ? (
+                    <img
+                      src={ActivePicture}
+                      alt="active-image"
+                      onClick={handleImageButton}
+                    />
+                  ) : (
+                    <img
+                      src={Picture}
+                      alt="image"
+                      onClick={handleImageButton}
+                    />
+                  )}
+                  <input
+                    type="file"
+                    id="file-input"
+                    style={{ display: "none" }}
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+          {selectedImage &&
+            isOcrLoading &&
+            (activeType === "paper" ? (
+              <OcrComponent
+                image={selectedImage}
+                onOcrResult={(result) => {
+                  setRecognizedResult(result);
+                  setIsOcrLoading(false);
+                  setEditedItems(result.items);
+                }}
+              />
+            ) : (
+              <GeneralOcrComponent
+                image={selectedImage}
+                onOcrResult={(result) => {
+                  setRecognizedResult(result);
+                  setIsOcrLoading(false);
+                  setEditedItems(result.items);
+                }}
+              />
+            ))}
+          {recognizedResult === null && (
+            <div className="recognized-content no-content">
+              <p>인식된 내용이 없어요</p>
+              <p>영수증을 인식해 정산을 시작해보세요!</p>
+            </div>
+          )}
+          {recognizedResult !== null && isEditing ? (
+            <div className="recognized-edit-info">
+              <input
+                type="text"
+                className="recognized-store-name edit"
+                value={recognizedResult.businessName}
+                onChange={(e) =>
+                  setRecognizedResult({
+                    ...recognizedResult,
+                    businessName: e.target.value,
+                  })
+                }
+              />
+              <DatePicker
+                selected={new Date(recognizedResult.paymentDate)}
+                onChange={(date) =>
+                  setRecognizedResult({
+                    ...recognizedResult,
+                    paymentDate: date.toISOString().split("T")[0],
+                  })
+                }
+                dateFormat="yyyy/MM/dd"
+                className="recognized-payment-date edit"
+              />
+            </div>
+          ) : (
+            recognizedResult !== null && (
+              <>
+                <div className="recognized-store-name">
+                  <p>{recognizedResult.businessName}</p>
+                </div>
+                <div className="recognized-payment-date">
+                  <p>
+                    {new Date(
+                      recognizedResult.paymentDate
+                    ).toLocaleDateString()}
+                  </p>
+                </div>
+              </>
+            )
           )}
           {recognizedResult !== null && (
-            <div className="recognize-header">
-              <div className="recognize-result-title">인식결과</div>
-              {!isEditing && (
-                <button
-                  className={`edit-result ${isEditStatus ? "" : "not-edit"}`}
-                  onClick={handleEditButton}
-                >
-                  편집
-                </button>
-              )}
-              {isEditing && (
-                <button
-                  className={`save-result ${isEditStatus ? "" : "not-edit"}`}
-                  onClick={handleSaveButton}
-                >
-                  저장
-                </button>
-              )}
+            <div className="recognized-content">
+              <table>
+                <thead>
+                  <tr>
+                    <th>품목</th>
+                    <th>수량</th>
+                    <th>금액</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {editedItems.map((item, index) => (
+                    <tr key={index}>
+                      {isEditing ? (
+                        <>
+                          <td>
+                            <input
+                              type="text"
+                              value={item.name}
+                              onChange={(e) =>
+                                handleChange(index, "name", e.target.value)
+                              }
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="number"
+                              value={item.count}
+                              onChange={(e) =>
+                                handleChange(index, "count", e.target.value)
+                              }
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="number"
+                              value={item.unitPrice}
+                              onChange={(e) =>
+                                handleChange(index, "unitPrice", e.target.value)
+                              }
+                            />
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td>
+                            {item.name.length > 10
+                              ? item.name.match(/.{1,10}/g).map((part, idx) => (
+                                  <span key={idx}>
+                                    {part}
+                                    <br />
+                                  </span>
+                                ))
+                              : item.name}
+                          </td>
+                          <td>{item.count}개</td>
+                          <td>{item.unitPrice.toLocaleString()}원</td>
+                        </>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <hr className="recognized-content-line" />
+              <div className="total">
+                <p>총액</p>
+                <p>
+                  {editedItems
+                    .reduce(
+                      (total, item) =>
+                        total + (item.unitPrice === "" ? 0 : item.unitPrice),
+                      0
+                    )
+                    .toLocaleString()}
+                  원
+                </p>
+              </div>
             </div>
           )}
-          {!isEditStatus && (
-            <div className="recognize-image-buttons">
-              {selectedImageType === "camera" ? (
-                <img src={ActiveCamera} alt="active-camera" />
-              ) : (
-                <img src={Camera} alt="camera" onClick={handleCameraButton} />
-              )}
-              {selectedImageType === "image" ? (
-                <img src={ActivePicture} alt="active-camera" />
-              ) : (
-                <img src={Picture} alt="image" onClick={handleImageButton} />
-              )}
+          {recognizedResult !== null && bookmark.id === -1 && (
+            <button
+              className="connect-schedule"
+              onClick={handleConnectSchedule}
+            >
+              장소연결
+            </button>
+          )}
+          {recognizedResult !== null && bookmark.id !== -1 && (
+            <div className="connected-place-info">
+              <div>연결된 장소</div>
+              <div className="connected-place-name">
+                {bookmark.name}
+                <img
+                  src={Close}
+                  alt="disconnect"
+                  className="disconnect-button"
+                  onClick={handleDisconnectPlace}
+                />
+              </div>
             </div>
           )}
-        </div>
-      </div>
-      {recognizedResult === null && (
-        <div className="recognized-content no-content">
-          <p>인식된 내용이 없어요</p>
-          <p>영수증을 인식해 정산을 시작해보세요!</p>
-        </div>
-      )}
-      {recognizedResult !== null && isEditing ? (
-        <div className="recognized-edit-info">
-          <input
-            type="text"
-            className="recognized-store-name edit"
-            value={recognizedResult.businessName}
-            onChange={(e) =>
-              setRecognizedResult({
-                ...recognizedResult,
-                businessName: e.target.value,
-              })
-            }
-          />
-          <DatePicker
-            selected={recognizedResult.paymentDate}
-            onChange={(date) =>
-              setRecognizedResult({
-                ...recognizedResult,
-                paymentDate: date,
-              })
-            }
-            dateFormat="yyyy-MM-dd"
-            className="recognized-payment-date edit"
-          />
-        </div>
-      ) : (
-        recognizedResult !== null && (
-          <>
-            <div className="recognized-store-name">
-              <p>{recognizedResult.businessName}</p>
-            </div>
-            <div className="recognized-payment-date">
-              <p>{recognizedResult.paymentDate}</p>
-            </div>
-          </>
-        )
-      )}
-      {recognizedResult !== null && (
-        <div className="recognized-content">
-          <table>
-            <thead>
-              <tr>
-                <th>품목</th>
-                <th>수량</th>
-                <th>금액</th>
-              </tr>
-            </thead>
-            <tbody>
-              {editedItems.map((item, index) => (
-                <tr key={index}>
-                  {isEditing ? (
-                    <>
-                      <td>
-                        <input
-                          type="text"
-                          value={item.name}
-                          onChange={(e) =>
-                            handleChange(index, "name", e.target.value)
-                          }
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          value={item.count}
-                          onChange={(e) =>
-                            handleChange(index, "count", e.target.value)
-                          }
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          value={item.unitPrice}
-                          onChange={(e) =>
-                            handleChange(index, "unitPrice", e.target.value)
-                          }
-                        />
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td>{item.name}</td>
-                      <td>{item.count}개</td>
-                      <td>{item.unitPrice.toLocaleString()}원</td>
-                    </>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <hr className="recognized-content-line" />
-          <div className="total">
-            <p>총액</p>
-            <p>
-              {editedItems
-                .reduce(
-                  (total, item) =>
-                    total + (item.unitPrice === "" ? 0 : item.unitPrice),
-                  0
-                )
-                .toLocaleString()}
-              원
-            </p>
-          </div>
-        </div>
-      )}
-      {recognizedResult !== null && bookmark.id === -1 && (
-        <button className="connect-schedule" onClick={handleConnectSchedule}>
-          장소연결
-        </button>
-      )}
-      {recognizedResult !== null && bookmark.id !== -1 && (
-        <div className="connected-place-info">
-          <div>연결된 장소</div>
-          <div className="connected-place-name">
-            {bookmark.name}
-            <img
-              src={Close}
-              alt="disconnect"
-              className="disconnect-button"
-              onClick={handleDisconnectPlace}
+          <Button
+            type={recognizedResult === null ? "gray" : "purple"}
+            onClick={handleNextTab}
+          >
+            다음
+          </Button>
+          {isModalOpen && (
+            <ConnectReceiptSchedule
+              onClose={closeModal}
+              onConfirm={handleConfirm}
             />
-          </div>
-        </div>
+          )}
+        </>
       )}
-      <Button
-        type={recognizedResult === null ? "gray" : "purple"}
-        onClick={handleNextTab}
-      >
-        다음
-      </Button>
-      {isModalOpen && (
-        <ConnectReceiptSchedule
-          onClose={closeModal}
-          onConfirm={handleConfirm}
+      {error && (
+        <Modal
+          mainMessage="문제가 발생했습니다."
+          subMessage="다시 시도해보세요."
+          onClose={() => setError(false)}
         />
       )}
     </div>

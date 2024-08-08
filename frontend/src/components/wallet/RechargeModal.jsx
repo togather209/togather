@@ -1,9 +1,24 @@
 import React, { useState } from "react";
 import "./RechargeModal.css";
-import bank from "../../assets/icons/common/kb.png";
+import kbbank from "../../assets/bank/국민은행.png";
+import shinhan from "../../assets/bank/신한은행.png";
+import hana from "../../assets/bank/하나은행.png";
+import woori from "../../assets/bank/우리은행.png";
+import nh from "../../assets/bank/농협은행.png";
+import citi from "../../assets/bank/한국씨티은행.png";
+import sc from "../../assets/bank/SC제일은행.png";
+import ibk from "../../assets/bank/기업은행.png";
+import kdb from "../../assets/bank/산업은행.png";
+import { useSelector } from "react-redux";
+import axiosInstance from "../../utils/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 function RechargeModal({ closeModal }) {
   const [amount, setAmount] = useState(0);
+  const linkedAccountInfo = useSelector(
+    (state) => state.linkedAccount.linkedAccountInfo
+  );
+  const navigate = useNavigate();
 
   const handleAmountChange = (value) => {
     setAmount((prevAmount) => prevAmount + value);
@@ -26,6 +41,76 @@ function RechargeModal({ closeModal }) {
     setAmount(0);
   };
 
+  //충전하는 함수
+  const handlerRechargePay = async () => {
+    //0원은 충전할 수 없다.
+    if (amount === 0) {
+      return;
+    }
+
+    //충전 금액
+    const rechargeData = {
+      price: amount,
+    };
+
+    try {
+      await axiosInstance
+        .post("/pay-accounts/recharge", rechargeData)
+        .then((res) => {
+          console.log(res.data);
+          alert("충전이 완료 되었습니다.");
+          navigate("/wallet");
+        });
+    } catch (error) {
+      alert("잔액이 부족합니다. 연동 계좌 잔액을 확인해주세요.");
+      closeModal();
+    }
+  };
+
+  let bank = "";
+  let bankName = "";
+
+  switch (linkedAccountInfo.type) {
+    case 0:
+      bank = kbbank;
+      bankName = "국민은행";
+      break;
+    case 1:
+      bank = shinhan;
+      bankName = "신한은행";
+      break;
+    case 2:
+      bank = hana;
+      bankName = "하나은행";
+      break;
+    case 3:
+      bank = woori;
+      bankName = "우리은행";
+      break;
+    case 4:
+      bank = nh;
+      bankName = "농협은행";
+      break;
+    case 5:
+      bank = citi;
+      bankName = "한국씨티은행";
+      break;
+    case 6:
+      bank = sc;
+      bankName = "SC제일은행";
+      break;
+    case 7:
+      bank = ibk;
+      bankName = "기업은행";
+      break;
+    case 8:
+      bank = kdb;
+      bankName = "산업은행";
+      break;
+    default:
+      break;
+  }
+
   return (
     <div className="rechargemodal-overlay">
       <div className="rechargemodal-content">
@@ -36,9 +121,9 @@ function RechargeModal({ closeModal }) {
         <div className="account-info">
           <img src={bank} alt="Bank Logo" className="bank-logo" />
           <div className="account-text">
-            <span>국민은행 1223-02-5666</span>
+            <span>{bankName} {linkedAccountInfo.accountNumber}</span>
             <span>
-              <span>범규꼰</span> 계좌에서 충전해요.
+              <span>{linkedAccountInfo.accountName}</span> 계좌에서 충전해요.
             </span>
           </div>
         </div>
@@ -62,7 +147,9 @@ function RechargeModal({ closeModal }) {
           <button onClick={() => handleKeypadInput(0)}>0</button>
           <button onClick={handleBackspace}>←</button>
         </div>
-        <button className="confirm-button">충전</button>
+        <button className="confirm-button" onClick={handlerRechargePay}>
+          충전
+        </button>
       </div>
     </div>
   );

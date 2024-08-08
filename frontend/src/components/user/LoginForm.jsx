@@ -26,6 +26,7 @@ function LoginForm() {
     console.log("로그인 시도");
     // 여기서 폼 데이터를 사용할 수 있습니다.
     console.log({ email, password, rememberEmail });
+    console.log(API_LINK);
 
     const memberData = {
       email,
@@ -56,6 +57,7 @@ function LoginForm() {
       navigate("/");
     } catch (error) {
       console.log("로그인 에러", error);
+      alert("존재하지 않는 아이디입니다. 아이디와 비밀번호를 확인해주세요.");
     }
   };
 

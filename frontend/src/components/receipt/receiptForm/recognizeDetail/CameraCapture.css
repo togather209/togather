@@ -1,0 +1,87 @@
+.camera-capture-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.camera {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.camera-video, .camera-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.capture-button {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.capture-button img {
+  width: 120px; /* 촬영 버튼 크기 */
+  height: 120px;
+}
+
+.close-button {
+  position: absolute;
+  top: 30px;
+  margin-right: 30px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 100;
+  width: 18px;
+  height: 18px;
+}
+
+.close-button img {
+  width: 30px; /* 닫기 버튼 크기 */
+  height: 30px;
+}
+
+.camera-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none; /* 클릭 이벤트 무시 */
+}
+
+.focus-corners {
+  width: 80%;
+  height: auto;
+}
+
+.instruction {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 18px;
+  text-align: center;
+}

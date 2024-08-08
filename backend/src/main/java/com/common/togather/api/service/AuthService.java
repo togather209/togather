@@ -5,6 +5,7 @@ import com.common.togather.api.request.LoginRequest;
 import com.common.togather.api.request.MemberSaveRequest;
 import com.common.togather.common.auth.TokenInfo;
 import com.common.togather.common.exception.handler.NotFoundHandler;
+import com.common.togather.common.util.ImageUtil;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
 import com.common.togather.db.repository.MemberRepository;
@@ -19,6 +20,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +32,11 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final RedisService redisService;
     private final JwtUtil jwtUtil;
+    private final ImageUtil imageUtil;
 
     // 회원가입
     @Transactional
-    public void signup(MemberSaveRequest memberSaveRequest) {
+    public void signup(MemberSaveRequest memberSaveRequest, MultipartFile profileImg) {
 
         String email = memberSaveRequest.getEmail();
         String password = memberSaveRequest.getPassword();
@@ -47,10 +50,17 @@ public class AuthService {
             throw new NicknameAlreadyExistsException("이미 사용중인 닉네임입니다.");
         }
 
+        String imageUrl = null;
+
+        if(profileImg != null && !profileImg.isEmpty()) {
+            imageUrl = imageUtil.uploadImage(profileImg);
+        }
+
         Member member = Member.builder()
                 .email(email)
                 .password(bCryptPasswordEncoder.encode(password))
                 .nickname(nickname)
+                .profileImg(imageUrl)
                 .build();
 
         memberRepository.save(member);

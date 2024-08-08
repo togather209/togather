@@ -9,6 +9,8 @@ import { clearUser, setUser } from "../../redux/slices/userSlice";
 import { clearToken } from "../../redux/slices/authSlice";
 import axiosInstance from "../../utils/axiosInstance";
 import { clearAccount, setAccount } from "../../redux/slices/accountSlice";
+import { clearLinkedAccount } from "../../redux/slices/linkedAccount";
+import { resetReceipt } from "../../redux/slices/receiptSlice";
 
 function MyPageMain() {
   const [secessionModalOpen, setSecessionModalOpen] = useState(false);
@@ -59,6 +61,9 @@ function MyPageMain() {
       await axiosInstance.post("/members/logout");
       dispatch(clearUser());
       dispatch(clearToken());
+      dispatch(clearAccount());
+      dispatch(clearLinkedAccount());
+      dispatch(resetReceipt());
       alert("로그아웃 되었습니다.");
     } catch (error) {
       console.error("로그인 실패", error);
@@ -67,13 +72,14 @@ function MyPageMain() {
   };
 
   const secessionMember = async () => {
-    if(account.balance > 0){
+    //계좌가 살아있고 잔액이 0원 이상이라면
+    if(account && account.balance > 0){
       alert("Pay계좌에 잔액이 남아있습니다. 잔액을 비운 후 탈퇴를 진행해 주세요.");
       return;
     }
-    else{
+    else{//아니라면
       //회원 탈퇴 진행
-      axiosInstance.delete('/members/me');
+      await axiosInstance.delete('/members/me');
       dispatch(clearUser());
       dispatch(clearToken());
       dispatch(clearAccount());

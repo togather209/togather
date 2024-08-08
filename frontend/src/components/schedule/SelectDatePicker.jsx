@@ -57,13 +57,9 @@ const CustomDatePickerWrapper = styled.div`
   }
 `;
 
-const CalendarComponent = ({ onChange, firstDate, lastDate }) => {
-  const [selectedDate, setSelectedDate] = useState(null);
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    onChange(date);
-  };
+const CalendarComponent = ({ onChange, firstDate, lastDate, datedate, handleDateChange, selectedDate }) => {
+
 
   return (
     <CustomDatePickerWrapper>
