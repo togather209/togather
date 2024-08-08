@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import Loading from "../../../common/Loading";
+import Modal from "../../../common/Modal";
 
 const RECEIPT_API_URL = "/ocr/receipt";
 
 function OcrComponent({ image, onOcrResult }) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 관리
+  const [error, setError] = useState(false); // 에러 상태 관리
 
   useEffect(() => {
     const fetchOcrResult = async () => {
@@ -34,13 +36,12 @@ function OcrComponent({ image, onOcrResult }) {
             },
           }
         );
-
-        // console.log(response.data.images);
+        // OCR 결과를 파싱
         const parsedResult = parseOcrResult(response.data);
-        console.log(parsedResult);
+        // 파싱된 result를 반환
         onOcrResult(parsedResult);
       } catch (error) {
-        console.error("ocr 처리 중 문제가 발생하였습니다.", error);
+        setError(true);
       } finally {
         setIsLoading(false);
       }
@@ -51,17 +52,15 @@ function OcrComponent({ image, onOcrResult }) {
       // OCR 결과에서 영수증 결과 가져옴
       const result = data.images[0].receipt.result;
 
-      // 상호명과 총액을 추출
-      // 상호명이 인식되지 않으면 "장소명"으로 설정
+      // 상호명과 총액을 추출하고 인식되지 않으면 기본값으로 설정
       const businessName = result.storeInfo?.name?.text || "장소명";
-      // 총액을 추출하고, 인식되지 않으면 0으로 설정
       const totalPrice =
         parseInt(result.totalPrice?.price.formatted?.value || 0) || 0;
 
-      // 결제 일시를 저장할 변수
+      // 결제 일시
       let paymentDate;
 
-      // 결제 일시를 검증하는 함수
+      // 결제 일시 검증하는 함수
       function isValidDate(year, month, day) {
         // 년, 월, 일이 숫자인지 확인하고 유효한 범위 내에 있는지 검사
         if (
@@ -91,7 +90,7 @@ function OcrComponent({ image, onOcrResult }) {
       // 결제 일시가 인식되었는지 확인
       if (result.paymentInfo?.date?.formatted) {
         const { year, month, day } = result.paymentInfo.date.formatted;
-        // 인식된 결제 일시가 유효한지 확인
+        // 결제 일시 유효성 검사
         if (isValidDate(year, month, day)) {
           // 유효한 경우, 결제 일시를 설정
           paymentDate = `${year}/${month}/${day}`;
@@ -118,12 +117,29 @@ function OcrComponent({ image, onOcrResult }) {
       };
     };
 
+    // 이미지가 넘어온 경우, Ocr 결과 가져오기
     if (image) {
       fetchOcrResult();
     }
   }, [image, onOcrResult]);
 
-  return <div>{isLoading && <Loading>결제 내용을 분석 중이에요</Loading>}</div>;
+  return (
+    <div>
+      {isLoading && (
+        <Loading>
+          <span style={{ color: "#712FFF" }}>결제 내용</span>을<br /> 분석
+          중이에요
+        </Loading>
+      )}
+      {error && (
+        <Modal
+          mainMessage="문제가 발생했습니다."
+          subMessage="다시 시도해보세요."
+          onClose={() => setError(false)}
+        />
+      )}
+    </div>
+  );
 }
 
 export default OcrComponent;

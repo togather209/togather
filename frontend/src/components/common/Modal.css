@@ -1,0 +1,59 @@
+/* common-modal.css */
+
+/* 배경을 어둡고 투명하게 설정 */
+.common-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+/* 모달 컨텐츠 영역을 흰색 배경과 그림자로 설정 */
+.common-modal-content {
+  background: white;
+  padding: 35px 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 300px;
+  max-width: 80%;
+  box-sizing: border-box;
+}
+
+/* 모달 메세지 */
+.common-modal-message {
+  margin-bottom: 25px;
+}
+
+/* 모달 메인 메세지 스타일 */
+.common-modal-main-message {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+/* 모달 서브 메세지 스타일 */
+.common-modal-sub-message {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 모달 버튼 스타일 */
+.common-modal-button {
+  width: 80%;
+  background: linear-gradient(45deg, #712FFF, #A074FF);
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  box-shadow: 5px 10px 20px #b08cff;
+}
