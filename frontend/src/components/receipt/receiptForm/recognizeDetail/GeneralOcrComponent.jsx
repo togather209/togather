@@ -138,9 +138,7 @@ function GeneralOcrComponent({ image, onOcrResult }) {
     }
   }, [image, onOcrResult]);
 
-  return (
-    <div>{isLoading && <Loading>결제 내역을 분석하고 있어요</Loading>}</div>
-  );
+  return <div>{isLoading && <Loading>결제 내용을 분석 중이에요</Loading>}</div>;
 }
 
 export default GeneralOcrComponent;

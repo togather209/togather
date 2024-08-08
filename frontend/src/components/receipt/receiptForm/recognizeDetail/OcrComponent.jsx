@@ -41,6 +41,8 @@ function OcrComponent({ image, onOcrResult }) {
         onOcrResult(parsedResult);
       } catch (error) {
         console.error("ocr 처리 중 문제가 발생하였습니다.", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -121,7 +123,7 @@ function OcrComponent({ image, onOcrResult }) {
     }
   }, [image, onOcrResult]);
 
-  return <div>{isLoading && <Loading>열심히 분석 중이에요</Loading>}</div>;
+  return <div>{isLoading && <Loading>결제 내용을 분석 중이에요</Loading>}</div>;
 }
 
 export default OcrComponent;

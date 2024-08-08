@@ -98,9 +98,24 @@ function RecognizeComponent({ defaultReceipt }) {
       const reader = new FileReader();
       reader.onloadend = () => {
         const imageBase64 = reader.result;
-        setSelectedImage(imageBase64);
-        setSelectedImageType("image");
-        setIsOcrLoading(true);
+
+        // 이미지 로드를 위해 새로운 이미지 객체를 생성합니다.
+        const img = new Image();
+        img.src = imageBase64;
+        img.onload = () => {
+          // Canvas를 생성하여 이미지를 그립니다.
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+
+          // Canvas를 JPG 형식의 base64 문자열로 변환합니다.
+          const jpgBase64 = canvas.toDataURL("image/jpeg");
+          setSelectedImage(jpgBase64);
+          setSelectedImageType("image");
+          setIsOcrLoading(true);
+        };
       };
       reader.readAsDataURL(file);
     }
