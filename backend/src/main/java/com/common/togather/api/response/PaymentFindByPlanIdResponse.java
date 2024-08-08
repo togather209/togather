@@ -26,7 +26,7 @@ public class PaymentFindByPlanIdResponse {
     private String endDate;
 
     // 정산 상태
-    private Boolean status;
+    private Integer status;
 
     // 정산 받을 금액
     private List<ReceiverPayment> receiverPayments;
@@ -52,7 +52,7 @@ public class PaymentFindByPlanIdResponse {
     @AllArgsConstructor
     public static class ReceiverPayment {
         private String name;
-        private String money;
+        private Integer money;
     }
 
     @Data
@@ -61,6 +61,6 @@ public class PaymentFindByPlanIdResponse {
     @AllArgsConstructor
     public static class MemberItem {
         private String name;
-        private String money;
+        private Integer money;
     }
 }

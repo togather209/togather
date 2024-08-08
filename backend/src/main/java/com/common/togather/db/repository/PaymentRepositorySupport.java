@@ -1,43 +1,29 @@
 package com.common.togather.db.repository;
 
-import com.common.togather.api.response.PaymentFindByPlanIdResponse;
-import com.common.togather.db.entity.QPayment;
 import com.common.togather.db.entity.QPaymentApproval;
 import com.common.togather.db.entity.QPlan;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-
 @Repository
 public class PaymentRepositorySupport {
 
     @Autowired
     private JPAQueryFactory jpaQueryFactory;
-    private QPayment qPayment = QPayment.payment;
     private QPlan qPlan = QPlan.plan;
     private QPaymentApproval qPaymentApproval = QPaymentApproval.paymentApproval;
 
-    public Optional<PaymentFindByPlanIdResponse> findPaymentByPlanId(String email, int teamId, int planId) {
-        List<Tuple> paymentResults = jpaQueryFactory
-                .select(
-                        qPlan.team.title,
-                        qPlan.title,
-                        qPlan.startDate,
-                        qPlan.endDate,
-                        qPlan.status
 
-
-                )
+    public Integer getStatus(int memberId, int planId) {
+        return jpaQueryFactory
+                .select(resultStatus)
                 .from(qPlan)
-                .where(qPlan.plan.id.eq(planId))
-                .fetch();
-        return null;
+                .leftJoin(qPaymentApproval).on(qPlan.id.eq(qPaymentApproval.plan.id))
+                .where(qPlan.id.eq(planId).and(qPaymentApproval.member.id.eq(memberId)))
+                .fetchOne();
     }
 
     NumberExpression<Integer> resultStatus = new CaseBuilder()
