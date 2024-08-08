@@ -113,15 +113,19 @@ public class TeamService {
         return teamMembers.stream()
                 .map(teamMember -> {
                     Team team = teamMember.getTeam();
+                    boolean isAdmin = teamMember.getRole() == 1;
+
                     return TeamFindAllByMemberIdResponse.builder()
                             .teamId(team.getId())
                             .title(team.getTitle())
                             .teamImg(team.getTeamImg())
                             .description(team.getDescription())
+                            .isAdmin(isAdmin)
                             .build();
                 })
                 .collect(Collectors.toList());
     }
+
 
     // 모임 상세 조회
     public TeamFindByTeamIdResponse findTeamByTeamId(String email, Integer teamId) {
