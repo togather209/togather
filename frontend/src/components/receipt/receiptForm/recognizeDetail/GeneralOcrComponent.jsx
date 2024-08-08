@@ -39,6 +39,7 @@ function GeneralOcrComponent({ image, onOcrResult }) {
         console.log(response.data);
         const parsedResult = parseOcrResult(response.data);
         const analyzedResult = await analyzeTextWithOpenAI(parsedResult);
+
         onOcrResult(analyzedResult);
       } catch (error) {
         console.error("OCR 처리 중 문제가 발생하였습니다.", error);
@@ -138,7 +139,16 @@ function GeneralOcrComponent({ image, onOcrResult }) {
     }
   }, [image, onOcrResult]);
 
-  return <div>{isLoading && <Loading>결제 내용을 분석 중이에요</Loading>}</div>;
+  return (
+    <div>
+      {isLoading && (
+        <Loading>
+          <span style={{ color: "#712FFF" }}>결제 내용</span>을<br /> 분석
+          중이에요
+        </Loading>
+      )}
+    </div>
+  );
 }
 
 export default GeneralOcrComponent;

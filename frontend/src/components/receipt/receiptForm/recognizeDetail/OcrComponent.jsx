@@ -123,7 +123,16 @@ function OcrComponent({ image, onOcrResult }) {
     }
   }, [image, onOcrResult]);
 
-  return <div>{isLoading && <Loading>결제 내용을 분석 중이에요</Loading>}</div>;
+  return (
+    <div>
+      {isLoading && (
+        <Loading>
+          <span style={{ color: "#712FFF" }}>결제 내용</span>을<br /> 분석
+          중이에요
+        </Loading>
+      )}
+    </div>
+  );
 }
 
 export default OcrComponent;
