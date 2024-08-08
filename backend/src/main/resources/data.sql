@@ -1,7 +1,7 @@
 INSERT INTO member (email, password, nickname, name, profile_img, type)
-VALUES ('user1@example.com', '$2a$10$MuuqnYmMS9RilaCk7uPrWOzZ1lER3giYR2T2ZQxOAlqrOEWjmUVVC', 'user1', 'User One', 'https://trip-bucket-0515.s3.ap-northeast-2.amazonaws.com/|1a305fed-d614-48c2-b93a-627910c75955.jpg',
+VALUES ('user1@example.com', '$2a$10$MuuqnYmMS9RilaCk7uPrWOzZ1lER3giYR2T2ZQxOAlqrOEWjmUVVC', 'user1', 'User One', 'https://trip-bucket-0515.s3.ap-northeast-2.amazonaws.com/|3f79a057-07ea-4bb0-86c0-aee64316c508.jpg',
         0),
-       ('user2@example.com', '$2a$10$MuuqnYmMS9RilaCk7uPrWOzZ1lER3giYR2T2ZQxOAlqrOEWjmUVVC', 'user2', 'User Two', 'https://trip-bucket-0515.s3.ap-northeast-2.amazonaws.com/|1a305fed-d614-48c2-b93a-627910c75955.jpg',
+       ('user2@example.com', '$2a$10$MuuqnYmMS9RilaCk7uPrWOzZ1lER3giYR2T2ZQxOAlqrOEWjmUVVC', 'user2', 'User Two', 'https://trip-bucket-0515.s3.ap-northeast-2.amazonaws.com/|3f79a057-07ea-4bb0-86c0-aee64316c508.jpg',
         0),
        ('user3@example.com', '$2a$10$MuuqnYmMS9RilaCk7uPrWOzZ1lER3giYR2T2ZQxOAlqrOEWjmUVVC', 'user3', 'User Three',
         NULL, 0);
@@ -33,10 +33,10 @@ VALUES (1, 1), -- User 1 is associated with Item A
        (3, 3), -- User 3 is associated with Item C
        (4, 2); -- User 2 is associated with Item D
 
-INSERT INTO bookmark (plan_id, place_img, place_name, place_addr, date, item_order)
-VALUES (1, 'place1.jpg', 'Place A', 'Address A', '2024-08-01', 1),
-       (1, 'place2.jpg', 'Place B', 'Address B', '2024-08-02', 2),
-       (1, 'null', 'Place C', 'Address C', '2024-08-01', 2);
+INSERT INTO bookmark (plan_id, place_id, place_img, place_name, place_addr, date, item_order)
+VALUES (1, 1, 'null', 'Place A', 'Address A', '2024-08-01', 1),
+       (1, 2, 'null', 'Place B', 'Address B', '2024-08-02', 2),
+       (1, 3, 'null', 'Place C', 'Address C', '2024-08-01', 2);
 
 INSERT INTO team_member (member_id, team_id, role)
 VALUES (1, 1, 1), -- User 1 is a member of Team A with role 1
