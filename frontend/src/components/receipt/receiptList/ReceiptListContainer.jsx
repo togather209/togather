@@ -14,6 +14,7 @@ import ScheduleFinishModal from "./ScheduleFinishModal";
 import axiosInstance from "../../../utils/axiosInstance";
 import { setTeamPlan } from "../../../redux/slices/receiptSlice";
 import { useDispatch } from "react-redux";
+import Modal from "../../common/Modal";
 
 function ReceiptListContainer() {
   const navigate = useNavigate();
@@ -27,10 +28,12 @@ function ReceiptListContainer() {
   const [scheduleState, setScheduleState] = useState("before");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [receipts, setReceipts] = useState([]);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (!teamId || !planId) {
       console.error("meetingId 또는 scheduleId가 전달되지 않았습니다.");
+      setError(true);
       return;
     }
 
@@ -49,6 +52,7 @@ function ReceiptListContainer() {
         console.log(response.data);
       } catch (error) {
         console.error("영수증 데이터를 가져오는 데 실패했습니다.", error);
+        setError(true);
       }
     };
     // TODO : 일정장 확인 후 일정 끝내기 버튼 활성화
@@ -132,6 +136,20 @@ function ReceiptListContainer() {
           onConfirm={handleComfirmModal}
         />
       )}
+      {error &&
+        (!planId ? (
+          <Modal
+            mainMessage="접근할 수 없는 페이지입니다."
+            subMessage="다시 시도해보세요."
+            onClose={() => setError(false)}
+          />
+        ) : (
+          <Modal
+            mainMessage="영수증 데이터를 가져올 수 없습니다.."
+            subMessage="다시 시도해보세요."
+            onClose={() => setError(false)}
+          />
+        ))}
     </div>
   );
 }

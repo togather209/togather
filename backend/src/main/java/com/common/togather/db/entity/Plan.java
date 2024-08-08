@@ -56,6 +56,14 @@ public class Plan {
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bookmark> bookmarks;
 
+    // 정산
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments;
+
+    // 정산 수락
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PaymentApproval> paymentApprovals;
+
     public void update(String title, String description, LocalDate startDate, LocalDate endDate) {
         this.title = title;
         this.description = description;
