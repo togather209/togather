@@ -2,15 +2,17 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import Loading from "../../../common/Loading";
+import Modal from "../../../common/Modal";
 
 const GENERAL_API_URL = "/ocr/general";
 
 function GeneralOcrComponent({ image, onOcrResult }) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 관리
+  const [error, setError] = useState(false); // 에러 상태 관리
 
   useEffect(() => {
     const fetchOcrResult = async () => {
-      // 로딩 화면 시작
+      // OCR 인식 시에 Loading 화면
       setIsLoading(true);
       try {
         const response = await axios.post(
@@ -35,14 +37,14 @@ function GeneralOcrComponent({ image, onOcrResult }) {
             },
           }
         );
-
-        console.log(response.data);
+        // Ocr 결과를 문자열로 파싱
         const parsedResult = parseOcrResult(response.data);
+        // 파싱된 문자열 중 상호명, 결제일시, 결제 총액을 openai api를 통해 분석
         const analyzedResult = await analyzeTextWithOpenAI(parsedResult);
-
+        // ocr 처리 결과 반환
         onOcrResult(analyzedResult);
       } catch (error) {
-        console.error("OCR 처리 중 문제가 발생하였습니다.", error);
+        setError(true);
       } finally {
         // 요청 종료 시 로딩화면 종료
         setIsLoading(false);
@@ -56,9 +58,11 @@ function GeneralOcrComponent({ image, onOcrResult }) {
     };
 
     const analyzeTextWithOpenAI = async (text) => {
+      // openai에 보낼 요청 프롬프트
       const prompt =
         await `다음 텍스트에서 상호명, 결제일시, 결제 총액을 추출하세요.\n\n텍스트: ${text}\n\n결과를 다음 형식으로 출력하세요.\n상호명: \n결제일시: \n결제 총액: \n`;
-      console.log(prompt);
+
+      // ocr로 인식한 문자열 분석 요청 API
       try {
         const response = await axios.post(
           "https://api.openai.com/v1/chat/completions",
@@ -83,6 +87,7 @@ function GeneralOcrComponent({ image, onOcrResult }) {
           }
         );
 
+        // API 응답으로 받은 데이터를 상호명, 결제일시, 결제 총액으로 분리
         const result = response.data.choices[0].message.content
           .trim()
           .split("\n");
@@ -94,6 +99,8 @@ function GeneralOcrComponent({ image, onOcrResult }) {
         );
 
         let paymentDate;
+
+        // 결제 일시 유효성 검사
         if (isValidDate(paymentDateText)) {
           paymentDate = formatDate(paymentDateText);
         } else {
@@ -106,9 +113,9 @@ function GeneralOcrComponent({ image, onOcrResult }) {
           items: [{ name: "품목 없음", count: 1, unitPrice: totalPrice }],
         };
       } catch (error) {
-        console.error("OpenAI 처리 중 문제가 발생하였습니다.", error);
+        // 모바일 결제 내역이 인식되지 않은 경우 기본값
         return {
-          businessName: "상호명을 인식할 수 없습니다.",
+          businessName: "상호명",
           paymentDate: new Date().toISOString().split("T")[0],
           items: [{ name: "품목 없음", count: 1, unitPrice: 0 }],
         };
@@ -146,6 +153,13 @@ function GeneralOcrComponent({ image, onOcrResult }) {
           <span style={{ color: "#712FFF" }}>결제 내용</span>을<br /> 분석
           중이에요
         </Loading>
+      )}
+      {error && (
+        <Modal
+          mainMessage="문제가 발생했습니다."
+          subMessage="다시 시도해보세요."
+          onClose={() => setError(false)}
+        />
       )}
     </div>
   );
