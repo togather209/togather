@@ -25,6 +25,9 @@ import ScheduleDetail from "../components/schedule/ScheduleDetail";
 import ScheduleDetailContainer from "../components/schedule/ScheduleDetailContainer";
 import ScheduleUpdate from "../components/schedule/ScheduleUpdate";
 
+import ScheduleDetailPart from "../components/schedule/ScheduleDetailPart";
+
+
 // 게임 페이지
 import Game from "../pages/Game";
 import GameContainer from "../components/game/GameContainer";
@@ -77,7 +80,7 @@ function AppRoutes() {
               path="schedule/:schedule_id"
               element={<ScheduleDetailContainer />}
             >
-              <Route index element={<ScheduleDetail />} />
+              <Route index element={<ScheduleDetailPart />} />
               <Route path="update" element={<ScheduleUpdate />} />
             </Route>
           </Route>
