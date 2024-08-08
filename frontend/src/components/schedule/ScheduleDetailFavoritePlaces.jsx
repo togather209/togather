@@ -4,12 +4,14 @@ import heart from "../../assets/schedule/scheduleheartimg.png";
 import heartpurple from "../../assets/schedule/scheduleheartpurple.png";
 import matjip from "../../assets/schedule/mayjip.jpg";
 import SchedulePlaceCal from "./SchedulePlaceCal";
+import axiosInstance from "../../utils/axiosInstance";
 
 function ScheduleDetailFavoritePlaces({
   name,
   meetingId,
   scheduleId,
   bookmarkId,
+  placeId,
   img_url,
   address,
   datedate,
@@ -21,7 +23,13 @@ function ScheduleDetailFavoritePlaces({
   const [isHeartPurple, setIsHeartPurple] = useState(false);
 
   const handleHeartPurple = () => {
-    setIsHeartPurple(!isHeartPurple);
+    if (!isHeartPurple) {
+      deleteJjimPlace()
+      setIsHeartPurple(!isHeartPurple);
+    } else {
+      addJjimPlace()
+      setIsHeartPurple(!isHeartPurple);
+    }
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,6 +44,33 @@ function ScheduleDetailFavoritePlaces({
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setForRendering(!forRendering)
+  };
+
+  // 찜하기 목록 삭제 axios 요청
+  const deleteJjimPlace = async () => {
+    try {
+      const response = await axiosInstance.delete(`/teams/${meetingId}/plans/${scheduleId}/bookmarks/${bookmarkId}`);
+      console.log(response.data)
+    } catch (error) {
+      console.error("데이터 불러오기 실패", error);
+    }
+  };
+
+  // 찜하기 목록 추가 axios 요청
+  const addJjimPlace = async () => {
+    const addJjimFormData = {}
+    addJjimFormData["placeId"] = placeId
+    addJjimFormData["placeImg"] = "이미지없음"
+    addJjimFormData["placeName"] = name
+    addJjimFormData["placeAddr"] = address
+    // console.log(addJjimFormData)
+ 
+    try {
+      const response = await axiosInstance.post(`/teams/${meetingId}/plans/${scheduleId}/bookmarks`, addJjimFormData);
+      console.log(response.data)
+    } catch (error) {
+      console.error("데이터 불러오기 실패", error);
+    }
   };
 
   return (
