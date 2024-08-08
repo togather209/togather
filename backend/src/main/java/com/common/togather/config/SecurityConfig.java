@@ -15,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -46,9 +45,9 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
 
                 // 권한 설정
-                .authorizeHttpRequests( (requests) -> requests
+                .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                        .requestMatchers("/api/v1/**","/api/auth/**").permitAll()
+                        .requestMatchers("/api/v1/**", "/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
 
@@ -58,7 +57,6 @@ public class SecurityConfig {
 
                 // jwt 필터 추가
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
 
 
         return http.build();
@@ -72,7 +70,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000/**","https://i11b209.p.ssafy.io/**"));
+        configuration.setAllowedOriginPatterns((List.of("http://localhost:3000", "https://i11b209.p.ssafy.io")));
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowedHeaders(Collections.singletonList("*"));
