@@ -113,6 +113,13 @@ function ReceiptDetail() {
     });
   };
 
+  // 유저 프로필 이미지 가져오기
+  // const getProfileImageUrl = (profileImg) => {
+  //   if (!profileImg) return "";
+  //   const [baseUrl, imagePath] = profileImg.split("|");
+  //   return `${baseUrl}%${imagePath}`;
+  // };
+
   return (
     <>
       {receipt ? (
@@ -144,7 +151,12 @@ function ReceiptDetail() {
                     <tr>
                       <td colSpan="3" className="tagged-people">
                         {item.members.map((member, idx) => (
-                          <div key={idx} className="tagged-avatar"></div>
+                          <img
+                            key={idx}
+                            src={member.profileImg}
+                            alt={member.nickname}
+                            className="tagged-avatar"
+                          />
                         ))}
                       </td>
                     </tr>

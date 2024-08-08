@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   isAuthenticated: false,
   member: null,
+  image: null,
 };
 
 const userSlice = createSlice({
@@ -12,10 +13,12 @@ const userSlice = createSlice({
     setUser: (state, action) => {
       state.isAuthenticated = true;
       state.member = action.payload.member;
+      state.image = action.payload.image;
     },
     clearUser: (state) => {
       state.isAuthenticated = false;
       state.member = null;
+      state.image = null;
     },
   },
 });
