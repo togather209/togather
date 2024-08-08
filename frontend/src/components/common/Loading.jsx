@@ -7,8 +7,8 @@ const Loading = ({ children, progress }) => {
       <div className="loading-content">
         {children && <div className="loading-text">{children}</div>}
         <div className="loading-subtext">잠시만 기다려주세요!</div>
-        <div className="progress-bar">
-          <div className="progress" style={{ width: `${progress}%` }}></div>
+        <div className="loader-wrapper">
+          <div className="loader"></div>
         </div>
       </div>
     </div>
