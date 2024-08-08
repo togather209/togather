@@ -233,6 +233,7 @@
   border-radius: 12px;
   display: flex;
   box-shadow: 5px 10px 20px #f4f4f4;
+  outline: none; 
 }
 
 .recognized-payment-date {
@@ -245,6 +246,7 @@
   border-radius: 12px;
   display: flex;
   box-shadow: 5px 10px 20px #f4f4f4;
+  outline: none; 
 }
 
 .recognized-content {
@@ -306,6 +308,7 @@ border-radius: 13px;
   font-size: 14px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  outline: none; 
 }
 
 .recognized-content td:nth-child(2) input {
@@ -315,7 +318,9 @@ border-radius: 13px;
   font-size: 14px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  outline: none; 
 }
+
 .recognized-content td:nth-child(3) input {
   width: 60px;
   padding: 8px;

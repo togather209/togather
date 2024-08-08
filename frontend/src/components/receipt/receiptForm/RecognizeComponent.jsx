@@ -18,6 +18,8 @@ import Close from "../../../assets/icons/common/close.png";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import CameraCapture from "./recognizeDetail/CameraCapture";
+import OcrComponent from "./recognizeDetail/OcrComponent";
+import GeneralOcrComponent from "./recognizeDetail/GeneralOcrComponent"; // GeneralOcrComponent를 import합니다.
 
 function RecognizeComponent({ defaultReceipt }) {
   const dispatch = useDispatch();
@@ -32,6 +34,7 @@ function RecognizeComponent({ defaultReceipt }) {
   const [bookmark, setBookmark] = useState({ id: -1, name: "" });
   const [isEditStatus, setIsEditStatus] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [isOcrLoading, setIsOcrLoading] = useState(false);
 
   let { teamId, planId, color } = useSelector((state) => state.receipt);
 
@@ -49,6 +52,7 @@ function RecognizeComponent({ defaultReceipt }) {
     }
 
     if (defaultReceipt !== undefined) {
+      console.log("defaultReceipt is not null");
       setIsEditStatus(true);
       setRecognizedResult(defaultReceipt);
       setEditedItems(defaultReceipt.items);
@@ -67,17 +71,25 @@ function RecognizeComponent({ defaultReceipt }) {
     setRecognizedResult(null);
     setIsEditing(false);
     setActiveType(type);
+    setSelectedImage(null);
   };
 
   const handleCameraButton = () => {
     console.log("카메라 버튼 클릭");
+    setSelectedImageType(null);
+    setSelectedImage(null);
     setIsCameraOpen(true);
   };
 
+  const handleCloseCamera = () => {
+    setIsCameraOpen(false);
+  };
+
   const handleImageButton = () => {
+    setSelectedImageType(null);
+    setSelectedImage(null);
     console.log("image 버튼 클릭");
     document.getElementById("file-input").click();
-    setSelectedImageType("image");
   };
 
   const handleFileChange = (event) => {
@@ -85,9 +97,25 @@ function RecognizeComponent({ defaultReceipt }) {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        console.log(file);
-        setSelectedImage(reader.result);
-        setSelectedImageType("image");
+        const imageBase64 = reader.result;
+
+        // 이미지 로드를 위해 새로운 이미지 객체를 생성합니다.
+        const img = new Image();
+        img.src = imageBase64;
+        img.onload = () => {
+          // Canvas를 생성하여 이미지를 그립니다.
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+
+          // Canvas를 JPG 형식의 base64 문자열로 변환합니다.
+          const jpgBase64 = canvas.toDataURL("image/jpeg");
+          setSelectedImage(jpgBase64);
+          setSelectedImageType("image");
+          setIsOcrLoading(true);
+        };
       };
       reader.readAsDataURL(file);
     }
@@ -160,28 +188,6 @@ function RecognizeComponent({ defaultReceipt }) {
     }
   };
 
-  const tempRecognizedItems = {
-    businessName: "How Cafe",
-    paymentDate: "2024-07-31",
-    items: [
-      {
-        name: "3루 입장권",
-        count: 1,
-        unitPrice: 15000,
-      },
-      {
-        name: "1루 입장권",
-        count: 2,
-        unitPrice: 26000,
-      },
-      {
-        name: "외야 지정석",
-        count: 3,
-        unitPrice: 30000,
-      },
-    ],
-  };
-
   return (
     <div className="recognize-component">
       {isCameraOpen ? (
@@ -189,9 +195,10 @@ function RecognizeComponent({ defaultReceipt }) {
           onCapture={(image) => {
             setSelectedImage(image);
             setSelectedImageType("camera");
+            setIsOcrLoading(true);
             setIsCameraOpen(false);
           }}
-          onClose={() => setIsCameraOpen(false)}
+          onClose={handleCloseCamera}
         />
       ) : (
         <>
@@ -308,15 +315,27 @@ function RecognizeComponent({ defaultReceipt }) {
               )}
             </div>
           </div>
-          {selectedImage && (
-            <div className="recognized-image">
-              <img
-                src={selectedImage}
-                alt="recognized"
-                style={{ width: "320px", height: "480px" }}
+          {selectedImage &&
+            isOcrLoading &&
+            (activeType === "paper" ? (
+              <OcrComponent
+                image={selectedImage}
+                onOcrResult={(result) => {
+                  setRecognizedResult(result);
+                  setIsOcrLoading(false);
+                  setEditedItems(result.items);
+                }}
               />
-            </div>
-          )}
+            ) : (
+              <GeneralOcrComponent
+                image={selectedImage}
+                onOcrResult={(result) => {
+                  setRecognizedResult(result);
+                  setIsOcrLoading(false);
+                  setEditedItems(result.items);
+                }}
+              />
+            ))}
           {recognizedResult === null && (
             <div className="recognized-content no-content">
               <p>인식된 내용이 없어요</p>
@@ -344,7 +363,7 @@ function RecognizeComponent({ defaultReceipt }) {
                     paymentDate: date.toISOString().split("T")[0],
                   })
                 }
-                dateFormat="yyyy-MM-dd"
+                dateFormat="yyyy/MM/dd"
                 className="recognized-payment-date edit"
               />
             </div>
@@ -355,7 +374,11 @@ function RecognizeComponent({ defaultReceipt }) {
                   <p>{recognizedResult.businessName}</p>
                 </div>
                 <div className="recognized-payment-date">
-                  <p>{recognizedResult.paymentDate}</p>
+                  <p>
+                    {new Date(
+                      recognizedResult.paymentDate
+                    ).toLocaleDateString()}
+                  </p>
                 </div>
               </>
             )
@@ -405,7 +428,16 @@ function RecognizeComponent({ defaultReceipt }) {
                         </>
                       ) : (
                         <>
-                          <td>{item.name}</td>
+                          <td>
+                            {item.name.length > 10
+                              ? item.name.match(/.{1,10}/g).map((part, idx) => (
+                                  <span key={idx}>
+                                    {part}
+                                    <br />
+                                  </span>
+                                ))
+                              : item.name}
+                          </td>
                           <td>{item.count}개</td>
                           <td>{item.unitPrice.toLocaleString()}원</td>
                         </>
