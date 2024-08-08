@@ -21,6 +21,8 @@ import CameraCapture from "./recognizeDetail/CameraCapture";
 import OcrComponent from "./recognizeDetail/OcrComponent";
 import GeneralOcrComponent from "./recognizeDetail/GeneralOcrComponent"; // GeneralOcrComponent를 import합니다.
 
+import Modal from "../../common/Modal";
+
 function RecognizeComponent({ defaultReceipt }) {
   const dispatch = useDispatch();
 
@@ -36,6 +38,9 @@ function RecognizeComponent({ defaultReceipt }) {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isOcrLoading, setIsOcrLoading] = useState(false);
 
+  // 에러 상황
+  const [error, setError] = useState(false);
+
   let { teamId, planId, color } = useSelector((state) => state.receipt);
 
   useEffect(() => {
@@ -47,6 +52,7 @@ function RecognizeComponent({ defaultReceipt }) {
         dispatch(setTeamPlan({ teamId, planId }));
       } else {
         console.error("teamId 또는 planId가 전달되지 않았습니다.");
+        setError(true);
         return;
       }
     }
@@ -497,6 +503,13 @@ function RecognizeComponent({ defaultReceipt }) {
             />
           )}
         </>
+      )}
+      {error && (
+        <Modal
+          mainMessage="문제가 발생했습니다."
+          subMessage="다시 시도해보세요."
+          onClose={() => setError(false)}
+        />
       )}
     </div>
   );
