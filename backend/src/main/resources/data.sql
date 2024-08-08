@@ -10,9 +10,9 @@ INSERT INTO team (code, title, description, team_img)
 VALUES ('TEAM_A', 'Description for Team A', 'Description for Team A', NULL),
        ('TEAM_B', 'Description for Team B', 'Description for Team B', NULL);
 
-
 INSERT INTO plan (team_id, member_id, title, description, start_date, end_date, status)
 VALUES (1, 1, 'Plan A', 'Description for Plan A', '2024-08-01 10:00:00', '2024-08-02 10:00:00', 1),
+       (1, 3, 'Plan A', 'Description for Plan A', '2024-08-01 10:00:00', '2024-08-02 10:00:00', 1),
        (1, 2, 'Plan B', 'Description for Plan B', '2024-08-02 11:00:00', '2024-08-03 11:00:00', 0);
 
 INSERT INTO receipt (plan_id, member_id, bookmark_id, business_name, payment_date, total_price, color)
@@ -42,3 +42,13 @@ INSERT INTO team_member (member_id, team_id, role)
 VALUES (1, 1, 1), -- User 1 is a member of Team A with role 1
        (2, 1, 2), -- User 2 is a member of Team A with role 2
        (3, 2, 1); -- User 3 is a member of Team B with role 1
+
+INSERT INTO payment (plan_id, sender_id, receiver_id, total_price)
+VALUES (1, 1, 2, 1000),
+       (2, 2, 1, 1500),
+       (3, 1, 2, 2000);
+
+INSERT INTO payment_approval (plan_id, member_id, status)
+VALUES (1, 1, 0),
+       (1, 2, 1),
+       (2, 3, 2);

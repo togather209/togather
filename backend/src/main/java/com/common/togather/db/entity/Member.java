@@ -1,7 +1,10 @@
 package com.common.togather.db.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
@@ -47,7 +50,7 @@ public class Member {
     private PayAccount payAccount;
 
     // 유저 모임
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY,  cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamMember> teamMembers;
 
     // 일정
@@ -62,22 +65,33 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<ItemMember> itemMembers;
 
+    // 정산 보내는 사람
+    @OneToMany(mappedBy = "sender")
+    private List<Payment> sendPayments;
+
+    // 정산 받는 사람
+    @OneToMany(mappedBy = "receiver")
+    private List<Payment> receivePayments;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PaymentApproval> paymentApprovals;
+
     public void update(String profileImg, String password, String nickname) {
         this.password = password;
         this.nickname = nickname;
         this.profileImg = profileImg;
     }
-    
+
     // 닉네임 변경
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
-    
+
     // 프로필 이미지 변경
     public void updateProfileImg(String profileImg) {
         this.profileImg = profileImg;
     }
-    
+
     // 비밀번호 변경
     public void updatePassword(String password, BCryptPasswordEncoder encoder) {
         this.password = encoder.encode(password);
