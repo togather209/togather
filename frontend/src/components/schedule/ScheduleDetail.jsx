@@ -21,6 +21,7 @@ import backImage from '../../assets/icons/common/back.png'
 import SearchForm from "../kakao/SearchForm";
 import PlacesList from "../kakao/PlacesList";
 import Pagination from "../kakao/Pagination";
+import ExitCheckModal from "./ExitCheckModal";
 
 function ScheduleDetail() {
   const { id, schedule_id } = useParams();
@@ -28,6 +29,8 @@ function ScheduleDetail() {
   const [pagination, setPagination] = useState(null);
   const [kakaoLoaded, setKakaoLoaded] = useState(false);
   const navigation = useNavigate()
+
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
   console.log(id)
   console.log(schedule_id)
@@ -241,13 +244,13 @@ function ScheduleDetail() {
         <div className="schedule-detail-first-section">
           <div>
             <p className="schedule-detail-meeting-name">모임명</p>
-            <p className="schedule-detail-schedule-name">일정명</p>
+            <p className="schedule-detail-schedule-name">{scheduleDetail.title}</p>
           </div>
 
           {scheduleDetail.isManager ? (
             <div>
               <img className="schedule-exit-img" src={update} alt="일정수정" />
-              <img onClick={scheduleExit} className="schedule-exit-img" src={deleteimg} alt="일정삭제" />
+              <img onClick={() => setIsExitModalOpen(true)} className="schedule-exit-img" src={deleteimg} alt="일정삭제" />
             </div>
           ) : (
 
@@ -259,7 +262,7 @@ function ScheduleDetail() {
         </div>
       </div>
       <div className="schedule-detail-second-section">
-        <p className="schedule-detail-schedule-name">일정 설명</p>
+        <p className="schedule-detail-schedule-name">{scheduleDetail.description}</p>
         <ScheduleButton type={"purple"} onClick={() => {}}>
           영수증 조회
         </ScheduleButton>
@@ -361,6 +364,15 @@ function ScheduleDetail() {
         </div>
       )}
     </div>
+
+
+    <ExitCheckModal 
+      isOpen={isExitModalOpen}
+      isClose={() => setIsExitModalOpen(false)}
+      onConfirm={scheduleExit}
+    />
+
+
     </div>
       ) : (
         <div>
