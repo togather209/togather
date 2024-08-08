@@ -71,12 +71,15 @@ function ProfileUpdate() {
     console.log(formData.get("member"));
 
     try {
-      const a = await axiosInstance.patch("/members/me", formData);
+      const a = await axiosInstance.patch("/members/me", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
       console.log("수정 됐다요요요요");
       navigate("/mypage");
     } catch (error) {
       console.error("수정 에러", error.response?.data || error.message);
-      console.log(error.response.data);
     }
   };
 
