@@ -291,11 +291,9 @@ function SignUpForm() {
   //이미지 첨부하는 함수
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfileImage(e.target.result);
-      };
-      reader.readAsDataURL(e.target.files[0]);
+      const file = e.target.files[0];
+      const image = URL.createObjectURL(file);
+      setProfileImage(image);
     }
   };
 

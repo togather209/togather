@@ -16,7 +16,6 @@ function MyPageMain() {
   const [secessionModalOpen, setSecessionModalOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const accessToken = useSelector((state) => state.auth.accessToken);
   const member = useSelector((state) => state.user.member);
   const account = useSelector((state) => state.account.account);
 
@@ -83,14 +82,21 @@ function MyPageMain() {
       dispatch(clearUser());
       dispatch(clearToken());
       dispatch(clearAccount());
+      dispatch(clearLinkedAccount());
+      dispatch(resetReceipt());
       alert("서비스를 이용해주셔서 감사드립니다. 회원 탈퇴완료 되었습니다.");
     }
   }
 
+  const formatBalance = (balance) => {
+    const numericBalance = parseFloat(balance);
+    return numericBalance.toLocaleString('ko-KR');
+  };
+
   return (
     <div className="mypage-container">
       <div className="mypage-profile">
-        <img src={chunsik} alt="춘식" className="mypage-profile-image" />
+        <img src={member.profileImg === null ? chunsik : member.profileImg} alt="춘식" className="mypage-profile-image" />
         <p className="mypage-profile-name">{member?.nickname}</p>
         <p className="mypage-profile-email">{member?.email}</p>
         <button className="mypage-logout-button" onClick={handleLogout}>
@@ -104,7 +110,7 @@ function MyPageMain() {
           onClick={() => navigate("/wallet")}
         >
           <p className="mypage-my-wallet-summary">{account?.memberName} 지갑</p>
-          <p className="mypage-my-wallet-balance">{account?.balance}원</p>
+          <p className="mypage-my-wallet-balance">{formatBalance(account?.balance)}원</p>
         </button> :
         <button
         className="mypage-my-wallet"

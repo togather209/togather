@@ -6,35 +6,38 @@ import "../user/User.css";
 import BackButton from "../common/BackButton";
 import { useSelector } from "react-redux";
 import chunsik from "../../assets/icons/common/chunsik.png";
-import axios from "axios";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // 아이콘 추가
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axiosInstance from "../../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
 function ProfileUpdate() {
-  const API_LINK = import.meta.env.VITE_API_URL;
-  const [profileImage, setProfileImage] = useState("");
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileImagePreview, setProfileImagePreview] = useState("");
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
   const [validPassword, setValidPassword] = useState("");
-  const [passwordMessage, setPasswordMessage] = useState("미 입력시 기존 비밀번호가 유지 됩니다.");
-  const [passwordVisible, setPasswordVisible] = useState(false); // 비밀번호 가시성 상태
-  const [nicknameMessage, setNicknameMessage] = useState(""); // 닉네임 메시지
+  const [passwordMessage, setPasswordMessage] = useState(
+    "미 입력시 기존 비밀번호가 유지 됩니다."
+  );
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [nicknameMessage, setNicknameMessage] = useState("");
   const member = useSelector((state) => state.user.member);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (member) {
       setNickname(member.nickname || "");
-      setProfileImage(member.profileImg || chunsik);
+      setProfileImagePreview(member.profileImg || chunsik);
     }
   }, [member]);
 
-  //제출 함수
   const handleUpdate = async (e) => {
     e.preventDefault();
 
-    if (password !== "" && !validatePassword(password) || password !== validPassword) {
+    if (
+      (password !== "" && !validatePassword(password)) ||
+      password !== validPassword
+    ) {
       setPasswordMessage("비밀번호를 확인해주세요.");
       return;
     }
@@ -44,31 +47,39 @@ function ProfileUpdate() {
       return;
     }
 
-    const updateData = {
+    const memData = {
       nickname: nickname,
-      profileImage: profileImage,
     };
 
-    //비밀번호가 비어있지 않다면.
-    if(password !== "") {
-      updateData.password = password;
+    if (password !== "") {
+      memData.password = password;
     }
 
-    console.log(updateData);
+    const memJsonData = JSON.stringify(memData);
+    const memBlob = new Blob([memJsonData], { type: "application/json" });
+    console.log(memBlob);
 
-    try{
-      await axiosInstance.patch('/members/me', updateData);
+    const formData = new FormData();
+
+    formData.append("member", memBlob);
+
+    if (profileImage) {
+      const fileBlob = new Blob([profileImage], { type: "image/png" });
+      const fileData = new File([fileBlob], "image.png");
+      formData.append("image", fileData);
+    }
+    console.log(formData.get("member"));
+
+    try {
+      const a = await axiosInstance.patch("/members/me", formData);
       console.log("수정 됐다요요요요");
-      navigate('/mypage');
-      
+      navigate("/mypage");
+    } catch (error) {
+      console.error("수정 에러", error.response?.data || error.message);
+      console.log(error.response.data);
     }
-    catch(error){
-      console.log("수정 에러", error);
-    }
-
   };
 
-  // 비밀번호 유효성 검사
   const validatePassword = (password) => {
     const hasLetter = /[a-zA-Z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
@@ -76,18 +87,15 @@ function ProfileUpdate() {
     return hasLetter && hasNumber && hasSpecialChar;
   };
 
-  // 닉네임 유효성 검사
   const validateNickname = (nickname) => {
     const nicknameRegex = /^[a-zA-Z0-9가-힣]{2,15}$/;
     return nicknameRegex.test(nickname);
   };
 
-  // 값 변경하는 메서드
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
 
-  // focus 해제 됐을 때, 유효성 검사 실시
   const handlePasswordBlur = () => {
     if (password.length === 0) {
       setPasswordMessage("미 입력시 기존 비밀번호가 유지 됩니다.");
@@ -105,7 +113,6 @@ function ProfileUpdate() {
     }
   };
 
-  // 닉네임 유효성 검사하기
   const handleNicknameBlur = async () => {
     if (nickname.length === 0) {
       setNicknameMessage("");
@@ -119,18 +126,14 @@ function ProfileUpdate() {
     } else if (nickname === member.nickname) {
       setNicknameMessage("");
     } else {
-      const nicknameData = {
-        nickname: nickname,
-      };
+      const nicknameData = { nickname: nickname };
 
       try {
-        const response = await axios.post(
-          `${API_LINK}/auth/nickname/duplicate-check`,
+        const response = await axiosInstance.post(
+          "/auth/nickname/duplicate-check",
           nicknameData,
           {
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
           }
         );
 
@@ -140,17 +143,15 @@ function ProfileUpdate() {
           setNicknameMessage("사용 가능한 닉네임입니다.");
         }
       } catch (error) {
-        console.log("에러 발생");
+        console.log("에러 발생", error);
       }
     }
   };
 
-  // 비밀번호 확인 입력할 때 ...
   const handleValidPasswordChange = (e) => {
     setValidPassword(e.target.value);
   };
 
-  // 비밀번호 확인 focus 떼면 수행
   const handleValidPasswordBlur = () => {
     if (!validatePassword(validPassword)) {
       setPasswordMessage(
@@ -165,9 +166,10 @@ function ProfileUpdate() {
 
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
+      setProfileImage(e.target.files[0]);
       const reader = new FileReader();
       reader.onload = (e) => {
-        setProfileImage(e.target.result);
+        setProfileImagePreview(e.target.result);
       };
       reader.readAsDataURL(e.target.files[0]);
     }
@@ -183,12 +185,13 @@ function ProfileUpdate() {
           <img src={logo} alt="로고" className="signup-logo" />
           <p>일정관리부터 정산까지</p>
         </div>
-        <form>
+
+        <form onSubmit={handleUpdate}>
           <div className="profile-image-upload">
             <label htmlFor="profileImageUpload" className="image-upload-label">
-              {profileImage ? (
+              {profileImagePreview ? (
                 <img
-                  src={profileImage}
+                  src={profileImagePreview}
                   alt="Profile"
                   className="profile-image"
                 />
@@ -199,6 +202,7 @@ function ProfileUpdate() {
             <input
               type="file"
               id="profileImageUpload"
+              name="image"
               className="image-upload-input"
               accept="image/*"
               onChange={handleImageChange}
@@ -208,6 +212,7 @@ function ProfileUpdate() {
           <div className="nickname-form">
             <CommonInput
               id="nickname"
+              name="nickname"
               type="text"
               placeholder="닉네임"
               value={nickname}
@@ -232,11 +237,12 @@ function ProfileUpdate() {
           <div className="password-container">
             <CommonInput
               id="password"
-              type={passwordVisible ? "text" : "password"} // 비밀번호 가시성에 따라 타입 변경
+              name="password"
+              type={passwordVisible ? "text" : "password"}
               placeholder="새 비밀번호"
               value={password}
               onChange={handlePasswordChange}
-              onBlur={handlePasswordBlur} // 포커스가 해제될 때 유효성 검사
+              onBlur={handlePasswordBlur}
               className="password-input"
             />
             <button
@@ -250,11 +256,11 @@ function ProfileUpdate() {
           <div className="password-container">
             <CommonInput
               id="validPassword"
-              type="password" // 비밀번호 확인 가시성에 따라 타입 변경
+              type="password"
               placeholder="새 비밀번호 확인"
               value={validPassword}
               onChange={handleValidPasswordChange}
-              onBlur={handleValidPasswordBlur} // 포커스가 해제될 때 유효성 검사
+              onBlur={handleValidPasswordBlur}
             />
           </div>
           {passwordMessage && (
@@ -268,11 +274,7 @@ function ProfileUpdate() {
               {passwordMessage}
             </p>
           )}
-          <SubmitButton
-            type="button"
-            onClick={handleUpdate}
-            className="submit-button"
-          >
+          <SubmitButton type="submit" className="submit-button">
             수정 완료
           </SubmitButton>
         </form>
