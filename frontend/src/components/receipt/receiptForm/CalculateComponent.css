@@ -28,16 +28,6 @@
   margin: 20px;
 }
 
-button.select-participant-title {
-  display: flex;
-  font-size: 14px;
-  margin: 20px 15px 0 15px;
-  border: 1px solid #D7D7D7;
-  padding: 10px 40px;
-  border-radius: 8px;
-  background-color: white;
-}
-
 .select-participant-table {
   width: 95%;
   box-sizing: border-box;
@@ -64,18 +54,26 @@ border-radius: 13px;
   font-weight: 500;
   font-weight: bold;
 }
-.calculate-tagged-peple {
+
+.calculate-tagged-people {
   display: flex;
   align-items: start;
-  height: 21px;
+  padding-left: 30px;
+}
+
+div.calculate-tagged-people {
+  margin-bottom: 15px;
 }
 
 .add-participant-button {
-  width: 21px;
+  width: 36px;
   margin-right: 10px;
 }
 
 .participant-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   margin-right: 10px;
 }
 

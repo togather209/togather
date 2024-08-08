@@ -246,15 +246,6 @@ function CalculateComponent() {
 
   const haveParticipants = Object.keys(settlements).length > 0;
 
-  // TODO : 이미지 처리
-  const fixProfileImgUrl = (url) => {
-    console.log("url is", url);
-    if (!url) {
-      return ""; // url이 undefined이거나 null일 경우 빈 문자열 반환
-    }
-    return url.replace("|", "");
-  };
-
   return (
     <>
       <div className="calculate-component-container">
@@ -300,8 +291,17 @@ function CalculateComponent() {
                   {items.map((item, index) => (
                     <React.Fragment key={index}>
                       <tr>
-                        <td>{item.name}</td>
-                        <td>{item.count}</td>
+                        <td>
+                          {item.name.length > 10
+                            ? item.name.match(/.{1,10}/g).map((part, idx) => (
+                                <span key={idx}>
+                                  {part}
+                                  <br />
+                                </span>
+                              ))
+                            : item.name}
+                        </td>
+                        <td>{item.count}개</td>
                         <td>{item.unitPrice.toLocaleString()}원</td>
                       </tr>
                       <tr className="calculate-tag-list">
@@ -313,13 +313,10 @@ function CalculateComponent() {
                             alt="Add"
                           />
                           {itemParticipants[index]?.map((participant, idx) => (
-                            // <span key={idx} className="participant-badge">
-                            //   {participant.nickname}
-                            // </span>
                             <img
                               key={idx}
                               className="participant-badge"
-                              src={fixProfileImgUrl(participant.profileImg)}
+                              src={participant.profileImg}
                               alt="profile"
                             />
                           ))}
@@ -331,12 +328,25 @@ function CalculateComponent() {
               </table>
             </>
           ) : (
-            <button
-              className="select-participant-title"
-              onClick={() => handleOpenModal(null)}
-            >
-              인원 선택
-            </button>
+            <>
+              <div className="select-participant-title">인원 선택</div>
+              <div className="calculate-tagged-people">
+                <img
+                  src={AddButton}
+                  onClick={() => handleOpenModal(null)}
+                  className="add-participant-button"
+                  alt="Add"
+                />
+                {generalParticipants.map((participant, idx) => (
+                  <img
+                    key={idx}
+                    className="participant-badge"
+                    src={participant.profileImg}
+                    alt={participant.nickname}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
         {haveParticipants && (

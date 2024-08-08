@@ -11,7 +11,7 @@ const TokenRefresher = ({ children }) => {
   const accessToken = useSelector((state) => state.auth.accessToken);
 
   useEffect(() => {
-    console.log('Current pathname:', location.pathname); // 현재 경로 출력
+    console.log("Current pathname:", location.pathname); // 현재 경로 출력
 
     const excludedPaths = ["/login", "/signup", "/"];
     if (!excludedPaths.includes(location.pathname)) {
@@ -25,20 +25,20 @@ const TokenRefresher = ({ children }) => {
     }
   }, [dispatch, location.pathname]);
 
-  useEffect(() => {
-    // 뒤로 가기 버튼 막기
-    const handlePopState = (event) => {
-      event.preventDefault();
-      navigate(location.pathname, { replace: true });
-    };
+  // useEffect(() => {
+  //   // 뒤로 가기 버튼 막기
+  //   const handlePopState = (event) => {
+  //     event.preventDefault();
+  //     navigate(location.pathname, { replace: true });
+  //   };
 
-    window.history.pushState(null, '', window.location.href);
-    window.addEventListener('popstate', handlePopState);
+  //   window.history.pushState(null, '', window.location.href);
+  //   window.addEventListener('popstate', handlePopState);
 
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [navigate, location.pathname]);
+  //   return () => {
+  //     window.removeEventListener('popstate', handlePopState);
+  //   };
+  // }, [navigate, location.pathname]);
 
   useEffect(() => {
     const restrictedPaths = ["/login", "/signup", "/"];

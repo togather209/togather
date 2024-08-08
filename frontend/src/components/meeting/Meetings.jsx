@@ -1,17 +1,32 @@
-import React from "react";
+import React, {useEffect} from "react";
 import "./Meetings.css";
-// import promimg from "../../../public/다운로드.jpg";
 import BackButton from "../common/BackButton";
 import MeetingCard from "./MeetingCard";
 import alarm from "../../assets/icons/common/alarm.png";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
+import { setMeetings } from '../../redux/slices/meetingSlice';
+import axiosInstance from "../../utils/axiosInstance";
 
 function Meetings() {
-
+  const dispatch = useDispatch();
   // homemain에서 요청한 모임들 데이터 받기
-  const location = useLocation();
-  const { myMeetings } = location.state || {};
-
+  const myMeetings = useSelector((state) => state.meetings.list);
+  
+    // 렌더링됐을 때 나의 모임 요청
+    useEffect(() => {
+      loadingMemberData();
+    }, []);
+  
+    // axios 함수
+    const loadingMemberData = async () => {
+      try {
+        const response = await axiosInstance.get('/teams/members/me');
+        dispatch(setMeetings(response.data.data)); // 리덕스 상태에 데이터 저장
+      } catch (error) {
+        console.error('데이터 불러오기 실패', error);
+      }
+    };
+    
   return (
     <div>
       <div className="meetings-header">

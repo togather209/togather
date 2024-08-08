@@ -4,6 +4,7 @@ import userReducer from './slices/userSlice';
 import accountReducer from './slices/accountSlice';
 import receiptReducer from './slices/receiptSlice';
 import linkedAccountReducer from './slices/linkedAccount';
+import meetingReducer from './slices/meetingSlice';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   account: accountReducer,
   receipt: receiptReducer,
   linkedAccount: linkedAccountReducer,
+  meetings: meetingReducer,
 });
 
 export default rootReducer;

@@ -19,6 +19,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import CameraCapture from "./recognizeDetail/CameraCapture";
 import OcrComponent from "./recognizeDetail/OcrComponent";
+import GeneralOcrComponent from "./recognizeDetail/GeneralOcrComponent"; // GeneralOcrComponent를 import합니다.
+
+import Modal from "../../common/Modal";
 
 function RecognizeComponent({ defaultReceipt }) {
   const dispatch = useDispatch();
@@ -35,6 +38,9 @@ function RecognizeComponent({ defaultReceipt }) {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isOcrLoading, setIsOcrLoading] = useState(false);
 
+  // 에러 상황
+  const [error, setError] = useState(false);
+
   let { teamId, planId, color } = useSelector((state) => state.receipt);
 
   useEffect(() => {
@@ -46,6 +52,7 @@ function RecognizeComponent({ defaultReceipt }) {
         dispatch(setTeamPlan({ teamId, planId }));
       } else {
         console.error("teamId 또는 planId가 전달되지 않았습니다.");
+        setError(true);
         return;
       }
     }
@@ -97,12 +104,24 @@ function RecognizeComponent({ defaultReceipt }) {
       const reader = new FileReader();
       reader.onloadend = () => {
         const imageBase64 = reader.result;
-        setSelectedImage(imageBase64);
-        setSelectedImageType("image");
-        setIsOcrLoading(true);
-        // console.log(file);
-        // setSelectedImage(reader.result);
-        // setSelectedImageType("image");
+
+        // 이미지 로드를 위해 새로운 이미지 객체를 생성합니다.
+        const img = new Image();
+        img.src = imageBase64;
+        img.onload = () => {
+          // Canvas를 생성하여 이미지를 그립니다.
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+
+          // Canvas를 JPG 형식의 base64 문자열로 변환합니다.
+          const jpgBase64 = canvas.toDataURL("image/jpeg");
+          setSelectedImage(jpgBase64);
+          setSelectedImageType("image");
+          setIsOcrLoading(true);
+        };
       };
       reader.readAsDataURL(file);
     }
@@ -174,28 +193,6 @@ function RecognizeComponent({ defaultReceipt }) {
       dispatch(setActiveTab("calculate"));
     }
   };
-
-  // const tempRecognizedItems = {
-  //   businessName: "How Cafe",
-  //   paymentDate: "2024-07-31",
-  //   items: [
-  //     {
-  //       name: "3루 입장권",
-  //       count: 1,
-  //       unitPrice: 15000,
-  //     },
-  //     {
-  //       name: "1루 입장권",
-  //       count: 2,
-  //       unitPrice: 26000,
-  //     },
-  //     {
-  //       name: "외야 지정석",
-  //       count: 3,
-  //       unitPrice: 30000,
-  //     },
-  //   ],
-  // };
 
   return (
     <div className="recognize-component">
@@ -324,15 +321,27 @@ function RecognizeComponent({ defaultReceipt }) {
               )}
             </div>
           </div>
-          {selectedImage && isOcrLoading && (
-            <OcrComponent
-              image={selectedImage}
-              onOcrResult={(result) => {
-                setRecognizedResult(result);
-                setIsOcrLoading(false);
-              }}
-            />
-          )}
+          {selectedImage &&
+            isOcrLoading &&
+            (activeType === "paper" ? (
+              <OcrComponent
+                image={selectedImage}
+                onOcrResult={(result) => {
+                  setRecognizedResult(result);
+                  setIsOcrLoading(false);
+                  setEditedItems(result.items);
+                }}
+              />
+            ) : (
+              <GeneralOcrComponent
+                image={selectedImage}
+                onOcrResult={(result) => {
+                  setRecognizedResult(result);
+                  setIsOcrLoading(false);
+                  setEditedItems(result.items);
+                }}
+              />
+            ))}
           {recognizedResult === null && (
             <div className="recognized-content no-content">
               <p>인식된 내용이 없어요</p>
@@ -360,7 +369,7 @@ function RecognizeComponent({ defaultReceipt }) {
                     paymentDate: date.toISOString().split("T")[0],
                   })
                 }
-                dateFormat="yyyy-MM-dd"
+                dateFormat="yyyy/MM/dd"
                 className="recognized-payment-date edit"
               />
             </div>
@@ -371,7 +380,11 @@ function RecognizeComponent({ defaultReceipt }) {
                   <p>{recognizedResult.businessName}</p>
                 </div>
                 <div className="recognized-payment-date">
-                  <p>{recognizedResult.paymentDate}</p>
+                  <p>
+                    {new Date(
+                      recognizedResult.paymentDate
+                    ).toLocaleDateString()}
+                  </p>
                 </div>
               </>
             )
@@ -421,7 +434,16 @@ function RecognizeComponent({ defaultReceipt }) {
                         </>
                       ) : (
                         <>
-                          <td>{item.name}</td>
+                          <td>
+                            {item.name.length > 10
+                              ? item.name.match(/.{1,10}/g).map((part, idx) => (
+                                  <span key={idx}>
+                                    {part}
+                                    <br />
+                                  </span>
+                                ))
+                              : item.name}
+                          </td>
                           <td>{item.count}개</td>
                           <td>{item.unitPrice.toLocaleString()}원</td>
                         </>
@@ -481,6 +503,13 @@ function RecognizeComponent({ defaultReceipt }) {
             />
           )}
         </>
+      )}
+      {error && (
+        <Modal
+          mainMessage="문제가 발생했습니다."
+          subMessage="다시 시도해보세요."
+          onClose={() => setError(false)}
+        />
       )}
     </div>
   );
