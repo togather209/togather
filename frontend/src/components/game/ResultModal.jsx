@@ -34,7 +34,9 @@ function ResultModal({ onClose, selectedParticipant, selectedTeam }) {
                   alt={selectedParticipant.nickname}
                   className="participant-image"
                 />
-                <div>{selectedTeam.title}</div>
+                <div className="participant-team-name">
+                  {selectedTeam.title}
+                </div>
                 <div className="participant-name">
                   <span>{selectedParticipant.nickname}</span>님 당첨 !
                 </div>

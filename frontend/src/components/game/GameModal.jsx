@@ -76,11 +76,16 @@ function GameModal({ onClose, onConfirm }) {
           }}
           alt="Close"
         />
-        <div className="game-modal-title">팀을 선택해주세요</div>
+        <div className="game-modal-title">게임 인원을 선택해주세요</div>
         <div className="team-list">
           {teams.map((team) => (
             <div key={team.teamId} className="team-item">
-              <div onClick={() => toggleTeam(team.teamId)}>{team.title}</div>
+              <div
+                className="team-title"
+                onClick={() => toggleTeam(team.teamId)}
+              >
+                {team.title}
+              </div>
               {expandedTeamId === team.teamId && (
                 <div className="game-participant-list">
                   {participantsByTeamId[team.teamId]?.map((participant) => (
@@ -96,7 +101,14 @@ function GameModal({ onClose, onConfirm }) {
                           )}
                           onChange={() => handleCheckboxChange(participant)}
                         />
-                        {participant.nickname}
+                        <div className="game-participant-info">
+                          <img
+                            className="game-participant-info-img"
+                            src={participant.profileImg}
+                            alt="프로필"
+                          />
+                          {participant.nickname}
+                        </div>
                       </label>
                     </div>
                   ))}
