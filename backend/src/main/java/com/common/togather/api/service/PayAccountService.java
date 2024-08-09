@@ -15,6 +15,7 @@ import com.common.togather.db.repository.MemberRepository;
 import com.common.togather.db.repository.PayAccountRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,8 @@ public class PayAccountService {
     private final AccountRepository accountRepository;
     private final MemberRepository memberRepository;
     private final TransactionService transactionService;
+
+    private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     // 나의 Pay 계좌 조회
     @Transactional
@@ -58,7 +61,7 @@ public class PayAccountService {
 
         payAccountRepository.save(PayAccount.builder()
                 .accountName(requestDto.getAccountName())
-                .password(requestDto.getPassword())
+                .password(bCryptPasswordEncoder.encode(requestDto.getPassword()))
                 .member(member)
                 .account(account)
                 .build());
@@ -112,7 +115,7 @@ public class PayAccountService {
         if (payAccount == null) {
             throw new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다.");
         }
-        if (payAccount.getPassword() != requestDto.getPayAccountPassword()) {
+        if (!bCryptPasswordEncoder.matches(requestDto.getPayAccountPassword(), payAccount.getPassword())) {
             throw new InvalidPayAccountPasswordException("계좌 비밀번호가 일치하지 않습니다.");
         }
 
@@ -145,7 +148,7 @@ public class PayAccountService {
         if (payAccount == null) {
             throw new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다.");
         }
-        if (payAccount.getPassword() != requestDto.getPayAccountPassword()) {
+        if (!bCryptPasswordEncoder.matches(requestDto.getPayAccountPassword(), payAccount.getPassword())) {
             throw new InvalidPayAccountPasswordException("계좌 비밀번호가 일치하지 않습니다.");
         }
 
@@ -193,6 +196,7 @@ public class PayAccountService {
         transactionService.saveTransaction(transactionSaveRequest);
     }
 
+    // 계좌 조회
     public AccountFindByPayAccountIdResponse findAccountByPayAccountId(Integer payAccountId) {
         PayAccount payAccount = payAccountRepository.findById(payAccountId)
                 .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
