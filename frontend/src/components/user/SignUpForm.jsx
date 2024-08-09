@@ -12,7 +12,8 @@ import { FaEye, FaEyeSlash } from "react-icons/fa"; // 아이콘 추가
 function SignUpForm() {
   const API_LINK = import.meta.env.VITE_API_URL;
 
-  const [profileImage, setProfileImage] = useState(""); //프로필 이미지
+  const [profileImage, setProfileImage] = useState(null); //프로필 이미지
+  const [profileImagePreview, setProfileImagePreview] = useState("");
   const [email, setEmail] = useState(""); //이메일
   const [emailMessage, setEmailMessage] = useState(""); //이메일 메시지
   const [password, setPassword] = useState(""); //비밀번호
@@ -291,11 +292,8 @@ function SignUpForm() {
   //이미지 첨부하는 함수
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfileImage(e.target.result);
-      };
-      reader.readAsDataURL(e.target.files[0]);
+      setProfileImage(e.target.files[0]);
+      setProfileImagePreview(URL.createObjectURL(profileImage));
     }
   };
 
@@ -345,7 +343,7 @@ function SignUpForm() {
             <label htmlFor="profileImageUpload" className="image-upload-label">
               {profileImage ? (
                 <img
-                  src={profileImage}
+                  src={profileImagePreview}
                   alt="Profile"
                   className="profile-image"
                 />

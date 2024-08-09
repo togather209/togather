@@ -27,7 +27,6 @@ import ScheduleUpdate from "../components/schedule/ScheduleUpdate";
 
 import ScheduleDetailPart from "../components/schedule/ScheduleDetailPart";
 
-
 // 게임 페이지
 import Game from "../pages/Game";
 import GameContainer from "../components/game/GameContainer";
@@ -43,6 +42,7 @@ import CameraCapture from "../components/receipt/receiptForm/recognizeDetail/Cam
 import ProfileUpdate from "../components/mypage/ProfileUpdate";
 import Terms from "../components/mypage/Terms";
 import PrivateRoute from "./PrivateRoute";
+import Payment from "../pages/Payment";
 
 function AppRoutes() {
   return (
@@ -167,6 +167,15 @@ function AppRoutes() {
       >
         <Route index element={<GameContainer />}></Route>
       </Route>
+
+      <Route
+        path="/payment"
+        element={
+          <PrivateRoute>
+            <Payment />
+          </PrivateRoute>
+        }
+      ></Route>
     </Routes>
   );
 }
