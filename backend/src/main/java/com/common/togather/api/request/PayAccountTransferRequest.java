@@ -14,6 +14,6 @@ public class PayAccountTransferRequest {
     // 이체 금액
     private int price;
     // Pay 계좌 비밀번호
-    private int payAccountPassword;
+    private String payAccountPassword;
 
 }

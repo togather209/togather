@@ -11,11 +11,11 @@
   justify-content: center;
 }
 
-.title {
+.header .title {
   font-size: 18px;
   font-weight: bold;
-  margin-top: 12px;
-  margin-left: auto;
+  margin-top: 14px;
+  margin-left: 16px;
   margin-right: auto;
 }
 

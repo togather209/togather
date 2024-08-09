@@ -10,6 +10,6 @@ import lombok.*;
 public class PayAccountDeleteRequest {
 
     // Pay 계좌 비밀번호
-    private int payAccountPassword;
+    private String payAccountPassword;
 
 }
