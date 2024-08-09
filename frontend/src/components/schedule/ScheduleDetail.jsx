@@ -15,13 +15,13 @@ import ScheduleDates from "./ScheduleDates";
 import ScheduleWeekdays from "./ScheduleWeekdays";
 import ScheduleDetailPlaces from "./ScheduleDetailPlaces";
 import ScheduleDetailFavoritePlaces from "./ScheduleDetailFavoritePlaces";
-import headphone from "../../assets/schedule/headphone.png";
-import mic from "../../assets/schedule/mic.png";
+// import headphone from "../../assets/schedule/headphone.png";
+// import mic from "../../assets/schedule/mic.png";
 import backImage from '../../assets/icons/common/back.png'
 import SearchForm from "../kakao/SearchForm";
 import PlacesList from "../kakao/PlacesList";
 import Pagination from "../kakao/Pagination";
-import ExitCheckModal from "./ExitCheckModal";
+import CheckModal from "../common/CheckModal";
 
 function ScheduleDetail() {
   const { id, schedule_id } = useParams();
@@ -146,16 +146,16 @@ function ScheduleDetail() {
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [isHeartClicked, setIsHeartClicked] = useState(true);
-  const [isCallStarted, setIsCallStarted] = useState(false);
-  const [isHeadPhone, setIsHeadPhone] = useState(false);
-  const [isMic, setIsMic] = useState(false);
+  // const [isCallStarted, setIsCallStarted] = useState(false);
+  // const [isHeadPhone, setIsHeadPhone] = useState(false);
+  // const [isMic, setIsMic] = useState(false);
   const [favoritePlaces, setFavoritePlaces] = useState([])
   // 날짜별 장소 배열 상태
   const [datePlaces, setDatePlaces] = useState([])
 
-  const handleCallStart = () => setIsCallStarted(!isCallStarted);
-  const handleHeadPhone = () => setIsHeadPhone(!isHeadPhone);
-  const handleMic = () => setIsMic(!isMic);
+  // const handleCallStart = () => setIsCallStarted(!isCallStarted);
+  // const handleHeadPhone = () => setIsHeadPhone(!isHeadPhone);
+  // const handleMic = () => setIsMic(!isMic);
   const handleDateClick = (date) => {
     setSelectedDate(date);
     setIsHeartClicked(false);
@@ -256,7 +256,6 @@ function ScheduleDetail() {
               <img onClick={() => setIsExitModalOpen(true)} className="schedule-exit-img" src={deleteimg} alt="일정삭제" />
             </div>
           ) : (
-
             <img className="schedule-exit-img" src={exit} alt="일정 나가기" />
           )
           }
@@ -342,7 +341,7 @@ function ScheduleDetail() {
       )}
     </div>
 
-    <div className="schedule-detail-button">
+    {/* <div className="schedule-detail-button">
       {isCallStarted ? (
         <ScheduleButton type={"purple"} onClick={handleCallStart}>
           통화 시작
@@ -366,13 +365,15 @@ function ScheduleDetail() {
           </div>
         </div>
       )}
-    </div>
+    </div> */}
 
 
-    <ExitCheckModal 
+    <CheckModal 
       isOpen={isExitModalOpen}
       isClose={() => setIsExitModalOpen(false)}
       onConfirm={scheduleExit}
+      firstbutton={"취소"}
+      secondbutton={"나가기"}
     />
 
 

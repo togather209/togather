@@ -9,11 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TeamFindAllByMemberIdResponse {
+public class PaymentApprovalUpdateByPlanIdResponse {
 
-    private Integer teamId;
-    private String title;
-    private String teamImg;
-    private String description;
-    private boolean isAdmin;
+    private Boolean isAllApproved;
 }

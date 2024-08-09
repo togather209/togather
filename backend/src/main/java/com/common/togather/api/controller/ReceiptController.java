@@ -18,8 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/teams/{teamId}/plans/{planId}")
 @RequiredArgsConstructor
@@ -78,12 +76,12 @@ public class ReceiptController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
             )
     })
-    public ResponseEntity<ResponseDto<List<ReceiptFindAllByPlanIdResponse>>> findAllReceiptByPlanId(
+    public ResponseEntity<ResponseDto<ReceiptFindAllByPlanIdResponse>> findAllReceiptByPlanId(
             @RequestHeader(value = "Authorization", required = false) String token,
             @PathVariable(name = "teamId") int teamId,
             @PathVariable(name = "planId") int planId) {
 
-        ResponseDto<List<ReceiptFindAllByPlanIdResponse>> responseDto = ResponseDto.<List<ReceiptFindAllByPlanIdResponse>>builder()
+        ResponseDto<ReceiptFindAllByPlanIdResponse> responseDto = ResponseDto.<ReceiptFindAllByPlanIdResponse>builder()
                 .status(HttpStatus.OK.value())
                 .message("영수증 조회를 성공했습니다.")
                 .data(receiptService.findAllReceiptByPlanId(

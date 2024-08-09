@@ -127,3 +127,11 @@
   .meeting-detail-no-schedule-container {
     width: 360px;
   }
+
+
+  .yes-schedule-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }

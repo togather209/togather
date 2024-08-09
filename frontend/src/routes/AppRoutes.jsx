@@ -25,9 +25,12 @@ import ScheduleDetail from "../components/schedule/ScheduleDetail";
 import ScheduleDetailContainer from "../components/schedule/ScheduleDetailContainer";
 import ScheduleUpdate from "../components/schedule/ScheduleUpdate";
 
+import ScheduleDetailPart from "../components/schedule/ScheduleDetailPart";
+
 
 // 게임 페이지
 import Game from "../pages/Game";
+import GameContainer from "../components/game/GameContainer";
 
 // 영수증 페이지
 import Receipt from "../pages/Receipt";
@@ -35,11 +38,11 @@ import ReceiptListContainer from "../components/receipt/receiptList/ReceiptListC
 import ReceiptFormContainer from "../components/receipt/receiptForm/ReceiptFormContainer";
 import ReceiptDetail from "../components/receipt/receiptDetail/ReceiptDetail";
 import ReceiptUpdateContainer from "../components/receipt/receiptUpdate/ReceiptUpdateContainer";
+import CameraCapture from "../components/receipt/receiptForm/recognizeDetail/CameraCapture";
 
 import ProfileUpdate from "../components/mypage/ProfileUpdate";
 import Terms from "../components/mypage/Terms";
 import PrivateRoute from "./PrivateRoute";
-import CameraCapture from "../components/receipt/receiptForm/recognizeDetail/CameraCapture";
 
 function AppRoutes() {
   return (
@@ -73,8 +76,11 @@ function AppRoutes() {
           <Route path=":id" element={<MeetingDetailContainer />}>
             <Route index element={<MeetingDetail />} />
             <Route path="schedule-regist" element={<ScheduleRegist />} />
-            <Route path="schedule/:schedule_id" element={<ScheduleDetailContainer />}>
-              <Route index element={<ScheduleDetail />} />
+            <Route
+              path="schedule/:schedule_id"
+              element={<ScheduleDetailContainer />}
+            >
+              <Route index element={<ScheduleDetailPart />} />
               <Route path="update" element={<ScheduleUpdate />} />
             </Route>
           </Route>
@@ -150,6 +156,7 @@ function AppRoutes() {
         <Route path="camera-capture" element={<CameraCapture />} />
         <Route path="update-form" element={<ReceiptUpdateContainer />} />
       </Route>
+
       <Route
         path="/game"
         element={
@@ -157,7 +164,9 @@ function AppRoutes() {
             <Game />
           </PrivateRoute>
         }
-      />
+      >
+        <Route index element={<GameContainer />}></Route>
+      </Route>
     </Routes>
   );
 }

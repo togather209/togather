@@ -30,7 +30,7 @@ public class PayAccount {
 
     // 비밀번호
     @Column(name = "password", nullable = false)
-    private int password;
+    private String password;
 
     // 유저
     @OneToOne(fetch = FetchType.LAZY)
