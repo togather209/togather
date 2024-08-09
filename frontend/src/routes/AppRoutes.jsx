@@ -27,6 +27,8 @@ import ScheduleUpdate from "../components/schedule/ScheduleUpdate";
 
 import ScheduleDetailPart from "../components/schedule/ScheduleDetailPart";
 
+import MeetingUpdate from "../components/meeting/MeetingUpdate"
+
 
 // 게임 페이지
 import Game from "../pages/Game";
@@ -76,6 +78,7 @@ function AppRoutes() {
           <Route path=":id" element={<MeetingDetailContainer />}>
             <Route index element={<MeetingDetail />} />
             <Route path="schedule-regist" element={<ScheduleRegist />} />
+            <Route path="meeting-update" element={<MeetingUpdate />} />
             <Route
               path="schedule/:schedule_id"
               element={<ScheduleDetailContainer />}
