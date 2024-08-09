@@ -22,15 +22,15 @@
 }
 
 .game-participant {
-  width: 50px;
-  height: 50px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   margin: 0 5px;
 }
 
 .game-participant-image {
-  width: 50px;
-  height: 50px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   margin: 0 5px;
 }
@@ -38,11 +38,13 @@
 .game-container .game-participants {
   display: inline-block;
   font-size: 14px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  margin-left: 10px;
 }
 
 .game-participants-list {
-  padding: 10px;
+  border-radius: 15px;
+  padding: 15px 20px;
   background-color: #F9F9F9;
 }
 
