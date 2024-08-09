@@ -3,6 +3,7 @@ package com.common.togather.api.service;
 import com.common.togather.api.error.MemberNotFoundException;
 import com.common.togather.api.error.MemberTeamNotFoundException;
 import com.common.togather.api.error.PlanNotFoundException;
+import com.common.togather.api.response.PaymentFindByPlanIdAndMemberResponse;
 import com.common.togather.api.response.PaymentFindByPlanIdResponse;
 import com.common.togather.api.response.PaymentFindByPlanIdResponse.MemberItem;
 import com.common.togather.api.response.PaymentFindByPlanIdResponse.ReceiverPayment;
@@ -201,6 +202,58 @@ public class PaymentService {
             }
         });
         paymentRepository.saveAll(paymentMap.values());
+    }
+
+    public PaymentFindByPlanIdAndMemberResponse findPaymentByPlanIdAndMember(String email, int planId) {
+
+        planRepository.findById(planId)
+                .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
+
+        //최종 정산 내역
+        List<PaymentFindDto> paymentFindDtos = paymentRepositorySupport.findPaymentByPlanId(planId);
+
+        Map<Integer, List<PaymentFindDto>> groupedPayments = groupPaymentsByItemId(paymentFindDtos);
+
+        // meberId, money (사용자가 보내야하는 금액이 기준)
+        Map<Integer, Integer> paymentMap = new HashMap<>();
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
+
+        groupedPayments.forEach((itemId, paymentFinds) -> {
+
+            int memberBalance = getMemberBalance(paymentFinds.get(0).getPrice(), paymentFinds.size());
+            Member receiver = paymentFinds.get(0).getReceiver();
+
+            for (PaymentFindDto paymentFind : paymentFinds) {
+                Member sender = paymentFind.getSender();
+
+                if (sender.getId() == receiver.getId()) {
+                    continue;
+                }
+
+                // 영수증 관리자일때
+                if (member.getId() == receiver.getId()) {
+                    paymentMap.put(sender.getId(),
+                            paymentMap.getOrDefault(sender.getId(), 0) - memberBalance);
+                } else if (member.getId() == sender.getId()) {
+                    paymentMap.put(receiver.getId(),
+                            paymentMap.getOrDefault(receiver.getId(), 0) + memberBalance);
+                }
+            }
+        });
+
+        // 유저가 보내야하는 금액 합
+        int total = 0;
+        for (int money : paymentMap.values()) {
+            if (money > 0) {
+                total += money;
+            }
+        }
+
+        return PaymentFindByPlanIdAndMemberResponse.builder()
+                .money(total)
+                .build();
     }
 
     private void setPaymentMap(Plan plan, Map<int[], Payment> paymentMap, int memberBalance, Member sender,
