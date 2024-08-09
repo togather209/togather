@@ -1,7 +1,8 @@
 package com.common.togather.db.repository;
 
+import com.common.togather.api.response.PaymentFindDto;
 import com.common.togather.db.entity.*;
-import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -22,14 +23,14 @@ public class PaymentRepositorySupport {
     private QItemMember qitemMember = QItemMember.itemMember;
     private QMember qMember = QMember.member;
 
-    public List<Tuple> findPaymentByPlanId(int planId) {
+    public List<PaymentFindDto> findPaymentByPlanId(int planId) {
         return jpaQueryFactory
-                .select(
+                .select(Projections.fields(PaymentFindDto.class,
                         qreceipt.manager.as("receiver"),
-                        qitem.id,
+                        qitem.id.as("itemId"),
                         qitem.unitPrice.multiply(qitem.count).as("price"),
                         qitemMember.member.as("sender")
-                )
+                ))
                 .from(qreceipt)
                 .join(qitem).on(qreceipt.id.eq(qitem.receipt.id))
                 .join(qitemMember).on(qitemMember.item.id.eq(qitem.id))

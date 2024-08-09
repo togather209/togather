@@ -69,16 +69,10 @@ public class PaymentController {
                     description = "정산 완료를 성공했습니다."
             ),
             @ApiResponse(
-                    responseCode = "403",
-                    description = "정산 요청에 접근 권환이 없습니다.",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
-            ),
-            @ApiResponse(
                     responseCode = "404",
                     description = "해당 일정은 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
-            ),
-
+            )
     })
     public ResponseEntity<ResponseDto<String>> savePaymentByPlanId(
             @RequestHeader(value = "Authorization") String token,
@@ -88,7 +82,7 @@ public class PaymentController {
 
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
-                .message("정산 요청을 성공했습니다.")
+                .message("정산 완료 요청을 성공했습니다.")
                 .data(null)
                 .build();
 
