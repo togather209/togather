@@ -12,7 +12,8 @@ import { FaEye, FaEyeSlash } from "react-icons/fa"; // 아이콘 추가
 function SignUpForm() {
   const API_LINK = import.meta.env.VITE_API_URL;
 
-  const [profileImage, setProfileImage] = useState(""); //프로필 이미지
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileImagePreview, setProfileImagePreview] = useState(""); //프로필 이미지
   const [email, setEmail] = useState(""); //이메일
   const [emailMessage, setEmailMessage] = useState(""); //이메일 메시지
   const [password, setPassword] = useState(""); //비밀번호
@@ -86,7 +87,13 @@ function SignUpForm() {
         type: "application/json",
       })
     );
-    memberData.append("image", profileImage);
+
+    if (profileImage) {
+      const fileBlob = new Blob([profileImage], { type: "image/png" });
+      const fileData = new File([fileBlob], "image.png");
+      memberData.append("image", fileData);
+    }
+
 
     if (email === "" || password === "" || nickname === "") {
       return;
@@ -291,9 +298,10 @@ function SignUpForm() {
   //이미지 첨부하는 함수
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
+      setProfileImage(e.target.files[0]);
       const reader = new FileReader();
       reader.onload = (e) => {
-        setProfileImage(e.target.result);
+        setProfileImagePreview(e.target.result);
       };
       reader.readAsDataURL(e.target.files[0]);
     }
@@ -343,9 +351,9 @@ function SignUpForm() {
         <form onSubmit={handleSignup}>
           <div className="profile-image-upload">
             <label htmlFor="profileImageUpload" className="image-upload-label">
-              {profileImage ? (
+              {profileImagePreview ? (
                 <img
-                  src={profileImage}
+                  src={profileImagePreview}
                   alt="Profile"
                   className="profile-image"
                 />
