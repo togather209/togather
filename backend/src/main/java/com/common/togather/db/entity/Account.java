@@ -2,15 +2,15 @@ package com.common.togather.db.entity;
 
 import com.common.togather.api.error.InsufficientBalanceException;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Account {
     // pk
     @Id
