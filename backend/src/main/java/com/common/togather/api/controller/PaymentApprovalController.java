@@ -2,6 +2,7 @@ package com.common.togather.api.controller;
 
 
 import com.common.togather.api.response.ErrorResponseDto;
+import com.common.togather.api.response.PaymentApprovalUpdateByPlanIdResponse;
 import com.common.togather.api.response.ResponseDto;
 import com.common.togather.api.service.PaymentApprovalService;
 import com.common.togather.common.util.JwtUtil;
@@ -54,6 +55,41 @@ public class PaymentApprovalController {
                 .status(HttpStatus.OK.value())
                 .message("정산 요청을 성공했습니다.")
                 .data(null)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    //정산 수락
+    @Operation(summary = "정산 수락")
+    @PatchMapping("/approval")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "정산 수락을 성공했습니다."
+            ),
+
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "해당 일정은 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "2팀에 user1@example.com유저가 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            )
+    })
+    public ResponseEntity<ResponseDto<PaymentApprovalUpdateByPlanIdResponse>> updatePaymentApprovalByPlanId(
+            @RequestHeader(value = "Authorization") String token,
+            @PathVariable(name = "planId") int planId) {
+
+        ResponseDto<PaymentApprovalUpdateByPlanIdResponse> responseDto = ResponseDto.<PaymentApprovalUpdateByPlanIdResponse>builder()
+                .status(HttpStatus.OK.value())
+                .message("정산 수락을 성공했습니다.")
+                .data(paymentApprovalService.UpdatePaymentApprovalByPlanId(
+                        jwtUtil.getAuthMemberEmail(token),
+                        planId))
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
