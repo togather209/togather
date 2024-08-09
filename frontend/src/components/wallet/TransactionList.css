@@ -23,6 +23,8 @@
   margin-left: 6px;
   margin-top: 6px;
   padding: 20px;
+  max-height: 540px;
+  overflow-y: auto;
 }
 
 .transactions-date-group {
