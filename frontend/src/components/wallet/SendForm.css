@@ -68,6 +68,10 @@
   padding: 2px;
 }
 
+.ammount-message {
+  color: red;
+}
+
 .send-btn {
   border: none;
   display: flex;
