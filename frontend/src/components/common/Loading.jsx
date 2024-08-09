@@ -1,7 +1,7 @@
 import React from "react";
 import "./Loading.css";
 
-const Loading = ({ children, progress }) => {
+const Loading = ({ children }) => {
   return (
     <div className="loading-overlay">
       <div className="loading-content">
