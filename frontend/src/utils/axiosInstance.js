@@ -39,7 +39,7 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const state = store.getState();
-
+    console.log(error)
     //권한 없음 & 재시도 상황이 아니라면
     if (error.response.status === 403 && !originalRequest._retry) {
       originalRequest._retry = true;
