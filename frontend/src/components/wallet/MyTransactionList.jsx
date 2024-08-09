@@ -20,7 +20,7 @@ function MyTransactionList() {
       const sortedTransactions = transactionData.sort((a, b) => new Date(b.date) - new Date(a.date));
 
       // 최대 6개만 선택
-      const latestTransactions = sortedTransactions.slice(0, 6);
+      const latestTransactions = sortedTransactions.slice(0, 5);
 
       // 데이터 가공
       const formattedTransactions = latestTransactions.map((transaction) => {

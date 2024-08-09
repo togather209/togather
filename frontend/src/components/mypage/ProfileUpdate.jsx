@@ -5,7 +5,7 @@ import logo from "../../assets/icons/common/logo.png";
 import "../user/User.css";
 import BackButton from "../common/BackButton";
 import { useSelector } from "react-redux";
-import chunsik from "../../assets/icons/common/chunsik.png";
+import defaultImage from "../../assets/icons/common/defaultProfile.png";
 import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // 아이콘 추가
 import axiosInstance from "../../utils/axiosInstance";
@@ -13,7 +13,8 @@ import { useNavigate } from "react-router-dom";
 
 function ProfileUpdate() {
   const API_LINK = import.meta.env.VITE_API_URL;
-  const [profileImage, setProfileImage] = useState("");
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileImagePreview, setProfileImagePreview] = useState("");
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
   const [validPassword, setValidPassword] = useState("");
@@ -26,7 +27,8 @@ function ProfileUpdate() {
   useEffect(() => {
     if (member) {
       setNickname(member.nickname || "");
-      setProfileImage(member.profileImg || chunsik);
+      setProfileImage(member.profileImg || defaultImage);
+      setProfileImagePreview(member.profileImg || defaultImage); // 기존 프로필 이미지 미리보기
     }
   }, [member]);
 
@@ -44,20 +46,34 @@ function ProfileUpdate() {
       return;
     }
 
-    const updateData = {
+    const memData = {
       nickname: nickname,
-      profileImage: profileImage,
     };
 
     //비밀번호가 비어있지 않다면.
     if(password !== "") {
-      updateData.password = password;
+      memData.password = password;
     }
 
-    console.log(updateData);
+    const formData = new FormData();
+    const memJsonData = JSON.stringify(memData);
+    const memBlob = new Blob([memJsonData], { type: "application/json" });
+    console.log(memBlob);
+
+    formData.append("member", memBlob);
+
+    if (profileImage) {
+      const fileBlob = new Blob([profileImage], { type: "image/png" });
+      const fileData = new File([fileBlob], "image.png");
+      formData.append("image", fileData);
+    }
 
     try{
-      await axiosInstance.patch('/members/me', updateData);
+      await axiosInstance.patch('/members/me', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
       console.log("수정 됐다요요요요");
       navigate('/mypage');
       
@@ -65,7 +81,6 @@ function ProfileUpdate() {
     catch(error){
       console.log("수정 에러", error);
     }
-
   };
 
   // 비밀번호 유효성 검사
@@ -165,11 +180,9 @@ function ProfileUpdate() {
 
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfileImage(e.target.result);
-      };
-      reader.readAsDataURL(e.target.files[0]);
+      const file = e.target.files[0];
+      setProfileImage(file); // 선택된 파일을 프로필 이미지로 설정
+      setProfileImagePreview(URL.createObjectURL(file)); // 미리보기를 위해 파일 URL 생성
     }
   };
 
@@ -186,9 +199,9 @@ function ProfileUpdate() {
         <form>
           <div className="profile-image-upload">
             <label htmlFor="profileImageUpload" className="image-upload-label">
-              {profileImage ? (
+              {profileImagePreview ? (
                 <img
-                  src={profileImage}
+                  src={profileImagePreview}
                   alt="Profile"
                   className="profile-image"
                 />
