@@ -18,6 +18,10 @@ function MeetingDetail() {
   const { id } = useParams()
   // 모임 디테일 객체 상태
   const [meetingDetail, setMeetingDetail] = useState({})
+  const [meetingPlans, setMeetingPlans] = useState([])
+
+  const [joinMembersRequest, setJoinMembersRequest] = useState([])
+  const [joinMember, setJoinMember] = useState([])
   
   // 일정은 plans로 들어온다. => meetingDetail.plan
   
@@ -33,6 +37,8 @@ function MeetingDetail() {
   // 해당 페이지 렌더링 되면 모임 상세 조회
   useEffect(() => {
     meetingDetailInfo()
+    wantJoinMembers()
+    joinMembers()
   }, [])  // => 이거 의존성 해치우고 싶다.
 
   // 모임 상세 요청
@@ -40,16 +46,41 @@ function MeetingDetail() {
     try {
         const response = await axiosInstance.get(`/teams/${id}`);
         setMeetingDetail(response.data.data)
+        setMeetingPlans(response.data.data.plans)
     } catch (error) {
       console.error("데이터 불러오기 실패", error)
     }
   }
 
+  // 참여 요청 인원 조회
+  const wantJoinMembers = async () => {
+    try {
+        const response = await axiosInstance.get(`/teams/${id}/join-requests`);
+        // setMeetingDetail(response.data.data)
+        // setMeetingPlans(response.data.data.plans)
+        setJoinMembersRequest(response.data.data)
+        console.log(response.data.data)
+    } catch (error) {
+      console.error("데이터 불러오기 실패", error)
+    }
+  }
+
+    // 참여 인원 조회
+  const joinMembers = async () => {
+    try {
+        const response = await axiosInstance.get(`/teams/${id}/members`);
+        setJoinMember(response.data.data)
+        console.log(joinMember)
+    } catch (error) {
+      console.error("데이터 불러오기 실패", error)
+    }
+  }
 
   console.log(meetingDetail)
+  console.log(joinMembersRequest)
 
 
-  if (Object.entries(meetingDetail).length === 0) {
+  if (Object.entries(meetingPlans).length === 0) {
     return (
       <div className="none-meetingdetail">
         <div className="none-meetingdetail-header">
@@ -76,7 +107,7 @@ function MeetingDetail() {
         </div>
 
         {meetingSetting ? (
-          <MeetingSetting></MeetingSetting>
+          <MeetingSetting joinMember={joinMember} meetingDetail={meetingDetail} joinMembersRequest={joinMembersRequest}></MeetingSetting>
         ) : (
           <div className="meeting-detail-no-schedule-container">
             <div className="meetingdetail-schedule">일정</div>
@@ -95,7 +126,7 @@ function MeetingDetail() {
     );
   }
   // Object.entries(emptyObject).length === 0
-  if (Object.entries(meetingDetail).length !== 0) {
+  if (Object.entries(meetingPlans).length !== 0) {
     return (
       <div className="none-meetingdetail">
         <div className="none-meetingdetail-header">
@@ -114,24 +145,32 @@ function MeetingDetail() {
         </div>
 
         <div className="meeting-info-container">
-          <img className="meetingdetail-img" src={promimg} alt="모임 이미지" />
+          <img className="meetingdetail-img" src={meetingDetail.teamImg} alt="모임 이미지" />
           <div className="overlay">
             <p className="meeting-name-in-detail">{meetingDetail.title}</p>
             <p className="meeting-desc-in-detail">{meetingDetail.description}</p>
           </div>
         </div>
 
-        <div className="meetingdetail-schedule2">일정 목록</div>
 
-        <div className="schedule-list-box">
-          {meetingDetail.plans.map((item, index) => (
-            <ScheduleCard key={item.planId} id={item.planId} name={item.title} />
-          ))}
-        </div>
+        {meetingSetting ? (
+          <MeetingSetting joinMember={joinMember} meetingDetail={meetingDetail} joinMembersRequest={joinMembersRequest}></MeetingSetting>
+        ) : (
+             <div className="yes-schedule-container">
+              <div className="meetingdetail-schedule2">일정 목록</div>
 
-        <MiddleButton onClick={() => navigation("schedule-regist")}>
-          + 일정 만들기
-        </MiddleButton>
+              <div className="schedule-list-box">
+                {meetingDetail.plans.map((item, index) => (
+                  <ScheduleCard key={item.planId} id={item.planId} name={item.title} />
+                ))}
+              </div>
+              <MiddleButton onClick={() => navigation("schedule-regist")}>
+                + 일정 만들기
+              </MiddleButton>
+             </div>
+        )}
+
+
       </div>
     );
   }
