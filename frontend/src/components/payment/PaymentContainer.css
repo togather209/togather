@@ -1,0 +1,178 @@
+.payment-container {
+  padding: 16px;
+}
+
+.payment-back-button {
+  position: absolute;
+  left: 16px;
+}
+
+.payment-container-title {
+  width: 100%;
+  margin-top: 54px;
+  margin-left: 40px;
+}
+
+.receipt-box {
+  width: 80%;
+  margin: 16px 0;
+  background-color: #f7f7f7;
+  border-radius: 15px;
+  padding: 24px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.receipt-box hr {
+  margin: 10px 0 20px 0;
+  border: 1px solid #e6e6e6;
+}
+
+.receipt-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.receipt-header h2 {
+  margin-bottom: 30px;
+}
+
+.receipt-header div {
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 5px;
+}
+
+.receipt-header p {
+  font-size: 12px;
+  color: #888;
+  margin: 2px 0;
+  text-align: end;
+}
+
+.receipt-section {
+  margin-bottom: 30px;
+}
+
+.receipt-section h3 {
+  font-size: 16px;
+  font-weight: bolder;
+  margin-bottom: 18px;
+  color: #712FFF;
+}
+
+.receipt-section h3 .receipt-section-number {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid #712FFF ;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.receipt-section h3 .section-number {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  line-height: 23px;
+  border-radius: 50%;
+  background-color: #712FFF; /* 배경색 설정 */
+  color: white; /* 숫자 색상 */
+  font-weight: bold;
+  text-align: center;
+  font-size: 12px;
+  margin: 3px; /* 숫자와 텍스트 간의 간격 */
+}
+
+.receipt-summary {
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: black;
+}
+
+.receipt-summary-receive-amount,
+.receipt-summary-send-amount {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  /* color: #575656 */
+}
+
+.payment-item,
+.expense-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.amount {
+  font-weight: bold;
+  color: #712fff;
+}
+
+.final-amount-container {
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+}
+
+.final-amount {
+  font-size: 18px;
+  font-weight: bold;
+  color: #712FFF;
+}
+
+.payment-details {
+  margin-bottom: 20px;
+}
+
+.payment-details h4, .expense-details h4 {
+  color: #575656;
+  margin: 10px 0 20px 0;
+}
+
+.system-name {
+  font-style: italic;
+  color: #ff0000;
+}
+
+.expense-details {
+  margin-top: 15px;
+}
+
+.expense-total {
+  text-align: right;
+  font-weight: bold;
+  color: #333;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.final-summary {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: right;
+  color: #712fff;
+  margin-top: 20px;
+}
+
+.settle-button {
+  background-color: #712fff;
+  color: #fff;
+  padding: 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 25px;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.settle-button:hover {
+  background-color: #5e23e5;
+}
