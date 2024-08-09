@@ -54,9 +54,10 @@ public class PaymentApprovalService {
         paymentApprovalRepository.saveAll(paymentApprovals);
     }
 
+    @Transactional
     public PaymentApprovalUpdateByPlanIdResponse UpdatePaymentApprovalByPlanId(String email, int planId) {
 
-        Plan plan = planRepository.findById(planId)
+        planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
 
         // 수락 동시에 업데이트 확인으로 정산 요청 유무 확인
@@ -68,5 +69,14 @@ public class PaymentApprovalService {
         return PaymentApprovalUpdateByPlanIdResponse.builder()
                 .isAllApproved(paymentApprovalRepositorySupport.findAllHasApprovalStatus(planId, email))
                 .build();
+    }
+
+    public void DeletePaymentApprovalByPlanId(String email, int planId) {
+        //일정에 유저가 포함 되어 있는지
+        paymentApprovalRepository.findByMemberEmailAndPlanId(email, planId)
+                .orElseThrow(() -> new NotFoundPaymentApprovalException("해당 정산 요청이 없습니다."));
+
+        // 일정의 모든 요청 지우기
+        paymentApprovalRepository.deleteAllByPlanId(planId);
     }
 }
