@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import "./Meetings.css";
 import BackButton from "../common/BackButton";
 import MeetingCard from "./MeetingCard";
@@ -11,11 +11,15 @@ function Meetings() {
   const dispatch = useDispatch();
   // homemain에서 요청한 모임들 데이터 받기
   const myMeetings = useSelector((state) => state.meetings.list);
-  
+  const [isCheckModalOpen, setIsCheckModalOpen] = useState(false);
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false)
+    // const [forRa, setForRa] = useState(false)
+
     // 렌더링됐을 때 나의 모임 요청
     useEffect(() => {
       loadingMemberData();
-    }, []);
+      // setIsCheckModalOpen(false)
+    }, [isCheckModalOpen, isExitModalOpen]);
   
     // axios 함수
     const loadingMemberData = async () => {
@@ -26,6 +30,14 @@ function Meetings() {
         console.error('데이터 불러오기 실패', error);
       }
     };
+
+    const handelCheckModalOpen = () => {
+        setIsCheckModalOpen(true)
+    }
+
+    const handleExitModalOpen = () => {
+      setIsExitModalOpen(true)
+    } 
     
   return (
     <div>
@@ -48,6 +60,13 @@ function Meetings() {
                   name={item.title}
                   image_url={item.teamImg}
                   desc={item.description}
+                  admin={item.admin}
+                  isCheckModalOpen={isCheckModalOpen}
+                  handelCheckModalOpen={handelCheckModalOpen}
+                  setIsCheckModalOpen={setIsCheckModalOpen}
+                  isExitModalOpen={isExitModalOpen}
+                  setIsExitModalOpen={setIsExitModalOpen}
+                  handleExitModalOpen={handleExitModalOpen}
                 />
               ))}
             </div>

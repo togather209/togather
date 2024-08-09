@@ -1,13 +1,10 @@
 import "./SendForm.css";
 import BackButton from "../common/BackButton";
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import axiosInstance from "../../utils/axiosInstance";
+import { useState } from "react";
 
 function SendForm() {
   const [amount, setAmount] = useState(0);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState([]);
   const [passwordModal, setPasswordModal] = useState(false);
   const account = useSelector((state) => state.account.account);
   const [amountMessage, setAmountMessage] = useState("");
@@ -22,7 +19,7 @@ function SendForm() {
   }, [password]);
 
   const handleKeypadInput = (value) => {
-    if (amount * 10 + value <= account.balance) {
+    if (amount * 10 + value <= 59000) {
       setAmount((prevAmount) => parseInt(`${prevAmount}${value}`));
     } else {
       setAmountMessage("잔액 초과");
@@ -39,7 +36,7 @@ function SendForm() {
 
   const handlePasswordInput = (value) => {
     if (password.length < 6) {
-      setPassword((prevAccountPassword) => prevAccountPassword + value);
+      setPassword((prevPassword) => [...prevPassword, value]);
     }
   };
 

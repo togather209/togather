@@ -21,10 +21,8 @@ function MyPayment() {
 
   const formatBalance = (balance) => {
     const numericBalance = parseFloat(balance);
-    return numericBalance.toLocaleString('ko-KR');
+    return numericBalance.toLocaleString('ko-KR'); // 'ko-KR' 로케일을 사용하여 한국어 형식으로 변환
   };
-
-  
   return (
     <div className="payment-container">
       <div className="balance-container">
