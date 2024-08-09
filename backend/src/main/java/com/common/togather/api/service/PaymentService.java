@@ -3,16 +3,14 @@ package com.common.togather.api.service;
 import com.common.togather.api.error.MemberNotFoundException;
 import com.common.togather.api.error.MemberTeamNotFoundException;
 import com.common.togather.api.error.PlanNotFoundException;
+import com.common.togather.api.response.PaymentFindByPlanIdAndMemberResponse;
 import com.common.togather.api.response.PaymentFindByPlanIdResponse;
 import com.common.togather.api.response.PaymentFindByPlanIdResponse.MemberItem;
 import com.common.togather.api.response.PaymentFindByPlanIdResponse.ReceiverPayment;
 import com.common.togather.api.response.PaymentFindByPlanIdResponse.SenderPayment;
+import com.common.togather.api.response.PaymentFindDto;
 import com.common.togather.db.entity.*;
-import com.common.togather.db.repository.MemberRepository;
-import com.common.togather.db.repository.PaymentRepositorySupport;
-import com.common.togather.db.repository.PlanRepository;
-import com.common.togather.db.repository.TeamMemberRepositorySupport;
-import com.querydsl.core.Tuple;
+import com.common.togather.db.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,18 +19,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
 
     private final PaymentRepositorySupport paymentRepositorySupport;
+    private final PaymentRepository paymentRepository;
     private final TeamMemberRepositorySupport teamMemberRepositorySupport;
     private final PlanRepository planRepository;
     private final MemberRepository memberRepository;
 
     private final String systemName = "TOGETHER";
-    private final Integer systemId = 0;
+    private final Integer systemType = 1;
 
     public PaymentFindByPlanIdResponse findPaymentByPlanId(String email, int teamId, int planId) {
 
@@ -48,12 +48,14 @@ public class PaymentService {
             throw new PlanNotFoundException("해당 팀에 속하는 일정이 존재하지 않습니다.");
         }
 
+        Member system = memberRepository.findByNameAndType(systemName, systemType).get();
+
         // 돈 받아야하는 사람
         Map<Integer, ReceiverPayment> receiverAmount = new HashMap<>();
         receiverAmount.put(
-                systemId,
+                system.getId(),
                 ReceiverPayment.builder()
-                        .name(systemName)
+                        .name(system.getName())
                         .money(0)
                         .build()
         );
@@ -78,9 +80,9 @@ public class PaymentService {
                 List<ItemMember> itemMembers = item.getItemMembers();
                 int amount = item.getUnitPrice() * item.getCount();
                 int count = itemMembers.size();
-                int memberBalance = getUserBalance(amount, count);
+                int memberBalance = getMemberBalance(amount, count);
                 int systemBalance = getSystemBalance(amount, count, memberBalance);
-                ReceiverPayment systemPayment = receiverAmount.get(systemId);
+                ReceiverPayment systemPayment = receiverAmount.get(system.getId());
                 systemPayment.setMoney(systemPayment.getMoney() + systemBalance);
 
                 for (ItemMember itemMember : itemMembers) {
@@ -114,7 +116,7 @@ public class PaymentService {
             Item item = itemMember.getItem();
             int amount = item.getUnitPrice() * item.getCount();
             int count = item.getItemMembers().size();
-            int memberBalance = getUserBalance(amount, count);
+            int memberBalance = getMemberBalance(amount, count);
             Member sender = item.getReceipt().getManager();
 
             if (sender.getId() == member.getId()) {
@@ -168,25 +170,123 @@ public class PaymentService {
         // 정산 완료 상태 저장
         plan.updateStatus(2);
 
-        //최종 정산
-        // 주는 사람
-        List< Tuple> result =paymentRepositorySupport.findPaymentByPlanId(planId);
+        //최종 정산 내역
+        List<PaymentFindDto> paymentFindDtos = paymentRepositorySupport.findPaymentByPlanId(planId);
 
+        Map<Integer, List<PaymentFindDto>> groupedPayments = groupPaymentsByItemId(paymentFindDtos);
 
-        Map<int[], Payment> map = new HashMap<>();
+        Map<int[], Payment> paymentMap = new HashMap<>();
 
+        Member system = memberRepository.findByNameAndType(systemName, systemType).get();
 
+        groupedPayments.forEach((itemId, paymentFinds) -> {
 
+            int memberBalance = getMemberBalance(paymentFinds.get(0).getPrice(), paymentFinds.size());
+            int systemBalance = getSystemBalance(paymentFinds.get(0).getPrice(), paymentFinds.size(), memberBalance);
+            Member receiver = paymentFinds.get(0).getReceiver();
 
+            if (systemBalance > 0) {
+                int[] key = new int[]{system.getId(), receiver.getId()};
+                setPaymentMap(plan, paymentMap, memberBalance, system, receiver, key);
+            }
+
+            for (PaymentFindDto paymentFind : paymentFinds) {
+                Member sender = paymentFind.getSender();
+
+                if (sender.getId() == receiver.getId()) {
+                    continue;
+                }
+
+                int[] key = new int[]{sender.getId(), receiver.getId()};
+                setPaymentMap(plan, paymentMap, memberBalance, sender, receiver, key);
+            }
+        });
+        paymentRepository.saveAll(paymentMap.values());
     }
 
-    private int getSystemBalance(int amount, int count, int userBalance) {
-        return amount - (userBalance * count);
+    public PaymentFindByPlanIdAndMemberResponse findPaymentByPlanIdAndMember(String email, int planId) {
+
+        planRepository.findById(planId)
+                .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
+
+        //최종 정산 내역
+        List<PaymentFindDto> paymentFindDtos = paymentRepositorySupport.findPaymentByPlanId(planId);
+
+        Map<Integer, List<PaymentFindDto>> groupedPayments = groupPaymentsByItemId(paymentFindDtos);
+
+        // meberId, money (사용자가 보내야하는 금액이 기준)
+        Map<Integer, Integer> paymentMap = new HashMap<>();
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
+
+        groupedPayments.forEach((itemId, paymentFinds) -> {
+
+            int memberBalance = getMemberBalance(paymentFinds.get(0).getPrice(), paymentFinds.size());
+            Member receiver = paymentFinds.get(0).getReceiver();
+
+            for (PaymentFindDto paymentFind : paymentFinds) {
+                Member sender = paymentFind.getSender();
+
+                if (sender.getId() == receiver.getId()) {
+                    continue;
+                }
+
+                // 영수증 관리자일때
+                if (member.getId() == receiver.getId()) {
+                    paymentMap.put(sender.getId(),
+                            paymentMap.getOrDefault(sender.getId(), 0) - memberBalance);
+                } else if (member.getId() == sender.getId()) {
+                    paymentMap.put(receiver.getId(),
+                            paymentMap.getOrDefault(receiver.getId(), 0) + memberBalance);
+                }
+            }
+        });
+
+        // 유저가 보내야하는 금액 합
+        int total = 0;
+        for (int money : paymentMap.values()) {
+            if (money > 0) {
+                total += money;
+            }
+        }
+
+        return PaymentFindByPlanIdAndMemberResponse.builder()
+                .money(total)
+                .build();
     }
 
-    private int getUserBalance(int amount, int count) {
+    private void setPaymentMap(Plan plan, Map<int[], Payment> paymentMap, int memberBalance, Member sender,
+                               Member receiver, int[] key) {
+        if (paymentMap.containsKey(key)) {
+            int currentMoney = paymentMap.get(key).getMoney();
+            paymentMap.put(key, Payment.builder()
+                    .plan(plan)
+                    .sender(sender)
+                    .receiver(receiver)
+                    .money(memberBalance + currentMoney)
+                    .build());
+        } else {
+            paymentMap.put(key, Payment.builder()
+                    .plan(plan)
+                    .sender(sender)
+                    .receiver(receiver)
+                    .money(memberBalance)
+                    .build());
+        }
+    }
+
+    private int getSystemBalance(int amount, int count, int memberBalance) {
+        return amount - (memberBalance * count);
+    }
+
+    private int getMemberBalance(int amount, int count) {
         return amount / count;
     }
 
+    public Map<Integer, List<PaymentFindDto>> groupPaymentsByItemId(List<PaymentFindDto> payments) {
+        return payments.stream()
+                .collect(Collectors.groupingBy(PaymentFindDto::getItemId));
+    }
 
 }
