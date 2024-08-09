@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CommonInput from "../common/CommonInput";
 import { useNavigate } from "react-router-dom";
 import SubmitButton from "./SubmitButton";
@@ -17,15 +17,22 @@ function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberEmail, setRememberEmail] = useState(false);
+  const [rememberEmail, setRememberEmail] = useState("");
+  const [rememberEmailCheck, setRememberEmailCheck] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if(localStorage.getItem("userEmail")){
+      setEmail(localStorage.getItem("userEmail"));
+    }
+  }, [])
 
   const handleLogin = async (e) => {
     e.preventDefault();
     console.log("로그인 시도");
     // 여기서 폼 데이터를 사용할 수 있습니다.
-    console.log({ email, password, rememberEmail });
+    console.log({ email, password, rememberEmailCheck });
     console.log(API_LINK);
 
     const memberData = {
@@ -43,7 +50,11 @@ function LoginForm() {
       });
 
       console.log("로그인 성공!", response.data);
-
+      //이메일을 저장했으면?
+      if(rememberEmailCheck){
+        //저장소에 이메일을 저장해주고..
+        localStorage.setItem("userEmail", email); 
+      }
       //토큰 가져오기
       const { accessToken, refreshToken } = response.data.data;
 
@@ -86,8 +97,8 @@ function LoginForm() {
           <input
             type="checkbox"
             id="rememberEmail"
-            checked={rememberEmail}
-            onChange={(e) => setRememberEmail(e.target.checked)}
+            checked={rememberEmailCheck}
+            onChange={(e) => setRememberEmailCheck(e.target.checked)}
           />
           <label htmlFor="rememberEmail">이메일 저장</label>
         </div>
