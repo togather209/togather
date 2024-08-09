@@ -170,7 +170,7 @@ function CreatePayment() {
       alert("계좌가 성공적으로 생성 되었습니다.");
       dispatch(setAccount({account : payDataResponse.data.data}));
       //지갑 페이지로 이동하면... 다른페이지가 뜰거다.
-      navigate("/wallet");
+      window.location.reload();
       
     } catch (error) {
       console.log("데이터 이상");
