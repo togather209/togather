@@ -21,7 +21,7 @@ import backImage from '../../assets/icons/common/back.png'
 import SearchForm from "../kakao/SearchForm";
 import PlacesList from "../kakao/PlacesList";
 import Pagination from "../kakao/Pagination";
-import ExitCheckModal from "./ExitCheckModal";
+import CheckModal from "../common/CheckModal";
 
 function ScheduleDetail() {
   const { id, schedule_id } = useParams();
@@ -368,10 +368,12 @@ function ScheduleDetail() {
     </div> */}
 
 
-    <ExitCheckModal 
+    <CheckModal 
       isOpen={isExitModalOpen}
       isClose={() => setIsExitModalOpen(false)}
       onConfirm={scheduleExit}
+      firstbutton={"취소"}
+      secondbutton={"나가기"}
     />
 
 
