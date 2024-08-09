@@ -1,7 +1,7 @@
 INSERT INTO member (email, password, nickname, name, profile_img, type)
-VALUES ('user1@example.com', '$2a$10$MuuqnYmMS9RilaCk7uPrWOzZ1lER3giYR2T2ZQxOAlqrOEWjmUVVC', 'user1', 'User One', 'https://trip-bucket-0515.s3.ap-northeast-2.amazonaws.com/|3f79a057-07ea-4bb0-86c0-aee64316c508.jpg',
+VALUES ('user1@example.com', '$2a$10$MuuqnYmMS9RilaCk7uPrWOzZ1lER3giYR2T2ZQxOAlqrOEWjmUVVC', 'user1', 'User One', 'https://trip-bucket-0515.s3.ap-northeast-2.amazonaws.com/|1a305fed-d614-48c2-b93a-627910c75955.jpg',
         0),
-       ('user2@example.com', '$2a$10$MuuqnYmMS9RilaCk7uPrWOzZ1lER3giYR2T2ZQxOAlqrOEWjmUVVC', 'user2', 'User Two', 'https://trip-bucket-0515.s3.ap-northeast-2.amazonaws.com/|3f79a057-07ea-4bb0-86c0-aee64316c508.jpg',
+       ('user2@example.com', '$2a$10$MuuqnYmMS9RilaCk7uPrWOzZ1lER3giYR2T2ZQxOAlqrOEWjmUVVC', 'user2', 'User Two', 'https://trip-bucket-0515.s3.ap-northeast-2.amazonaws.com/|1a305fed-d614-48c2-b93a-627910c75955.jpg',
         0),
        ('user3@example.com', '$2a$10$MuuqnYmMS9RilaCk7uPrWOzZ1lER3giYR2T2ZQxOAlqrOEWjmUVVC', 'user3', 'User Three',
         NULL, 0);
