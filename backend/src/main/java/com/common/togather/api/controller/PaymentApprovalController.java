@@ -27,7 +27,7 @@ public class PaymentApprovalController {
 
     //정산 요청
     @Operation(summary = "정산 요청")
-    @PostMapping("/approval")
+    @PostMapping("/approvals")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -62,7 +62,7 @@ public class PaymentApprovalController {
 
     //정산 수락
     @Operation(summary = "정산 수락")
-    @PatchMapping("/approval")
+    @PatchMapping("/approvals")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -97,7 +97,7 @@ public class PaymentApprovalController {
 
     //정산 거절
     @Operation(summary = "정산 거절")
-    @DeleteMapping("/approval")
+    @DeleteMapping("/approvals")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
