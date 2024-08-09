@@ -75,10 +75,10 @@ public class PaymentApprovalController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
             ),
             @ApiResponse(
-                    responseCode = "400",
-                    description = "2팀에 user1@example.com유저가 존재하지 않습니다.",
+                    responseCode = "404",
+                    description = "해당 정산 요청은 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
-            )
+            ),
     })
     public ResponseEntity<ResponseDto<PaymentApprovalUpdateByPlanIdResponse>> updatePaymentApprovalByPlanId(
             @RequestHeader(value = "Authorization") String token,
@@ -90,6 +90,35 @@ public class PaymentApprovalController {
                 .data(paymentApprovalService.UpdatePaymentApprovalByPlanId(
                         jwtUtil.getAuthMemberEmail(token),
                         planId))
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    //정산 거절
+    @Operation(summary = "정산 거절")
+    @DeleteMapping("/approval")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "정산 거절을 성공했습니다."
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "해당 정산 요청은 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            )
+    })
+    public ResponseEntity<ResponseDto<String>> deletePaymentApprovalByPlanId(
+            @RequestHeader(value = "Authorization") String token,
+            @PathVariable(name = "planId") int planId) {
+
+        paymentApprovalService.DeletePaymentApprovalByPlanId(jwtUtil.getAuthMemberEmail(token), planId);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("정산 거절을 성공했습니다.")
+                .data(null)
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);

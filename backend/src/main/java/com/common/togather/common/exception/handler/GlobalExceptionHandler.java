@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
         ErrorResponseDto error = new ErrorResponseDto("Join Request Already Exists", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
-    
+
     // 모임에 벌써 가입된 경우
     @ExceptionHandler(AlreadyJoinedTeamException.class)
     public ResponseEntity<ErrorResponseDto> handleAlreadyJoinedTeamException(AlreadyJoinedTeamException ex) {
@@ -255,5 +255,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleUpdateNotAllwedException(UpdateNotAllwedException ex) {
         ErrorResponseDto error = new ErrorResponseDto("Update Not Allwed", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    // 정산 요청이 존재하지 않는 경우
+    @ExceptionHandler(NotFoundPaymentApprovalException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotFoundPaymentApprovalException(PlanNotFoundException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("payment approval Not Found", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }
