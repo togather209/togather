@@ -33,11 +33,17 @@ public class ReceiptService {
                 .orElseThrow(() -> new ReceiptNotFoundException(receiptId + "번 영수증이 존재하지 않습니다."));
     }
 
-    public List<ReceiptFindAllByPlanIdResponse> findAllReceiptByPlanId(String email, int teamId, int planId) {
+    public ReceiptFindAllByPlanIdResponse findAllReceiptByPlanId(String email, int teamId, int planId) {
+
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
 
         existTeamMember(email, teamId);
 
-        return receiptRepositorySupport.findAllByPlanId(planId).get();
+        return ReceiptFindAllByPlanIdResponse.builder()
+                .status(plan.getStatus())
+                .ReceiptFindByPlanIds(receiptRepositorySupport.findAllByPlanId(planId).get())
+                .build();
     }
 
     @Transactional
