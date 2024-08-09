@@ -5,6 +5,8 @@ import com.common.togather.api.request.PlanUpdateRequest;
 import com.common.togather.api.response.*;
 import com.common.togather.api.service.PlanService;
 import com.common.togather.common.util.JwtUtil;
+import io.openvidu.java.client.OpenViduHttpException;
+import io.openvidu.java.client.OpenViduJavaClientException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,7 +27,7 @@ public class PlanController {
 
     @Operation(summary = "일정 생성")
     @PostMapping("/{teamId}/plans")
-    public ResponseEntity<ResponseDto<PlanSaveResponse>> createPlan(@PathVariable(name = "teamId") int teamId, @RequestBody PlanSaveRequest planSaveRequest, @RequestHeader(value = "Authorization", required = false) String header) {
+    public ResponseEntity<ResponseDto<PlanSaveResponse>> createPlan(@PathVariable(name = "teamId") int teamId, @RequestBody PlanSaveRequest planSaveRequest, @RequestHeader(value = "Authorization", required = false) String header) throws OpenViduJavaClientException, OpenViduHttpException {
 
         PlanSaveResponse response = planService.savePlan(teamId, jwtUtil.getAuthMemberEmail(header), planSaveRequest);
 

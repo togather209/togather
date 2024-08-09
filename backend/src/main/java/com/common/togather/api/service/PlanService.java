@@ -12,7 +12,10 @@ import com.common.togather.db.entity.Member;
 import com.common.togather.db.entity.Plan;
 import com.common.togather.db.entity.Team;
 import com.common.togather.db.repository.*;
+import io.openvidu.java.client.*;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,9 +42,23 @@ public class PlanService {
         this.receiptRepositorySupport = receiptRepositorySupport;
     }
 
+    // 오픈비두
+    @Value("${openvidu.url}")
+    private String OPENVIDU_URL;
+
+    @Value("${openvidu.secret}")
+    private String OPENVIDU_SECRET;
+
+    private OpenVidu openvidu;
+
+    @PostConstruct
+    public void init() {
+        this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
+    }
+
     // 일정 추가
     @Transactional
-    public PlanSaveResponse savePlan(int teamId, String authMemberEmail, PlanSaveRequest planSaveRequest) {
+    public PlanSaveResponse savePlan(int teamId, String authMemberEmail, PlanSaveRequest planSaveRequest) throws OpenViduJavaClientException, OpenViduHttpException {
 
         Member member = memberRepository.findByEmail(authMemberEmail)
                 .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
@@ -52,6 +69,11 @@ public class PlanService {
         teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, authMemberEmail)
                 .orElseThrow(() -> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
 
+        // 오픈비두 세션 생성
+        OpenVidu openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
+        SessionProperties properties = new SessionProperties.Builder().build();
+        Session session = openvidu.createSession(properties);
+
         Plan plan = Plan.builder()
                 .title(planSaveRequest.getTitle())
                 .description(planSaveRequest.getDescription())
@@ -60,6 +82,7 @@ public class PlanService {
                 .manager(member)
                 .team(team)
                 .status(0)
+                .sessionId(session.getSessionId()) // 만들어진 세션ID 맵핑
                 .build();
 
         planRepository.save(plan);
@@ -67,6 +90,7 @@ public class PlanService {
         PlanSaveResponse response = PlanSaveResponse.builder()
                 .teamId(teamId)
                 .planId(plan.getId())
+                .sessionId(plan.getSessionId())
                 .build();
 
         return response;
@@ -94,6 +118,7 @@ public class PlanService {
                 .endDate(plan.getEndDate())
                 .isManager(hostId == member.getId()) // 일정장id와 현재 로그인유저id가 같은지 비교
                 .status(plan.getStatus())
+                .sessionId(plan.getSessionId())
                 .build();
 
         return response;

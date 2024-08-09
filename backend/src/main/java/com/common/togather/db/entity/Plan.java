@@ -48,6 +48,10 @@ public class Plan {
     @Column(name = "status", nullable = false)
     private Integer status;
 
+    // 세션 ID
+    @Column(name = "sessionId", nullable = false)
+    private String sessionId;
+
     // 영수증
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Receipt> receipts;
