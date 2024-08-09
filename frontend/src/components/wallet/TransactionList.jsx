@@ -1,49 +1,90 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./TransactionList.css";
 import image from "../../assets/icons/common/chunsik.png";
 import BackButton from "../common/BackButton";
-
-const transactions = [
-  { id: 1, date: "7.21", amount: "-3,600원", name: "이지혜", type: "negative" },
-  { id: 2, date: "7.20", amount: "+15,000원", name: "나", type: "positive" },
-  {
-    id: 3,
-    date: "7.20",
-    amount: "+10,300원",
-    name: "김해수",
-    type: "positive",
-  },
-  { id: 4, date: "7.19", amount: "-5,200원", name: "김선하", type: "negative" },
-  {
-    id: 5,
-    date: "7.18",
-    amount: "+20,000원",
-    name: "서두나",
-    type: "positive",
-  },
-];
-
-const groupTransactionsByDate = (transactions) => {
-  return transactions.reduce((groups, transaction) => {
-    const date = transaction.date;
-    if (!groups[date]) {
-      groups[date] = [];
-    }
-    groups[date].push(transaction);
-    return groups;
-  }, {});
-};
+import axiosInstance from "../../utils/axiosInstance";
 
 function TransactionList() {
-  const groupedTransactions = groupTransactionsByDate(transactions);
+  const [transactions, setTransactions] = useState([]);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [detailsTransactions, setDetailsTransactions] = useState([]);
 
-  const openModal = (transaction) => {
+  useEffect(() => {
+    callTransactionData();
+  }, []);
+
+  const callTransactionData = async () => {
+    try {
+      const response = await axiosInstance.get("/transactions/members/me");
+      const transactionData = response.data.data;
+
+      // 데이터를 최신순으로 정렬
+      transactionData.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // 데이터 가공: 날짜 형식 변환 및 금액과 이름 처리
+      const formattedTransactions = transactionData.map((transaction) => {
+        const date = new Date(transaction.date);
+        const formattedDate = `${date.getMonth() + 1}.${date.getDate()}`; // 월-일 포맷
+
+        const isSender = transaction.status === 0;
+        const name = isSender
+          ? transaction.receiverName
+          : transaction.senderName;
+        const amount = isSender
+          ? `+${transaction.price.toLocaleString()}원`
+          : `-${transaction.price.toLocaleString()}원`;
+        const type = isSender ? "positive" : "negative";
+
+        return {
+          id: transaction.transactionListId,
+          date: formattedDate,
+          name,
+          amount,
+          type,
+          originalDate: transaction.date,
+          transactionInfo: transaction, // 추가로 모든 정보를 저장해두기
+        };
+      });
+
+      // 날짜별 그룹화
+      const groupedTransactions = groupTransactionsByDate(
+        formattedTransactions
+      );
+      setTransactions(groupedTransactions);
+    } catch (error) {
+      console.error("거래 내역을 불러오는 중 오류 발생:", error);
+    }
+  };
+
+  // 거래 내역을 날짜별로 그룹화하는 함수
+  const groupTransactionsByDate = (transactions) => {
+    return transactions.reduce((groups, transaction) => {
+      const date = transaction.date;
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(transaction);
+      return groups;
+    }, {});
+  };
+
+  const openModal = async (transaction) => {
+    //아이디에 해당하는 정보 가져오기
+    const detailsTransaction = await axiosInstance.get(
+      `/transactions/${transaction.id}`
+    );
+    console.log(detailsTransaction.data.data);
+    setDetailsTransactions(detailsTransaction.data.data);
     setSelectedTransaction(transaction);
   };
 
   const closeModal = () => {
     setSelectedTransaction(null);
+  };
+
+  const formatBalance = (balance) => {
+    const numericBalance = parseFloat(balance);
+    return numericBalance.toLocaleString("ko-KR");
   };
 
   return (
@@ -53,10 +94,10 @@ function TransactionList() {
         <h1 className="title">거래 내역</h1>
       </div>
       <div className="transactions-list">
-        {Object.keys(groupedTransactions).map((date) => (
+        {Object.keys(transactions).map((date) => (
           <div key={date} className="transactions-date-group">
             <p className="transactions-date">{date}</p>
-            {groupedTransactions[date].map((transaction) => (
+            {transactions[date].map((transaction) => (
               <div
                 className="transactions-item"
                 key={transaction.id}
@@ -75,7 +116,7 @@ function TransactionList() {
         ))}
       </div>
 
-      {selectedTransaction && (
+      {selectedTransaction && detailsTransactions !== null && (
         <div className="modal" style={{ display: "block" }}>
           <div className="modal-content">
             <span className="close" onClick={closeModal}>
@@ -88,12 +129,14 @@ function TransactionList() {
                 {selectedTransaction.amount}
               </p>
               <div className="transactions-information">
-                <p>거래시각: 2024/07/13 10:53</p>
+                <p>거래시각: {selectedTransaction.originalDate}</p>
                 <p>
                   구분:{" "}
                   {selectedTransaction.type === "positive" ? "입금" : "송금"}
                 </p>
-                <p>거래 후 잔액: 41,000원</p>
+                <p>
+                  거래 후 잔액: {formatBalance(detailsTransactions.balance)}원
+                </p>
               </div>
             </div>
             <button className="confirm-button" onClick={closeModal}>
