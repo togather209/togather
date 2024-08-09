@@ -27,12 +27,8 @@ function TransactionList() {
         const formattedDate = `${date.getMonth() + 1}.${date.getDate()}`; // 월-일 포맷
 
         const isSender = transaction.status === 0;
-        const name = isSender
-          ? transaction.receiverName
-          : transaction.senderName;
-        const amount = isSender
-          ? `+${transaction.price.toLocaleString()}원`
-          : `-${transaction.price.toLocaleString()}원`;
+        const name = isSender ? transaction.senderName : transaction.receiverName;
+        const amount = isSender ? `+${transaction.price.toLocaleString()}원` : `-${transaction.price.toLocaleString()}원`;
         const type = isSender ? "positive" : "negative";
 
         return {
