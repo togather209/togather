@@ -1,12 +1,14 @@
 package com.common.togather.db.repository;
 
-import com.common.togather.db.entity.QPaymentApproval;
-import com.common.togather.db.entity.QPlan;
+import com.common.togather.db.entity.*;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public class PaymentRepositorySupport {
@@ -15,7 +17,26 @@ public class PaymentRepositorySupport {
     private JPAQueryFactory jpaQueryFactory;
     private QPlan qPlan = QPlan.plan;
     private QPaymentApproval qPaymentApproval = QPaymentApproval.paymentApproval;
+    private QReceipt qreceipt = QReceipt.receipt;
+    private QItem qitem = QItem.item;
+    private QItemMember qitemMember = QItemMember.itemMember;
+    private QMember qMember = QMember.member;
 
+    public List<Tuple> findPaymentByPlanId(int planId) {
+        return jpaQueryFactory
+                .select(
+                        qreceipt.manager.as("receiver"),
+                        qitem.id,
+                        qitem.unitPrice.multiply(qitem.count).as("price"),
+                        qitemMember.member.as("sender")
+                )
+                .from(qreceipt)
+                .join(qitem).on(qreceipt.id.eq(qitem.receipt.id))
+                .join(qitemMember).on(qitemMember.item.id.eq(qitem.id))
+                .join(qMember).on(qitemMember.member.id.eq(qMember.id))
+                .where(qreceipt.plan.id.eq(planId))
+                .fetch();
+    }
 
     public Integer getStatus(int memberId, int planId) {
         return jpaQueryFactory

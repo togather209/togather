@@ -12,6 +12,8 @@ import com.common.togather.db.repository.MemberRepository;
 import com.common.togather.db.repository.PaymentRepositorySupport;
 import com.common.togather.db.repository.PlanRepository;
 import com.common.togather.db.repository.TeamMemberRepositorySupport;
+import com.querydsl.core.Tuple;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -157,6 +159,27 @@ public class PaymentService {
                 .build();
     }
 
+    @Transactional
+    public void savePaymentByPlanId(String email, int planId) {
+
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
+
+        // 정산 완료 상태 저장
+        plan.updateStatus(2);
+
+        //최종 정산
+        // 주는 사람
+        List< Tuple> result =paymentRepositorySupport.findPaymentByPlanId(planId);
+
+
+        Map<int[], Payment> map = new HashMap<>();
+
+
+
+
+    }
+
     private int getSystemBalance(int amount, int count, int userBalance) {
         return amount - (userBalance * count);
     }
@@ -164,4 +187,6 @@ public class PaymentService {
     private int getUserBalance(int amount, int count) {
         return amount / count;
     }
+
+
 }
