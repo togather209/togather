@@ -74,4 +74,8 @@ public class Plan {
     public Boolean isManager(String email) {
         return manager.getEmail().equals(email);
     }
+
+    public void updateStatus(Integer status) {
+        this.status = status;
+    }
 }
