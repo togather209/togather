@@ -42,8 +42,6 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
             onClick={() => {
               setIsModalOpen(true);
             }}
-            teamId={teamId}
-            planId={planId}
           >
             이의 신청
           </button>

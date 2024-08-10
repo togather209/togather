@@ -28,11 +28,13 @@ function ReceiptListContainer() {
   const [error, setError] = useState(false);
   const [status, setStatus] = useState(0);
   const [auth, setAuth] = useState(false);
+  const [liveStatus, setLiveStatus] = useState(0);
 
   useEffect(() => {
     if (!teamId || !planId) {
       teamId = Number(localStorage.getItem("teamId"));
       planId = Number(localStorage.getItem("planId"));
+      console.log("teamId", teamId);
     }
 
     // teamId와 planId를 redux와 localStorage에 저장
@@ -68,9 +70,24 @@ function ReceiptListContainer() {
       }
     };
 
+    // 실시간 정산 현황 API 요청
+    const fetchLiveStatus = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/teams/${teamId}/plans/${planId}/payments/me`
+        );
+
+        console.log(response.data);
+        setLiveStatus(response.data.data.money);
+      } catch (error) {
+        console.error("실시간 정산 현황 요청 중 문제 발생", error);
+      }
+    };
+
     // 일정장 확인 후 일정 끝내기 버튼 활성화
     fetchReceipt();
     fetchAuth();
+    fetchLiveStatus();
   }, [teamId, planId, dispatch]);
 
   // 일정 끝내기 버튼
@@ -81,7 +98,9 @@ function ReceiptListContainer() {
 
   // 일정 끝난 후 정산 확인 버튼
   const handleFinishedButtonClick = () => {
-    // TODO : 정산 페이지로 이동
+    console.log(teamId, planId);
+    // 정산 페이지로 이동
+    navigate("/payment", { state: { teamId: teamId, planId: planId } });
   };
 
   // 모달 닫기 버튼
@@ -89,10 +108,25 @@ function ReceiptListContainer() {
     setIsModalOpen(false);
   };
 
+  // 정산 API 요청 (일정 끝내기)
+  const finishSchedule = async () => {
+    try {
+      const response = await axiosInstance.post(
+        `/teams/${teamId}/plans/${planId}/payments/approvals`
+      );
+
+      console.log(response.data);
+    } catch (error) {
+      console.error("");
+    }
+  };
+
   // 모달 확인 버튼
   const handleComfirmModal = () => {
+    // 일정 종료 처리
     setIsModalOpen(false);
-    setScheduleState(1);
+    setStatus(1);
+    finishSchedule();
   };
 
   // 일정 상세보기 버튼
@@ -101,11 +135,6 @@ function ReceiptListContainer() {
     navigate(`/receipt/${receipt.receiptId}`, {
       state: { teamId: teamId, planId: planId },
     });
-  };
-
-  // 정산 내역 확인 버튼
-  const onClick = () => {
-    navigate("/payment");
   };
 
   return (
@@ -128,11 +157,13 @@ function ReceiptListContainer() {
         />
       )}
       <div className="receipt-list">
-        <ReceiptAddButton
-          onClick={() => {
-            navigate("regist-form");
-          }}
-        />
+        {status === 0 && (
+          <ReceiptAddButton
+            onClick={() => {
+              navigate("regist-form");
+            }}
+          />
+        )}
         {receipts.map((receipt) => (
           <ReceiptCard
             key={receipt.receiptId}
@@ -141,7 +172,7 @@ function ReceiptListContainer() {
           />
         ))}
       </div>
-      <ReceiptTotal amount="28,000원" />
+      <ReceiptTotal amount={liveStatus} />
       {isModalOpen && (
         <ScheduleFinishModal
           onClose={handleCloseModal}

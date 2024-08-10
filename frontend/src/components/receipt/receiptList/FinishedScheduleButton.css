@@ -10,7 +10,7 @@
   font-size: 16px;
   font-weight: bold;
   width: 100%;
-  margin: 10px 0;
+  margin: 15px 0 5px 0;
   box-sizing: border-box;
 }
 
@@ -35,9 +35,9 @@
 }
 
 .after {
-  background: linear-gradient(45deg, #712FFF, #A074FF);
+  background: linear-gradient(45deg, #712fff, #a074ff);
 }
 
 .complete {
-  background: linear-gradient(90deg, #676767, #B0B0B0);
+  background: linear-gradient(90deg, #676767, #b0b0b0);
 }
