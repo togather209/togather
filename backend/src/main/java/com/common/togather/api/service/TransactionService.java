@@ -67,4 +67,23 @@ public class TransactionService {
                         .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다.")))
                 .build());
     }
+
+    @Transactional
+    public void saveTransactions(List<TransactionSaveRequest> transactionRequests) {
+        // DTO를 Entity로 변환
+        List<Transaction> transactions = transactionRequests.stream().map(request ->
+                Transaction.builder()
+                        .senderName(request.getSenderName())
+                        .receiverName(request.getReceiverName())
+                        .price(request.getPrice())
+                        .balance(request.getBalance())
+                        .date(request.getDate())
+                        .status(request.getStatus())
+                        .payAccount(PayAccount.builder().id(request.getPayAccountId()).build())
+                        .build()
+        ).collect(Collectors.toList());
+
+        // 배치로 저장
+        transactionRepository.saveAll(transactions);
+    }
 }
