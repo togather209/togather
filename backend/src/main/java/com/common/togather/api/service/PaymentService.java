@@ -243,12 +243,10 @@ public class PaymentService {
             }
         });
 
-        // 유저가 보내야하는 금액 합
+        // 유저가 보내고 받는 금액 합
         int total = 0;
         for (int money : paymentMap.values()) {
-            if (money > 0) {
-                total += money;
-            }
+            total += money;
         }
 
         return PaymentFindByPlanIdAndMemberResponse.builder()
