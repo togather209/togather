@@ -103,6 +103,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
+    // 정산 내역이 없는 경우
+    @ExceptionHandler(PaymentNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handlePaymentNotFoundException(PaymentNotFoundException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Payment Not Found", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
     // 정산 되지 않은 일정이 존재하는 경우
     @ExceptionHandler(PlansExistException.class)
     public ResponseEntity<ErrorResponseDto> handlePlansExistException(PlansExistException ex) {
