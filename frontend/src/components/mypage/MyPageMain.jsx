@@ -1,5 +1,5 @@
 import "./MyPageMain.css";
-import chunsik from "../../assets/icons/common/chunsik.png";
+import defaultImage from "../../assets/icons/common/defaultProfile.png";
 import profile from "../../assets/mypage/profile.png";
 import terms from "../../assets/mypage/terms.png";
 import { useEffect, useState } from "react";
@@ -87,10 +87,15 @@ function MyPageMain() {
     }
   }
 
+  const formatBalance = (balance) => {
+    const numericBalance = parseFloat(balance);
+    return numericBalance.toLocaleString('ko-KR'); // 'ko-KR' 로케일을 사용하여 한국어 형식으로 변환
+  };
+
   return (
     <div className="mypage-container">
       <div className="mypage-profile">
-        <img src={chunsik} alt="춘식" className="mypage-profile-image" />
+        <img src={member?.profileImg ? member.profileImg : defaultImage} alt="기본" className="mypage-profile-image" />
         <p className="mypage-profile-name">{member?.nickname}</p>
         <p className="mypage-profile-email">{member?.email}</p>
         <button className="mypage-logout-button" onClick={handleLogout}>
@@ -104,7 +109,7 @@ function MyPageMain() {
           onClick={() => navigate("/wallet")}
         >
           <p className="mypage-my-wallet-summary">{account?.memberName} 지갑</p>
-          <p className="mypage-my-wallet-balance">{account?.balance}원</p>
+          <p className="mypage-my-wallet-balance">{formatBalance(account?.balance)}원</p>
         </button> :
         <button
         className="mypage-my-wallet"

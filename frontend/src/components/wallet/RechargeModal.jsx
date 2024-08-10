@@ -59,7 +59,7 @@ function RechargeModal({ closeModal }) {
         .then((res) => {
           console.log(res.data);
           alert("충전이 완료 되었습니다.");
-          navigate("/wallet");
+          window.location.reload();
         });
     } catch (error) {
       alert("잔액이 부족합니다. 연동 계좌 잔액을 확인해주세요.");

@@ -6,57 +6,34 @@ import Machine from "../../assets/game/machine.png";
 import MachineTongsHead from "../../assets/game/machine-tongs-head.png";
 import MachineTongs from "../../assets/game/machine-tongs.png";
 import AddButton from "../../assets/icons/common/add.png";
-import axiosInstance from "../../utils/axiosInstance";
 
 function GameContainer() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isResultModalOpen, setIsResultModalOpen] = useState(false);
-  const [teams, setTeams] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [participants, setParticipants] = useState([]);
-  const [selectedParticipants, setSelectedParticipants] = useState([]);
   const [randomParticipant, setRandomParticipant] = useState(null);
   const [isTongsDown, setIsTongsDown] = useState(false);
 
   useEffect(() => {
-    const fetchTeams = async () => {
-      try {
-        const response = await axiosInstance.get("/teams/members/me");
-        if (response) {
-          setTeams(response.data.data);
-          console.log(response.data.data);
-        }
-      } catch (error) {
-        console.error("모임 전체 조회 중 문제가 발생했슴", error);
-      }
-    };
-    fetchTeams();
-  }, []);
+    console.log(participants);
+  }, [participants]);
 
   const addParticipant = () => {
+    // 참여 인원 리셋
+    setParticipants([]);
+    setSelectedTeam(null);
     setIsModalOpen(true);
   };
 
-  const handleConfirm = () => {
-    const newParticipants = selectedParticipants
-      .filter(
-        (participant) => !participants.some((p) => p.name === participant.name)
-      )
-      .map((participant) => ({
-        id: Date.now() + Math.random(),
-        name: participant.name,
-        imgSrc: participant.imgSrc || "default.jpg",
-      }));
-
-    const updatedParticipants = participants.filter((participant) =>
-      selectedParticipants.some((p) => p.name === participant.name)
-    );
-
-    setParticipants([...updatedParticipants, ...newParticipants]);
+  const handleConfirm = (team, selectedParticipants) => {
+    setSelectedTeam(team); // 선택된 팀 저장
+    setParticipants(selectedParticipants); // 선택된 참여자들을 저장
     setIsModalOpen(false);
   };
 
   const handleCardPick = () => {
+    // TODO 참여자 없을 시 모달 알림
     if (participants.length > 0) {
       setIsTongsDown(true);
       setTimeout(() => {
@@ -66,20 +43,9 @@ function GameContainer() {
       setTimeout(() => {
         const randomIndex = Math.floor(Math.random() * participants.length);
         setRandomParticipant(participants[randomIndex]);
+        console.log(randomParticipant);
         setIsResultModalOpen(true);
       }, 3000);
-    }
-  };
-
-  const handleTeamSelect = async (team) => {
-    setSelectedTeam(team);
-    try {
-      const response = await axiosInstance.get(`/teams/${team.teamId}/members`);
-      if (response) {
-        setSelectedParticipants(response.data.data);
-      }
-    } catch (error) {
-      console.error("참여자 조회 중 문제가 발생했습니다", error);
     }
   };
 
@@ -98,10 +64,10 @@ function GameContainer() {
           alt="Add"
         />
         {participants.map((participant) => (
-          <div key={participant.id} className="game-participant">
+          <div key={participant.memberId} className="game-participant">
             <img
-              src={participant.imgSrc}
-              alt={participant.name}
+              src={participant.profileImg}
+              alt={participant.nickname}
               className="game-participant-image"
             />
           </div>
@@ -125,20 +91,19 @@ function GameContainer() {
           카드 뽑기
         </button>
       </div>
-      <GameModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onTeamSelect={handleTeamSelect}
-        teams={teams}
-        selectedParticipants={selectedParticipants}
-        setSelectedParticipants={setSelectedParticipants}
-        onConfirm={handleConfirm}
-      />
-      <ResultModal
-        isOpen={isResultModalOpen}
-        onClose={() => setIsResultModalOpen(false)}
-        selectedParticipant={randomParticipant}
-      />
+      {isModalOpen && (
+        <GameModal
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleConfirm}
+        />
+      )}
+      {isResultModalOpen && (
+        <ResultModal
+          onClose={() => setIsResultModalOpen(false)}
+          selectedParticipant={randomParticipant}
+          selectedTeam={selectedTeam}
+        />
+      )}
     </div>
   );
 }

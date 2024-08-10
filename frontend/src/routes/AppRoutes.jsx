@@ -26,9 +26,7 @@ import ScheduleDetailContainer from "../components/schedule/ScheduleDetailContai
 import ScheduleUpdate from "../components/schedule/ScheduleUpdate";
 
 import ScheduleDetailPart from "../components/schedule/ScheduleDetailPart";
-
 import MeetingUpdate from "../components/meeting/MeetingUpdate"
-
 
 // 게임 페이지
 import Game from "../pages/Game";
@@ -47,6 +45,7 @@ import Terms from "../components/mypage/Terms";
 import PrivateRoute from "./PrivateRoute";
 import MeetingSetting from "../components/meeting/MeetingSetting";
 import MeetingDetailPart from "../components/meeting/MeetingDetailPart";
+import Payment from "../pages/Payment";
 
 function AppRoutes() {
   return (
@@ -175,6 +174,15 @@ function AppRoutes() {
       >
         <Route index element={<GameContainer />}></Route>
       </Route>
+
+      <Route
+        path="/payment"
+        element={
+          <PrivateRoute>
+            <Payment />
+          </PrivateRoute>
+        }
+      ></Route>
     </Routes>
   );
 }
