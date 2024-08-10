@@ -348,7 +348,14 @@ function ScheduleDetail() {
               <p className="schedule-detail-schedule-name">
                 {scheduleDetail.description}
               </p>
-              <ScheduleButton type={"purple"} onClick={() => {}}>
+              <ScheduleButton
+                type={"purple"}
+                onClick={() =>
+                  navigation("/receipt", {
+                    state: { teamId: id, planId: schedule_id },
+                  })
+                }
+              >
                 영수증 조회
               </ScheduleButton>
             </div>
