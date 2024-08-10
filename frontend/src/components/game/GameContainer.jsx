@@ -51,7 +51,7 @@ function GameContainer() {
 
   return (
     <div className="game-container">
-      <h1>게임</h1>
+      <h1>누가 걸리게 될까요?</h1>
       <div className="game-participants">참여 인원</div>
       <div
         style={{ display: "flex", alignItems: "center" }}

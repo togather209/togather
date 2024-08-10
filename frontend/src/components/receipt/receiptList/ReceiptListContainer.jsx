@@ -79,8 +79,8 @@ function ReceiptListContainer() {
 
   // 일정 끝내기 버튼
   const handlePurpleLineButton = () => {
+    // 모달 창 활성화
     setIsModalOpen(true);
-    console.log(isModalOpen);
   };
 
   // 일정 끝난 후 정산 확인 버튼
@@ -97,7 +97,9 @@ function ReceiptListContainer() {
   const handleComfirmModal = () => {
     setIsModalOpen(false);
     setScheduleState("after");
-    // TODO : 정산 페이지로 이동
+
+    // 정산 페이지로 이동
+    navigate("/payment", { state: { teamId, planId } });
   };
 
   // 일정 상세보기 버튼
@@ -107,11 +109,6 @@ function ReceiptListContainer() {
       state: { teamId: teamId, planId: planId },
     });
   };
-
-  // const totalAmount = receipts.reduce(
-  //   (total, receipt) => total + receipt.amount,
-  //   0
-  // );
 
   return (
     <div className="receipt-container">
