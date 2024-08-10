@@ -5,32 +5,34 @@ import agree from "../../assets/meeting/agree.png"
 import disagree from "../../assets/meeting/disagree.png"
 import axiosInstance from "../../utils/axiosInstance";
 
-function MeetingParticipantManage ({name, meetingDetail, guestId}) {
+function MeetingParticipantManage ({name, meetingDetail, guestId, forR, setForR, joinrequeststatus}) {
     const { id } = useParams()
     console.log(id)
-    // 참여 인원 조회
+    console.log(joinrequeststatus)
+
+    // 참여요청 수락 axios
     const joinRequestAccept = async () => {
     try {
         const response = await axiosInstance.post(`/teams/${id}/join-requests/${guestId}/accept`);
-        // setJoinMember(response.data.data)
-        // console.log(joinMember)
+        setForR(!forR)
     } catch (error) {
       console.error("데이터 불러오기 실패", error)
     }
   }
 
+    // 참여요청 거절 axios
     const joinRequestReject = async () => {
     try {
         const response = await axiosInstance.post(`/teams/${id}/join-requests/${guestId}/reject`);
-        // setJoinMember(response.data.data)
-        // console.log(joinMember)
+        setForR(!forR)
     } catch (error) {
       console.error("데이터 불러오기 실패", error)
     }
   }
 
-
+  if (joinrequeststatus === 0) {
     return (
+      
         <div className="meeting-participant-request-box">
             <p className="meeting-participant-name">{ name }</p>
             <div>
@@ -39,6 +41,7 @@ function MeetingParticipantManage ({name, meetingDetail, guestId}) {
             </div>
         </div>
     )
+  }
 }
 
 export default MeetingParticipantManage
