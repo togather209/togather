@@ -169,6 +169,8 @@ public class PaymentService {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
 
+        /// 정산 상태가 1 일때만
+
         // 정산 완료 상태 저장
         plan.updateStatus(2);
 

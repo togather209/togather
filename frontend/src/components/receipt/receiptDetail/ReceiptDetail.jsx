@@ -113,13 +113,6 @@ function ReceiptDetail() {
     });
   };
 
-  // 유저 프로필 이미지 가져오기
-  // const getProfileImageUrl = (profileImg) => {
-  //   if (!profileImg) return "";
-  //   const [baseUrl, imagePath] = profileImg.split("|");
-  //   return `${baseUrl}%${imagePath}`;
-  // };
-
   return (
     <>
       {receipt ? (
