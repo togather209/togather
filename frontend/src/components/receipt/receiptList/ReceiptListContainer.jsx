@@ -23,7 +23,6 @@ function ReceiptListContainer() {
   let { teamId, planId } = location.state || {};
 
   // status : 일정 진행 중(0), 일정 끝남(1), 정산 완료(3)
-  const [scheduleState, setScheduleState] = useState("before");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [receipts, setReceipts] = useState([]);
   const [error, setError] = useState(false);
@@ -93,8 +92,7 @@ function ReceiptListContainer() {
   // 모달 확인 버튼
   const handleComfirmModal = () => {
     setIsModalOpen(false);
-    setScheduleState("after");
-    // TODO : 정산 페이지로 이동
+    setScheduleState(1);
   };
 
   // 일정 상세보기 버튼
@@ -105,16 +103,16 @@ function ReceiptListContainer() {
     });
   };
 
-  // const totalAmount = receipts.reduce(
-  //   (total, receipt) => total + receipt.amount,
-  //   0
-  // );
+  // 정산 내역 확인 버튼
+  const onClick = () => {
+    navigate("/payment");
+  };
 
   return (
     <div className="receipt-container">
       <header className="list-header">
         <BackButton />
-        {scheduleState === "before" && status === 1 && auth && (
+        {status === 0 && auth && (
           <LineButton
             className="schedule-finish-button"
             onClick={handlePurpleLineButton}
@@ -123,9 +121,9 @@ function ReceiptListContainer() {
           </LineButton>
         )}
       </header>
-      {scheduleState !== "before" && (
+      {status !== 0 && (
         <FinishedScheduleButton
-          scheduleState={scheduleState}
+          status={status}
           onClick={handleFinishedButtonClick}
         />
       )}
