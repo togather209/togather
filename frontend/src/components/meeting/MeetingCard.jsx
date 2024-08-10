@@ -108,7 +108,7 @@ function MeetingCard({id, image_url, name, desc, admin, isCheckModalOpen, handel
             <div className="button-section">
                 { admin ? (
                     <div>
-                        <button className="meeting-card-button-form"><img className="update-button" src={Change} alt="수정버튼" /></button>
+                        <button onClick={() => navigation(`/home/meeting/${id}/meeting-update`, { state: { title: name, description: desc, id: id }}) } className="meeting-card-button-form"><img className="update-button" src={Change} alt="수정버튼" /></button>
                         <button onClick={handelCheckModalOpen} className="meeting-card-button-form"><img className="delete-button" src={Delete} alt="삭제버튼" /></button>
                     </div>
                 ) : (
