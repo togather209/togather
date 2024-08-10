@@ -88,6 +88,8 @@ function AppRoutes() {
               element={<ScheduleDetailContainer />}
             >
               <Route index element={<ScheduleDetailPart />} />
+
+              
               <Route path="update" element={<ScheduleUpdate />} />
             </Route>
           </Route>

@@ -1,60 +1,140 @@
-import React, {useState, useEffect} from "react"
-import "./ScheduleDetail.css"
+import React, { useState, useEffect, useRef } from "react";
+import { OpenVidu } from 'openvidu-browser'; // 올바른 임포트 경로
+import "./ScheduleDetail.css";
 import headphone from "../../assets/schedule/headphone.png";
 import mic from "../../assets/schedule/mic.png";
 import ScheduleButton from "./ScheduleButton";
 import ScheduleDetail from "./ScheduleDetail";
 
-function ScheduleDetailPart () {
+const OPENVIDU_SERVER_URL = "https://YOUR_OPENVIDU_SERVER_URL";
+const OPENVIDU_SERVER_SECRET = "YOUR_SECRET";
+
+function ScheduleDetailPart() {
     const [isCallStarted, setIsCallStarted] = useState(false);
     const [isHeadPhone, setIsHeadPhone] = useState(false);
     const [isMic, setIsMic] = useState(false);
-    const handleCallStart = () => setIsCallStarted(!isCallStarted);
+    const [session, setSession] = useState(null);
+    const [publisher, setPublisher] = useState(null);
+    const [subscribers, setSubscribers] = useState([]);
+
+    const mySession = useRef(null);
+
+    const handleCallStart = async () => {
+        if (isCallStarted) {
+            await endCall();
+        } else {
+            await startCall();
+        }
+    };
+
     const handleHeadPhone = () => setIsHeadPhone(!isHeadPhone);
-    const handleMic = () => setIsMic(!isMic);
 
+    const handleMic = () => {
+        if (publisher) {
+            publisher.publishAudio(!isMic);
+        }
+        setIsMic(!isMic);
+    };
 
-    // 찜하기 목록 날짜 목록 클릭했을 때 리렌더링 확인용 코드
-    // 이거 콘솔에 찍히면 비상 비상
-    useEffect (() => {
-        console.log("김해수는 숭실대 졸업생입니다. ㅎㅎㅎㅎㅎ")
-        console.log("김해수는 숭실대 졸업생입니다. ㅎㅎㅎㅎㅎ")
-        console.log("김해수는 숭실대 졸업생입니다. ㅎㅎㅎㅎㅎ")
-        console.log("김해수는 숭실대 졸업생입니다. ㅎㅎㅎㅎㅎ")
-    },[])
+    const startCall = async () => {
+        try {
+            const OV = new OpenVidu(); // OpenVidu 클래스 생성
+            const session = OV.initSession();
+            setSession(session);
+            mySession.current = session;
+
+            session.on('streamCreated', (event) => {
+                const subscriber = session.subscribe(event.stream, undefined);
+                setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
+            });
+
+            session.on('streamDestroyed', (event) => {
+                const { stream } = event;
+                setSubscribers((prevSubscribers) =>
+                    prevSubscribers.filter((subscriber) => subscriber.stream.streamId !== stream.streamId)
+                );
+            });
+
+            const response = await fetch(`${OPENVIDU_SERVER_URL}/api/tokens`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Basic ${btoa('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET)}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            const { token } = await response.json();
+
+            await session.connect(token);
+            const publisher = OV.initPublisher(undefined, {
+                audioSource: undefined,
+                videoSource: undefined,
+                publishAudio: true,
+                publishVideo: false,
+                resolution: '640x480',
+                frameRate: 30,
+            });
+            setPublisher(publisher);
+            await session.publish(publisher);
+            setIsCallStarted(true);
+        } catch (error) {
+            console.error('Failed to start call:', error);
+        }
+    };
+
+    const endCall = async () => {
+        try {
+            if (session) {
+                session.unpublish(publisher);
+                session.disconnect();
+                setIsCallStarted(false);
+                setPublisher(null);
+                setSubscribers([]);
+            }
+        } catch (error) {
+            console.error('Failed to end call:', error);
+        }
+    };
+
+    useEffect(() => {
+        return () => {
+            if (session) {
+                session.disconnect();
+            }
+        };
+    }, [session]);
 
     return (
-
         <div>
-        <ScheduleDetail></ScheduleDetail>
-        
-        <div className="schedule-detail-button">
-        {isCallStarted ? (
-          <ScheduleButton type={"purple"} onClick={handleCallStart}>
-            통화 시작
-          </ScheduleButton>
-        ) : (
-          <div className="schedule-detail-call-started">
-            <ScheduleButton type={"border"} onClick={handleCallStart}>
-              통화 종료
-            </ScheduleButton>
-            <div
-              className={isHeadPhone ? "headphone-mic-container-activate" : "headphone-mic-container"}
-              onClick={handleHeadPhone}
-            >
-              <img className="headphone-mic-size" src={headphone} alt="헤드폰" />
+            <ScheduleDetail />
+            <div className="schedule-detail-button">
+                {isCallStarted ? (
+                    <ScheduleButton type={"border"} onClick={handleCallStart}>
+                        통화 종료
+                    </ScheduleButton>
+                ) : (
+                    <ScheduleButton type={"purple"} onClick={handleCallStart}>
+                        통화 시작
+                    </ScheduleButton>
+                )}
+                {isCallStarted && (
+                    <div className="schedule-detail-call-started">
+                        <div
+                            className={isHeadPhone ? "headphone-mic-container-activate" : "headphone-mic-container"}
+                            onClick={handleHeadPhone}
+                        >
+                            <img className="headphone-mic-size" src={headphone} alt="헤드폰" />
+                        </div>
+                        <div
+                            className={isMic ? "headphone-mic-container-activate" : "headphone-mic-container"}
+                            onClick={handleMic}
+                        >
+                            <img className="headphone-mic-size" src={mic} alt="마이크" />
+                        </div>
+                    </div>
+                )}
             </div>
-            <div
-              className={isMic ? "headphone-mic-container-activate" : "headphone-mic-container"}
-              onClick={handleMic}
-            >
-              <img className="headphone-mic-size" src={mic} alt="마이크" />
-            </div>
-          </div>
-        )}
-      </div>
         </div>
-    )
+    );
 }
 
-export default ScheduleDetailPart
+export default ScheduleDetailPart;
