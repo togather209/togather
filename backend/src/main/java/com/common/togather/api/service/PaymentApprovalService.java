@@ -72,9 +72,16 @@ public class PaymentApprovalService {
     }
 
     public void DeletePaymentApprovalByPlanId(String email, int planId) {
+
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
+
         //일정에 유저가 포함 되어 있는지
         paymentApprovalRepository.findByMemberEmailAndPlanId(email, planId)
                 .orElseThrow(() -> new NotFoundPaymentApprovalException("해당 정산 요청이 없습니다."));
+
+        // 일정 상태 바꾸기
+        plan.updateStatus(0);
 
         // 일정의 모든 요청 지우기
         paymentApprovalRepository.deleteAllByPlanId(planId);
