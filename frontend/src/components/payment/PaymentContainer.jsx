@@ -8,6 +8,7 @@ import Receive from "../../assets/payment/receive.png";
 import Send from "../../assets/payment/send.png";
 import Spend from "../../assets/payment/spend.png";
 import RenderButton from "./PaymentRenderButton";
+import Modal from "../common/Modal";
 
 function PaymentContainer() {
   const location = useLocation();
@@ -18,17 +19,18 @@ function PaymentContainer() {
 
   useEffect(() => {
     // 정산 예정 내역 API 조회
-    // const fetchPayment = async () => {
-    //   try {
-    //     const response = await axiosInstance.get(
-    //       `/teams/${teamId}/plans/${planId}/payments`
-    //     );
-    //     setPaymentData(response.data.data);
-    //     console.log(response.data.data);
-    //   } catch (error) {
-    //     console.error("페이먼트 데이터 조회 오류", error);
-    //   }
-    // };
+    const fetchPayment = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/teams/${teamId}/plans/${planId}/payments`
+        );
+        setPaymentData(response.data.data);
+        console.log(response.data.data);
+      } catch (error) {
+        console.error("페이먼트 데이터 조회 오류", error);
+        setError(true);
+      }
+    };
 
     // 로그인 유저 닉네임 API 조회
     const fetchNickname = async () => {
@@ -38,43 +40,26 @@ function PaymentContainer() {
         console.log(loginUserName);
       } catch (error) {
         console.error("유저 정보 조회 중 오류 발생", error);
+        setError(true);
       }
     };
 
-    // fetchPayment();
+    fetchPayment();
     fetchNickname();
-
-    // 테스트를 위한 임시 데이터 설정
-    const tempData = {
-      startDate: "2024-07-15",
-      endDate: "2024-07-17",
-      teamTitle: "비모",
-      planTitle: "부산일정",
-      status: 0,
-      receiverPayments: [
-        { name: "TOGETHER", money: 22000 },
-        { name: "서두나", money: 33000 },
-        { name: "김범규", money: 18700 },
-        { name: "김해수", money: 20000 },
-      ],
-      senderPayments: [
-        { name: "김선하", money: 15000 },
-        { name: "서두나", money: 7500 },
-        { name: "김범규", money: 18000 },
-        { name: "김해수", money: 7000 },
-      ],
-      memberItems: [
-        { name: "아이스 아메리카노", money: 4500 },
-        { name: "닭볶음탕", money: 11000 },
-        { name: "아쿠아리움", money: 12000 },
-        { name: "택시비", money: 7600 },
-        { name: "소주", money: 8000 },
-        { name: "반건조 오징어", money: 4000 },
-      ],
-    };
-
-    setPaymentData(tempData);
   }, [teamId, planId]);
+
+  if (error) {
+    return (
+      <Modal
+        mainMessage="문제가 발생했습니다."
+        subMessage="다시 시도해보세요."
+        onClose={() => {
+          setError(false);
+          navigate(-1);
+        }}
+      />
+    );
+  }
 
   if (!paymentData) {
     return (
@@ -94,6 +79,7 @@ function PaymentContainer() {
     senderPayments,
     memberItems,
   } = paymentData;
+
   const filteredReceiverPayments = receiverPayments.filter(
     (payment) => payment.money > 0
   );
@@ -165,28 +151,34 @@ function PaymentContainer() {
                   정산 받을 금액
                 </h4>
                 <div className="payment-item-list">
-                  {filteredReceiverPayments.map((payment, index) => (
-                    <div key={index} className="payment-item">
-                      <p
-                        className={`name ${
-                          payment.name === "TOGETHER"
-                            ? "payment-system-name"
-                            : ""
-                        }`}
-                      >
-                        {payment.name}
-                      </p>
-                      <p
-                        className={`name ${
-                          payment.name === "TOGETHER"
-                            ? "payment-system-name"
-                            : ""
-                        }`}
-                      >
-                        {payment.money}원
-                      </p>
-                    </div>
-                  ))}
+                  {filteredReceiverPayments.length > 0 ? (
+                    filteredReceiverPayments.map((payment, index) => (
+                      <div key={index} className="payment-item">
+                        <p
+                          className={`name ${
+                            payment.name === "TOGETHER"
+                              ? "payment-system-name"
+                              : ""
+                          }`}
+                        >
+                          {payment.name}
+                        </p>
+                        <p
+                          className={`name ${
+                            payment.name === "TOGETHER"
+                              ? "payment-system-name"
+                              : ""
+                          }`}
+                        >
+                          {payment.money}원
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="payment-no-amount">
+                      정산 받을 금액이 없습니다.
+                    </p>
+                  )}
                 </div>
               </div>
               <hr />
@@ -214,7 +206,9 @@ function PaymentContainer() {
                     </div>
                   ))
                 ) : (
-                  <p>정산 보낼 금액이 없습니다.</p>
+                  <p className="payment-no-amount">
+                    정산 보낼 금액이 없습니다.
+                  </p>
                 )}
               </div>
               <hr />
@@ -268,7 +262,13 @@ function PaymentContainer() {
           </div>
         </div>
       </div>
-      {RenderButton(paymentData)}
+      {
+        <RenderButton
+          teamId={teamId}
+          planId={planId}
+          paymentData={paymentData}
+        />
+      }
     </div>
   );
 }

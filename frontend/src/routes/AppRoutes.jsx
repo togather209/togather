@@ -155,6 +155,7 @@ function AppRoutes() {
         <Route path="regist-form" element={<ReceiptFormContainer />} />
         <Route path="camera-capture" element={<CameraCapture />} />
         <Route path="update-form" element={<ReceiptUpdateContainer />} />
+        <Route path="bookmark" element={<></>} />
       </Route>
 
       <Route
