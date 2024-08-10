@@ -3,18 +3,15 @@ import "./MeetingParticipants.css"
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 
-function MeetingParticipants ({name, guestId}) {
+function MeetingParticipants ({name, guestId, forR, setForR}) {
     
     const { id } = useParams()
-    console.log(id)
-    console.log(guestId)
 
     const memberDelete = async () => {
 
         try {
             const response = await axiosInstance.delete(`/teams/${id}/members/${guestId}`);
-            // setJoinMember(response.data.data)
-            // console.log(joinMember)
+            setForR(!forR)
         } catch (error) {
           console.error("데이터 불러오기 실패", error)
         }

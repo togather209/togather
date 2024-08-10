@@ -26,6 +26,7 @@ import ScheduleDetailContainer from "../components/schedule/ScheduleDetailContai
 import ScheduleUpdate from "../components/schedule/ScheduleUpdate";
 
 import ScheduleDetailPart from "../components/schedule/ScheduleDetailPart";
+import MeetingUpdate from "../components/meeting/MeetingUpdate"
 
 // 게임 페이지
 import Game from "../pages/Game";
@@ -42,6 +43,8 @@ import CameraCapture from "../components/receipt/receiptForm/recognizeDetail/Cam
 import ProfileUpdate from "../components/mypage/ProfileUpdate";
 import Terms from "../components/mypage/Terms";
 import PrivateRoute from "./PrivateRoute";
+import MeetingSetting from "../components/meeting/MeetingSetting";
+import MeetingDetailPart from "../components/meeting/MeetingDetailPart";
 import Payment from "../pages/Payment";
 
 function AppRoutes() {
@@ -74,8 +77,12 @@ function AppRoutes() {
         <Route path="meeting" element={<MeetingContainer />}>
           <Route index element={<Meetings />} />
           <Route path=":id" element={<MeetingDetailContainer />}>
-            <Route index element={<MeetingDetail />} />
+            <Route path="" element={<MeetingDetail />}> 
+              <Route index element={<MeetingDetailPart />} />
+              <Route path="manage" element={<MeetingSetting />} />
+            </Route>
             <Route path="schedule-regist" element={<ScheduleRegist />} />
+            <Route path="meeting-update" element={<MeetingUpdate />} />
             <Route
               path="schedule/:schedule_id"
               element={<ScheduleDetailContainer />}
