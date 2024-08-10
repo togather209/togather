@@ -237,20 +237,18 @@ public class PaymentService {
                 // 영수증 관리자일때
                 if (member.getId() == receiver.getId()) {
                     paymentMap.put(sender.getId(),
-                            paymentMap.getOrDefault(sender.getId(), 0) - memberBalance);
+                            paymentMap.getOrDefault(sender.getId(), 0) + memberBalance);
                 } else if (member.getId() == sender.getId()) {
                     paymentMap.put(receiver.getId(),
-                            paymentMap.getOrDefault(receiver.getId(), 0) + memberBalance);
+                            paymentMap.getOrDefault(receiver.getId(), 0) - memberBalance);
                 }
             }
         });
 
-        // 유저가 보내야하는 금액 합
+        // 유저가 보내고 받는 금액 합
         int total = 0;
         for (int money : paymentMap.values()) {
-            if (money > 0) {
-                total += money;
-            }
+            total += money;
         }
 
         return PaymentFindByPlanIdAndMemberResponse.builder()
