@@ -102,14 +102,14 @@
   margin-left: 5px;
 }
 
-.receipt-card .amount {
+.receipt-card .receipt-amount {
   margin-right: 5px;
   font-size: 16px;
   text-align: end;
   font-weight: 800;
 }
 
-.receipt-card .date {
+.receipt-card .receipt-date {
   position: absolute;
   right: 10px;
   bottom: 10px;
