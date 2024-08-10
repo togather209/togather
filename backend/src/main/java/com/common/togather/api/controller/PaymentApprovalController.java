@@ -1,10 +1,10 @@
 package com.common.togather.api.controller;
 
+
 import com.common.togather.api.response.ErrorResponseDto;
-import com.common.togather.api.response.PaymentFindByPlanIdAndMemberResponse;
-import com.common.togather.api.response.PaymentFindByPlanIdResponse;
+import com.common.togather.api.response.PaymentApprovalUpdateByPlanIdResponse;
 import com.common.togather.api.response.ResponseDto;
-import com.common.togather.api.service.PaymentService;
+import com.common.togather.api.service.PaymentApprovalService;
 import com.common.togather.common.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,24 +17,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/teams/{teamId}/plans/{planId}")
+@RequestMapping("/api/teams/{teamId}/plans/{planId}/payments")
 @RequiredArgsConstructor
-public class PaymentController {
+public class PaymentApprovalController {
 
+    //정산 요청
     private final JwtUtil jwtUtil;
-    private final PaymentService paymentService;
+    private final PaymentApprovalService paymentApprovalService;
 
-    //정산 내역 조회
-    @Operation(summary = "정산 내역 조회")
-    @GetMapping("/payments")
+    //정산 요청
+    @Operation(summary = "정산 요청")
+    @PostMapping("/approvals")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "정산 내역 조회를 성공했습니다."
+                    description = "정산 요청을 성공했습니다."
             ),
             @ApiResponse(
-                    responseCode = "400",
-                    description = "2팀에 user1@example.com유저가 존재하지 않습니다.",
+                    responseCode = "403",
+                    description = "정산 요청에 접근 권환이 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
             ),
             @ApiResponse(
@@ -44,76 +45,80 @@ public class PaymentController {
             ),
 
     })
-    public ResponseEntity<ResponseDto<PaymentFindByPlanIdResponse>> findPaymentByPlanId(
+    public ResponseEntity<ResponseDto<String>> savePaymentApprovalByPlanId(
             @RequestHeader(value = "Authorization", required = false) String token,
-            @PathVariable(name = "teamId") int teamId,
             @PathVariable(name = "planId") int planId) {
 
-        ResponseDto<PaymentFindByPlanIdResponse> responseDto = ResponseDto.<PaymentFindByPlanIdResponse>builder()
-                .status(HttpStatus.OK.value())
-                .message("정산 내역 조회를 성공했습니다.")
-                .data(paymentService.findPaymentByPlanId(
-                        jwtUtil.getAuthMemberEmail(token),
-                        teamId,
-                        planId))
-                .build();
-
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
-    }
-
-    //정산 완료
-    @Operation(summary = "정산 완료")
-    @PostMapping("/payments")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "정산 완료를 성공했습니다."
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "해당 일정은 존재하지 않습니다.",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
-            )
-    })
-    public ResponseEntity<ResponseDto<String>> savePaymentByPlanId(
-            @RequestHeader(value = "Authorization") String token,
-            @PathVariable(name = "planId") int planId) {
-
-        paymentService.savePaymentByPlanId(jwtUtil.getAuthMemberEmail(token), planId);
+        paymentApprovalService.findPaymentApprovalByPlanId(jwtUtil.getAuthMemberEmail(token), planId);
 
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
-                .message("정산 완료 요청을 성공했습니다.")
+                .message("정산 요청을 성공했습니다.")
                 .data(null)
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
-    //정산 현황 금액 조회 (보내야할 금액)
-    @Operation(summary = "정산 현황 금액 조회")
-    @GetMapping("/payments/me")
+    //정산 수락
+    @Operation(summary = "정산 수락")
+    @PatchMapping("/approvals")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "정산 현황 금액 조회를 성공했습니다."
+                    description = "정산 수락을 성공했습니다."
             ),
+
             @ApiResponse(
                     responseCode = "404",
                     description = "해당 일정은 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
-            )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "해당 정산 요청은 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
     })
-    public ResponseEntity<ResponseDto<PaymentFindByPlanIdAndMemberResponse>> findPaymentByPlanIdAndMember(
+    public ResponseEntity<ResponseDto<PaymentApprovalUpdateByPlanIdResponse>> updatePaymentApprovalByPlanId(
             @RequestHeader(value = "Authorization") String token,
             @PathVariable(name = "planId") int planId) {
 
-        ResponseDto<PaymentFindByPlanIdAndMemberResponse> responseDto = ResponseDto.<PaymentFindByPlanIdAndMemberResponse>builder()
+        ResponseDto<PaymentApprovalUpdateByPlanIdResponse> responseDto = ResponseDto.<PaymentApprovalUpdateByPlanIdResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("정산 현황 금액 조회를 성공했습니다.")
-                .data(paymentService.findPaymentByPlanIdAndMember(
+                .message("정산 수락을 성공했습니다.")
+                .data(paymentApprovalService.UpdatePaymentApprovalByPlanId(
                         jwtUtil.getAuthMemberEmail(token),
                         planId))
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    //정산 거절
+    @Operation(summary = "정산 거절")
+    @DeleteMapping("/approvals")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "정산 거절을 성공했습니다."
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "해당 정산 요청은 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            )
+    })
+    public ResponseEntity<ResponseDto<String>> deletePaymentApprovalByPlanId(
+            @RequestHeader(value = "Authorization") String token,
+            @PathVariable(name = "planId") int planId) {
+
+        paymentApprovalService.DeletePaymentApprovalByPlanId(jwtUtil.getAuthMemberEmail(token), planId);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("정산 거절을 성공했습니다.")
+                .data(null)
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);

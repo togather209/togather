@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import "./ResultModal.css";
 import Close from "../../assets/icons/common/close.png";
 
-function ResultModal({ isOpen, onClose, selectedParticipant }) {
+function ResultModal({ onClose, selectedParticipant, selectedTeam }) {
   const [isCardReversed, setIsCardReversed] = useState(false);
-
-  if (!isOpen) return null;
 
   const handleModalCard = () => {
     if (!isCardReversed) {
@@ -32,12 +30,15 @@ function ResultModal({ isOpen, onClose, selectedParticipant }) {
             {selectedParticipant && (
               <div className="selected-participant">
                 <img
-                  src={selectedParticipant.imgSrc}
-                  alt={selectedParticipant.name}
+                  src={selectedParticipant.profileImg}
+                  alt={selectedParticipant.nickname}
                   className="participant-image"
                 />
+                <div className="participant-team-name">
+                  {selectedTeam.title}
+                </div>
                 <div className="participant-name">
-                  <span>{selectedParticipant.name}</span>님 당첨 !
+                  <span>{selectedParticipant.nickname}</span>님 당첨 !
                 </div>
               </div>
             )}

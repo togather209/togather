@@ -1,19 +1,39 @@
 import "./SendForm.css";
 import BackButton from "../common/BackButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axiosInstance from "../../utils/axiosInstance";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function SendForm() {
   const [amount, setAmount] = useState(0);
   const [password, setPassword] = useState([]);
   const [passwordModal, setPasswordModal] = useState(false);
+  const account = useSelector((state) => state.account.account);
+  const member = useSelector((state) => state.user.member);
+  const [amountMessage, setAmountMessage] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { name, memberId } = location.state; // 전달된 name과 memberId를 받아옴
+
+  useEffect(() => {
+    if (password.length >= 6) {
+      //이름이 나랑같다?(내 연동계좌로 보낸다..)
+      if(member.memberId === memberId){
+        sendMoneyMe();
+      }
+      //아니면 상대에게 보내는...
+      else{
+        sendMoney();
+      }
+    }
+  }, [password]);
 
   const handleKeypadInput = (value) => {
     if (amount * 10 + value <= 59000) {
       setAmount((prevAmount) => parseInt(`${prevAmount}${value}`));
-    }
-    else{
-      alert("잔액초과임");
-      window.location.reload();
+    } else {
+      setAmountMessage("잔액 초과");
     }
   };
 
@@ -49,6 +69,60 @@ function SendForm() {
     setPasswordModal(false);
   };
 
+  const formatBalance = (balance) => {
+    const numericBalance = parseFloat(balance);
+    return numericBalance.toLocaleString("ko-KR");
+  };
+
+  //송금하는 함수
+  const sendMoney = async () => {
+    if (amountMessage === "잔액 초과") {
+      console.log("잔액 초과");
+      return;
+    }
+
+    const formData = {
+      targetMemberId: memberId,
+      price: amount,
+      payAccountPassword: password,
+    };
+
+    try {
+      const sendResponse = await axiosInstance.post(
+        "/pay-accounts/transfer",
+        formData
+      );
+      console.log(sendResponse.data);
+      alert("송금이 완료되었습니다.");
+      navigate("/wallet");
+    } catch (error) {
+      console.log("송금 실패", error);
+    }
+  };
+
+  //나에게 송금
+  const sendMoneyMe = async () => {
+    if (amountMessage === "잔액 초과") {
+      console.log("잔액 초과");
+      return;
+    }
+    //금액만
+    const formData = {
+      price: amount,
+    };
+
+    try{
+      const sendMeResponse = await axiosInstance.post("/pay-accounts/withdraw", formData);
+      console.log(sendMeResponse.data);
+      alert("송금이 완료되었습니다.");
+      navigate("/wallet");
+    }
+    catch(error){
+      console.log("자기에게 보내기 실패!", error);
+    }
+
+  }
+
   return (
     <div className="sendform-container">
       <div className="sendform-header">
@@ -56,12 +130,13 @@ function SendForm() {
         <p>송금하기</p>
       </div>
       <div className="send-form">
-        <p className="send-to-who">김해수님에게</p>
+        <p className="send-to-who">{name}님에게</p>
         <p className={`send-to-howmuch${amount !== 0 ? "-enter" : ""}`}>
           {amount === 0 ? "보낼 금액" : amount.toLocaleString()}
           <span>{amount === 0 ? "" : "원"}</span>
         </p>
-        <p className="money">잔액 59,000원</p>
+        <p className="money">잔액 {formatBalance(account?.balance)}원</p>
+        <p className="ammount-message">{amountMessage}</p>
       </div>
       <div className="keypad">
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
@@ -106,7 +181,7 @@ function SendForm() {
               </button>
               <button onClick={() => handlePasswordInput(0)}>0</button>
               <button onClick={handlePasswordBackspace}>←</button>
-            </div>
+            </div>{" "}
           </div>
         </div>
       )}

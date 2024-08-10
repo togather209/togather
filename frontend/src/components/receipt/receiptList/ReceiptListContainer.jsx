@@ -24,11 +24,13 @@ function ReceiptListContainer() {
   const teamId = 1;
   const planId = 1;
 
-  // state : 일정 진행 중(before), 일정 끝남(after), 정산 완료(completet)
+  // status : 일정 진행 중(0), 일정 끝남(1), 정산 완료(3)
   const [scheduleState, setScheduleState] = useState("before");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [receipts, setReceipts] = useState([]);
   const [error, setError] = useState(false);
+  const [status, setStatus] = useState(0);
+  const [auth, setAuth] = useState(false);
 
   useEffect(() => {
     if (!teamId || !planId) {
@@ -48,16 +50,31 @@ function ReceiptListContainer() {
         const response = await axiosInstance.get(
           `/teams/${teamId}/plans/${planId}/receipts`
         );
-        setReceipts(response.data.data); // 서버에서 받은 데이터를 상태로 설정
+        setReceipts(response.data.data.receiptFindByPlanIds); // 서버에서 받은 영수증 데이터를 설정
+        setStatus(response.data.data.status); // 일정 상태 설정
         console.log(response.data);
       } catch (error) {
         console.error("영수증 데이터를 가져오는 데 실패했습니다.", error);
         setError(true);
       }
     };
-    // TODO : 일정장 확인 후 일정 끝내기 버튼 활성화
 
+    // 일정 권한 조회 API 요청
+    const fetchAuth = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/teams/${teamId}/plans/${planId}/auths`
+        );
+        setAuth(response.data.data.isManager);
+        console.log(response.data);
+      } catch (error) {
+        console.error("일정 권한 조회 요청 중 문제 발생", error);
+      }
+    };
+
+    // 일정장 확인 후 일정 끝내기 버튼 활성화
     fetchReceipt();
+    fetchAuth();
   }, [teamId, planId, dispatch]);
 
   // 일정 끝내기 버튼
@@ -91,16 +108,16 @@ function ReceiptListContainer() {
     });
   };
 
-  const totalAmount = receipts.reduce(
-    (total, receipt) => total + receipt.amount,
-    0
-  );
+  // const totalAmount = receipts.reduce(
+  //   (total, receipt) => total + receipt.amount,
+  //   0
+  // );
 
   return (
     <div className="receipt-container">
       <header className="list-header">
         <BackButton />
-        {scheduleState === "before" && (
+        {scheduleState === "before" && status === 1 && auth && (
           <LineButton
             className="schedule-finish-button"
             onClick={handlePurpleLineButton}

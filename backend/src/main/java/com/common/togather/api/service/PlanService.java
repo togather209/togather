@@ -6,7 +6,7 @@ import com.common.togather.api.request.PlanUpdateRequest;
 import com.common.togather.api.response.PlanFindAuthAccessResponse;
 import com.common.togather.api.response.PlanFindByPlanIdResponse;
 import com.common.togather.api.response.PlanSaveResponse;
-import com.common.togather.api.response.ReceiptFindAllByPlanIdResponse;
+import com.common.togather.api.response.ReceiptFindAllByPlanIdResponse.ReceiptFindByPlanId;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
 import com.common.togather.db.entity.Plan;
@@ -164,7 +164,7 @@ public class PlanService {
         }
 
         // 정산이 끝났거나 등록된 영수증이 없으면 삭제 가능
-        Optional<List<ReceiptFindAllByPlanIdResponse>> receiptList = receiptRepositorySupport.findAllByPlanId(planId);
+        Optional<List<ReceiptFindByPlanId>> receiptList = receiptRepositorySupport.findAllByPlanId(planId);
         if (plan.getStatus() == 1 || !receiptList.isPresent() || receiptList.get().isEmpty()) {
             planRepository.deleteById(planId);
         } else throw new DeletionNotAllowedException("정산이 완료 됐거나 등록된 영수증이 없어야 일정을 삭제할 수 있습니다.");
