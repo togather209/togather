@@ -24,6 +24,7 @@ function ScheduleDetailPart () {
     const fetchSessionId = async () => {
       const response = await axiosInstance.get(`/teams/${id}/plans/${schedule_id}`);
       await setSessionId(response.data.data.sessionId);
+      console.log(response.data.data.sessionId)
     }
 
 

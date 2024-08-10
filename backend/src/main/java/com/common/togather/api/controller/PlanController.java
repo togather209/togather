@@ -76,7 +76,7 @@ public class PlanController {
     @Operation(summary = "일정 삭제")
     @DeleteMapping("/{teamId}/plans/{planId}")
     public ResponseEntity<ResponseDto<String>> deletePlan(@PathVariable(name = "teamId") int teamId, @PathVariable(name = "planId") int planId,
-                                                          @RequestHeader(value = "Authorization", required = false) String header) {
+                                                          @RequestHeader(value = "Authorization", required = false) String header) throws OpenViduJavaClientException, OpenViduHttpException {
 
         planService.deletePlan(teamId, planId, jwtUtil.getAuthMemberEmail(header));
         ResponseDto<String> responseDto = ResponseDto.<String>builder()

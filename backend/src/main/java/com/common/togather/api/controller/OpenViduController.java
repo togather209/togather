@@ -1,5 +1,7 @@
 package com.common.togather.api.controller;
 
+import com.common.togather.api.response.CreateConnectionResponse;
+import com.common.togather.api.response.ResponseDto;
 import io.openvidu.java.client.*;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.PostConstruct;
@@ -8,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin(origins = "*")
@@ -28,40 +31,35 @@ public class OpenViduController {
     }
 
     /**
-     * @param params The Session properties
-     * @return The Session ID
-     */
-    @Operation(summary = "세션 생성")
-    @PostMapping("/api/sessions")
-    public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
-            throws OpenViduJavaClientException, OpenViduHttpException {
-        SessionProperties properties = SessionProperties.fromJson(params).build();
-        Session session = openvidu.createSession(properties);
-        return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
-    }
-
-    /**
      * @param sessionId The Session in which to create the Connection
      * @param params    The Connection properties
      * @return The Token associated to the Connection
      */
     @Operation(summary = "세션 참가")
     @PostMapping("/api/sessions/{sessionId}/connections")
-    public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
-                                                   @RequestBody(required = false) Map<String, Object> params)
+    public ResponseEntity<ResponseDto<CreateConnectionResponse>> createConnection(@PathVariable("sessionId") String sessionId,
+                                                                                  @RequestBody(required = false) Map<String, Object> params)
             throws OpenViduJavaClientException, OpenViduHttpException {
-        System.out.println("지금존재하는 세션이 뭐여~~");
-        for(Session session1 : openvidu.getActiveSessions()) {
-            System.out.println(session1.getSessionId());
-        }
         Session session = openvidu.getActiveSession(sessionId);
+        // 해당 세션이 존재하지 않으면 해당 세션 아이디로 세션 생성
         if (session == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            session = openvidu.createSession(new SessionProperties.Builder().customSessionId(sessionId).build());
         }
+
+        // 해당 세션에 연걸
         ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
         Connection connection = session.createConnection(properties);
-        System.out.println(connection.getToken());
-        return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
+        CreateConnectionResponse response = CreateConnectionResponse.builder()
+                .token(connection.getToken())
+                .build();
+
+        ResponseDto<CreateConnectionResponse> responseDto = ResponseDto.<CreateConnectionResponse>builder()
+                .status(HttpStatus.OK.value())
+                .message("오픈비두 연결 커넥션 토큰이 발급되었습니다.")
+                .data(response)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
 }
