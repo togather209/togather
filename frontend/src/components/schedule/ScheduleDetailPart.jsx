@@ -24,7 +24,7 @@ function ScheduleDetailPart () {
     const fetchSessionId = async () => {
       const response = await axiosInstance.get(`/teams/${id}/plans/${schedule_id}`);
       await setSessionId(response.data.data.sessionId);
-      console.log(response.data.data.sessionId)
+      console.log("세션아이디 내놔 : ", response.data.data.sessionId)
     }
 
 
@@ -32,7 +32,7 @@ function ScheduleDetailPart () {
     const handleCallStart = async () => {
       await setIsCallStarted(!isCallStarted);
       const test = await axiosInstance.post(`/sessions/${sessionId}/connections`);
-      console.log(test);
+      console.log("발급된 토큰 내놔 : ", test);
       
     };
 

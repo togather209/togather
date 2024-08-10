@@ -66,6 +66,9 @@ dependencies {
 
 	// OpenVidu
 	implementation group: 'io.openvidu', name: 'openvidu-java-client', version: '2.30.0'
+
+	// OAuth
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
 tasks.named('test') {
