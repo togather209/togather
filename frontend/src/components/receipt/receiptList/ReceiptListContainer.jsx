@@ -75,8 +75,8 @@ function ReceiptListContainer() {
 
   // 일정 끝내기 버튼
   const handlePurpleLineButton = () => {
+    // 모달 창 활성화
     setIsModalOpen(true);
-    console.log(isModalOpen);
   };
 
   // 일정 끝난 후 정산 확인 버튼

@@ -1,8 +1,7 @@
 package com.common.togather.api.service;
 
-import com.common.togather.api.error.MemberNotFoundException;
-import com.common.togather.api.error.MemberTeamNotFoundException;
-import com.common.togather.api.error.PlanNotFoundException;
+import com.common.togather.api.error.*;
+import com.common.togather.api.request.TransactionSaveRequest;
 import com.common.togather.api.response.PaymentFindByPlanIdAndMemberResponse;
 import com.common.togather.api.response.PaymentFindByPlanIdResponse;
 import com.common.togather.api.response.PaymentFindByPlanIdResponse.MemberItem;
@@ -15,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +30,8 @@ public class PaymentService {
     private final TeamMemberRepositorySupport teamMemberRepositorySupport;
     private final PlanRepository planRepository;
     private final MemberRepository memberRepository;
+    private final PayAccountRepository payAccountRepository;
+    private final TransactionService transactionService;
 
     private final String systemName = "TOGETHER";
     private final Integer systemType = 1;
@@ -167,6 +169,8 @@ public class PaymentService {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
 
+        /// 정산 상태가 1 일때만
+
         // 정산 완료 상태 저장
         plan.updateStatus(2);
 
@@ -235,20 +239,18 @@ public class PaymentService {
                 // 영수증 관리자일때
                 if (member.getId() == receiver.getId()) {
                     paymentMap.put(sender.getId(),
-                            paymentMap.getOrDefault(sender.getId(), 0) - memberBalance);
+                            paymentMap.getOrDefault(sender.getId(), 0) + memberBalance);
                 } else if (member.getId() == sender.getId()) {
                     paymentMap.put(receiver.getId(),
-                            paymentMap.getOrDefault(receiver.getId(), 0) + memberBalance);
+                            paymentMap.getOrDefault(receiver.getId(), 0) - memberBalance);
                 }
             }
         });
 
-        // 유저가 보내야하는 금액 합
+        // 유저가 보내고 받는 금액 합
         int total = 0;
         for (int money : paymentMap.values()) {
-            if (money > 0) {
-                total += money;
-            }
+            total += money;
         }
 
         return PaymentFindByPlanIdAndMemberResponse.builder()
@@ -287,6 +289,81 @@ public class PaymentService {
     public Map<Integer, List<PaymentFindDto>> groupPaymentsByItemId(List<PaymentFindDto> payments) {
         return payments.stream()
                 .collect(Collectors.groupingBy(PaymentFindDto::getItemId));
+    }
+
+    // 정산내역 송금하기
+    @Transactional
+    public void transferSettlement(String email, int planId) {
+
+        // 송금할 Payment 목록 조회
+        List<Payment> payments = paymentRepository.findByPlanIdAndSenderEmail(planId, email);
+        if (payments.isEmpty()) {
+            throw new PaymentNotFoundException("정산할 내역이 없습니다.");
+        }
+
+        // 송금자의 Pay 계좌 확인
+        PayAccount payAccount = payAccountRepository.findByMember_Email(email)
+                .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
+
+        // 총 송금할 금액 계산
+        int totalAmount = payments.stream().mapToInt(Payment::getMoney).sum();
+        if (payAccount.getBalance() < totalAmount) {
+            throw new InsufficientBalanceException("잔액이 부족합니다.");
+        }
+
+        // 송금 대상자의 Pay 계좌 미리 조회 및 캐싱
+        Map<Integer, PayAccount> targetPayAccounts = new HashMap<>();
+        for (Payment payment : payments) {
+            int receiverId = payment.getReceiver().getId();
+            targetPayAccounts.putIfAbsent(receiverId,
+                    payAccountRepository.findByMemberId(receiverId)
+                            .orElseThrow(() -> new PayAccountNotFoundException("Target Pay 계좌가 존재하지 않습니다.")));
+        }
+
+        List<TransactionSaveRequest> transactionRequests = new ArrayList<>();
+
+        // 송금 처리 및 거래 내역 생성
+        for (Payment payment : payments) {
+            PayAccount targetPayAccount = targetPayAccounts.get(payment.getReceiver().getId());
+
+            payAccount.decreaseBalance(payment.getMoney());
+            targetPayAccount.increaseBalance(payment.getMoney());
+
+            // 송금자 거래 내역 생성
+            transactionRequests.add(TransactionSaveRequest.builder()
+                    .senderName(payAccount.getMember().getName())
+                    .receiverName(targetPayAccount.getMember().getName())
+                    .price(payment.getMoney())
+                    .balance(payAccount.getBalance())
+                    .date(LocalDateTime.now())
+                    .status(1)  // 출금
+                    .payAccountId(payAccount.getId())
+                    .build());
+
+            // 수신자 거래 내역 생성
+            transactionRequests.add(TransactionSaveRequest.builder()
+                    .senderName(payAccount.getMember().getName())
+                    .receiverName(targetPayAccount.getMember().getName())
+                    .price(payment.getMoney())
+                    .balance(targetPayAccount.getBalance())
+                    .date(LocalDateTime.now())
+                    .status(0)  // 입금
+                    .payAccountId(targetPayAccount.getId())
+                    .build());
+        }
+
+        // 거래 내역 배치 저장
+        transactionService.saveTransactions(transactionRequests);
+
+        // 정산 내역 배치 삭제
+        paymentRepository.deleteAll(payments);
+
+        // 모든 Payment가 처리된 경우 계획 상태 업데이트
+        if (paymentRepository.countByPlanId(planId) == 0) {
+            Plan plan = planRepository.findById(planId).orElseThrow(() -> new PlanNotFoundException("일정을 찾을 수 없습니다."));
+            plan.updateStatus(3);
+            planRepository.save(plan);
+        }
     }
 
 }

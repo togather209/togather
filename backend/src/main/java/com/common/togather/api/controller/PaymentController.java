@@ -1,5 +1,6 @@
 package com.common.togather.api.controller;
 
+import com.common.togather.api.request.TeamUpdateRequest;
 import com.common.togather.api.response.ErrorResponseDto;
 import com.common.togather.api.response.PaymentFindByPlanIdAndMemberResponse;
 import com.common.togather.api.response.PaymentFindByPlanIdResponse;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/teams/{teamId}/plans/{planId}")
@@ -114,6 +116,24 @@ public class PaymentController {
                 .data(paymentService.findPaymentByPlanIdAndMember(
                         jwtUtil.getAuthMemberEmail(token),
                         planId))
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    // 정산내역 송금하기
+    @Operation(summary = "정산 내역 송금하기")
+    @PostMapping("/payments/me/transfer")
+    public ResponseEntity<ResponseDto<String>> transferSettlement(@RequestHeader(value = "Authorization", required = false) String token,
+                                                                  @PathVariable(name = "teamId") int teamId,
+                                                                  @PathVariable(name = "planId") int planId) {
+
+        paymentService.transferSettlement(jwtUtil.getAuthMemberEmail(token), planId);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("정산내역 송금을 성공했습니다.")
+                .data(null)
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);

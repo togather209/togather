@@ -27,7 +27,7 @@ function ScheduleDetailFavoritePlaces({
       deleteJjimPlace()
       setIsHeartPurple(!isHeartPurple);
     } else {
-      addJjimPlace()
+      // addJjimPlace()
       setIsHeartPurple(!isHeartPurple);
     }
   };
@@ -51,27 +51,28 @@ function ScheduleDetailFavoritePlaces({
     try {
       const response = await axiosInstance.delete(`/teams/${meetingId}/plans/${scheduleId}/bookmarks/${bookmarkId}`);
       console.log(response.data)
+      setForRendering(!forRendering)
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
     }
   };
 
   // 찜하기 목록 추가 axios 요청
-  const addJjimPlace = async () => {
-    const addJjimFormData = {}
-    addJjimFormData["placeId"] = placeId
-    addJjimFormData["placeImg"] = "이미지없음"
-    addJjimFormData["placeName"] = name
-    addJjimFormData["placeAddr"] = address
-    // console.log(addJjimFormData)
+  // const addJjimPlace = async () => {
+  //   const addJjimFormData = {}
+  //   addJjimFormData["placeId"] = placeId
+  //   addJjimFormData["placeImg"] = "이미지없음"
+  //   addJjimFormData["placeName"] = name
+  //   addJjimFormData["placeAddr"] = address
+  //   // console.log(addJjimFormData)
  
-    try {
-      const response = await axiosInstance.post(`/teams/${meetingId}/plans/${scheduleId}/bookmarks`, addJjimFormData);
-      console.log(response.data)
-    } catch (error) {
-      console.error("데이터 불러오기 실패", error);
-    }
-  };
+  //   try {
+  //     const response = await axiosInstance.post(`/teams/${meetingId}/plans/${scheduleId}/bookmarks`, addJjimFormData);
+  //     console.log(response.data)
+  //   } catch (error) {
+  //     console.error("데이터 불러오기 실패", error);
+  //   }
+  // };
 
   return (
     <div className="schedule-detail-list-box">

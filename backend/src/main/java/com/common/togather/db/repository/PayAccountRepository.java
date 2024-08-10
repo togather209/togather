@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface PayAccountRepository extends JpaRepository<PayAccount, Integer> {
     // memberId로 Pay 계좌 찾기
     Optional<PayAccount> findByMemberId(int memberId);
+    // email로 Pay 계좌 찾기
+    Optional<PayAccount> findByMember_Email(String email);
 }

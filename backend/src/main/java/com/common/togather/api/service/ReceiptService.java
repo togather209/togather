@@ -3,8 +3,10 @@ package com.common.togather.api.service;
 import com.common.togather.api.error.*;
 import com.common.togather.api.request.ReceiptSaveRequest;
 import com.common.togather.api.request.ReceiptUpdateRequest;
+import com.common.togather.api.response.ReceiptFinalAllByBookmarkResponse;
 import com.common.togather.api.response.ReceiptFindAllByPlanIdResponse;
 import com.common.togather.api.response.ReceiptFindByReceiptIdResponse;
+import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.*;
 import com.common.togather.db.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +27,7 @@ public class ReceiptService {
     private final BookmarkRepository bookmarkRepository;
     private final PlanRepository planRepository;
     private final ItemRepository itemRepository;
+    private final JwtUtil jwtUtil;
 
     public ReceiptFindByReceiptIdResponse findReceiptByReceiptId(String email, int teamId, int receiptId) {
 
@@ -180,5 +184,30 @@ public class ReceiptService {
     private void existTeamMember(String email, int teamId) {
         teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, email)
                 .orElseThrow(() -> new MemberTeamNotFoundException(teamId + "팀에 " + email + "유저가 존재하지 않습니다."));
+    }
+
+    // 북마크 아이디로 영수증 조회
+    public List<ReceiptFinalAllByBookmarkResponse> findReceiptByBookmark(int teamId, int planId, int bookmarkId, String header) {
+
+        teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, jwtUtil.getAuthMemberEmail(header))
+                .orElseThrow(() -> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
+
+        planRepository.findById(planId)
+                .orElseThrow(()-> new PlanNotFoundException("해당 일정이 존재하지 않습니다."));
+
+        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
+                .orElseThrow(() -> new BookmarkNotFoundException("해당 북마크가 존재하지 않습니다."));
+
+        List<Receipt> receiptList = bookmark.getReceipts();
+        return receiptList.stream()
+                .map(receipt -> ReceiptFinalAllByBookmarkResponse.builder()
+                        .receiptId(receipt.getId())
+                        .businessName(receipt.getBusinessName())
+                        .totalPrice(receipt.getTotalPrice())
+                        .paymentDate(receipt.getPaymentDate())
+                        .color(receipt.getColor())
+                        .build())
+                .collect(Collectors.toList());
+
     }
 }

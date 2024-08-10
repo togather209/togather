@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import image from "../../assets/icons/common/chunsik.png";
-import './MyTransactionList.css';
+import "./MyTransactionList.css";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 
@@ -17,10 +17,12 @@ function MyTransactionList() {
       const transactionData = response.data.data;
 
       // 데이터를 최신순으로 정렬
-      const sortedTransactions = transactionData.sort((a, b) => new Date(b.date) - new Date(a.date));
+      const sortedTransactions = transactionData.sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
+      );
 
       // 최대 6개만 선택
-      const latestTransactions = sortedTransactions.slice(0, 5);
+      const latestTransactions = sortedTransactions.slice(0, 4);
 
       // 데이터 가공
       const formattedTransactions = latestTransactions.map((transaction) => {
@@ -28,13 +30,19 @@ function MyTransactionList() {
         const formattedDate = `${date.getMonth() + 1}.${date.getDate()}`; // 월-일 포맷
 
         const isSender = transaction.status === 0;
-        const name = isSender ? transaction.senderName : transaction.receiverName;
-        const amount = isSender ? `+${transaction.price.toLocaleString()}원` : `-${transaction.price.toLocaleString()}원`;
+        const name = isSender
+          ? transaction.senderName
+          : transaction.receiverName;
+        const amount = isSender
+          ? `+ ${transaction.price.toLocaleString()}원`
+          : `- ${transaction.price.toLocaleString()}원`;
+        const type = isSender ? "positive" : "negative";
 
         return {
           date: formattedDate,
           name,
           amount,
+          type,
         };
       });
 
@@ -49,27 +57,36 @@ function MyTransactionList() {
       <div className="transaction-header">
         <p className="transaction-title">거래 내역</p>
         <Link to="/wallet/transaction_list" className="view-more">
-          전체 보기 {">"}
+          상세 내역
         </Link>
-      </div>
+      </div>   
       <div className="transaction-list">
         {transactions.map((transaction, index) => (
           <div key={index}>
-            {index === 0 || transaction.date !== transactions[index - 1].date ? (
+            {index === 0 ||
+            transaction.date !== transactions[index - 1].date ? (
               <p className="transaction-date">{transaction.date}</p>
             ) : null}
             <div className="transaction-item">
-              <img src={image} alt="Avatar" className="avatar" />
+            <img src={image} alt="Avatar" className="avatar" />
               <div className="transaction-details">
-                <p className={`transaction-amount ${transaction.amount.startsWith('+') ? 'positive' : 'negative'}`}>
-                  {transaction.amount}
-                </p>
-                <p className="transaction-name">{transaction.name}</p>
+                <div>
+                  <p className="transaction-name">{transaction.name}</p>
+                  <p className="transaction-type">{transaction.type === "positive" ? "입금" : "송금"}</p>
+                </div>
+                <p
+                className={`transaction-amount ${
+                  transaction.amount.startsWith("+") ? "positive" : "negative"
+                }`}
+              >
+                {transaction.amount}
+              </p>
               </div>
             </div>
           </div>
         ))}
       </div>
+      
     </div>
   );
 }
