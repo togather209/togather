@@ -290,28 +290,45 @@ public class PaymentService {
     }
 
     // 정산내역 송금하기
+    @Transactional
     public void transferSettlement(String email, int planId) {
 
+        // 송금할 Payment 목록 조회
         List<Payment> payments = paymentRepository.findByPlanIdAndSenderEmail(planId, email);
+        if (payments.isEmpty()) {
+            throw new PaymentNotFoundException("정산할 내역이 없습니다.");
+        }
+
+        // 송금자의 Pay 계좌 확인
         PayAccount payAccount = payAccountRepository.findByMember_Email(email)
                 .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
-        List<Transaction> myTransaction = payAccount.getTransactions();
-        PayAccount targetPayAccount = null;
 
-        // 송금
+        // 총 송금할 금액 계산
+        int totalAmount = payments.stream().mapToInt(Payment::getMoney).sum();
+        if (payAccount.getBalance() < totalAmount) {
+            throw new InsufficientBalanceException("잔액이 부족합니다.");
+        }
+
+        // 송금 대상자의 Pay 계좌 미리 조회 및 캐싱
+        Map<Integer, PayAccount> targetPayAccounts = new HashMap<>();
         for (Payment payment : payments) {
-            targetPayAccount = payAccountRepository.findByMemberId(payment.getReceiver().getId())
-                    .orElseThrow(() -> new PayAccountNotFoundException("Target Pay 계좌가 존재하지 않습니다."));
+            int receiverId = payment.getReceiver().getId();
+            targetPayAccounts.putIfAbsent(receiverId,
+                    payAccountRepository.findByMemberId(receiverId)
+                            .orElseThrow(() -> new PayAccountNotFoundException("Target Pay 계좌가 존재하지 않습니다.")));
+        }
 
-            // 송금자의 잔액이 부족한지 확인
-            if (payAccount.getBalance() < payment.getMoney()) {
-                throw new InsufficientBalanceException("잔액이 부족합니다.");
-            }
+        List<TransactionSaveRequest> transactionRequests = new ArrayList<>();
+
+        // 송금 처리 및 거래 내역 생성
+        for (Payment payment : payments) {
+            PayAccount targetPayAccount = targetPayAccounts.get(payment.getReceiver().getId());
 
             payAccount.decreaseBalance(payment.getMoney());
             targetPayAccount.increaseBalance(payment.getMoney());
 
-            TransactionSaveRequest myTransactionSaveRequest = TransactionSaveRequest.builder()
+            // 송금자 거래 내역 생성
+            transactionRequests.add(TransactionSaveRequest.builder()
                     .senderName(payAccount.getMember().getName())
                     .receiverName(targetPayAccount.getMember().getName())
                     .price(payment.getMoney())
@@ -319,9 +336,10 @@ public class PaymentService {
                     .date(LocalDateTime.now())
                     .status(1)  // 출금
                     .payAccountId(payAccount.getId())
-                    .build();
+                    .build());
 
-            TransactionSaveRequest targetTransactionSaveRequest = TransactionSaveRequest.builder()
+            // 수신자 거래 내역 생성
+            transactionRequests.add(TransactionSaveRequest.builder()
                     .senderName(payAccount.getMember().getName())
                     .receiverName(targetPayAccount.getMember().getName())
                     .price(payment.getMoney())
@@ -329,19 +347,21 @@ public class PaymentService {
                     .date(LocalDateTime.now())
                     .status(0)  // 입금
                     .payAccountId(targetPayAccount.getId())
-                    .build();
+                    .build());
+        }
 
-            transactionService.saveTransaction(myTransactionSaveRequest);
-            transactionService.saveTransaction(targetTransactionSaveRequest);
+        // 거래 내역 배치 저장
+        transactionService.saveTransactions(transactionRequests);
 
-            // 송금 후 정산 내역 삭제
-            paymentRepository.delete(payment);
+        // 정산 내역 배치 삭제
+        paymentRepository.deleteAll(payments);
 
-            if (paymentRepository.countByPlanId(planId) == 0) {
-                Plan plan = planRepository.findById(planId).get();
-                plan.updateStatus(3);
-                planRepository.save(plan);
-            }
+        // 모든 Payment가 처리된 경우 계획 상태 업데이트
+        if (paymentRepository.countByPlanId(planId) == 0) {
+            Plan plan = planRepository.findById(planId).orElseThrow(() -> new PlanNotFoundException("일정을 찾을 수 없습니다."));
+            plan.updateStatus(3);
+            planRepository.save(plan);
         }
     }
+
 }
