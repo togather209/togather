@@ -7,7 +7,7 @@ import ReceiptAddButton from "./ReceiptAddButton";
 import ReceiptTotal from "./ReceiptTotal";
 import BackButton from "../../common/BackButton";
 import LineButton from "../../common/LineButton";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import FinishedScheduleButton from "./FinishedScheduleButton";
 import ScheduleFinishModal from "./ScheduleFinishModal";
@@ -19,10 +19,8 @@ import Modal from "../../common/Modal";
 function ReceiptListContainer() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // TODO : meetingId, scheduleId 가져오기
-  const teamId = 1;
-  const planId = 1;
+  const location = useLocation();
+  let { teamId, planId } = location.state || {};
 
   // status : 일정 진행 중(0), 일정 끝남(1), 정산 완료(3)
   const [scheduleState, setScheduleState] = useState("before");
@@ -34,9 +32,8 @@ function ReceiptListContainer() {
 
   useEffect(() => {
     if (!teamId || !planId) {
-      console.error("meetingId 또는 scheduleId가 전달되지 않았습니다.");
-      setError(true);
-      return;
+      teamId = Number(localStorage.getItem("teamId"));
+      planId = Number(localStorage.getItem("planId"));
     }
 
     // teamId와 planId를 redux와 localStorage에 저장

@@ -29,8 +29,8 @@ function ReceiptDetail() {
 
   useEffect(() => {
     if (!teamId || !planId) {
-      teamId = localStorage.getItem("teamId");
-      planId = localStorage.getItem("planId");
+      teamId = Number(localStorage.getItem("teamId"));
+      planId = Number(localStorage.getItem("planId"));
 
       if (teamId && planId) {
         dispatch(setTeamPlan({ teamId, planId }));
