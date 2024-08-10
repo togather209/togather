@@ -1,17 +1,45 @@
-import React, {useState, useEffect} from "react"
+import React, {useState, useEffect, useLayoutEffect} from "react"
 import "./ScheduleDetail.css"
 import headphone from "../../assets/schedule/headphone.png";
 import mic from "../../assets/schedule/mic.png";
 import ScheduleButton from "./ScheduleButton";
 import ScheduleDetail from "./ScheduleDetail";
+import axiosInstance from "../../utils/axiosInstance";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 function ScheduleDetailPart () {
     const [isCallStarted, setIsCallStarted] = useState(false);
     const [isHeadPhone, setIsHeadPhone] = useState(false);
     const [isMic, setIsMic] = useState(false);
-    const handleCallStart = () => setIsCallStarted(!isCallStarted);
+    const { id, schedule_id } = useParams();
+    const [sessionId , setSessionId] = useState("");
     const handleHeadPhone = () => setIsHeadPhone(!isHeadPhone);
     const handleMic = () => setIsMic(!isMic);
+
+    useLayoutEffect(() => {
+      fetchSessionId();
+    }, [sessionId]);
+
+    const fetchSessionId = async () => {
+      const response = await axiosInstance.get(`/teams/${id}/plans/${schedule_id}`);
+      await setSessionId(response.data.data.sessionId);
+      console.log(response.data.data.sessionId)
+    }
+
+
+
+    const handleCallStart = async () => {
+      await setIsCallStarted(!isCallStarted);
+      const test = await axiosInstance.post(`/sessions/${sessionId}/connections`);
+      console.log(test);
+      
+    };
+
+    const handleCallEnd = () => {
+      setIsCallStarted(!isCallStarted);
+
+    }
 
 
     // 찜하기 목록 날짜 목록 클릭했을 때 리렌더링 확인용 코드
@@ -21,6 +49,7 @@ function ScheduleDetailPart () {
         console.log("김해수는 숭실대 졸업생입니다. ㅎㅎㅎㅎㅎ")
         console.log("김해수는 숭실대 졸업생입니다. ㅎㅎㅎㅎㅎ")
         console.log("김해수는 숭실대 졸업생입니다. ㅎㅎㅎㅎㅎ")
+        console.log("하정수는 한밭대 졸업생입니다!!!!!")
     },[])
 
     return (
@@ -29,13 +58,13 @@ function ScheduleDetailPart () {
         <ScheduleDetail></ScheduleDetail>
         
         <div className="schedule-detail-button">
-        {isCallStarted ? (
+        {!isCallStarted ? (
           <ScheduleButton type={"purple"} onClick={handleCallStart}>
             통화 시작
           </ScheduleButton>
         ) : (
           <div className="schedule-detail-call-started">
-            <ScheduleButton type={"border"} onClick={handleCallStart}>
+            <ScheduleButton type={"border"} onClick={handleCallEnd}>
               통화 종료
             </ScheduleButton>
             <div

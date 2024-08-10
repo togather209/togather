@@ -7,8 +7,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PlanSaveResponse {
-    int teamId;
-    int planId;
-    String sessionId;
+public class CreateConnectionResponse {
+
+    private String token;
+
 }
