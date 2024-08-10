@@ -12,8 +12,10 @@ import kdb from "../../assets/bank/산업은행.png";
 import { useSelector } from "react-redux";
 import axiosInstance from "../../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import Modal from "../common/Modal";
 
 function RechargeModal({ closeModal }) {
+  const [isCompleteRecharge, setIsCompleteRecharge] = useState(false);
   const [amount, setAmount] = useState(0);
   const linkedAccountInfo = useSelector(
     (state) => state.linkedAccount.linkedAccountInfo
@@ -58,8 +60,7 @@ function RechargeModal({ closeModal }) {
         .post("/pay-accounts/recharge", rechargeData)
         .then((res) => {
           console.log(res.data);
-          alert("충전이 완료 되었습니다.");
-          window.location.reload();
+          setIsCompleteRecharge(true);
         });
     } catch (error) {
       alert("잔액이 부족합니다. 연동 계좌 잔액을 확인해주세요.");
@@ -121,7 +122,9 @@ function RechargeModal({ closeModal }) {
         <div className="account-info">
           <img src={bank} alt="Bank Logo" className="bank-logo" />
           <div className="account-text">
-            <span>{bankName} {linkedAccountInfo.accountNumber}</span>
+            <span>
+              {bankName} {linkedAccountInfo.accountNumber}
+            </span>
             <span>
               <span>{linkedAccountInfo.accountName}</span> 계좌에서 충전해요.
             </span>
@@ -151,6 +154,7 @@ function RechargeModal({ closeModal }) {
           충전
         </button>
       </div>
+      {isCompleteRecharge && <Modal mainMessage={`${amount}원 충전`} subMessage={"충전이 완료되었습니다."} onClose={() => navigate(0)}/>}
     </div>
   );
 }
