@@ -87,8 +87,14 @@ function SignUpForm() {
         type: "application/json",
       })
     );
-    memberData.append("image", profileImage);
 
+    if (profileImage) {
+      const fileBlob = new Blob([profileImage], { type: "image/png" });
+      const fileData = new File([fileBlob], "image.png");
+      memberData.append("image", fileData);
+    }
+
+    
     if (email === "" || password === "" || nickname === "") {
       return;
     } else {
@@ -292,8 +298,9 @@ function SignUpForm() {
   //이미지 첨부하는 함수
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      setProfileImage(e.target.files[0]);
-      setProfileImagePreview(URL.createObjectURL(profileImage));
+      const file = e.target.files[0];
+      setProfileImage(file); // 선택된 파일을 프로필 이미지로 설정
+      setProfileImagePreview(URL.createObjectURL(file)); // 미리보기를 위해 파일 URL 생성
     }
   };
 
@@ -341,7 +348,7 @@ function SignUpForm() {
         <form onSubmit={handleSignup}>
           <div className="profile-image-upload">
             <label htmlFor="profileImageUpload" className="image-upload-label">
-              {profileImage ? (
+              {profileImagePreview ? (
                 <img
                   src={profileImagePreview}
                   alt="Profile"

@@ -2,6 +2,7 @@ import "./MyPageMain.css";
 import defaultImage from "../../assets/icons/common/defaultProfile.png";
 import profile from "../../assets/mypage/profile.png";
 import terms from "../../assets/mypage/terms.png";
+import wallet from "../../assets/wallet/wallet.png";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,14 +12,17 @@ import axiosInstance from "../../utils/axiosInstance";
 import { clearAccount, setAccount } from "../../redux/slices/accountSlice";
 import { clearLinkedAccount } from "../../redux/slices/linkedAccount";
 import { resetReceipt } from "../../redux/slices/receiptSlice";
+import Modal from "../common/Modal";
 
 function MyPageMain() {
   const [secessionModalOpen, setSecessionModalOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const accessToken = useSelector((state) => state.auth.accessToken);
   const member = useSelector((state) => state.user.member);
   const account = useSelector((state) => state.account.account);
+  const [isExistsAccount, setIsExistsAccount] = useState(false);
+  const [goodbye, setGoodbye] = useState(false);
+  const [logout, setLogout] = useState(false);
 
   //로딩될 때 멤버들 데이터 불러와서 redux에 저장한다.
   useEffect(() => {
@@ -29,7 +33,7 @@ function MyPageMain() {
   const loadingMemberData = async () => {
     try {
       const response = await axiosInstance.get("/members/me");
-      dispatch(setUser({ member : response.data.data }));
+      dispatch(setUser({ member: response.data.data }));
       console.log(member);
     } catch (error) {
       console.error("데이터 불러오기실패", error);
@@ -38,13 +42,13 @@ function MyPageMain() {
 
   const loadingAccountData = async () => {
     try {
-      const response = await axiosInstance.get('/pay-accounts/members/me');
-      dispatch(setAccount({ account : response.data.data }));
+      const response = await axiosInstance.get("/pay-accounts/members/me");
+      dispatch(setAccount({ account: response.data.data }));
       console.log(account);
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
     }
-  }
+  };
 
   const openSecessionModal = (e) => {
     e.preventDefault();
@@ -56,15 +60,18 @@ function MyPageMain() {
     setSecessionModalOpen(false);
   };
 
-  const handleLogout = async () => {
+  const logoutConfirm = async () => {
+    await axiosInstance.post("/members/logout");
+    dispatch(clearUser());
+    dispatch(clearToken());
+    dispatch(clearAccount());
+    dispatch(clearLinkedAccount());
+    dispatch(resetReceipt());
+  };
+
+  const handleLogout = () => {
     try {
-      await axiosInstance.post("/members/logout");
-      dispatch(clearUser());
-      dispatch(clearToken());
-      dispatch(clearAccount());
-      dispatch(clearLinkedAccount());
-      dispatch(resetReceipt());
-      alert("로그아웃 되었습니다.");
+      setLogout(true);
     } catch (error) {
       console.error("로그인 실패", error);
       alert("로그아웃 실패! 다시 해주세요.");
@@ -73,29 +80,38 @@ function MyPageMain() {
 
   const secessionMember = async () => {
     //계좌가 살아있고 잔액이 0원 이상이라면
-    if(account && account.balance > 0){
-      alert("Pay계좌에 잔액이 남아있습니다. 잔액을 비운 후 탈퇴를 진행해 주세요.");
+    if (account.balance > 0) {
+      setIsExistsAccount(true);
       return;
+    } else {
+      //아니라면
+      setGoodbye(true);
     }
-    else{//아니라면
-      //회원 탈퇴 진행
-      await axiosInstance.delete('/members/me');
-      dispatch(clearUser());
-      dispatch(clearToken());
-      dispatch(clearAccount());
-      alert("서비스를 이용해주셔서 감사드립니다. 회원 탈퇴완료 되었습니다.");
-    }
-  }
+  };
+
+  const confirmSecession = async () => {
+    //회원 탈퇴 진행
+    await axiosInstance.delete("/members/me");
+    dispatch(clearUser());
+    dispatch(clearToken());
+    dispatch(clearAccount());
+    dispatch(clearLinkedAccount());
+    dispatch(resetReceipt());
+  };
 
   const formatBalance = (balance) => {
     const numericBalance = parseFloat(balance);
-    return numericBalance.toLocaleString('ko-KR'); // 'ko-KR' 로케일을 사용하여 한국어 형식으로 변환
+    return numericBalance.toLocaleString("ko-KR"); // 'ko-KR' 로케일을 사용하여 한국어 형식으로 변환
   };
 
   return (
     <div className="mypage-container">
       <div className="mypage-profile">
-        <img src={member?.profileImg ? member.profileImg : defaultImage} alt="기본" className="mypage-profile-image" />
+        <img
+          src={member?.profileImg ? member.profileImg : defaultImage}
+          alt="기본"
+          className="mypage-profile-image"
+        />
         <p className="mypage-profile-name">{member?.nickname}</p>
         <p className="mypage-profile-email">{member?.email}</p>
         <button className="mypage-logout-button" onClick={handleLogout}>
@@ -103,22 +119,30 @@ function MyPageMain() {
         </button>
       </div>
       <div className="mypage-content">
-        {account !== null ? 
-        <button
-          className="mypage-my-wallet"
-          onClick={() => navigate("/wallet")}
-        >
-          <p className="mypage-my-wallet-summary">{account?.memberName} 지갑</p>
-          <p className="mypage-my-wallet-balance">{formatBalance(account?.balance)}원</p>
-        </button> :
-        <button
-        className="mypage-my-wallet"
-        onClick={() => navigate("/wallet")}
-      >
-        <p className="mypage-my-wallet-summary">계좌가 없으신데용 ㅋㅋ</p>
-        <p className="mypage-my-wallet-balance">만드세요~</p>
-      </button>
-}
+        {account !== null ? (
+          <button
+            className="mypage-my-wallet"
+            onClick={() => navigate("/wallet")}
+          >
+            <img src={wallet} alt="지갑" className="mypage-my-wallet-image" />
+            <div>
+              <p className="mypage-my-wallet-summary">
+                {account?.memberName} 지갑
+              </p>
+              <p className="mypage-my-wallet-balance">
+                {formatBalance(account?.balance)}원
+              </p>
+            </div>
+          </button>
+        ) : (
+          <button
+            className="mypage-my-wallet"
+            onClick={() => navigate("/wallet")}
+          >
+            <p className="mypage-my-wallet-summary">계좌가 없으신데용 ㅋㅋ</p>
+            <p className="mypage-my-wallet-balance">만드세요~</p>
+          </button>
+        )}
         <button
           className="mypage-my-profile-update"
           onClick={() => navigate("profile_update")}
@@ -166,13 +190,35 @@ function MyPageMain() {
               >
                 취소
               </button>
-              <button className="mypage-secession-modal-isSecession-button-ok" 
-              onClick={secessionMember}>
+              <button
+                className="mypage-secession-modal-isSecession-button-ok"
+                onClick={secessionMember}
+              >
                 확인
               </button>
             </div>
           </div>
         </div>
+      )}
+
+      {isExistsAccount && (
+        <Modal
+          mainMessage={"계좌가 아직 존재합니다!"}
+          subMessage={"잔액을 비워주시고 다시 시도해주세요."}
+          onClose={() => window.location.reload()}
+        />
+      )}
+
+      {goodbye && (
+        <Modal
+          mainMessage={"서비스를 이용해주셔서 감사드립니다!"}
+          subMessage={"회원탈퇴가 완료 되었습니다."}
+          onClose={confirmSecession}
+        />
+      )}
+
+      {logout && (
+        <Modal mainMessage={"로그아웃 되었습니다."} onClose={logoutConfirm} />
       )}
     </div>
   );
