@@ -23,6 +23,10 @@ import PlacesList from "../kakao/PlacesList";
 import Pagination from "../kakao/Pagination";
 import CheckModal from "../common/CheckModal";
 
+
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
+
+
 function ScheduleDetail() {
   const { id, schedule_id } = useParams();
   const [places, setPlaces] = useState([]);
@@ -133,17 +137,6 @@ function ScheduleDetail() {
     fetchScheduleDetail();
   }, [id, schedule_id]);
 
-  // 목업 데이터
-  const locations_mokup = [
-    {
-      id: 1,
-      name: "서울 맛집",
-      address: "서울특별시 중구 을지로 123",
-      image: "https://example.com/images/seoul-matzip.jpg",
-      date: "2024-08-01",
-    },
-  ];
-
   const [selectedDate, setSelectedDate] = useState(null);
   const [isHeartClicked, setIsHeartClicked] = useState(true);
   // const [isCallStarted, setIsCallStarted] = useState(false);
@@ -209,7 +202,7 @@ function ScheduleDetail() {
     const getDatePlaces = async () => {
       try {
         const response = await axiosInstance.get(`/teams/${id}/plans/${schedule_id}/bookmarks/${selectedDate}`);
-        console.log(response);
+        console.log(response.data.data);
         setDatePlaces(response.data.data)
       } catch (error) {
         console.error("데이터 불러오기 실패", error);
@@ -230,6 +223,54 @@ function ScheduleDetail() {
 
   // 일정 수정 axios 요청
   // const scheduleUpdate = async () =>
+
+
+    // 드래그 완료 후 호출되는 함수
+    const onDragEnd = (result) => {
+      const { destination, source, draggableId } = result;
+  
+      if (!destination) return;
+
+      const extractIdNumber = (draggableId) => {
+        return parseInt(draggableId.split('-').pop(), 10);
+      };
+
+      const newbookmarkid =extractIdNumber(draggableId)
+  
+      const reorderedPlaces = Array.from(datePlaces);
+      const [movedItem] = reorderedPlaces.splice(source.index, 1);
+      reorderedPlaces.splice(destination.index, 0, movedItem);
+  
+      setDatePlaces(reorderedPlaces);
+
+
+          // 날짜 북마크 내에서 순서 수정 (드래그 앤 드롭)
+    const newBookMarkOrder = async () => {
+      const orderForm = {
+        newOrder: destination.index,
+      }
+
+      try {
+        console.log(orderForm)
+        const response = await axiosInstance.patch(`/teams/${id}/plans/${schedule_id}/bookmarks/${newbookmarkid}/order`, orderForm, {
+          header: {
+            "Content-Type": "application/json"
+          }
+        });
+        console.log(response.data);
+      } catch (error) {
+        console.error("데이터 불러오기 실패", error.response);
+      }
+    }
+    newBookMarkOrder()
+
+
+    };
+
+
+    // 날짜 북마크 내에서 순서 수정 (드래그 앤 드롭)
+    
+
 
   return (
     <div className="schedule-detail">
@@ -320,26 +361,47 @@ function ScheduleDetail() {
           ))}
         </div>
       ) : (
-        <div>
-          {datePlaces.map((item, index) => (
-            <ScheduleDetailPlaces
-              key={item.placeId}
-              meetingId={id}
-              scheduleId={schedule_id}
-              bookmarkId={item.bookmarkId}
-              // img_url={item.image}
-              name={item.placeName}
-              address={item.placeAddr}
-              datedate={item.date}
-              firstDate={datedata[0]?.date}
-              lastDate={datedata[datedata.length - 1]?.date}
-              forRendering={forRendering}
-              setForRendering={setForRendering}
-            />
-          ))}
-        </div>
+
+
+
+        <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="droppable-places">
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+            >
+              {datePlaces.map((item, index) => (
+                <ScheduleDetailPlaces
+                  key={item.bookmarkId}
+                  index={index}
+                  meetingId={id}
+                  scheduleId={schedule_id}
+                  bookmarkId={item.bookmarkId}
+                  name={item.placeName}
+                  address={item.placeAddr}
+                  datedate={item.date}
+                  firstDate={datedata[0]?.date}
+                  lastDate={datedata[datedata.length - 1]?.date}
+                  forRendering={forRendering}
+                  setForRendering={setForRendering}
+                />
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+
+
+
+
       )}
+
+
+
     </div>
+
 
     {/* <div className="schedule-detail-button">
       {isCallStarted ? (
