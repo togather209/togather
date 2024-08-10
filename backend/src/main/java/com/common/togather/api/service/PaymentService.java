@@ -235,10 +235,10 @@ public class PaymentService {
                 // 영수증 관리자일때
                 if (member.getId() == receiver.getId()) {
                     paymentMap.put(sender.getId(),
-                            paymentMap.getOrDefault(sender.getId(), 0) - memberBalance);
+                            paymentMap.getOrDefault(sender.getId(), 0) + memberBalance);
                 } else if (member.getId() == sender.getId()) {
                     paymentMap.put(receiver.getId(),
-                            paymentMap.getOrDefault(receiver.getId(), 0) + memberBalance);
+                            paymentMap.getOrDefault(receiver.getId(), 0) - memberBalance);
                 }
             }
         });
