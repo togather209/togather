@@ -10,6 +10,7 @@ import DeleteReceiptModal from "./DeleteReceiptModal";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setTeamPlan } from "../../../redux/slices/receiptSlice";
+import Loading from "../../common/Loading";
 
 function ReceiptDetail() {
   const navigate = useNavigate();
@@ -204,7 +205,7 @@ function ReceiptDetail() {
           </div>
         </div>
       ) : (
-        <div>로딩 중...</div>
+        <></>
       )}
       {isDeleteModalOpen && (
         <DeleteReceiptModal
