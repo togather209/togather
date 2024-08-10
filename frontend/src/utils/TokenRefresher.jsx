@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { refreshAccessTokenAsync } from "../redux/slices/authSlice";
 import { useLocation, useNavigate } from "react-router-dom";
+import Loading from "../components/common/Loading";
 
 const TokenRefresher = ({ children }) => {
   const dispatch = useDispatch();
@@ -13,7 +14,7 @@ const TokenRefresher = ({ children }) => {
   useEffect(() => {
     //console.log("Current pathname:", location.pathname); // 현재 경로 출력
 
-    const excludedPaths = ["/login", "/signup", "/"];
+    const excludedPaths = ["/login", "/signup", "/", "/search_password"];
     if (!excludedPaths.includes(location.pathname)) {
       const tokenReload = async () => {
         await dispatch(refreshAccessTokenAsync()).unwrap();
@@ -41,14 +42,14 @@ const TokenRefresher = ({ children }) => {
   // }, [navigate, location.pathname]);
 
   useEffect(() => {
-    const restrictedPaths = ["/login", "/signup", "/"];
+    const restrictedPaths = ["/login", "/signup", "/", "/search_password"];
     if (accessToken && restrictedPaths.includes(location.pathname)) {
       navigate("/home", { replace: true });
     }
   }, [accessToken, location.pathname, navigate]);
 
   if (loading) {
-    return <div>Loading...</div>; // 로딩 중일 때 보여줄 UI
+    return <Loading/>; // 로딩 중일 때 보여줄 UI
   }
 
   return children;

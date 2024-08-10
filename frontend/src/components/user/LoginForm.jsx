@@ -102,7 +102,7 @@ function LoginForm() {
         </Link>
         <p className="textBoundary">{" | "}</p>
         <Link
-          to="/searchpassword"
+          to="/search_password"
           style={{ textDecoration: "none", color: "black" }}
         >
           비밀번호 찾기
