@@ -17,8 +17,8 @@ const ReceiptCard = ({ receipt, onClick }) => {
     <div className={`receipt-card ${receiptColor()}`} onClick={onClick}>
       <h3>{receipt.businessName}</h3>
       <p>총액</p>
-      <p className="amount">{receipt.totalPrice.toLocaleString()}원</p>
-      <p className="date">일시 : {receipt.paymentDate.slice(2, 10)}</p>
+      <p className="receipt-amount">{receipt.totalPrice.toLocaleString()}원</p>
+      <p className="receipt-date">일시 : {receipt.paymentDate.slice(2, 10)}</p>
     </div>
   );
 };
