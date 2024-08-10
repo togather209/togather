@@ -4,12 +4,17 @@ import { useLocation } from "react-router-dom";
 import Loading from "../common/Loading";
 import "./PaymentContainer.css";
 import BackButton from "../common/BackButton";
+import Receive from "../../assets/payment/receive.png";
+import Send from "../../assets/payment/send.png";
+import Spend from "../../assets/payment/spend.png";
+import RenderButton from "./PaymentRenderButton";
 
 function PaymentContainer() {
   const location = useLocation();
   const { teamId, planId } = location.state || { teamId: 1, planId: 1 };
   const [paymentData, setPaymentData] = useState(null);
   const [loginUserName, setLoginUserName] = useState("");
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     // 정산 예정 내역 API 조회
@@ -45,8 +50,9 @@ function PaymentContainer() {
       endDate: "2024-07-17",
       teamTitle: "비모",
       planTitle: "부산일정",
+      status: 0,
       receiverPayments: [
-        { name: "김선하", money: 22000 },
+        { name: "TOGETHER", money: 22000 },
         { name: "서두나", money: 33000 },
         { name: "김범규", money: 18700 },
         { name: "김해수", money: 20000 },
@@ -63,7 +69,7 @@ function PaymentContainer() {
         { name: "아쿠아리움", money: 12000 },
         { name: "택시비", money: 7600 },
         { name: "소주", money: 8000 },
-        { item: "반건조 오징어", money: 4000 },
+        { name: "반건조 오징어", money: 4000 },
       ],
     };
 
@@ -97,11 +103,9 @@ function PaymentContainer() {
       <div className="payment-back-button">
         <BackButton />
       </div>
-      <div className="payment-container-title">
-        {loginUserName}님의 최종 정산 내역
-      </div>
-      <div className="receipt-box">
-        <div className="receipt-header">
+      <div className="payment-title">{loginUserName}님의 최종 정산 내역</div>
+      <div className="payment-receipt-box">
+        <div className="payment-receipt-header">
           <h2>Receipt</h2>
           <p>모임명: {teamTitle}</p>
           <p>일정명: {planTitle}</p>
@@ -110,29 +114,31 @@ function PaymentContainer() {
           </p>
         </div>
 
-        <div className="receipt-section">
+        <div className="payment-receipt-section">
           <h3>
-            <span className="receipt-section-number">
-              <span className="section-number">1</span>
+            <span className="payment-receipt-section-number">
+              <span className="receipt-section-number-inner">1</span>
             </span>{" "}
             정산 요약
           </h3>
-          <div className="receipt-summary">
-            <div className="receipt-summary-receive-amount">
+          <div className="payment-receipt-summary">
+            <div className="payment-receipt-summary-receive">
               <p>정산으로 받을 금액</p>
-              <p className="amount">
+              <p className="payment-receipt-summary-amount">
                 + {calculateTotal(filteredReceiverPayments)}원
               </p>
             </div>
-            <div className="receipt-summary-send-amount">
+            <div className="payment-receipt-summary-send">
               <p>정산으로 보낼 금액</p>
-              <p className="amount">- {calculateTotal(senderPayments)}원</p>
+              <p className="payment-receipt-summary-amount">
+                - {calculateTotal(senderPayments)}원
+              </p>
             </div>
           </div>
           <hr />
-          <div className="final-amount-container">
+          <div className="payment-final-amount-container">
             <div>최종 정산 예정 금액 </div>
-            <span className="final-amount">
+            <span className="payment-final-amount">
               {calculateTotal(filteredReceiverPayments) -
                 calculateTotal(senderPayments)}{" "}
               원
@@ -140,83 +146,129 @@ function PaymentContainer() {
           </div>
         </div>
 
-        <div className="receipt-section">
+        <div className="payment-receipt-section">
           <h3>
-            <span className="receipt-section-number">
-              <span className="section-number">2</span>
+            <span className="payment-receipt-section-number">
+              <span className="receipt-section-number-inner">2</span>
             </span>{" "}
             정산 상세 내역
           </h3>
           <div className="payment-details">
-            <div>
-              <h4>정산 받을 금액</h4>
-              <div className="payment-item-list">
-                {filteredReceiverPayments.map((payment, index) => (
-                  <div key={index} className="payment-item">
-                    <p
-                      className={`name ${
-                        payment.name === "TOGETHER" ? "system-name" : ""
-                      }`}
-                    >
-                      {payment.name}
-                    </p>
-                    <p>{payment.money}원</p>
-                  </div>
-                ))}
+            <div className="payment-details-receive">
+              <div>
+                <h4>
+                  <img
+                    src={Receive}
+                    alt=""
+                    className="payment-details-receive-icon"
+                  />
+                  정산 받을 금액
+                </h4>
+                <div className="payment-item-list">
+                  {filteredReceiverPayments.map((payment, index) => (
+                    <div key={index} className="payment-item">
+                      <p
+                        className={`name ${
+                          payment.name === "TOGETHER"
+                            ? "payment-system-name"
+                            : ""
+                        }`}
+                      >
+                        {payment.name}
+                      </p>
+                      <p
+                        className={`name ${
+                          payment.name === "TOGETHER"
+                            ? "payment-system-name"
+                            : ""
+                        }`}
+                      >
+                        {payment.money}원
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <hr />
+              <div className="payment-summary-total">
+                <p>총액 </p>
+                <p>{calculateTotal(receiverPayments)}원</p>
               </div>
             </div>
-            <hr />
 
-            <div>
-              <h4>정산 보낼 금액</h4>
-              {senderPayments.length > 0 ? (
-                senderPayments.map((payment, index) => (
-                  <div key={index} className="payment-item">
-                    <p>{payment.name}</p>
-                    <p>{payment.money}원</p>
-                  </div>
-                ))
-              ) : (
-                <p>정산 보낼 금액이 없습니다.</p>
-              )}
+            <div className="payment-details-send">
+              <div>
+                <h4>
+                  <img
+                    src={Send}
+                    alt=""
+                    className="payment-details-send-icon"
+                  />
+                  정산 보낼 금액
+                </h4>
+                {senderPayments.length > 0 ? (
+                  senderPayments.map((payment, index) => (
+                    <div key={index} className="payment-item">
+                      <p>{payment.name}</p>
+                      <p>{payment.money}원</p>
+                    </div>
+                  ))
+                ) : (
+                  <p>정산 보낼 금액이 없습니다.</p>
+                )}
+              </div>
+              <hr />
+              <div className="payment-summary-total">
+                <p>총액 </p>
+                <p>{calculateTotal(senderPayments)}원</p>
+              </div>
             </div>
-            <hr />
           </div>
         </div>
 
-        <div className="receipt-section">
-          <h3>
-            <span className="receipt-section-number">
-              <span className="section-number">3</span>
-            </span>{" "}
-            지출 상세 내역
-          </h3>
-          <div className="expense-details">
-            <h4>일정에서 나의 총 지출액</h4>
-            {memberItems.map((expense, index) => (
-              <div key={index} className="expense-item">
-                <p>{expense.name}</p>
-                <p>{expense.money}원</p>
-              </div>
-            ))}
-            <hr />
-            <div className="expense-total">
-              총액 {calculateTotal(memberItems)}원
-            </div>
+        <div className="payment-final-summary">
+          <div>
+            {calculateTotal(filteredReceiverPayments)}원 -{" "}
+            {calculateTotal(senderPayments)}원 =
           </div>
-        </div>
-
-        <div className="final-summary">
-          {calculateTotal(filteredReceiverPayments)}원 -{" "}
-          {calculateTotal(senderPayments)}원 =
-          <span className="final-amount">
+          <span className="payment-final-amount">
             {calculateTotal(filteredReceiverPayments) -
               calculateTotal(senderPayments)}{" "}
             원
           </span>
         </div>
+
+        <div className="payment-receipt-section disabled8">
+          <h3>
+            <span className="payment-receipt-section-number">
+              <span className="receipt-section-number-inner">3</span>
+            </span>{" "}
+            지출 상세 내역
+          </h3>
+          <div className="payment-expense-details">
+            <h4>
+              <img
+                src={Spend}
+                alt=""
+                className="payment-expense-details-icon"
+              />
+              일정에서 나의 총 지출액
+            </h4>
+            {memberItems.map((expense, index) => (
+              <div key={index} className="payment-expense-item">
+                <p>{expense.name}</p>
+                <p>{expense.money}원</p>
+              </div>
+            ))}
+            <hr />
+            <div className="payment-expense-total">
+              <p>총액 </p>
+              <p>{calculateTotal(memberItems)}원</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <button className="settle-button">정산 시작하기</button>
+      {RenderButton(paymentData)}
     </div>
   );
 }

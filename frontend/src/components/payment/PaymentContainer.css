@@ -7,13 +7,13 @@
   left: 16px;
 }
 
-.payment-container-title {
+.payment-title {
   width: 100%;
   margin-top: 54px;
   margin-left: 40px;
 }
 
-.receipt-box {
+.payment-receipt-box {
   width: 80%;
   margin: 16px 0;
   background-color: #f7f7f7;
@@ -22,129 +22,157 @@
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.receipt-box hr {
-  margin: 10px 0 20px 0;
+.payment-receipt-box hr {
+  margin: 10px 0 15px 0;
   border: 1px solid #e6e6e6;
 }
 
-.receipt-header {
+.payment-receipt-header {
   text-align: center;
   margin-bottom: 30px;
 }
 
-.receipt-header h2 {
+.payment-receipt-header h2 {
   margin-bottom: 30px;
 }
 
-.receipt-header div {
+.payment-receipt-header div {
   font-size: 24px;
   font-weight: bold;
   color: #000;
   margin-bottom: 5px;
 }
 
-.receipt-header p {
+.payment-receipt-header p {
   font-size: 12px;
   color: #888;
   margin: 2px 0;
   text-align: end;
 }
 
-.receipt-section {
-  margin-bottom: 30px;
-}
+/* .payment-receipt-section:not(.disabled) {
+  margin-bottom: 20px;
+} */
 
-.receipt-section h3 {
+.payment-receipt-section h3 {
   font-size: 16px;
   font-weight: bolder;
   margin-bottom: 18px;
-  color: #712FFF;
+  color: #712fff;
 }
 
-.receipt-section h3 .receipt-section-number {
+.payment-receipt-section h3 .payment-receipt-section-number {
   display: inline-block;
-  width: 28px;
-  height: 28px;
-  border: 1.5px solid #712FFF ;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid #712fff;
   border-radius: 50%;
   margin-right: 6px;
 }
 
-.receipt-section h3 .section-number {
+.payment-receipt-section h3 .receipt-section-number-inner {
   display: inline-block;
-  width: 22px;
-  height: 22px;
-  line-height: 23px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
   border-radius: 50%;
-  background-color: #712FFF; /* 배경색 설정 */
-  color: white; /* 숫자 색상 */
+  background-color: #712fff;
+  color: white;
   font-weight: bold;
   text-align: center;
   font-size: 12px;
-  margin: 3px; /* 숫자와 텍스트 간의 간격 */
+  transform: translate(10%, -10%);
 }
 
-.receipt-summary {
+.payment-receipt-summary {
   margin-bottom: 15px;
   font-size: 14px;
   color: black;
 }
 
-.receipt-summary-receive-amount,
-.receipt-summary-send-amount {
+.payment-receipt-summary-receive,
+.payment-receipt-summary-send {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
   font-size: 14px;
-  /* color: #575656 */
 }
 
 .payment-item,
-.expense-item {
+.payment-expense-item {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
   font-size: 12px;
 }
 
-.amount {
+.payment-amount {
   font-weight: bold;
   color: #712fff;
 }
 
-.final-amount-container {
-  font-size: 16px;
-  font-weight: bold;
+.payment-final-amount-container {
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  font-weight: bold;
 }
 
-.final-amount {
+.payment-final-summary div {
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5px;
+}
+
+.payment-final-amount {
+  display: flex;
+  justify-content: center;
   font-size: 18px;
   font-weight: bold;
-  color: #712FFF;
+  color: #712fff;
+  margin-bottom: 40px;
 }
 
 .payment-details {
   margin-bottom: 20px;
 }
 
-.payment-details h4, .expense-details h4 {
+.payment-details-receive,
+.payment-details-send {
+  margin: 30px 0;
+}
+
+.payment-details-receive-icon,
+.payment-details-send-icon,
+.payment-expense-details-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  margin-right: 10px;
+  margin-top: 3px;
+}
+
+.payment-details h4,
+.payment-expense-details h4 {
+  display: flex;
   color: #575656;
-  margin: 10px 0 20px 0;
+  margin: 20px 0 20px 0;
 }
 
-.system-name {
+.payment-system-name {
   font-style: italic;
-  color: #ff0000;
+  font-weight: bold;
+  color: #712fff;
 }
 
-.expense-details {
+.payment-expense-details {
   margin-top: 15px;
 }
 
-.expense-total {
+.payment-expense-total,
+.payment-summary-total {
+  display: flex;
+  justify-content: space-between;
   text-align: right;
   font-weight: bold;
   color: #333;
@@ -152,15 +180,15 @@
   margin-top: 10px;
 }
 
-.final-summary {
+.payment-final-summary {
   font-size: 18px;
   font-weight: bold;
   text-align: right;
-  color: #712fff;
+  color: #575656;
   margin-top: 20px;
 }
 
-.settle-button {
+.payment-settle-button {
   background-color: #712fff;
   color: #fff;
   padding: 15px;
@@ -173,6 +201,6 @@
   margin-top: 20px;
 }
 
-.settle-button:hover {
+.payment-settle-button:hover {
   background-color: #5e23e5;
 }
