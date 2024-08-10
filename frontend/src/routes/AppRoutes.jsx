@@ -46,6 +46,7 @@ import PrivateRoute from "./PrivateRoute";
 import MeetingSetting from "../components/meeting/MeetingSetting";
 import MeetingDetailPart from "../components/meeting/MeetingDetailPart";
 import Payment from "../pages/Payment";
+import SearchPasswordForm from "../components/user/SearchPasswordForm";
 
 function AppRoutes() {
   return (
@@ -53,6 +54,7 @@ function AppRoutes() {
       <Route path="/" element={<Landing />} />
       <Route path="/signup" element={<SignUpForm />} />
       <Route path="/login" element={<User />} />
+      <Route path="search_password" element={<SearchPasswordForm />}/>
       <Route
         path="/mypage"
         element={
