@@ -1,8 +1,7 @@
 package com.common.togather.api.service;
 
-import com.common.togather.api.error.MemberNotFoundException;
-import com.common.togather.api.error.MemberTeamNotFoundException;
-import com.common.togather.api.error.PlanNotFoundException;
+import com.common.togather.api.error.*;
+import com.common.togather.api.request.TransactionSaveRequest;
 import com.common.togather.api.response.PaymentFindByPlanIdAndMemberResponse;
 import com.common.togather.api.response.PaymentFindByPlanIdResponse;
 import com.common.togather.api.response.PaymentFindByPlanIdResponse.MemberItem;
@@ -15,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +30,8 @@ public class PaymentService {
     private final TeamMemberRepositorySupport teamMemberRepositorySupport;
     private final PlanRepository planRepository;
     private final MemberRepository memberRepository;
+    private final PayAccountRepository payAccountRepository;
+    private final TransactionService transactionService;
 
     private final String systemName = "TOGETHER";
     private final Integer systemType = 1;
@@ -289,4 +291,59 @@ public class PaymentService {
                 .collect(Collectors.groupingBy(PaymentFindDto::getItemId));
     }
 
+    // 정산내역 송금하기
+    public void transferSettlement(String email, int planId) {
+
+        List<Payment> payments = paymentRepository.findByPlanIdAndSenderEmail(planId, email);
+        PayAccount payAccount = payAccountRepository.findByMember_Email(email)
+                .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
+        List<Transaction> myTransaction = payAccount.getTransactions();
+        PayAccount targetPayAccount = null;
+
+        // 송금
+        for (Payment payment : payments) {
+            targetPayAccount = payAccountRepository.findByMemberId(payment.getReceiver().getId())
+                    .orElseThrow(() -> new PayAccountNotFoundException("Target Pay 계좌가 존재하지 않습니다."));
+
+            // 송금자의 잔액이 부족한지 확인
+            if (payAccount.getBalance() < payment.getMoney()) {
+                throw new InsufficientBalanceException("잔액이 부족합니다.");
+            }
+
+            payAccount.decreaseBalance(payment.getMoney());
+            targetPayAccount.increaseBalance(payment.getMoney());
+
+            TransactionSaveRequest myTransactionSaveRequest = TransactionSaveRequest.builder()
+                    .senderName(payAccount.getMember().getName())
+                    .receiverName(targetPayAccount.getMember().getName())
+                    .price(payment.getMoney())
+                    .balance(payAccount.getBalance())
+                    .date(LocalDateTime.now())
+                    .status(1)  // 출금
+                    .payAccountId(payAccount.getId())
+                    .build();
+
+            TransactionSaveRequest targetTransactionSaveRequest = TransactionSaveRequest.builder()
+                    .senderName(payAccount.getMember().getName())
+                    .receiverName(targetPayAccount.getMember().getName())
+                    .price(payment.getMoney())
+                    .balance(targetPayAccount.getBalance())
+                    .date(LocalDateTime.now())
+                    .status(0)  // 입금
+                    .payAccountId(targetPayAccount.getId())
+                    .build();
+
+            transactionService.saveTransaction(myTransactionSaveRequest);
+            transactionService.saveTransaction(targetTransactionSaveRequest);
+
+            // 송금 후 정산 내역 삭제
+            paymentRepository.delete(payment);
+
+            if (paymentRepository.countByPlanId(planId) == 0) {
+                Plan plan = planRepository.findById(planId).get();
+                plan.updateStatus(3);
+                planRepository.save(plan);
+            }
+        }
+    }
 }
