@@ -24,6 +24,7 @@ public class PaymentApprovalService {
     private final PaymentApprovalRepositorySupport paymentApprovalRepositorySupport;
     private final PaymentApprovalRepository paymentApprovalRepository;
 
+    // 일정 종료 및 정산 요청
     @Transactional
     public void savePaymentApprovalByPlanId(String email, int planId) {
 
@@ -60,6 +61,7 @@ public class PaymentApprovalService {
         paymentApprovalRepository.saveAll(paymentApprovals);
     }
 
+    // 정산 수락
     @Transactional
     public PaymentApprovalUpdateByPlanIdResponse UpdatePaymentApprovalByPlanId(String email, int planId) {
 
@@ -88,6 +90,7 @@ public class PaymentApprovalService {
                 .build();
     }
 
+    // 정산 거절
     @Transactional
     public void DeletePaymentApprovalByPlanId(String email, int planId, String contents) {
 

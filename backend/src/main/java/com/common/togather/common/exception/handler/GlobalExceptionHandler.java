@@ -279,4 +279,11 @@ public class GlobalExceptionHandler {
         ErrorResponseDto error = new ErrorResponseDto("Invalid plan status Password", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
+    // 카카오 코드가 존재하지 않는 경우(유저가 동의 화면에서 카카오 로그인 취소했을 경우)
+    @ExceptionHandler(NotFoundKakaoException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotFoundKakaoCodeException(PlanNotFoundException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Kakao Code Not Found", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
 }

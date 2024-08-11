@@ -8,6 +8,7 @@ import com.common.togather.api.response.PaymentFindByPlanIdResponse.MemberItem;
 import com.common.togather.api.response.PaymentFindByPlanIdResponse.ReceiverPayment;
 import com.common.togather.api.response.PaymentFindByPlanIdResponse.SenderPayment;
 import com.common.togather.api.response.PaymentFindDto;
+import com.common.togather.common.util.FCMUtil;
 import com.common.togather.db.entity.*;
 import com.common.togather.db.repository.*;
 import jakarta.transaction.Transactional;
@@ -32,10 +33,13 @@ public class PaymentService {
     private final MemberRepository memberRepository;
     private final PayAccountRepository payAccountRepository;
     private final TransactionService transactionService;
+    private final AlarmRepository alarmRepository;
+    private final FCMUtil fcmUtil;
 
     private final String systemName = "TOGETHER";
     private final Integer systemType = 1;
 
+    // 정산 내역 조회
     public PaymentFindByPlanIdResponse findPaymentByPlanId(String email, int teamId, int planId) {
 
         TeamMember teamMember = teamMemberRepositorySupport.findMemberInTeamByEmail(teamId, email)
@@ -167,6 +171,7 @@ public class PaymentService {
                 .build();
     }
 
+    // 정산 완료
     @Transactional
     public void savePaymentByPlanId(String email, int planId) {
 
@@ -177,8 +182,8 @@ public class PaymentService {
             throw new InvalidPlanStatusException("이미 정산이 종료 되었습니다.");
         }
 
-        if (plan.getStatus() == 2) {
-            throw new InvalidPlanStatusException("정산을 모두 수락하지 않았습니다.");
+        if (plan.getStatus() != 2) {
+            throw new InvalidPlanStatusException("정산 완료를 할 수 있는 상태가 아닙니다.");
         }
 
         // 정산 완료 상태 저장
@@ -216,8 +221,11 @@ public class PaymentService {
             }
         });
         paymentRepository.saveAll(paymentMap.values());
+
+        // 알림 전송
     }
 
+    // 실시간 정산 현황
     public PaymentFindByPlanIdAndMemberResponse findPaymentByPlanIdAndMember(String email, int planId) {
 
         Plan plan = planRepository.findById(planId)
