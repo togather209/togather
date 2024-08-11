@@ -10,15 +10,20 @@ import kakao from "../../assets/icons/common/kakao.png";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setToken } from "../../redux/slices/authSlice";
+import { useFirebase } from "../../firebaseContext";
 
 function LoginForm() {
   const API_LINK = import.meta.env.VITE_API_URL;
+  //리다이렉트 URI
+  const CLIENT_ID = import.meta.env.VITE_KAKAO_LOGIN_CLIENT_ID;
+  const REDIRECT_URI = import.meta.env.VITE_KAKAO_LOGIN_REDIRECT_URI;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberEmail, setRememberEmail] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { fcmToken } = useFirebase();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -30,6 +35,7 @@ function LoginForm() {
     const memberData = {
       email,
       password,
+      fcmToken
     };
 
     try {
@@ -42,6 +48,7 @@ function LoginForm() {
       });
 
       console.log("로그인 성공!", response.data);
+      console.log(memberData);
 
       //토큰 가져오기
       const { accessToken, refreshToken } = response.data.data;
@@ -62,10 +69,8 @@ function LoginForm() {
 
   // 카카오 로그인
   const handleKakaoLogin = () => {
-    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${import.meta.env.VITE_KAKAO_LOGIN_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_KAKAO_LOGIN_REDIRECT_URI}`;
+    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&`;
     window.location.href = kakaoAuthUrl;
-
-
   }
 
   return (
