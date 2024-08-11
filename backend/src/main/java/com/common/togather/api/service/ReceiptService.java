@@ -61,7 +61,10 @@ public class ReceiptService {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
 
-        Bookmark bookmark = getBookmark(requestDto.getBookmarkId());
+        Bookmark bookmark = null;
+        if (requestDto.getBookmarkId() != null) {
+            bookmark = getBookmark(requestDto.getBookmarkId());
+        }
 
         Receipt receipt = Receipt.builder()
                 .plan(plan)
@@ -193,7 +196,7 @@ public class ReceiptService {
                 .orElseThrow(() -> new MemberTeamNotFoundException("해당 팀에 소속되지 않은 회원입니다."));
 
         planRepository.findById(planId)
-                .orElseThrow(()-> new PlanNotFoundException("해당 일정이 존재하지 않습니다."));
+                .orElseThrow(() -> new PlanNotFoundException("해당 일정이 존재하지 않습니다."));
 
         Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
                 .orElseThrow(() -> new BookmarkNotFoundException("해당 북마크가 존재하지 않습니다."));
