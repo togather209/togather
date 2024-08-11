@@ -49,7 +49,7 @@ public class PaymentApprovalController {
             @RequestHeader(value = "Authorization", required = false) String token,
             @PathVariable(name = "planId") int planId) {
 
-        paymentApprovalService.findPaymentApprovalByPlanId(jwtUtil.getAuthMemberEmail(token), planId);
+        paymentApprovalService.savePaymentApprovalByPlanId(jwtUtil.getAuthMemberEmail(token), planId);
 
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())

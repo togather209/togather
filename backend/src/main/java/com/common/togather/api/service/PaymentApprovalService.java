@@ -1,8 +1,6 @@
 package com.common.togather.api.service;
 
-import com.common.togather.api.error.NotFoundPaymentApprovalException;
-import com.common.togather.api.error.PlanNotFoundException;
-import com.common.togather.api.error.UnauthorizedAccessException;
+import com.common.togather.api.error.*;
 import com.common.togather.api.response.PaymentApprovalUpdateByPlanIdResponse;
 import com.common.togather.db.entity.Member;
 import com.common.togather.db.entity.PaymentApproval;
@@ -27,13 +25,17 @@ public class PaymentApprovalService {
     private final PaymentApprovalRepository paymentApprovalRepository;
 
     @Transactional
-    public void findPaymentApprovalByPlanId(String email, int planId) {
+    public void savePaymentApprovalByPlanId(String email, int planId) {
 
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
 
         if (!plan.isManager(email)) {
             throw new UnauthorizedAccessException("정산 요청의 접근 권환이 없습니다.");
+        }
+
+        if (plan.getStatus() == 1) {
+            throw new InvalidPlanStatueException("이미 일정이 종료 되었습니다.");
         }
 
         plan.updateStatus(1);
