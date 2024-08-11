@@ -66,6 +66,10 @@ public class PaymentApprovalService {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
 
+        if (plan.getStatus() != 1) {
+            throw new InvalidPlanStatusException("정산 수락을 할 수 있는 정산 종료 상태가 아닙니다.");
+        }
+
         // 수락 동시에 업데이트 확인으로 정산 요청 유무 확인
         if (paymentApprovalRepositorySupport.updateApprovalStatus(planId, email) == 0) {
             throw new NotFoundPaymentApprovalException("해당 정산 요청을 수락했거나 없습니다.");
@@ -88,6 +92,10 @@ public class PaymentApprovalService {
 
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
+
+        if (plan.getStatus() != 1) {
+            throw new InvalidPlanStatusException("정산 거절을 할 수 있는 정산 종료 상태가 아닙니다.");
+        }
 
         //일정에 유저가 포함 되어 있는지
         paymentApprovalRepository.findByMemberEmailAndPlanId(email, planId)
