@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface AlarmRepository extends JpaRepository<Alarm, Integer> {
     Optional<List<Alarm>> findAllByMemberId(int memberId);
+
+    int deleteByIdAndMemberEmail(int id, String email);
 }
