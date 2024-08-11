@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import CommonInput from "../common/CommonInput";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SubmitButton from "./SubmitButton";
 import "./User.css";
 import "../common/CommonInput.css";
@@ -61,6 +61,14 @@ function LoginForm() {
     }
   };
 
+  // 카카오 로그인
+  const handleKakaoLogin = () => {
+    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${import.meta.env.VITE_KAKAO_LOGIN_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_KAKAO_LOGIN_REDIRECT_URI}`;
+    window.location.href = kakaoAuthUrl;
+
+
+  }
+
   return (
     <div className="login-container">
       <div className="logo-container">
@@ -114,7 +122,8 @@ function LoginForm() {
       </div>
       <button
         className="loginWithKakao"
-        onClick={() => navigate("/loginWithKakao")}
+        // onClick={() => navigate("/loginWithKakao")}
+        onClick={handleKakaoLogin}
       >
         <img
           src={kakao}
