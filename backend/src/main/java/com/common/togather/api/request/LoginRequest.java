@@ -12,5 +12,5 @@ import lombok.Setter;
 public class LoginRequest {
     String email;
     String password;
-    String FCMToken;
+    String fcmToken;
 }
