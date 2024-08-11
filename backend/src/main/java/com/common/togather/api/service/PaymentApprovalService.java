@@ -88,7 +88,7 @@ public class PaymentApprovalService {
                 .build();
     }
 
-    public void DeletePaymentApprovalByPlanId(String email, int planId) {
+    public void DeletePaymentApprovalByPlanId(String email, int planId, String contents) {
 
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));

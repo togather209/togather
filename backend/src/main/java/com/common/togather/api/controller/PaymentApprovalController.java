@@ -1,6 +1,7 @@
 package com.common.togather.api.controller;
 
 
+import com.common.togather.api.request.PaymentApprovalDeleteRequest;
 import com.common.togather.api.response.ErrorResponseDto;
 import com.common.togather.api.response.PaymentApprovalUpdateByPlanIdResponse;
 import com.common.togather.api.response.ResponseDto;
@@ -121,9 +122,11 @@ public class PaymentApprovalController {
     })
     public ResponseEntity<ResponseDto<String>> deletePaymentApprovalByPlanId(
             @RequestHeader(value = "Authorization") String token,
-            @PathVariable(name = "planId") int planId) {
+            @PathVariable(name = "planId") int planId,
+            @RequestBody PaymentApprovalDeleteRequest requestDto) {
 
-        paymentApprovalService.DeletePaymentApprovalByPlanId(jwtUtil.getAuthMemberEmail(token), planId);
+        paymentApprovalService.DeletePaymentApprovalByPlanId(jwtUtil.getAuthMemberEmail(token), planId,
+                requestDto.getContents());
 
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
