@@ -1,6 +1,7 @@
 package com.common.togather.api.controller;
 
 
+import com.common.togather.api.request.PaymentApprovalDeleteRequest;
 import com.common.togather.api.response.ErrorResponseDto;
 import com.common.togather.api.response.PaymentApprovalUpdateByPlanIdResponse;
 import com.common.togather.api.response.ResponseDto;
@@ -43,13 +44,23 @@ public class PaymentApprovalController {
                     description = "해당 일정은 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
             ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "이미 일정이 종료 되었습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "정산할 영수증이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
 
     })
     public ResponseEntity<ResponseDto<String>> savePaymentApprovalByPlanId(
             @RequestHeader(value = "Authorization", required = false) String token,
             @PathVariable(name = "planId") int planId) {
 
-        paymentApprovalService.findPaymentApprovalByPlanId(jwtUtil.getAuthMemberEmail(token), planId);
+        paymentApprovalService.savePaymentApprovalByPlanId(jwtUtil.getAuthMemberEmail(token), planId);
 
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
@@ -111,9 +122,11 @@ public class PaymentApprovalController {
     })
     public ResponseEntity<ResponseDto<String>> deletePaymentApprovalByPlanId(
             @RequestHeader(value = "Authorization") String token,
-            @PathVariable(name = "planId") int planId) {
+            @PathVariable(name = "planId") int planId,
+            @RequestBody PaymentApprovalDeleteRequest requestDto) {
 
-        paymentApprovalService.DeletePaymentApprovalByPlanId(jwtUtil.getAuthMemberEmail(token), planId);
+        paymentApprovalService.DeletePaymentApprovalByPlanId(jwtUtil.getAuthMemberEmail(token), planId,
+                requestDto.getContents());
 
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
