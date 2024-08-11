@@ -22,12 +22,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.common.togather.common.fcm.AlarmType.PAYMENT_TRANSFER_REQUEST;
+
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
 
     private final PaymentRepositorySupport paymentRepositorySupport;
     private final PaymentRepository paymentRepository;
+    private final PaymentApprovalRepositorySupport paymentApprovalRepositorySupport;
     private final TeamMemberRepositorySupport teamMemberRepositorySupport;
     private final PlanRepository planRepository;
     private final MemberRepository memberRepository;
@@ -222,7 +225,25 @@ public class PaymentService {
         });
         paymentRepository.saveAll(paymentMap.values());
 
-        // 알림 전송
+
+        List<Member> members = paymentApprovalRepositorySupport.getMembers(planId);
+
+        for (Member member : members) {
+            // 알림 저장
+            alarmRepository.save(Alarm.builder()
+                    .member(member)
+                    .title(PAYMENT_TRANSFER_REQUEST.getTitle())
+                    .content(PAYMENT_TRANSFER_REQUEST.getMessage(plan.getTitle()))
+                    .type(PAYMENT_TRANSFER_REQUEST.getType())
+                    .build());
+
+            // 알림 전송
+            fcmUtil.pushNotification(
+                    member.getFcmToken().getToken(),
+                    PAYMENT_TRANSFER_REQUEST.getTitle(),
+                    PAYMENT_TRANSFER_REQUEST.getMessage(plan.getTitle())
+            );
+        }
     }
 
     // 실시간 정산 현황

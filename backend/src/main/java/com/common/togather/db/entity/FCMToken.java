@@ -20,7 +20,11 @@ public class FCMToken {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    // 내용
-    @Column(name = "content", nullable = false)
-    private String content;
+    // fcm 토큰
+    @Column(name = "token")
+    private String token;
+
+    public void updateToken(String token) {
+        this.token = token;
+    }
 }
