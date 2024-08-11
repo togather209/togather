@@ -71,6 +71,11 @@
   margin-left: 10px;
 }
 
+.participant-item label {
+  display: flex;
+  align-items: center;
+}
+
 .participant-item input {
   margin-right: 10px;
   width: 15px;
@@ -78,7 +83,16 @@
 }
 
 .participant-item input:checked {
-  accent-color: #712FFF;
+  accent-color: #712fff;
+}
+
+.participant-info-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #f0f0f0;
+  margin-right: 15px;
+  margin-left: 5px;
 }
 
 .select-confirm-button {
@@ -92,14 +106,14 @@
 }
 
 .select-confirm-button.active {
-  background: linear-gradient(45deg, #712FFF, #A074FF);
+  background: linear-gradient(45deg, #712fff, #a074ff);
   box-shadow: 5px 10px 20px #b08cff;
   color: white;
 }
 
 .select-confirm-button.inactive {
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
   color: #ccc;
-  box-shadow: 5px 10px 20px #E9E9E9;
+  box-shadow: 5px 10px 20px #e9e9e9;
   cursor: not-allowed;
 }

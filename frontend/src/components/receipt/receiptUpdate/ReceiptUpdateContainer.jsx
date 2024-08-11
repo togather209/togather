@@ -35,27 +35,6 @@ function ReceiptUpdateContainer() {
     }
   }, [dispatch, location.state]);
 
-  const handleSetActiveTab = (
-    tab,
-    items = [],
-    businessName = "",
-    paymentDate = ""
-  ) => {
-    dispatch(setActiveTab(tab));
-
-    if (items.length > 0) {
-      dispatch(
-        setReceiptData({
-          ...receiptData,
-          items: items,
-          businessName: businessName,
-          paymentDate: paymentDate,
-          totalPrice: items.reduce((total, item) => total + item.price, 0),
-        })
-      );
-    }
-  };
-
   return (
     <div className="form-container">
       <header className="form-header">

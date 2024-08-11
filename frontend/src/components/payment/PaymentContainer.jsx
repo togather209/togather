@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Loading from "../common/Loading";
 import "./PaymentContainer.css";
 import BackButton from "../common/BackButton";
@@ -11,13 +11,16 @@ import RenderButton from "./PaymentRenderButton";
 import Modal from "../common/Modal";
 
 function PaymentContainer() {
+  const navigate = useNavigate();
   const location = useLocation();
-  const { teamId, planId } = location.state || { teamId: 1, planId: 1 };
+  let { teamId, planId } = location.state || {};
   const [paymentData, setPaymentData] = useState(null);
   const [loginUserName, setLoginUserName] = useState("");
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    console.log(teamId, planId);
+
     // 정산 예정 내역 API 조회
     const fetchPayment = async () => {
       try {

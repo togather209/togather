@@ -6,6 +6,11 @@ import axiosInstance from "../../utils/axiosInstance";
 function PaymentRenderButton({ paymentData, teamId, planId }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  useEffect(() => {
+    console.log(paymentData.status);
+    console.log(paymentData);
+  });
+
   const handleAgree = () => {
     // 정산 수락하기
     const patchPayment = async () => {
@@ -42,8 +47,6 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
             onClick={() => {
               setIsModalOpen(true);
             }}
-            teamId={teamId}
-            planId={planId}
           >
             이의 신청
           </button>
@@ -70,7 +73,7 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
           </button>
         </div>
       );
-    } else if (paymentData.status === 3) {
+    } else {
       // (개인) 송금 완료
       // 버튼 비활성화
       return <div className="payment-render-button-container"></div>;

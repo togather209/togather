@@ -34,30 +34,15 @@ function CalculateComponent() {
   const [generalParticipants, setGeneralParticipants] = useState([]); // 일반적인 참가자 정보를 저장
 
   useEffect(() => {
-    console.log("general", generalParticipants);
-
     // teamId, planId 없을 때 localStorage에서 가져오기
     if (!teamId || !planId) {
-      teamId = localStorage.getItem("teamId");
-      planId = localStorage.getItem("planId");
+      teamId = Number(localStorage.getItem("teamId"));
+      planId = Number(localStorage.getItem("planId"));
 
       if (teamId && planId) {
         dispatch(setTeamPlan({ teamId, planId }));
       } else {
         console.error("teamId 또는 planId가 전달되지 않았습니다.");
-        return;
-      }
-    }
-
-    // teamId, planId 없을 때 localStorage에서 가져오기
-    if (!teamId) {
-      teamId = localStorage.getItem("teamId");
-      planId = localStorage.getItem("planId");
-
-      if (teamId) {
-        dispatch(setTeamPlan({ teamId, planId }));
-      } else {
-        console.error("teamId가 전달되지 않았습니다.");
         return;
       }
     }
@@ -82,7 +67,6 @@ function CalculateComponent() {
   // 영수증 등록 요청
   const handleRegister = async () => {
     // paymentDate를 ISO 8601 형식으로 변환
-
     const receiptTempInfo = {
       businessName,
       paymentDate: formattedPaymentDate,
@@ -103,8 +87,6 @@ function CalculateComponent() {
               })),
       })),
     };
-
-    console.log(receiptTempInfo);
 
     try {
       const response = await axiosInstance.post(
@@ -127,7 +109,7 @@ function CalculateComponent() {
 
   // 영수증 수정 요청
   const handleUpdate = async () => {
-    const receiptTempInfo = {
+    const receiptUpdatepInfo = {
       businessName,
       paymentDate: formattedPaymentDate,
       totalPrice,
@@ -138,7 +120,7 @@ function CalculateComponent() {
         unitPrice: item.unitPrice,
         count: item.count,
         members:
-          activeType === "person"
+          activeType === "personal"
             ? (itemParticipants[index] || []).map((participant) => ({
                 memberId: participant.memberId,
               }))
@@ -148,12 +130,10 @@ function CalculateComponent() {
       })),
     };
 
-    console.log(receiptTempInfo);
-
     try {
       const response = await axiosInstance.put(
         `teams/${teamId}/plans/${planId}/receipts/${receiptId}`,
-        receiptTempInfo
+        receiptUpdatepInfo
       );
       console.log("수정 성공", response);
 
@@ -350,7 +330,11 @@ function CalculateComponent() {
           )}
         </div>
         {haveParticipants && (
-          <div className="calculated-result">
+          <div
+            className={`calculated-result ${
+              color === 0 ? "sky" : color === 1 ? "pink" : "yellow"
+            }`}
+          >
             <div className="calculated-result-title">정산 결과</div>
             <div className="calculated-result-content">
               <table className="calculated-result-table">
