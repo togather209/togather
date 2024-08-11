@@ -181,7 +181,7 @@ function ReceiptListContainer() {
           />
         ))}
       </div>
-      <ReceiptTotal amount={liveStatus} />
+      {status === 0 && <ReceiptTotal amount={liveStatus} />}
       {isModalOpen && (
         <ScheduleFinishModal
           onClose={handleCloseModal}
