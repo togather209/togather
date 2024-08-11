@@ -14,4 +14,5 @@ public class MemberFindByIdResponse {
     private String nickname;
     private String profileImg;
     private String name;
+    private int type;
 }
