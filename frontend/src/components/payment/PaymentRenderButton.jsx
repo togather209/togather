@@ -22,7 +22,7 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
 
       if (response.data.data.isAllApproved) {
         const response = await axiosInstance.post(
-          `/teams/${teamId}/plans/${planId}/payments/approvals`
+          `/teams/${teamId}/plans/${planId}/payments`
         );
 
         console.log(response.data);

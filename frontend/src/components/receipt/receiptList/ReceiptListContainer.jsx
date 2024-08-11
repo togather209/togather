@@ -22,7 +22,7 @@ function ReceiptListContainer() {
   const location = useLocation();
   let { teamId, planId } = location.state || {};
 
-  // status : 일정 진행 중(0), 일정 끝남(1), 정산 완료(3)
+  // status : 일정 진행 중(0), 일정 끝남(1), 정산 완료(4)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [receipts, setReceipts] = useState([]);
   const [error, setError] = useState(false);
