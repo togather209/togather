@@ -97,6 +97,7 @@ public class MemberService {
                 .nickname(member.getNickname())
                 .name(member.getName())
                 .profileImg(member.getProfileImg())
+                .type(member.getType())
                 .build();
 
     }
