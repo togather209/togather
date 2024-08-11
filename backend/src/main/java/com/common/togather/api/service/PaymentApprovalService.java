@@ -88,6 +88,7 @@ public class PaymentApprovalService {
                 .build();
     }
 
+    @Transactional
     public void DeletePaymentApprovalByPlanId(String email, int planId, String contents) {
 
         Plan plan = planRepository.findById(planId)
