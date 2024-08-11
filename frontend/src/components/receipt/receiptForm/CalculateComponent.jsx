@@ -34,10 +34,8 @@ function CalculateComponent() {
   const [generalParticipants, setGeneralParticipants] = useState([]); // 일반적인 참가자 정보를 저장
 
   useEffect(() => {
-    console.log("general", generalParticipants);
-    console.log(receiptData);
-
-    // teamId, planId 없을 때 localStorage에서 가져오기
+    // teamId와 planId를 로컬 스토리지에서 가져오기
+    console.log("itemParticipants", itemParticipants);
     if (!teamId || !planId) {
       teamId = Number(localStorage.getItem("teamId"));
       planId = Number(localStorage.getItem("planId"));
@@ -50,20 +48,62 @@ function CalculateComponent() {
       }
     }
 
+    // 영수증이 이미 존재하는 경우, 초기 상태를 설정 (수정 시)
+    if (receiptId) {
+      const loadReceiptData = async () => {
+        try {
+          const response = await axiosInstance.get(
+            `teams/${teamId}/plans/${planId}/receipts/${receiptId}`
+          );
+          const receipt = response.data;
+
+          // itemParticipants 초기화
+          const initialItemParticipants = receipt.items.reduce(
+            (acc, item, index) => {
+              acc[index] = item.members.map((participant) => ({
+                memberId: participant.memberId,
+                nickname: participant.nickname,
+                profileImg: participant.profileImg,
+              }));
+              return acc;
+            },
+            {}
+          );
+
+          setItemParticipants(initialItemParticipants);
+
+          setGeneralParticipants(
+            receipt.items
+              .flatMap((item) => item.members)
+              .map((participant) => ({
+                memberId: participant.memberId,
+                nickname: participant.nickname,
+                profileImg: participant.profileImg,
+              }))
+          );
+        } catch (error) {
+          console.error(
+            "영수증 데이터를 불러오는 중 문제가 발생했습니다.",
+            error
+          );
+        }
+      };
+
+      loadReceiptData();
+    }
+
     // 일정 참여자 리스트 조회하기 API 요청
     const fetchParticipants = async () => {
       try {
         const response = await axiosInstance.get(`teams/${teamId}/members`);
-        // console.log("일정 참여자 리스트 조회 결과", response.data.data);
         setParticipants(response.data.data);
-        console.log(response.data.data);
       } catch (error) {
         console.error("일정 참여자 리스트 조회 중 문제가 발생했습니다.", error);
       }
     };
 
     fetchParticipants();
-  }, [generalParticipants]);
+  }, [teamId, planId, receiptId]);
 
   const formattedPaymentDate = new Date(paymentDate).toISOString();
 
@@ -120,7 +160,7 @@ function CalculateComponent() {
       totalPrice,
       bookmarkId,
       color,
-      items: items.map((item, index) => ({
+      items: await items.map((item, index) => ({
         name: item.name,
         unitPrice: item.unitPrice,
         count: item.count,
@@ -142,7 +182,7 @@ function CalculateComponent() {
         `teams/${teamId}/plans/${planId}/receipts/${receiptId}`,
         receiptTempInfo
       );
-      console.log("수정 성공", response);
+      console.log("수정 성공", response.data);
 
       // 수정 후 영수증 전체 조회 페이지로 이동
       navigate("/receipt");
@@ -161,6 +201,7 @@ function CalculateComponent() {
 
   // 모달을 여는 함수
   const handleOpenModal = (itemIndex) => {
+    console.log(items);
     setCurrentItemIndex(itemIndex);
     setIsModalOpen(true);
   };
@@ -185,7 +226,6 @@ function CalculateComponent() {
         }))
       );
     }
-    console.log(itemParticipants);
     setIsModalOpen(false);
   };
 

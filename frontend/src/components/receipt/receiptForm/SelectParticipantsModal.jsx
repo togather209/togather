@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./SelectParticipantsModal.css";
 import Close from "../../../assets/icons/common/close.png";
-import { useDispatch } from "react-redux";
 
 function SelectParticipantsModal({
   participants,
