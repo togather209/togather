@@ -13,11 +13,19 @@ function CameraCapture({ onCapture, onClose }) {
     const startCamera = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
+          video: { facingMode: { exact: "environment" } }, // 후면 카메라 우선 시도
         });
         videoRef.current.srcObject = stream;
       } catch (err) {
-        console.error("카메라 접근 오류:", err);
+        console.warn("후면 카메라 접근 실패, 전면 카메라로 시도합니다:", err);
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "user" }, // 전면 카메라로 대체
+          });
+          videoRef.current.srcObject = stream;
+        } catch (err) {
+          console.error("카메라 접근 오류:", err);
+        }
       }
     };
 
