@@ -232,27 +232,23 @@ function ScheduleDetail() {
   // 일정 수정 axios 요청
   // const scheduleUpdate = async () =>
 
-    // 드래그 완료 후 호출되는 함수
-    const onDragEnd = (result) => {
-      const { destination, source, draggableId } = result;
+  // 드래그 완료 후 호출되는 함수
+  const onDragEnd = (result) => {
+    const { destination, source, draggableId } = result;
 
-      if (!destination) return;
+    if (!destination) return;
 
     const extractIdNumber = (draggableId) => {
       return parseInt(draggableId.split("-").pop(), 10);
     };
 
-      const newbookmarkid =extractIdNumber(draggableId)
-
-      const reorderedPlaces = Array.from(datePlaces);
-      const [movedItem] = reorderedPlaces.splice(source.index, 1);
-      reorderedPlaces.splice(destination.index, 0, movedItem);
-
-      setDatePlaces(reorderedPlaces);
+    const newbookmarkid = extractIdNumber(draggableId);
 
     const reorderedPlaces = Array.from(datePlaces);
     const [movedItem] = reorderedPlaces.splice(source.index, 1);
     reorderedPlaces.splice(destination.index, 0, movedItem);
+
+    setDatePlaces(reorderedPlaces);
 
     // 날짜 북마크 내에서 순서 수정 (드래그 앤 드롭)
     const newBookMarkOrder = async () => {
