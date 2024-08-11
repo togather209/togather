@@ -28,9 +28,6 @@ async function requestPermission() {
   const token = await getToken(messaging, {
     vapidKey: import.meta.env.VITE_VAPID_KEY,
   });
-
-  if (token) console.log("token: ", token);
-  else console.log("Can not get Token");
 }
 
 const onMessageListener = () =>
