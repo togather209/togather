@@ -60,6 +60,12 @@ function LoginForm() {
     }
   };
 
+  // 카카오 로그인
+  const handleKakaoLogin = () => {
+    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=7fa5721d9190b0b9d8d0de769a1d1346&redirect_uri=http://localhost:3000/home`;
+    window.location.href = kakaoAuthUrl;
+  }
+
   return (
     <div className="login-container">
       <div className="logo-container">
@@ -113,7 +119,7 @@ function LoginForm() {
       </div>
       <button
         className="loginWithKakao"
-        onClick={() => navigate("/loginWithKakao")}
+        onClick={handleKakaoLogin}
       >
         <img
           src={kakao}

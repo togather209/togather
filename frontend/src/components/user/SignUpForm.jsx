@@ -29,6 +29,7 @@ function SignUpForm() {
   const [passwordVisible, setPasswordVisible] = useState(false); // 비밀번호 가시성 상태
   const [validPasswordVisible, setValidPasswordVisible] = useState(false); // 비밀번호 확인 가시성 상태
   const [nicknameMessage, setNicknameMessage] = useState(""); //닉네임 메시지
+  const [signupOk, setSignupOk] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -95,7 +96,6 @@ function SignUpForm() {
       memberData.append("image", fileData);
     }
 
-    
     if (email === "" || password === "" || nickname === "") {
       return;
     } else {
@@ -113,8 +113,7 @@ function SignUpForm() {
         }
       );
 
-      console.log("회원가입 성공!", response.data);
-      navigate("/login");
+      setSignupOk(true);
     } catch (error) {
       console.log("회원 가입 오류", error);
     }
@@ -298,9 +297,13 @@ function SignUpForm() {
 
   //이미지 첨부하는 함수
   const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0] && e.target.files[0].size <= 1048576) {
+    if (
+      e.target.files &&
+      e.target.files[0] &&
+      e.target.files[0].size <= 1048576
+    ) {
       const file = e.target.files[0];
-  
+
       setProfileImage(file); // 선택된 파일을 프로필 이미지로 설정
       setProfileImagePreview(URL.createObjectURL(file)); // 미리보기를 위해 파일 URL 생성
     } else {
@@ -339,6 +342,12 @@ function SignUpForm() {
     }
   };
 
+  const deleteImage = (e) => {
+    e.preventDefault();
+    setProfileImage(null);
+    setProfileImagePreview("");
+  };
+
   return (
     <>
       <div className="signup-back-button">
@@ -349,7 +358,7 @@ function SignUpForm() {
           <img src={logo} alt="로고" className="signup-logo" />
           <p>일정관리부터 정산까지</p>
         </div>
-        <form onSubmit={handleSignup}>
+        <form>
           <div className="profile-image-upload">
             <label htmlFor="profileImageUpload" className="image-upload-label">
               {profileImagePreview ? (
@@ -370,6 +379,12 @@ function SignUpForm() {
               onChange={handleImageChange}
               style={{ display: "none" }}
             />
+            <button
+              className="profile-image-delete-button"
+              onClick={deleteImage}
+            >
+              삭제
+            </button>
           </div>
           <div className="emailForm">
             <CommonInput
@@ -490,13 +505,28 @@ function SignUpForm() {
             </p>
           )}
 
-          <SubmitButton type="submit" className="submit-button">
+          <SubmitButton
+            type="button"
+            onClick={handleSignup}
+            className="submit-button"
+          >
             회원가입
           </SubmitButton>
         </form>
       </div>
       {isImageBig && (
-        <Modal mainMessage={"사진 용량 초과!"} subMessage={"1MB이하의 크기만 첨부 가능합니다."} onClose={() => setIsImageBig(false)}/>
+        <Modal
+          mainMessage={"사진 용량 초과!"}
+          subMessage={"1MB이하의 크기만 첨부 가능합니다."}
+          onClose={() => setIsImageBig(false)}
+        />
+      )}
+      {signupOk && (
+        <Modal
+          mainMessage={"회원가입을 환영합니다!"}
+          subMessage={"Togather를 이용하러 가볼까요?"}
+          onClose={() => setSignupOk(false)}
+        />
       )}
     </>
   );
