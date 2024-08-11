@@ -9,7 +9,6 @@ import { Link } from "react-router-dom";
 import kakao from "../../assets/icons/common/kakao.png";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { setUser } from "../../redux/slices/userSlice";
 import { setToken } from "../../redux/slices/authSlice";
 
 function LoginForm() {

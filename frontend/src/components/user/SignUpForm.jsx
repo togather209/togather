@@ -8,10 +8,11 @@ import BackButton from "../common/BackButton";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // 아이콘 추가
+import Modal from "../common/Modal";
 
 function SignUpForm() {
   const API_LINK = import.meta.env.VITE_API_URL;
-
+  const [isImageBig, setIsImageBig] = useState(false);
   const [profileImage, setProfileImage] = useState(null); //프로필 이미지
   const [profileImagePreview, setProfileImagePreview] = useState("");
   const [email, setEmail] = useState(""); //이메일
@@ -297,10 +298,13 @@ function SignUpForm() {
 
   //이미지 첨부하는 함수
   const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files && e.target.files[0] && e.target.files[0].size <= 1048576) {
       const file = e.target.files[0];
+  
       setProfileImage(file); // 선택된 파일을 프로필 이미지로 설정
       setProfileImagePreview(URL.createObjectURL(file)); // 미리보기를 위해 파일 URL 생성
+    } else {
+      setIsImageBig(true);
     }
   };
 
@@ -491,6 +495,9 @@ function SignUpForm() {
           </SubmitButton>
         </form>
       </div>
+      {isImageBig && (
+        <Modal mainMessage={"사진 용량 초과!"} subMessage={"1MB이하의 크기만 첨부 가능합니다."} onClose={() => setIsImageBig(false)}/>
+      )}
     </>
   );
 }

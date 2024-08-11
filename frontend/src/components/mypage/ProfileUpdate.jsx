@@ -11,9 +11,11 @@ import { FaEye, FaEyeSlash } from "react-icons/fa"; // 아이콘 추가
 import axiosInstance from "../../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { setUser } from "../../redux/slices/userSlice";
+import Modal from "../common/Modal";
 
 function ProfileUpdate() {
   const API_LINK = import.meta.env.VITE_API_URL;
+  const [isImageBig, setIsImageBig] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [profileImagePreview, setProfileImagePreview] = useState("");
   const [password, setPassword] = useState("");
@@ -185,10 +187,13 @@ function ProfileUpdate() {
   };
 
   const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files && e.target.files[0] && e.target.files[0].size <= 1048576) {
       const file = e.target.files[0];
+  
       setProfileImage(file); // 선택된 파일을 프로필 이미지로 설정
       setProfileImagePreview(URL.createObjectURL(file)); // 미리보기를 위해 파일 URL 생성
+    } else {
+      setIsImageBig(true);
     }
   };
 
@@ -296,6 +301,9 @@ function ProfileUpdate() {
           </SubmitButton>
         </form>
       </div>
+      {isImageBig && (
+        <Modal mainMessage={"사진 용량 초과!"} subMessage={"1MB이하의 크기만 첨부 가능합니다."} onClose={() => setIsImageBig(false)}/>
+      )}
     </>
   );
 }
