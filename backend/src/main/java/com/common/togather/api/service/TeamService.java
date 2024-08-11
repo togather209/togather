@@ -252,6 +252,15 @@ public class TeamService {
                 .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new TeamNotFoundException("해당 모임이 존재하지 않습니다."));
+
+        if (team.getPlans().size() > 0) {
+            for (Plan plan : team.getPlans()) {
+                if (plan.getStatus() != 4) {
+                    throw new InvalidPlanStatusException("일정 " + plan.getId() + "번 정산이 완료되지 않았습니다.");
+                }
+            }
+        }
+
         TeamMember teamMember = teamMemberRepository.findByMemberAndTeam(member, team);
 
         teamMemberRepository.deleteByMemberAndTeam(member, team);
