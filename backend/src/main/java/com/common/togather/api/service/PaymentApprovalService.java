@@ -68,7 +68,7 @@ public class PaymentApprovalService {
 
         // 수락 동시에 업데이트 확인으로 정산 요청 유무 확인
         if (paymentApprovalRepositorySupport.updateApprovalStatus(planId, email) == 0) {
-            throw new NotFoundPaymentApprovalException("해당 정산 요청이 없습니다.");
+            throw new NotFoundPaymentApprovalException("해당 정산 요청을 수락했거나 없습니다.");
         }
 
         // 모든 테이블 정산 요청 되었는지 확인
