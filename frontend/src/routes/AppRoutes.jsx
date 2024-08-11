@@ -48,6 +48,7 @@ import MeetingSetting from "../components/meeting/MeetingSetting";
 import MeetingDetailPart from "../components/meeting/MeetingDetailPart";
 import Payment from "../pages/Payment";
 import SearchPasswordForm from "../components/user/SearchPasswordForm";
+import KakaoLogin from "../components/user/KakaoLogin";
 
 function AppRoutes() {
   return (
@@ -56,6 +57,7 @@ function AppRoutes() {
       <Route path="/signup" element={<SignUpForm />} />
       <Route path="/login" element={<User />} />
       <Route path="search_password" element={<SearchPasswordForm />} />
+      <Route path="/api/auth/kakao/callback" element={<KakaoLogin/>} />
       <Route
         path="/mypage"
         element={
