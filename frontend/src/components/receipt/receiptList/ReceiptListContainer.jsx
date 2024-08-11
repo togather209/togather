@@ -184,7 +184,10 @@ function ReceiptListContainer() {
           <Modal
             mainMessage="접근할 수 없는 페이지입니다."
             subMessage="다시 시도해보세요."
-            onClose={() => setError(false)}
+            onClose={() => {
+              setError(false);
+              navigate(-1);
+            }}
           />
         ) : (
           <Modal
