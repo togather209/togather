@@ -150,7 +150,7 @@ function ReceiptListContainer() {
     <div className="receipt-container">
       <header className="list-header">
         <BackButton />
-        {status === 0 && auth && (
+        {status === 0 && auth && receipts.length > 0 && (
           <LineButton
             className="schedule-finish-button"
             onClick={handlePurpleLineButton}
