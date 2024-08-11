@@ -1,9 +1,6 @@
 package com.common.togather.api.service;
 
-import com.common.togather.api.error.EmailAlreadyExistsException;
-import com.common.togather.api.error.EmailNotFoundException;
-import com.common.togather.api.error.InvalidPasswordException;
-import com.common.togather.api.error.NicknameAlreadyExistsException;
+import com.common.togather.api.error.*;
 import com.common.togather.api.request.LoginRequest;
 import com.common.togather.api.request.MemberSaveRequest;
 import com.common.togather.common.auth.TokenInfo;
@@ -34,7 +31,7 @@ public class AuthService {
     private final RedisService redisService;
     private final JwtUtil jwtUtil;
     private final ImageUtil imageUtil;
-    private final FCMUtil fcmService;
+    private final FCMUtil fcmUtil;
 
     // 회원가입
     @Transactional
@@ -91,7 +88,10 @@ public class AuthService {
 
             redisService.saveRefreshToken(email, refreshToken); // Redis에 Refresh Token 저장 (유효기간 7일)
 
-            fcmService.saveToken(email, loginRequest.getFCMToken());
+            Member member = memberRepository.findByEmail(email)
+                    .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
+
+            fcmUtil.saveToken(member, loginRequest.getFCMToken());
 
             return new TokenInfo(accessToken, refreshToken); // Access Token과 Refresh Token 반환
         } catch (AuthenticationException e) {

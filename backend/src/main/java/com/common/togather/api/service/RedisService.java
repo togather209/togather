@@ -15,7 +15,6 @@ public class RedisService {
     private static final String EMAIL_VERIFICATION_PREFIX = "email_verification_code:";
     private static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
     private static final String BLACKLIST_PREFIX = "blacklist:";
-    private static final String FCM_TOKEN_PREFIX = "fcm_token_prefix";
 
     public void saveEmailVerificationCode(String email, String code) {
         redisTemplate.opsForValue().set(EMAIL_VERIFICATION_PREFIX + email, code);
@@ -48,13 +47,5 @@ public class RedisService {
 
     public boolean isTokenBlacklisted(String token) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(BLACKLIST_PREFIX + token));
-    }
-
-    public String getFCMToken(String email) {
-        return (String) redisTemplate.opsForValue().get(FCM_TOKEN_PREFIX + email);
-    }
-
-    public void saveFCMToken(String email, String refreshToken) {
-        redisTemplate.opsForValue().set(FCM_TOKEN_PREFIX + email, refreshToken);
     }
 }
