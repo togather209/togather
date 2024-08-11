@@ -8,12 +8,13 @@ import axiosInstance from "../../../utils/axiosInstance";
 function ReceiptBookmarkList() {
   const navigate = useNavigate();
   const location = useLocation();
-  let { bookmarkId } = location.state || {};
 
+  let { teamId, planId, bookmarkId } = location.state || {};
   const [receipts, setReceipts] = useState([]);
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    console.log(teamId, planId, bookmarkId);
     if (!bookmarkId) {
       bookmarkId = Number(localStorage.getItem("bookmarkId"));
     }
