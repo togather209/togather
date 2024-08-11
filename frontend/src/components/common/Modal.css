@@ -18,10 +18,10 @@
 .common-modal-content {
   background: white;
   padding: 35px 10px;
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
-  width: 300px;
+  width: 90%;
   max-width: 80%;
   box-sizing: border-box;
 }
@@ -48,12 +48,13 @@
 /* 모달 버튼 스타일 */
 .common-modal-button {
   width: 80%;
+  height: 50px;
   background: linear-gradient(45deg, #712FFF, #A074FF);
   color: white;
   font-weight: bold;
   padding: 10px 20px;
   border: none;
-  border-radius: 15px;
+  border-radius: 12px;
   cursor: pointer;
   box-shadow: 4px 6px 6px #b08cff;
 }

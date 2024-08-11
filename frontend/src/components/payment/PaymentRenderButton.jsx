@@ -2,14 +2,18 @@ import { useEffect, useState } from "react";
 import "./PaymentRenderButton.css";
 import AppealModal from "./AppealModal";
 import axiosInstance from "../../utils/axiosInstance";
+import Modal from "../common/Modal";
+import axios from "axios";
+import store from "../../redux/store";
+import { useNavigate } from "react-router-dom";
+
+const API_LINK = import.meta.env.VITE_API_URL;
 
 function PaymentRenderButton({ paymentData, teamId, planId }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  useEffect(() => {
-    console.log(paymentData.status);
-    console.log(paymentData);
-  });
+  const [isAppealModalOpen, setIsAppealModalOpen] = useState(false);
+  const [accountError, setAccountError] = useState(false);
+  const [completePayment, setCompletePayment] = useState(false);
+  const navigate = useNavigate();
 
   const handleAgree = () => {
     // 정산 수락하기
@@ -27,13 +31,52 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
 
         console.log(response.data);
       }
+
+      // 동의 처리 후 페이지 새로고침
+      window.location.reload();
     };
 
     patchPayment();
   };
 
   const handleSend = () => {
-    // TODO : 정산하기 요청
+    // 정산 내역 송금하기 요청
+    const sendPayments = async () => {
+      try {
+        const state = store.getState();
+        const { accessToken } = state.auth;
+
+        const response = await axios.post(
+          `${API_LINK}/teams/${teamId}/plans/${planId}/payments/me/transfer`,
+          {},
+          {
+            headers: {
+              Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
+            },
+            withCredentials: true, // 쿠키를 포함한 요청을 보내기 위해 필요
+          }
+        );
+
+        console.log(response);
+        // 송금 성공 처리
+        if (response) {
+          setCompletePayment(true);
+          // 송금 후 페이지 새로고침
+          window.location.reload();
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          // 404 에러 처리
+          setAccountError(true);
+        } else {
+          // 다른 에러 처리
+          console.error("정산 내역 송금 중 예외 상황 발생:", error);
+          // setError({ status: true, message: "" });
+        }
+      }
+    };
+
+    sendPayments();
   };
 
   const renderButton = () => {
@@ -45,7 +88,7 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
           <button
             className="payment-button-appeal-register"
             onClick={() => {
-              setIsModalOpen(true);
+              setIsAppealModalOpen(true);
             }}
           >
             이의 신청
@@ -83,13 +126,25 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
   return (
     <>
       {renderButton()}
-      {isModalOpen && (
+      {isAppealModalOpen && (
         <AppealModal
           teamId={teamId}
           planId={planId}
-          onClose={() => setIsModalOpen(false)}
+          onClose={() => setIsAppealModalOpen(false)}
         />
       )}
+      {accountError && (
+        <Modal
+          mainMessage="등록된 Pay 계좌가 없습니다."
+          subMessage="지금 바로 만들어보세요 !"
+          onClose={() => setAccountError(false)}
+          onConfirm={() => {
+            navigate("/wallet");
+          }}
+          buttonText="계좌 생성하기"
+        />
+      )}
+      {completePayment && <Modal mainMessage="송금 완료 !" />}
     </>
   );
 }
