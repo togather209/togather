@@ -337,7 +337,11 @@ function CalculateComponent() {
           )}
         </div>
         {haveParticipants && (
-          <div className="calculated-result">
+          <div
+            className={`calculated-result ${
+              color === 0 ? "sky" : color === 1 ? "pink" : "yellow"
+            }`}
+          >
             <div className="calculated-result-title">정산 결과</div>
             <div className="calculated-result-content">
               <table className="calculated-result-table">
