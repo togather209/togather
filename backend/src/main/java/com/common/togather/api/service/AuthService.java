@@ -91,7 +91,7 @@ public class AuthService {
             Member member = memberRepository.findByEmail(email)
                     .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
 
-            fcmUtil.saveToken(member, loginRequest.getFCMToken());
+            fcmUtil.saveToken(member, loginRequest.getFcmToken());
 
             return new TokenInfo(accessToken, refreshToken); // Access Token과 Refresh Token 반환
         } catch (AuthenticationException e) {

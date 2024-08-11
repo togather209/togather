@@ -13,10 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -50,6 +47,40 @@ public class AlarmController {
                 .message("알림 조회를 성공했습니다.")
                 .data(alarmService.findAllAlarmByMember(
                         jwtUtil.getAuthMemberEmail(token)))
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    // 알림 삭제
+    @Operation(summary = "알림 삭제")
+    @DeleteMapping("/{alarmId}")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "알림 삭제를 성공했습니다."
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "해당 알림이 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "알림의 접근 권환이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
+    })
+    public ResponseEntity<ResponseDto<String>> deleteAlarmByAlarmId(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable(name = "alarmId") int alarmId) {
+
+        alarmService.DeleteAlarmByAlarmId(jwtUtil.getAuthMemberEmail(token), alarmId);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("알림 삭제를 성공했습니다.")
+                .data(null)
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
