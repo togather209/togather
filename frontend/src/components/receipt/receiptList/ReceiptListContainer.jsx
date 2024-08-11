@@ -48,7 +48,12 @@ function ReceiptListContainer() {
           `/teams/${teamId}/plans/${planId}/receipts`
         );
         setReceipts(response.data.data.receiptFindByPlanIds); // 서버에서 받은 영수증 데이터를 설정
-        setStatus(response.data.data.status); // 일정 상태 설정
+        const responseStatus = response.data.data.status;
+        setStatus(responseStatus); // 일정 상태 설정
+
+        if (responseStatus === 0) {
+          fetchLiveStatus();
+        }
         console.log(response.data);
       } catch (error) {
         console.error("영수증 데이터를 가져오는 데 실패했습니다.", error);
@@ -86,7 +91,6 @@ function ReceiptListContainer() {
     // 일정장 확인 후 일정 끝내기 버튼 활성화
     fetchReceipt();
     fetchAuth();
-    fetchLiveStatus();
   }, [teamId, planId, dispatch]);
 
   // 일정 끝내기 버튼
