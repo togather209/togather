@@ -44,6 +44,10 @@ public class PaymentService {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
 
+        if (plan.getStatus() == 0) {
+            throw new InvalidPlanStatusException("일정이 종료된 상태가 아닙니다.");
+        }
+
         Team team = plan.getTeam();
 
         if (team.getId() != teamId) {
@@ -80,7 +84,7 @@ public class PaymentService {
             for (Item item : items) {
                 // 유저당 돈 계산
                 List<ItemMember> itemMembers = item.getItemMembers();
-                int amount = item.getUnitPrice() * item.getCount();
+                int amount = item.getUnitPrice();
                 int count = itemMembers.size();
                 int memberBalance = getMemberBalance(amount, count);
                 int systemBalance = getSystemBalance(amount, count, memberBalance);
@@ -116,7 +120,7 @@ public class PaymentService {
 
         for (ItemMember itemMember : itemMembers) {
             Item item = itemMember.getItem();
-            int amount = item.getUnitPrice() * item.getCount();
+            int amount = item.getUnitPrice();
             int count = item.getItemMembers().size();
             int memberBalance = getMemberBalance(amount, count);
             Member sender = item.getReceipt().getManager();
@@ -169,10 +173,16 @@ public class PaymentService {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
 
-        /// 정산 상태가 1 일때만
+        if (plan.getStatus() == 3) {
+            throw new InvalidPlanStatusException("이미 정산이 종료 되었습니다.");
+        }
+
+        if (plan.getStatus() == 2) {
+            throw new InvalidPlanStatusException("정산을 모두 수락하지 않았습니다.");
+        }
 
         // 정산 완료 상태 저장
-        plan.updateStatus(2);
+        plan.updateStatus(3);
 
         //최종 정산 내역
         List<PaymentFindDto> paymentFindDtos = paymentRepositorySupport.findPaymentByPlanId(planId);
@@ -210,8 +220,12 @@ public class PaymentService {
 
     public PaymentFindByPlanIdAndMemberResponse findPaymentByPlanIdAndMember(String email, int planId) {
 
-        planRepository.findById(planId)
+        Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
+
+        if (plan.getStatus() != 0) {
+            throw new InvalidPlanStatusException("일정이 종료 되었습니다.");
+        }
 
         //최종 정산 내역
         List<PaymentFindDto> paymentFindDtos = paymentRepositorySupport.findPaymentByPlanId(planId);

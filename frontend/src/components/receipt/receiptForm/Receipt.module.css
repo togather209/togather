@@ -10,7 +10,7 @@
 }
 
 .temp-receipt::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   right: 0;
@@ -53,13 +53,13 @@
   color: #666;
 }
 
-
 /* small receipt */
 .subpic-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(102px, 1fr));
   gap: px;
   margin-bottom: 20px;
+  justify-items: center;
 }
 
 .subpic {
@@ -73,7 +73,6 @@
 
 .receipt-card {
   position: absolute;
-  margin-left: 3px;
   top: 0;
   left: 0;
   width: 102px;
@@ -81,7 +80,8 @@
 }
 
 /* sky */
-.receipt-card.sky h3,.yellow h3 {
+.receipt-card.sky h3,
+.yellow h3 {
   margin-top: 15px;
   font-size: 10px;
   font-weight: bolder;
@@ -89,15 +89,15 @@
 }
 
 .sky hr {
-  margin:10px 10px;
-  border : 0px;
-  border-top: 2px dashed #98BFD7;
+  margin: 10px 10px;
+  border: 0px;
+  border-top: 2px dashed #98bfd7;
 }
 
 /* pink */
 
 .receipt-card.pink h3 {
-  margin: 15px ;
+  margin: 15px;
   font-size: 10px;
   font-weight: bolder;
   text-align: start;
@@ -105,15 +105,15 @@
 
 .pink .pink-line {
   margin: 20px 10px 10px 10px;
-  border : 0px;
-  border-top: 2px solid #FBCED8;
+  border: 0px;
+  border-top: 2px solid #fbced8;
 }
 
 /* yellow */
 .yellow hr {
   margin: 8px 10px;
-  border : 0px;
-  border-top: 2px dashed #EFCEA7;
+  border: 0px;
+  border-top: 2px dashed #efcea7;
 }
 
 .receipt-card p:nth-child(3) {

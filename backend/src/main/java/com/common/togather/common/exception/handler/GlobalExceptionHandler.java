@@ -271,4 +271,12 @@ public class GlobalExceptionHandler {
         ErrorResponseDto error = new ErrorResponseDto("payment approval Not Found", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+
+    // 정산 상태가 잘못된 경우
+    @ExceptionHandler(InvalidPlanStatusException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidPlanStatusException(InvalidPlanStatusException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Invalid plan status Password", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }

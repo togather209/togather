@@ -40,6 +40,7 @@ public class OpenViduController {
     public ResponseEntity<ResponseDto<CreateConnectionResponse>> createConnection(@PathVariable("sessionId") String sessionId,
                                                                                   @RequestBody(required = false) Map<String, Object> params)
             throws OpenViduJavaClientException, OpenViduHttpException {
+        openvidu.fetch();
         Session session = openvidu.getActiveSession(sessionId);
         // 해당 세션이 존재하지 않으면 해당 세션 아이디로 세션 생성
         if (session == null) {
@@ -47,6 +48,7 @@ public class OpenViduController {
         }
 
         // 해당 세션에 연걸
+        openvidu.fetch();
         ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
         Connection connection = session.createConnection(properties);
         CreateConnectionResponse response = CreateConnectionResponse.builder()
