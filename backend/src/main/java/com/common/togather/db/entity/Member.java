@@ -73,8 +73,17 @@ public class Member {
     @OneToMany(mappedBy = "receiver")
     private List<Payment> receivePayments;
 
+    // 정산 수락 여부
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaymentApproval> paymentApprovals;
+
+    // 알림
+    @OneToMany(mappedBy = "member")
+    private List<Alarm> alarms;
+
+    // FCM token
+    @OneToOne(mappedBy = "member")
+    private FCMToken fcmToken;
 
     public void update(String profileImg, String password, String nickname) {
         this.password = password;
