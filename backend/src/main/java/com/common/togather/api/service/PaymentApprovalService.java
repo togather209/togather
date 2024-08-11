@@ -35,7 +35,11 @@ public class PaymentApprovalService {
         }
 
         if (plan.getStatus() == 1) {
-            throw new InvalidPlanStatueException("이미 일정이 종료 되었습니다.");
+            throw new InvalidPlanStatusException("이미 일정이 종료 되었습니다.");
+        }
+
+        if (plan.getReceipts().size() == 0) {
+            throw new ReceiptNotFoundException("정산할 영수증이 없습니다.");
         }
 
         plan.updateStatus(1);
