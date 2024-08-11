@@ -63,7 +63,7 @@ public class PaymentApprovalService {
     @Transactional
     public PaymentApprovalUpdateByPlanIdResponse UpdatePaymentApprovalByPlanId(String email, int planId) {
 
-        planRepository.findById(planId)
+        Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
 
         // 수락 동시에 업데이트 확인으로 정산 요청 유무 확인
@@ -72,8 +72,15 @@ public class PaymentApprovalService {
         }
 
         // 모든 테이블 정산 요청 되었는지 확인
+        Boolean isAllApproved = paymentApprovalRepositorySupport.findAllHasApprovalStatus(planId, email);
+
+        // 모두가 승인을 했다. 모두 동의 된 상태값으로 변경
+        if (isAllApproved) {
+            plan.updateStatus(2);
+        }
+
         return PaymentApprovalUpdateByPlanIdResponse.builder()
-                .isAllApproved(paymentApprovalRepositorySupport.findAllHasApprovalStatus(planId, email))
+                .isAllApproved(isAllApproved)
                 .build();
     }
 
