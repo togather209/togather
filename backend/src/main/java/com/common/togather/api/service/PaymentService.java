@@ -44,6 +44,10 @@ public class PaymentService {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
 
+        if (plan.getStatus() == 0) {
+            throw new InvalidPlanStatusException("일정이 종료된 상태가 아닙니다.");
+        }
+
         Team team = plan.getTeam();
 
         if (team.getId() != teamId) {
