@@ -43,6 +43,16 @@ public class PaymentApprovalController {
                     description = "해당 일정은 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
             ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "이미 일정이 종료 되었습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "정산할 영수증이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
 
     })
     public ResponseEntity<ResponseDto<String>> savePaymentApprovalByPlanId(
