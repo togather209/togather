@@ -23,12 +23,12 @@ public class PaymentRepositorySupport {
     private QItemMember qitemMember = QItemMember.itemMember;
     private QMember qMember = QMember.member;
 
-    public List<PaymentFindDto> findPaymentByPlanId(int planId) {
+    public List<PaymentFindDto> findPaymentByPlanId(int planId) {   // 수량을 안곱했다. 확인 부탁
         return jpaQueryFactory
                 .select(Projections.fields(PaymentFindDto.class,
                         qreceipt.manager.as("receiver"),
                         qitem.id.as("itemId"),
-                        qitem.unitPrice.multiply(qitem.count).as("price"),
+                        qitem.unitPrice.as("price"),
                         qitemMember.member.as("sender")
                 ))
                 .from(qreceipt)
