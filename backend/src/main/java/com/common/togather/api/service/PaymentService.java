@@ -177,8 +177,8 @@ public class PaymentService {
             throw new InvalidPlanStatusException("이미 정산이 종료 되었습니다.");
         }
 
-        if (plan.getStatus() == 2) {
-            throw new InvalidPlanStatusException("정산을 모두 수락하지 않았습니다.");
+        if (plan.getStatus() != 2) {
+            throw new InvalidPlanStatusException("정산 완료를 할 수 있는 상태가 아닙니다.");
         }
 
         // 정산 완료 상태 저장
