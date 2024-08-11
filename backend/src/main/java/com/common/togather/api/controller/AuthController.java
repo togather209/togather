@@ -320,4 +320,18 @@ public class AuthController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
 
     }
+
+    @Operation(summary = "카카오 정보로 회원가입하기")
+    @PostMapping("/kakao/register")
+    public ResponseEntity<ResponseDto<String>> kakaoSignup(@Valid @RequestBody KakaoMemverSaveRequest request){
+
+        kakaoService.signup(request);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("카카오 정보로 회원가입에 성공했습니다.")
+                .data(null)
+                .build();
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 }

@@ -1,12 +1,12 @@
 package com.common.togather.api.service;
 
-import com.common.togather.api.error.EmailNotFoundException;
-import com.common.togather.api.error.InvalidPasswordException;
-import com.common.togather.api.error.NotFoundKakaoException;
+import com.common.togather.api.error.*;
+import com.common.togather.api.request.KakaoMemverSaveRequest;
 import com.common.togather.api.response.KakaoLoginResponse;
 import com.common.togather.api.response.KakaoUserInfoResponse;
 import com.common.togather.common.auth.TokenInfo;
 import com.common.togather.common.util.JwtUtil;
+import com.common.togather.db.entity.Member;
 import com.common.togather.db.repository.MemberRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -127,20 +127,27 @@ public class KakaoService {
     }
 
     // 카카오에서 받은 정보로 회원가입 (이메일, 닉네임만 존재)
-    public void signup(KakaoUserInfoResponse userInfo) {
+    public void signup(KakaoMemverSaveRequest request) {
 
-        if(userInfo == null || userInfo.getEmail() == null || userInfo.getNickname() == null) {
-            throw new NotFoundKakaoException("유저 정보 불러오기에서 문제가 발생했습니다.");
+        String email = request.getEmail();
+        String nickname = request.getNickname();
+
+        if (memberRepository.existsByEmail(email)) {
+            throw new EmailAlreadyExistsException("이미 가입된 이메일입니다.");
         }
 
-        String email = userInfo.getEmail();
-        String nickname = userInfo.getNickname();
-
-        // 이미 존재하는 닉네임이라면
-        if(memberRepository.existsByNickname(nickname)){
-
+        if (memberRepository.existsByNickname(nickname)) { // 닉네임 중복 확인
+            throw new NicknameAlreadyExistsException("이미 사용중인 닉네임입니다.");
         }
 
+        Member member = Member.builder()
+                .type(1) // 카카오 로그인
+                .email(email)
+                .nickname(nickname)
+                .profileImg(null)
+                .password("KAKAO")
+                .build();
+        memberRepository.save(member);
     }
 
     // 이미 회원인 유저라면 바로 로그인
