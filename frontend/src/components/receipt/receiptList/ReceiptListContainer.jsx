@@ -95,6 +95,33 @@ function ReceiptListContainer() {
     setIsModalOpen(true);
   };
 
+  // 모달 확인 버튼
+  const handleComfirmModal = () => {
+    // 일정 종료 처리
+    setIsModalOpen(false);
+    finishSchedule();
+    setStatus(1);
+  };
+
+  // 정산 API 요청 (일정 끝내기)
+  const finishSchedule = async () => {
+    // teamId나 planId가 없는 경우 처리
+    if (!teamId || !planId) {
+      teamId = Number(localStorage.getItem("teamId"));
+      planId = Number(localStorage.getItem("planId"));
+    }
+
+    try {
+      const response = await axiosInstance.post(
+        `/teams/${teamId}/plans/${planId}/payments/approvals`
+      );
+
+      console.log(response.data);
+    } catch (error) {
+      console.error("");
+    }
+  };
+
   // 일정 끝난 후 정산 확인 버튼
   const handleFinishedButtonClick = () => {
     // teamId나 planId가 없는 경우 처리
@@ -111,32 +138,11 @@ function ReceiptListContainer() {
     setIsModalOpen(false);
   };
 
-  // 정산 API 요청 (일정 끝내기)
-  const finishSchedule = async () => {
-    try {
-      const response = await axiosInstance.post(
-        `/teams/${teamId}/plans/${planId}/payments/approvals`
-      );
-
-      console.log(response.data);
-    } catch (error) {
-      console.error("");
-    }
-  };
-
-  // 모달 확인 버튼
-  const handleComfirmModal = () => {
-    // 일정 종료 처리
-    setIsModalOpen(false);
-    setStatus(1);
-    finishSchedule();
-  };
-
   // 일정 상세보기 버튼
   const handleReceiptCard = (receipt) => {
     // console.log(receipt);
     navigate(`/receipt/${receipt.receiptId}`, {
-      state: { teamId: teamId, planId: planId },
+      state: { teamId: teamId, planId: planId, status: status },
     });
   };
 

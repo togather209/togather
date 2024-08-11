@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./ReceiptDetail.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import BackButton from "../../common/BackButton";
 import Update from "../../../assets/receipt/update.png";
 import Delete from "../../../assets/receipt/delete.png";
@@ -15,12 +15,14 @@ import Loading from "../../common/Loading";
 function ReceiptDetail() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
   const [receipt, setReceipt] = useState(null); // 초기 상태를 null로 설정
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isManager, setIsManager] = useState(false);
 
   const { receiptId } = useParams();
   let { teamId, planId } = useSelector((state) => state.receipt);
+  const status = location.state.status;
 
   const colorMap = {
     0: "sky",
@@ -29,6 +31,7 @@ function ReceiptDetail() {
   };
 
   useEffect(() => {
+    console.log("status : ", status);
     if (!teamId || !planId) {
       teamId = Number(localStorage.getItem("teamId"));
       planId = Number(localStorage.getItem("planId"));
@@ -168,7 +171,7 @@ function ReceiptDetail() {
                 <p>결제자 : {receipt.managerName}</p>
                 <p>결제일시 : {receipt.paymentDate}</p>
               </div>
-              {isManager && (
+              {isManager && status === 0 && (
                 <div className="receipt-manage">
                   <img src={Update} alt="update" onClick={handleUpdate} />
                   <img src={Delete} alt="delete" onClick={handleDeleteModal} />
