@@ -4,14 +4,16 @@ VALUES ('user1@example.com', '$2a$10$MuuqnYmMS9RilaCk7uPrWOzZ1lER3giYR2T2ZQxOAlq
        ('user2@example.com', '$2a$10$MuuqnYmMS9RilaCk7uPrWOzZ1lER3giYR2T2ZQxOAlqrOEWjmUVVC', 'user2', 'User Two', 'https://trip-bucket-0515.s3.ap-northeast-2.amazonaws.com/|1a305fed-d614-48c2-b93a-627910c75955.jpg',
         0),
        ('user3@example.com', '$2a$10$MuuqnYmMS9RilaCk7uPrWOzZ1lER3giYR2T2ZQxOAlqrOEWjmUVVC', 'user3', 'User Three',
-        NULL, 0);
+        NULL, 0),
+       ('user4@example.com', '$2a$10$MuuqnYmMS9RilaCk7uPrWOzZ1lER3giYR2T2ZQxOAlqrOEWjmUVVC', 'TOGETHER', 'TOGETHER', 'https://trip-bucket-0515.s3.ap-northeast-2.amazonaws.com/|1a305fed-d614-48c2-b93a-627910c75955.jpg',
+        1);
 
 INSERT INTO team (code, title, description, team_img)
 VALUES ('TEAM_A', 'Description for Team A', 'Description for Team A', NULL),
        ('TEAM_B', 'Description for Team B', 'Description for Team B', NULL);
 
 INSERT INTO plan (team_id, member_id, title, description, start_date, end_date, status)
-VALUES (1, 1, 'Plan A', 'Description for Plan A', '2024-08-01 10:00:00', '2024-08-02 10:00:00', 1),
+VALUES (1, 1, 'Plan A', 'Description for Plan A', '2024-08-01 10:00:00', '2024-08-02 10:00:00', 0),
        (1, 3, 'Plan A', 'Description for Plan A', '2024-08-01 10:00:00', '2024-08-02 10:00:00', 1),
        (1, 2, 'Plan B', 'Description for Plan B', '2024-08-02 11:00:00', '2024-08-03 11:00:00', 0);
 

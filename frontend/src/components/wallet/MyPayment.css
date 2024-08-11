@@ -1,10 +1,16 @@
-.payment-container {
+.my-payment-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 16px;
     margin-left: auto;
     margin-right: auto;
+  }
+
+  .my-payment-title{
+    font-size: 18px;
+    font-weight: 900;
+    padding: 0px 16px;
   }
   
   .balance-container {
@@ -16,7 +22,20 @@
     text-align: left;
     color: white;
     margin-bottom: 20px;
-    box-shadow: 0 4px 6px rgba(227, 136, 250, 0.25);
+    box-shadow: 0px 4px 12px #a37afa;
+  }
+
+  .balance-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px;
+    margin-bottom: 8px;
+  }
+
+  .payment-image {
+    width: 80px;
+    height: 80px;
+    margin-left: auto;
   }
   
   .balance-title {
@@ -40,19 +59,22 @@
   
   .button-container {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
   }
   
   .recharge-button,
   .send-button {
+    width: 100%;
     background-color: white;
     color: #6200ea;
     border: none;
     border-radius: 6px;
-    padding: 4px 12px;
-    font-size: 16px;
+    padding: 6px 12px;
+    font-size: 14px;
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .recharge-button {

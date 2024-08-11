@@ -2,10 +2,7 @@ package com.common.togather.api.controller;
 
 import com.common.togather.api.request.ReceiptSaveRequest;
 import com.common.togather.api.request.ReceiptUpdateRequest;
-import com.common.togather.api.response.ErrorResponseDto;
-import com.common.togather.api.response.ReceiptFindAllByPlanIdResponse;
-import com.common.togather.api.response.ReceiptFindByReceiptIdResponse;
-import com.common.togather.api.response.ResponseDto;
+import com.common.togather.api.response.*;
 import com.common.togather.api.service.ReceiptService;
 import com.common.togather.common.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/teams/{teamId}/plans/{planId}")
@@ -209,6 +208,22 @@ public class ReceiptController {
                 .status(HttpStatus.OK.value())
                 .message("영수증 삭제를 성공했습니다.")
                 .data(null)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    // 북마크 아이디로 영수증 조회
+    @Operation(summary = "북마크 아이디로 영수증 조회")
+    @GetMapping("/bookmarks/{bookmarkId}/receipts")
+    public ResponseEntity<ResponseDto<List<ReceiptFinalAllByBookmarkResponse>>> findReceiptByBookmark(
+            @PathVariable("teamId") int teamId, @PathVariable("planId") int planId,
+            @PathVariable("bookmarkId") int bookmarkId, @RequestHeader(value = "Authorization", required = false) String header
+    ){
+        ResponseDto<List<ReceiptFinalAllByBookmarkResponse>> responseDto = ResponseDto.<List<ReceiptFinalAllByBookmarkResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("해당 북마크에 맵핑된 영수증 조회에 성공했습니다.")
+                .data(receiptService.findReceiptByBookmark(teamId, planId, bookmarkId, header))
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);

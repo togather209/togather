@@ -7,6 +7,13 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
   const onButtonClick = (place) => async (e) => {
     e.preventDefault(); // 폼 제출을 방지 (버튼 클릭 시 기본 동작 방지)
 
+
+
+    
+    console.log("fffffff")
+    console.log(place)
+    console.log("fffffff")
+
     // 요청 파라미터 값 생성
     const favoriteFormData = {
       placeId: place.id,

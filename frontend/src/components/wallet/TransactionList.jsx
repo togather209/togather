@@ -27,8 +27,12 @@ function TransactionList() {
         const formattedDate = `${date.getMonth() + 1}.${date.getDate()}`; // 월-일 포맷
 
         const isSender = transaction.status === 0;
-        const name = isSender ? transaction.senderName : transaction.receiverName;
-        const amount = isSender ? `+${transaction.price.toLocaleString()}원` : `-${transaction.price.toLocaleString()}원`;
+        const name = isSender
+          ? transaction.senderName
+          : transaction.receiverName;
+        const amount = isSender
+          ? `+${transaction.price.toLocaleString()}원`
+          : `-${transaction.price.toLocaleString()}원`;
         const type = isSender ? "positive" : "negative";
 
         return {
@@ -85,9 +89,9 @@ function TransactionList() {
 
   return (
     <div className="transaction-container">
-      <div className="header">
+      <div className="transactions-header">
         <BackButton />
-        <h1 className="title">거래 내역</h1>
+        <h1 className="transactions-title">거래 내역</h1>
       </div>
       <div className="transactions-list">
         {Object.keys(transactions).map((date) => (
@@ -101,10 +105,15 @@ function TransactionList() {
               >
                 <img src={image} alt="Avatar" className="avatar" />
                 <div className="transactions-details">
+                  <div>
+                    <p className="transactions-name">{transaction.name}</p>
+                    <p className="transactions-type">
+                      {transaction.type === "postive" ? "입금" : "송금"}
+                    </p>
+                  </div>
                   <p className={`transactions-amount ${transaction.type}`}>
                     {transaction.amount}
                   </p>
-                  <p className="transactions-name">{transaction.name}</p>
                 </div>
               </div>
             ))}
@@ -119,11 +128,19 @@ function TransactionList() {
               &times;
             </span>
             <div className="modal-details">
-              <img src={image} alt="Avatar" />
-              <p className="modal-name">{selectedTransaction.name}</p>
-              <p className={`transactions-amount ${selectedTransaction.type}`}>
-                {selectedTransaction.amount}
+              <p className="modal-details-title">거래 상세 내역</p>
+              <p className="modal-name">
+                {transactions.type === "postive" ? "받는 사람" : "보낸 사람"} :{" "}
+                {selectedTransaction.name}
               </p>
+              <div className="transactions-amount">
+                <p>금액 : &nbsp;</p>
+                <p
+                  className={`transactions-amount ${selectedTransaction.type}`}
+                >
+                  {selectedTransaction.amount}
+                </p>
+              </div>
               <div className="transactions-information">
                 <p>거래시각: {selectedTransaction.originalDate}</p>
                 <p>
