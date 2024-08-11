@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import Close from "../../assets/icons/common/close.png";
 import "./AppealModal.css";
 import axiosInstance from "../../utils/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 function AppealModal({ onClose, teamId, planId }) {
+  const navigate = useNavigate();
   const [inputValue, setInputValue] = useState("");
 
   const onConfirm = () => {

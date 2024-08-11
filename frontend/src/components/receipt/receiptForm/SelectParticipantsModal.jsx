@@ -59,6 +59,11 @@ function SelectParticipantsModal({
                 onChange={() => handleToggle(participant)}
               />
               <label htmlFor={`participant-${participant.memberId}`}>
+                <img
+                  className="participant-info-img"
+                  src={participant.profileImg}
+                  alt=""
+                />
                 {participant.nickname}
               </label>
             </div>

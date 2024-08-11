@@ -34,7 +34,6 @@ function ReceiptListContainer() {
     if (!teamId || !planId) {
       teamId = Number(localStorage.getItem("teamId"));
       planId = Number(localStorage.getItem("planId"));
-      console.log("teamId", teamId);
     }
 
     // teamId와 planId를 redux와 localStorage에 저장
@@ -98,7 +97,11 @@ function ReceiptListContainer() {
 
   // 일정 끝난 후 정산 확인 버튼
   const handleFinishedButtonClick = () => {
-    console.log(teamId, planId);
+    // teamId나 planId가 없는 경우 처리
+    if (!teamId || !planId) {
+      teamId = Number(localStorage.getItem("teamId"));
+      planId = Number(localStorage.getItem("planId"));
+    }
     // 정산 페이지로 이동
     navigate("/payment", { state: { teamId: teamId, planId: planId } });
   };
