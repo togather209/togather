@@ -95,14 +95,11 @@ function Send() {
         <CommonInput
           id="content"
           type="text"
-          placeholder="검색어를 입력하세요"
+          placeholder="멤버를 검색 해보세요"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           maxLength={20}
         />
-        <button className="search-image" type="submit">
-          <img src={Search} alt="돋보기" />
-        </button>
       </form>{" "}
       <button
         className="my-account-withdraw"
@@ -110,13 +107,14 @@ function Send() {
       >
         내 연동 계좌로 출금
       </button>
+      <p className="meeting-list-title">모임원 목록</p>
       <div className="meeting-list">
-        <p className="meeting-list-title">모임원 목록</p>
+        
         {Object.keys(groupedMembers).length === 0 ? (
-          <p>검색 결과가 없습니다.</p>
+          <p className="meeting-list-not-exist">모임이 존재하지 않습니다.</p>
         ) : (
           Object.keys(groupedMembers).map((group) => (
-            <div key={group}>
+            <div key={group} className="grout-list">
               <div className="group-title" onClick={() => toggleGroup(group)}>
                 <p>{group}</p>
                 <span>{expandedGroups[group] ? "▲" : "▼"}</span>

@@ -10,4 +10,5 @@ import lombok.*;
 public class PlanSaveResponse {
     int teamId;
     int planId;
+    String sessionId;
 }

@@ -18,5 +18,6 @@ public class PlanFindByPlanIdResponse {
     private LocalDate endDate; // 일정 종료 날짜
     private Boolean isManager; // 일정장인지 여부
     private Integer status;  // 일정 상태
+    private String sessionId; // 세션아이디
 
 }

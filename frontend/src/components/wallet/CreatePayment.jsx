@@ -17,6 +17,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setAccount } from "../../redux/slices/accountSlice";
+import Modal from "../common/Modal";
 
 function CreatePayment() {
   const dispatch = useDispatch();
@@ -33,6 +34,10 @@ function CreatePayment() {
   const [accountPassword, setAccountPassword] = useState("");
   //인증 되었다.
   const [isVerification, setIsVerification] = useState(false);
+  //비밀번호 모달열기
+  const [isAuthenticationSuccess, setIsAuthenticationsSuccess] = useState(false);
+  //페이생성 모달
+  const [completeCreatePay, setCompleteCreatePay] = useState(false);
 
   useEffect(() => {
     //6자리가되는 순간!
@@ -140,9 +145,8 @@ function CreatePayment() {
       //인증 성공했으면! 
       setIsVerification(true);
       //모달 닫기
-      console.log("도달")
       setPasswordModal(false);
-
+      setIsAuthenticationsSuccess(true);
     } catch (error) {
       console.log("입력에 이상이 있는 것 같은데", error);
     }
@@ -167,10 +171,9 @@ function CreatePayment() {
     try {
       const payDataResponse = await axiosInstance.post("/pay-accounts", payData);
       
-      alert("계좌가 성공적으로 생성 되었습니다.");
+      setCompleteCreatePay(true);
       dispatch(setAccount({account : payDataResponse.data.data}));
       //지갑 페이지로 이동하면... 다른페이지가 뜰거다.
-      window.location.reload();
       
     } catch (error) {
       console.log("데이터 이상");
@@ -302,6 +305,14 @@ function CreatePayment() {
             </div>
           </div>
         </div>
+      )}
+
+      {isAuthenticationSuccess && (
+        <Modal mainMessage={"비밀번호 인증 성공!"} subMessage={"연동계좌 확인이 완료되었습니다."} onClose={() => setIsAuthenticationsSuccess(false)}/>
+      )}
+
+      {completeCreatePay && (
+        <Modal mainMessage={"계좌 생성에 성공하였습니다!"} subMessage={`${accountName} 지갑이 생성되었습니다.`} onClose={() => navigate("/wallet")}/>
       )}
     </div>
   );
