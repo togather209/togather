@@ -117,7 +117,8 @@
 
 .profile-image-upload {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 20px;
 }
 
@@ -130,6 +131,16 @@
   border: 2px dashed #d9d9d9;
   border-radius: 50%;
   cursor: pointer;
+}
+
+.profile-image-delete-button {
+  margin-top: 5px;
+  border: none;
+  background: linear-gradient(to right, #712fff, #925eff);
+  padding: 6px 10px;
+  color: white;
+  font-weight: 600;
+  border-radius: 6px;
 }
 
 .profile-image {

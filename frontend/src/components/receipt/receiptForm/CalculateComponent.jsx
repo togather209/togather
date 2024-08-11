@@ -71,7 +71,6 @@ function CalculateComponent() {
       businessName,
       paymentDate: formattedPaymentDate,
       totalPrice,
-      bookmarkId,
       color,
       items: items.map((item, index) => ({
         name: item.name,
@@ -87,6 +86,12 @@ function CalculateComponent() {
               })),
       })),
     };
+
+    if (bookmarkId !== null) {
+      receiptTempInfo.bookmarkId = bookmarkId;
+    }
+
+    console.log(receiptTempInfo);
 
     try {
       const response = await axiosInstance.post(
@@ -113,7 +118,6 @@ function CalculateComponent() {
       businessName,
       paymentDate: formattedPaymentDate,
       totalPrice,
-      bookmarkId,
       color,
       items: items.map((item, index) => ({
         name: item.name,
@@ -129,6 +133,10 @@ function CalculateComponent() {
               })),
       })),
     };
+
+    if (bookmarkId !== null) {
+      receiptUpdatepInfo.bookmarkId = bookmarkId;
+    }
 
     try {
       const response = await axiosInstance.put(
