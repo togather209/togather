@@ -3,6 +3,8 @@ import "./TransactionList.css";
 import image from "../../assets/icons/common/chunsik.png";
 import BackButton from "../common/BackButton";
 import axiosInstance from "../../utils/axiosInstance";
+import deposit from "../../assets/wallet/deposit.png";
+import withdraw from "../../assets/wallet/withdraw.png";
 
 function TransactionList() {
   const [transactions, setTransactions] = useState([]);
@@ -103,12 +105,12 @@ function TransactionList() {
                 key={transaction.id}
                 onClick={() => openModal(transaction)}
               >
-                <img src={image} alt="Avatar" className="avatar" />
+                <img src={transaction.type === "positive" ? deposit : withdraw} alt="Avatar" className="avatar" />
                 <div className="transactions-details">
                   <div>
                     <p className="transactions-name">{transaction.name}</p>
                     <p className="transactions-type">
-                      {transaction.type === "postive" ? "입금" : "송금"}
+                      {transaction.type === "positive" ? "입금" : "송금"}
                     </p>
                   </div>
                   <p className={`transactions-amount ${transaction.type}`}>
@@ -130,7 +132,7 @@ function TransactionList() {
             <div className="modal-details">
               <p className="modal-details-title">거래 상세 내역</p>
               <p className="modal-name">
-                {transactions.type === "postive" ? "받는 사람" : "보낸 사람"} :{" "}
+                {transactions.type === "positive" ? "받는 사람" : "보낸 사람"} :{" "}
                 {selectedTransaction.name}
               </p>
               <div className="transactions-amount">

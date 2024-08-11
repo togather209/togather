@@ -127,7 +127,7 @@ function Send() {
                       key={member.memberId}
                       onClick={() => goToSendForm(member.name, member.memberId)}
                     >
-                      <img src={member.img} alt={member.name} />
+                      <img src={member.img} alt={member.name}/>
                       <p className="member-name">{member.name}</p>
                     </button>
                   ))}
