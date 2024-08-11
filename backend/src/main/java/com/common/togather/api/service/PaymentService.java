@@ -220,8 +220,12 @@ public class PaymentService {
 
     public PaymentFindByPlanIdAndMemberResponse findPaymentByPlanIdAndMember(String email, int planId) {
 
-        planRepository.findById(planId)
+        Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanNotFoundException("해당 일정은 존재하지 않습니다."));
+
+        if (plan.getStatus() != 0) {
+            throw new InvalidPlanStatusException("일정이 종료 되었습니다.");
+        }
 
         //최종 정산 내역
         List<PaymentFindDto> paymentFindDtos = paymentRepositorySupport.findPaymentByPlanId(planId);
