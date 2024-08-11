@@ -84,7 +84,7 @@ public class PaymentService {
             for (Item item : items) {
                 // 유저당 돈 계산
                 List<ItemMember> itemMembers = item.getItemMembers();
-                int amount = item.getUnitPrice() * item.getCount();
+                int amount = item.getUnitPrice();
                 int count = itemMembers.size();
                 int memberBalance = getMemberBalance(amount, count);
                 int systemBalance = getSystemBalance(amount, count, memberBalance);
@@ -120,7 +120,7 @@ public class PaymentService {
 
         for (ItemMember itemMember : itemMembers) {
             Item item = itemMember.getItem();
-            int amount = item.getUnitPrice() * item.getCount();
+            int amount = item.getUnitPrice();
             int count = item.getItemMembers().size();
             int memberBalance = getMemberBalance(amount, count);
             Member sender = item.getReceipt().getManager();
