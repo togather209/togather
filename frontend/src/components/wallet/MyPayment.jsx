@@ -24,8 +24,8 @@ function MyPayment() {
     return numericBalance.toLocaleString("ko-KR"); // 'ko-KR' 로케일을 사용하여 한국어 형식으로 변환
   };
   return (
-    <div className="payment-container">
-      <p className="payment-title">내 지갑</p>
+    <div className="my-payment-container">
+      <p className="my-payment-title">내 지갑</p>
       <div className="balance-container">
         <div className="balance-header">
           <div className="balance-title">

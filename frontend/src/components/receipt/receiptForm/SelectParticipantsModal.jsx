@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./SelectParticipantsModal.css";
 import Close from "../../../assets/icons/common/close.png";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import { setTeamPlan } from "../../../redux/slices/receiptSlice";
-import axiosInstance from "../../../utils/axiosInstance";
-import localStorage from "redux-persist/es/storage";
 
 function SelectParticipantsModal({
   participants,
@@ -14,7 +9,6 @@ function SelectParticipantsModal({
   onClose,
   isSingleSelect,
 }) {
-  const dispatch = useDispatch();
   const [selected, setSelected] = useState(selectedParticipants || []);
 
   useEffect(() => {
@@ -64,6 +58,11 @@ function SelectParticipantsModal({
                 onChange={() => handleToggle(participant)}
               />
               <label htmlFor={`participant-${participant.memberId}`}>
+                <img
+                  className="participant-info-img"
+                  src={participant.profileImg}
+                  alt=""
+                />
                 {participant.nickname}
               </label>
             </div>

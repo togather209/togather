@@ -4,12 +4,13 @@ import SubmitButton from "../user/SubmitButton";
 import logo from "../../assets/icons/common/logo.png";
 import "../user/User.css";
 import BackButton from "../common/BackButton";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import defaultImage from "../../assets/icons/common/defaultProfile.png";
 import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // 아이콘 추가
 import axiosInstance from "../../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import { setUser } from "../../redux/slices/userSlice";
 
 function ProfileUpdate() {
   const API_LINK = import.meta.env.VITE_API_URL;
@@ -23,6 +24,7 @@ function ProfileUpdate() {
   const [nicknameMessage, setNicknameMessage] = useState(""); // 닉네임 메시지
   const member = useSelector((state) => state.user.member);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (member) {
@@ -69,14 +71,18 @@ function ProfileUpdate() {
     }
 
     try{
-      await axiosInstance.patch('/members/me', formData, {
+      const response = await axiosInstance.patch('/members/me', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         }
       });
+
+      if (response.status === 200) {
+        dispatch(setUser({ member: response.data.data }));
+      }
+
       console.log("수정 됐다요요요요");
       navigate('/mypage');
-      
     }
     catch(error){
       console.log("수정 에러", error);

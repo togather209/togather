@@ -33,7 +33,7 @@ function RecognizeComponent({ defaultReceipt }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedItems, setEditedItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [bookmark, setBookmark] = useState({ id: -1, name: "" });
+  const [bookmark, setBookmark] = useState({ id: null, name: "" });
   const [isEditStatus, setIsEditStatus] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isOcrLoading, setIsOcrLoading] = useState(false);
@@ -45,8 +45,8 @@ function RecognizeComponent({ defaultReceipt }) {
 
   useEffect(() => {
     if (!teamId || !planId) {
-      teamId = localStorage.getItem("teamId");
-      planId = localStorage.getItem("planId");
+      teamId = Number(localStorage.getItem("teamId"));
+      planId = Number(localStorage.getItem("planId"));
 
       if (teamId && planId) {
         dispatch(setTeamPlan({ teamId, planId }));
@@ -169,7 +169,7 @@ function RecognizeComponent({ defaultReceipt }) {
   };
 
   const handleDisconnectPlace = () => {
-    setBookmark({ id: -1, name: "" });
+    setBookmark({ id: null, name: "" });
   };
 
   const handleNextTab = () => {
@@ -468,7 +468,7 @@ function RecognizeComponent({ defaultReceipt }) {
               </div>
             </div>
           )}
-          {recognizedResult !== null && bookmark.id === -1 && (
+          {recognizedResult !== null && bookmark.id === null && (
             <button
               className="connect-schedule"
               onClick={handleConnectSchedule}
@@ -476,7 +476,7 @@ function RecognizeComponent({ defaultReceipt }) {
               장소연결
             </button>
           )}
-          {recognizedResult !== null && bookmark.id !== -1 && (
+          {recognizedResult !== null && bookmark.id !== null && (
             <div className="connected-place-info">
               <div>연결된 장소</div>
               <div className="connected-place-name">

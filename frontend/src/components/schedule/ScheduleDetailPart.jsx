@@ -1,63 +1,127 @@
-import React, {useState, useEffect, useLayoutEffect} from "react"
-import "./ScheduleDetail.css"
+import React, { useState, useEffect } from "react";
+import "./ScheduleDetail.css";
 import headphone from "../../assets/schedule/headphone.png";
 import mic from "../../assets/schedule/mic.png";
 import ScheduleButton from "./ScheduleButton";
 import ScheduleDetail from "./ScheduleDetail";
 import axiosInstance from "../../utils/axiosInstance";
+import { OpenVidu } from "openvidu-browser";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 
-function ScheduleDetailPart () {
-    const [isCallStarted, setIsCallStarted] = useState(false);
-    const [isHeadPhone, setIsHeadPhone] = useState(false);
-    const [isMic, setIsMic] = useState(false);
-    const { id, schedule_id } = useParams();
-    const [sessionId , setSessionId] = useState("");
-    const handleHeadPhone = () => setIsHeadPhone(!isHeadPhone);
-    const handleMic = () => setIsMic(!isMic);
+function ScheduleDetailPart() {
+  const [isCallStarted, setIsCallStarted] = useState(false);
+  const [isHeadPhone, setIsHeadPhone] = useState(false);
+  const [isMic, setIsMic] = useState(true);
+  const { id, schedule_id } = useParams();
+  const [sessionId, setSessionId] = useState("");
+  const [session, setSession] = useState(null);
+  const [publisher, setPublisher] = useState(null);
+  const [error, setError] = useState(null);
 
-    useLayoutEffect(() => {
-      fetchSessionId();
-    }, [sessionId]);
-
+  useEffect(() => {
     const fetchSessionId = async () => {
-      const response = await axiosInstance.get(`/teams/${id}/plans/${schedule_id}`);
-      await setSessionId(response.data.data.sessionId);
-      console.log("세션아이디 내놔 : ", response.data.data.sessionId)
-    }
-
-
-
-    const handleCallStart = async () => {
-      await setIsCallStarted(!isCallStarted);
-      const test = await axiosInstance.post(`/sessions/${sessionId}/connections`);
-      console.log("발급된 토큰 내놔 : ", test);
-      
+      try {
+        const response = await axiosInstance.get(
+          `/teams/${id}/plans/${schedule_id}`
+        );
+        const newSessionId = response.data.data.sessionId;
+        setSessionId(newSessionId);
+        localStorage.setItem("sessionId", newSessionId);
+      } catch (err) {
+        setError("Failed to fetch session ID");
+      }
     };
 
-    const handleCallEnd = () => {
-      setIsCallStarted(!isCallStarted);
-
+    if (!sessionId) {
+      fetchSessionId();
     }
+  }, [id, schedule_id, sessionId]);
+
+  const handleCallStart = async () => {
+    if (isCallStarted) return;
+
+    try {
+      if (sessionId) {
+        const response = await axiosInstance.post(
+          `/sessions/${sessionId}/connections`
+        );
+        const token = response.data.data.token;
+
+        const OV = new OpenVidu();
+        const newSession = OV.initSession();
+
+        newSession.on("streamCreated", (event) => {
+          const subscriberContainer = document.createElement("div");
+          subscriberContainer.id = event.stream.streamId;
+          document.body.appendChild(subscriberContainer);
+          newSession.subscribe(event.stream, subscriberContainer.id);
+        });
+
+        newSession.on("streamDestroyed", (event) => {
+          const subscriberContainer = document.getElementById(event.stream.streamId);
+          if (subscriberContainer) {
+            subscriberContainer.remove();
+          }
+        });
+
+        await newSession.connect(token);
+
+        const newPublisher = OV.initPublisher(undefined, {
+          audioSource: true,
+          videoSource: false,
+          publishAudio: isMic,
+          publishVideo: false,
+          resolution: "640x480",
+          frameRate: 30,
+        });
+
+        const publisherContainer = document.createElement("div");
+        publisherContainer.id = "publisher";
+        document.body.appendChild(publisherContainer);
+
+        setSession(newSession);
+        setPublisher(newPublisher);
+        newSession.publish(newPublisher);
+        setIsCallStarted(true);
+      }
+    } catch (err) {
+      setError("Failed to start call");
+    }
+  };
+
+  const handleCallEnd = () => {
+    if (session) {
+      session.disconnect();
+  
+      setIsCallStarted(false);
+
+      const publisherContainer = document.getElementById("publisher");
+      if (publisherContainer) {
+        publisherContainer.remove();
+      }
 
 
-    // 찜하기 목록 날짜 목록 클릭했을 때 리렌더링 확인용 코드
-    // 이거 콘솔에 찍히면 비상 비상
-    useEffect (() => {
-        console.log("김해수는 숭실대 졸업생입니다. ㅎㅎㅎㅎㅎ")
-        console.log("김해수는 숭실대 졸업생입니다. ㅎㅎㅎㅎㅎ")
-        console.log("김해수는 숭실대 졸업생입니다. ㅎㅎㅎㅎㅎ")
-        console.log("김해수는 숭실대 졸업생입니다. ㅎㅎㅎㅎㅎ")
-        console.log("하정수는 한밭대 졸업생입니다!!!!!")
-    },[])
+      const subscriberContainers = document.querySelectorAll("div[id^='stream']");
+      subscriberContainers.forEach(container => container.remove());
+    }
+  };
 
-    return (
+  const handleHeadPhone = () => setIsHeadPhone(!isHeadPhone);
 
-        <div>
-        <ScheduleDetail></ScheduleDetail>
-        
-        <div className="schedule-detail-button">
+  const handleMic = () => {
+    if (publisher) {
+      publisher.publishAudio(!isMic);
+    }
+    setIsMic(!isMic);
+  };
+
+  return (
+    <div>
+      <ScheduleDetail />
+
+      {error && <div className="error">{error}</div>}
+
+      <div className="schedule-detail-button">
         {!isCallStarted ? (
           <ScheduleButton type={"purple"} onClick={handleCallStart}>
             통화 시작
@@ -82,8 +146,8 @@ function ScheduleDetailPart () {
           </div>
         )}
       </div>
-        </div>
-    )
+    </div>
+  );
 }
 
-export default ScheduleDetailPart
+export default ScheduleDetailPart;
