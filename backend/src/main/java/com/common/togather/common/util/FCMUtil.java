@@ -1,7 +1,9 @@
 package com.common.togather.common.util;
 
 import com.common.togather.api.error.MissingTokenException;
-import com.common.togather.api.service.RedisService;
+import com.common.togather.db.entity.FCMToken;
+import com.common.togather.db.entity.Member;
+import com.common.togather.db.repository.FCMTokenRepository;
 import com.google.firebase.messaging.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -15,10 +17,23 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FCMUtil {
 
-    private final RedisService redisService;
+    private final FCMTokenRepository fcmTokenRepository;
 
-    public void saveToken(String email, String token) {
-        redisService.saveFCMToken(email, token);
+    @Transactional
+    public void saveToken(Member member, String token) {
+        if (member.getFcmToken() != null) {
+            updateToken(member, token);
+            return;
+        }
+
+        fcmTokenRepository.save(FCMToken.builder()
+                .member(member)
+                .token(token)
+                .build());
+    }
+
+    private void updateToken(Member member, String token) {
+        member.getFcmToken().updateToken(token);
     }
 
     @Async
@@ -28,8 +43,8 @@ public class FCMUtil {
             backoff = @Backoff(delay = 1000, multiplier = 2) // 초기 대기 시간 1초, 지수적 증가
     )
     @SneakyThrows
-    public void pushNotification(String email, String title, String content) {
-        String token = redisService.getFCMToken(email);
+    public void pushNotification(String token, String title, String content) {
+
         if (token == null) {
             throw new MissingTokenException("fcm 토큰이 없습니다.");
         }

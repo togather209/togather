@@ -1,8 +1,8 @@
 package com.common.togather.common.fcm;
 
-public enum NotificationType {
+public enum AlarmType {
 
-    PAYMENT_REQUEST(
+    PAYMENT_APPROVAL_REQUEST(
             "최종 정산 동의 요청",
             "'%s' 일정이 끝났습니다 내역을 확인해보세요!",
             1
@@ -54,14 +54,14 @@ public enum NotificationType {
     private final String message;
     private final Integer type;
 
-    NotificationType(String title, String message) {
+    AlarmType(String title, String message) {
         this(title, message, null);
     }
 
-    NotificationType(String title, String message, Integer type) {
+    AlarmType(String title, String message, Integer type) {
         this.title = title;
         this.message = message;
-        this.type=type;
+        this.type = type;
     }
 
     // 제목 반환
@@ -73,7 +73,7 @@ public enum NotificationType {
         return String.format(message, args);
     }
 
-    public Integer getType(){
+    public Integer getType() {
         return type;
     }
 }
