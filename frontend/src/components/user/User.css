@@ -22,7 +22,7 @@
   margin-right: auto;
   text-align: center;
   font-size: 12px;
-  margin-bottom: 50px;
+  margin-bottom: 40px;
 }
 
 .submit-button:hover {
@@ -66,13 +66,20 @@
 }
 
 .remember-email {
-  margin-right: auto;
-  margin-left: 10px;
-  margin-bottom: 30px;
+  margin: 10px 0 30px 10px;
 }
 
 .remember-email input {
-  margin-right: 5px;
+  margin-right: 10px;
+}
+
+.remember-email input:checked {
+  accent-color: #712fff;
+}
+
+.remember-email label {
+  color: #575656;
+  font-size: 14px;
 }
 
 .signup-search-password {
@@ -161,7 +168,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 
 .image-upload-label {
