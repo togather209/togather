@@ -25,10 +25,10 @@ function UnderBar() {
       <div className="underbar">
         <button
           onClick={() => navigate("/")}
-          className={`underbar-button ${isActive("/") ? "active" : ""}`}
+          className={`underbar-button ${isActive("/home") ? "active" : ""}`}
         >
           <img
-            src={isActive("/") ? MeetingIconActive : MeetingIcon}
+            src={isActive("/home") ? MeetingIconActive : MeetingIcon}
             alt="meeting"
             className="underbar-icon"
           />
