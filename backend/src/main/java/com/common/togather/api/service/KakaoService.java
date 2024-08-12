@@ -25,6 +25,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -159,9 +161,19 @@ public class KakaoService {
             throw new NotFoundKakaoException("카카오 로그인에 실패하였습니다.");
         }
 
-        // 이메일 존재 여부 확인
-        if(!memberRepository.existsByEmail(email)) {
-            throw new EmailNotFoundException("가입되지 않은 이메일입니다.");
+        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+
+        if (memberOptional.isPresent()) {
+            Member member = memberOptional.get();
+
+            // Member의 type 값을 비교하여 예외 처리
+            if (member.getType() == 0) {
+                throw new LoginMethodMismatchException("일반 가입 회원입니다.");
+            }
+        }
+        // 해당 이메일의 회원이 없다면
+        else {
+            throw new EmailNotFoundException("가입되지 않은 이메일 입니다.");
         }
 
         String accessToken = jwtUtil.generateAccessToken(email); // Access Token 생성

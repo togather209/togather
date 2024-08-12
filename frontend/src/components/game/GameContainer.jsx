@@ -6,6 +6,8 @@ import Machine from "../../assets/game/machine.png";
 import MachineTongsHead from "../../assets/game/machine-tongs-head.png";
 import MachineTongs from "../../assets/game/machine-tongs.png";
 import AddButton from "../../assets/icons/common/add.png";
+import SelectedCard from "../../assets/game/selectedCard.png";
+import Modal from "../common/Modal";
 
 function GameContainer() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,6 +16,7 @@ function GameContainer() {
   const [participants, setParticipants] = useState([]);
   const [randomParticipant, setRandomParticipant] = useState(null);
   const [isTongsDown, setIsTongsDown] = useState(false);
+  const [noParticipant, SetNoParticipant] = useState(false);
 
   useEffect(() => {
     console.log(participants);
@@ -33,8 +36,11 @@ function GameContainer() {
   };
 
   const handleCardPick = () => {
-    // TODO 참여자 없을 시 모달 알림
-    if (participants.length > 0) {
+    if (participants.length === 0) {
+      // 참여자 없을 시 모달 알림
+      SetNoParticipant(true);
+    } else {
+      SetNoParticipant(false);
       setIsTongsDown(true);
       setTimeout(() => {
         setIsTongsDown(false);
@@ -67,7 +73,7 @@ function GameContainer() {
           <div key={participant.memberId} className="game-participant">
             <img
               src={participant.profileImg}
-              alt={participant.nickname}
+              alt=""
               className="game-participant-image"
             />
           </div>
@@ -87,6 +93,13 @@ function GameContainer() {
           }`}
           alt="tongs"
         />
+        <img
+          src={SelectedCard}
+          className={`game-machine-selected-card ${
+            !isTongsDown ? "selected-card-up" : ""
+          }`}
+          alt=""
+        />
         <button className="game-start-button" onClick={handleCardPick}>
           카드 뽑기
         </button>
@@ -102,6 +115,13 @@ function GameContainer() {
           onClose={() => setIsResultModalOpen(false)}
           selectedParticipant={randomParticipant}
           selectedTeam={selectedTeam}
+        />
+      )}
+      {noParticipant && (
+        <Modal
+          mainMessage="선택된 참여 인원이 없습니다"
+          subMessage="게임 참여 인원을 선택해보세요"
+          onClose={() => SetNoParticipant(false)}
         />
       )}
     </div>

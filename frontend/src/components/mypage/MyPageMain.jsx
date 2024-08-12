@@ -39,8 +39,9 @@ function MyPageMain() {
   const loadingAccountData = async () => {
     try {
       const response = await axiosInstance.get("/pay-accounts/members/me");
-      dispatch(setAccount({ account: response.data.data }));
-      console.log(account);
+      if (response.data.data !== null) {
+        dispatch(setAccount({ account: response.data.data }));
+      }
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
     }
@@ -86,7 +87,7 @@ function MyPageMain() {
 
   const secessionMember = async () => {
     //계좌가 살아있고 잔액이 0원 이상이라면
-    if (account.balance > 0) {
+    if (account?.balance > 0) {
       setIsExistsAccount(true);
       return;
     } else {
@@ -97,12 +98,16 @@ function MyPageMain() {
 
   const confirmSecession = async () => {
     //회원 탈퇴 진행
-    await axiosInstance.delete("/members/me");
-    dispatch(clearUser());
-    dispatch(clearToken());
-    dispatch(clearAccount());
-    dispatch(clearLinkedAccount());
-    dispatch(resetReceipt());
+    try {
+      const res = await axiosInstance.delete("/members/me");
+      dispatch(clearUser());
+      dispatch(clearToken());
+      dispatch(clearAccount());
+      dispatch(clearLinkedAccount());
+      dispatch(resetReceipt());
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const formatBalance = (balance) => {
@@ -129,7 +134,7 @@ function MyPageMain() {
             </button>
           </div>
           <div className="mypage-content">
-            {account !== null ? (
+            {account ? (
               <button
                 className="mypage-my-wallet"
                 onClick={() => navigate("/wallet")}
@@ -154,9 +159,8 @@ function MyPageMain() {
                 onClick={() => navigate("/wallet")}
               >
                 <p className="mypage-my-wallet-summary">
-                  계좌가 없으신데용 ㅋㅋ
+                  Pay 계좌가 존재 하지 않습니다.
                 </p>
-                <p className="mypage-my-wallet-balance">만드세요~</p>
               </button>
             )}
             <button
