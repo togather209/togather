@@ -525,7 +525,7 @@ function SignUpForm() {
         <Modal
           mainMessage={"회원가입을 환영합니다!"}
           subMessage={"Togather를 이용하러 가볼까요?"}
-          onClose={() => setSignupOk(false)}
+          onClose={() => navigate("/login")}
         />
       )}
     </>
