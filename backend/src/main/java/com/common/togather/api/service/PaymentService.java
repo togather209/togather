@@ -64,102 +64,86 @@ public class PaymentService {
 
         Member system = memberRepository.findByNameAndType(systemName, systemType).get();
 
-        // 돈 받아야하는 사람
-        Map<Integer, ReceiverPayment> receiverAmount = new HashMap<>();
-        receiverAmount.put(
-                system.getId(),
-                ReceiverPayment.builder()
-                        .name(system.getName())
-                        .money(0)
-                        .build()
-        );
+        //최종 정산 내역
+        List<PaymentFindDto> paymentFindDtos = paymentRepositorySupport.findPaymentByPlanId(planId);
 
-        //  돈 보내야 하는 사람
-        Map<Integer, SenderPayment> senderAmount = new HashMap<>();
+        Map<Integer, List<PaymentFindDto>> groupedPayments = groupPaymentsByItemId(paymentFindDtos);
 
-        // 품목에 대한 총 지출액
-        Map<Integer, MemberItem> itemAmount = new HashMap<>();
+        // 돈을 보내야하는 사람 (memberId, senderPayment);
+        Map<Integer, SenderPayment> senderMap = new HashMap<>();
+        // 돈을 받아야하는 사람 (memberId, ReceiverPayment)
+        Map<Integer, ReceiverPayment> receiverMap = new HashMap<>();
+        // 소비 품목 목록 (MemberItem) 
+        List<MemberItem> memberItems = new ArrayList<>();
 
-        // 사용자를 찾는다.
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
 
-        // 해당 사용자의 영수증
-        List<Receipt> receipts = member.getReceipts();
+        groupedPayments.forEach((itemId, paymentFinds) -> {
 
-        // 내가 돈을 받아야하는 사람
-        for (Receipt receipt : receipts) {
-            List<Item> items = receipt.getItems();
-            for (Item item : items) {
-                // 유저당 돈 계산
-                List<ItemMember> itemMembers = item.getItemMembers();
-                int amount = item.getUnitPrice();
-                int count = itemMembers.size();
-                int memberBalance = getMemberBalance(amount, count);
-                int systemBalance = getSystemBalance(amount, count, memberBalance);
-                ReceiverPayment systemPayment = receiverAmount.get(system.getId());
-                systemPayment.setMoney(systemPayment.getMoney() + systemBalance);
+            int memberBalance = getMemberBalance(paymentFinds.get(0).getPrice(), paymentFinds.size());
+            int systemBalance = getSystemBalance(paymentFinds.get(0).getPrice(), paymentFinds.size(), memberBalance);
 
-                for (ItemMember itemMember : itemMembers) {
-                    Member receiver = itemMember.getMember();
+            Member receiver = paymentFinds.get(0).getReceiver();
 
-                    if (receiver.getId() == member.getId()) {
-                        continue;
-                    }
+            if (systemBalance > 0) {
+                if (receiverMap.containsKey(system.getId())) {
+                    receiverMap.get(system.getId()).addMoney(memberBalance);
+                } else {
+                    receiverMap.put(
+                            system.getId(),
+                            ReceiverPayment.builder()
+                                    .name(system.getName())
+                                    .money(memberBalance)
+                                    .build()
+                    );
+                }
+            }
 
-                    if (receiverAmount.containsKey(receiver.getId())) {
-                        ReceiverPayment receiverPayment = receiverAmount.get(receiver.getId());
-                        receiverPayment.setMoney(receiverPayment.getMoney() + memberBalance);
+            for (PaymentFindDto paymentFind : paymentFinds) {
+                Member sender = paymentFind.getSender();
+
+                if (sender.getId() == receiver.getId()) {
+                    continue;
+                }
+
+                // 영수증 관리자일때
+                if (member.getId() == receiver.getId()) {
+                    if (receiverMap.containsKey(sender.getId())) {
+                        receiverMap.get(sender.getId()).addMoney(memberBalance);
                     } else {
-                        receiverAmount.put(
-                                receiver.getId(),
+                        receiverMap.put(
+                                sender.getId(),
                                 ReceiverPayment.builder()
+                                        .name(sender.getName())
+                                        .money(memberBalance)
+                                        .build()
+                        );
+
+                    }
+                } else if (member.getId() == sender.getId()) {
+                    if (senderMap.containsKey(receiver.getId())) {
+                        senderMap.get(receiver.getId()).addMoney(memberBalance);
+                    } else {
+                        senderMap.put(
+                                receiver.getId(),
+                                SenderPayment.builder()
                                         .name(receiver.getName())
                                         .money(memberBalance)
                                         .build()
-
                         );
+
                     }
+
+                    memberItems.add(MemberItem.builder()
+                            .name(paymentFind.getItemName())
+                            .money(memberBalance)
+                            .build());
                 }
             }
-        }
+        });
 
-        // 해당 사용자의 품목
-        List<ItemMember> itemMembers = member.getItemMembers();
-
-        for (ItemMember itemMember : itemMembers) {
-            Item item = itemMember.getItem();
-            int amount = item.getUnitPrice();
-            int count = item.getItemMembers().size();
-            int memberBalance = getMemberBalance(amount, count);
-            Member sender = item.getReceipt().getManager();
-
-            if (sender.getId() == member.getId()) {
-                continue;
-            }
-
-            itemAmount.put(
-                    item.getId(),
-                    MemberItem.builder()
-                            .name(item.getName())
-                            .money(memberBalance)
-                            .build()
-            );
-
-            // 돈을 보내야하는 사람
-            if (senderAmount.containsKey(sender.getId())) {
-                SenderPayment senderPayment = senderAmount.get(sender.getId());
-                senderPayment.setMoney(senderPayment.getMoney() + memberBalance);
-            } else {
-                senderAmount.put(
-                        sender.getId(),
-                        SenderPayment.builder()
-                                .name(sender.getName())
-                                .money(memberBalance)
-                                .build()
-                );
-            }
-        }
-
+        System.out.println(member.getId() + " " + planId);
         // 정산 상태 얻기
         int status = paymentRepositorySupport.getStatus(member.getId(), planId);
 
@@ -169,9 +153,9 @@ public class PaymentService {
                 .startDate(plan.getStartDate().toString())
                 .endDate(plan.getEndDate().toString())
                 .status(status)
-                .receiverPayments(new ArrayList<>(receiverAmount.values()))
-                .senderPayments(new ArrayList<>(senderAmount.values()))
-                .memberItems(new ArrayList<>(itemAmount.values()))
+                .receiverPayments(new ArrayList<>(receiverMap.values()))
+                .senderPayments(new ArrayList<>(senderMap.values()))
+                .memberItems(memberItems)
                 .build();
     }
 
