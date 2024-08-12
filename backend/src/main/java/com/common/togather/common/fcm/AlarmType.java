@@ -48,6 +48,12 @@ public enum AlarmType {
             "영수증 업로드 알림",
             "'%s' 일정에 영수증이 등록되었습니다.",
             8
+    ),
+
+    WITHDRAWAL_ALERT(
+    "출금 알림",
+            "'%s'님에게 '%d'원을 보냈습니다.",
+            9
     );
 
     private final String title;
