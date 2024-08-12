@@ -410,7 +410,7 @@ public class PaymentService {
 
             // 송금인 알림 전송
             fcmUtil.pushNotification(
-                    member.getFcmToken().getToken(),
+                    member.getFcmToken(),
                     WITHDRAWAL_ALERT.getTitle(),
                     WITHDRAWAL_ALERT.getMessage(targetMember.getName(), String.valueOf(payment.getMoney()))
             );
@@ -425,7 +425,7 @@ public class PaymentService {
 
             // 수취인 알림 전송
             fcmUtil.pushNotification(
-                    targetMember.getFcmToken().getToken(),
+                    targetMember.getFcmToken(),
                     PAYACOUNT_RECEIVED.getTitle(),
                     PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(payment.getMoney()))
             );
