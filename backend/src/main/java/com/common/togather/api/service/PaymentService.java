@@ -334,7 +334,7 @@ public class PaymentService {
 
         // 송금자의 Pay 계좌 확인
         PayAccount payAccount = payAccountRepository.findByMember_Email(email)
-                .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
+                .orElseThrow(() -> new PayAccountPaymentNotFoundException("사용자의 Pay 계좌가 존재하지 않습니다."));
         Member member = payAccount.getMember();
 
         // 총 송금할 금액 계산
@@ -349,7 +349,7 @@ public class PaymentService {
             int receiverId = payment.getReceiver().getId();
             targetPayAccounts.putIfAbsent(receiverId,
                     payAccountRepository.findByMemberId(receiverId)
-                            .orElseThrow(() -> new PayAccountNotFoundException("Target Pay 계좌가 존재하지 않습니다.")));
+                            .orElseThrow(() -> new PayAccountPaymentNotFoundException("Target Pay 계좌가 존재하지 않습니다.")));
         }
 
         List<TransactionSaveRequest> transactionRequests = new ArrayList<>();

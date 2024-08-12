@@ -39,6 +39,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NO_CONTENT);
     }
 
+    // 정산 시 Pay 계좌가 존재 하지 않을 경우
+    @ExceptionHandler(PayAccountPaymentNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handlePayAccountPaymentNotFoundException(PayAccountPaymentNotFoundException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Pay Account Not Found", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
     // Pay 계좌가 비밀번호가 틀린 경우
     @ExceptionHandler(InvalidPayAccountPasswordException.class)
     public ResponseEntity<ErrorResponseDto> handleInvalidPayAccountPasswordException(InvalidPayAccountPasswordException ex) {
@@ -108,7 +116,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handlePaymentNotFoundException(PaymentNotFoundException ex) {
         ex.printStackTrace();
         ErrorResponseDto error = new ErrorResponseDto("Payment Not Found", ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.NO_CONTENT);
     }
 
     // 정산 되지 않은 일정이 존재하는 경우
