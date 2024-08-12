@@ -14,7 +14,7 @@ const TokenRefresher = ({ children }) => {
   useEffect(() => {
     //console.log("Current pathname:", location.pathname); // 현재 경로 출력
 
-    const excludedPaths = ["/login", "/signup", "/", "/search_password"];
+    const excludedPaths = ["/login", "/signup", "/", "/search_password", "/api/auth/kakao/callback", "/signupWithKakao"];
     if (!excludedPaths.includes(location.pathname)) {
       const tokenReload = async () => {
         await dispatch(refreshAccessTokenAsync()).unwrap();
@@ -42,7 +42,7 @@ const TokenRefresher = ({ children }) => {
   // }, [navigate, location.pathname]);
 
   useEffect(() => {
-    const restrictedPaths = ["/login", "/signup", "/", "/search_password"];
+    const restrictedPaths = ["/login", "/signup", "/", "/search_password", "/api/auth/kakao/callback", "/signupWithKakao"];
     if (accessToken && restrictedPaths.includes(location.pathname)) {
       navigate("/home", { replace: true });
     }

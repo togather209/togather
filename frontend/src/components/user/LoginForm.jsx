@@ -33,9 +33,9 @@ function LoginForm() {
     console.log(API_LINK);
 
     const memberData = {
-      email,
-      password,
-      fcmToken
+      email: email,
+      password: password,
+      fcmtoken: fcmToken
     };
 
     try {

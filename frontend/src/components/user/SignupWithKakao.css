@@ -1,0 +1,46 @@
+.signup-with-kakao-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 80px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.signup-with-kakao-header {
+  font-size: 18px;
+  flex-grow: 1;
+  text-align: center;
+  font-weight: 600;
+}
+
+.signup-with-kakao-form-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 6px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.signup-with-kakao-form-title {
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+    padding: 16px;
+}
+
+.signup-with-kakao-form-input {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+}
+
+.signup-with-kakao-nickname-check {
+    margin-left: 5px;
+}
