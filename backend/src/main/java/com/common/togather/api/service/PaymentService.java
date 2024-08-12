@@ -404,7 +404,7 @@ public class PaymentService {
         // 모든 Payment가 처리된 경우 계획 상태 업데이트
         if (paymentRepository.countByPlanId(planId) == 0) {
             Plan plan = planRepository.findById(planId).orElseThrow(() -> new PlanNotFoundException("일정을 찾을 수 없습니다."));
-            plan.updateStatus(3);
+            plan.updateStatus(4);
             planRepository.save(plan);
         }
     }
