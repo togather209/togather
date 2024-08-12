@@ -207,10 +207,26 @@ public class PaymentService {
                     continue;
                 }
 
-                int[] key = new int[]{sender.getId(), receiver.getId()};
-                setPaymentMap(plan, paymentMap, memberBalance, sender, receiver, key);
+                // 상쇄를 위한 key값 하나만 지정
+                int[] key;
+                if (sender.getId() > receiver.getId()) {
+                    key = new int[]{receiver.getId(), sender.getId()};
+                    setPaymentMap(plan, paymentMap, -memberBalance, receiver, sender, key);
+                } else {
+                    key = new int[]{sender.getId(), receiver.getId()};
+                    setPaymentMap(plan, paymentMap, memberBalance, sender, receiver, key);
+                }
             }
         });
+
+        // 마이너스인 경우 송금 수신 변경
+        for (Payment payment : paymentMap.values()) {
+            if (payment.getMoney() < 0) {
+                payment.switchSenderToReceiver();
+                payment.updateMoney(-payment.getMoney());
+            }
+        }
+
         paymentRepository.saveAll(paymentMap.values());
 
 
@@ -227,7 +243,7 @@ public class PaymentService {
 
             // 알림 전송
             fcmUtil.pushNotification(
-                    member.getFcmToken().getToken(),
+                    member.getFcmToken(),
                     PAYMENT_TRANSFER_REQUEST.getTitle(),
                     PAYMENT_TRANSFER_REQUEST.getMessage(plan.getTitle())
             );
