@@ -87,15 +87,15 @@ public class PaymentService {
 
             Member receiver = paymentFinds.get(0).getReceiver();
 
-            if (systemBalance > 0) {
+            if (systemBalance > 0 && member.getId() == receiver.getId()) {
                 if (receiverMap.containsKey(system.getId())) {
-                    receiverMap.get(system.getId()).addMoney(memberBalance);
+                    receiverMap.get(system.getId()).addMoney(systemBalance);
                 } else {
                     receiverMap.put(
                             system.getId(),
                             ReceiverPayment.builder()
                                     .name(system.getName())
-                                    .money(memberBalance)
+                                    .money(systemBalance)
                                     .build()
                     );
                 }
