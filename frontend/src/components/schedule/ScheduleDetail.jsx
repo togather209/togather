@@ -2,7 +2,10 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import "./ScheduleDetail.css";
 import axiosInstance from "../../utils/axiosInstance";
-import meetingimg from "../../../public/다운로드.jpg";
+
+// import meetingimg from "../../../public/다운로드.jpg";
+import defaultImg from "../../../public/defaultimage.png";
+
 import alarm from "../../assets/icons/common/alarm.png";
 import exit from "../../assets/schedule/scheduleexit.png";
 import heart from "../../assets/schedule/scheduleheartimg.png";
@@ -36,7 +39,7 @@ function ScheduleDetail() {
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
   const location = useLocation();
-  const { meetingName } = location.state || {};
+  const { meetingName, meetingImg } = location.state || {};
 
   console.log(id);
   console.log(schedule_id);
@@ -280,6 +283,9 @@ function ScheduleDetail() {
   };
 
   // 날짜 북마크 내에서 순서 수정 (드래그 앤 드롭)
+  const handleImageError = (e) => {
+    e.target.src = defaultImg; // 이미지 로드 실패 시 디폴트 이미지로 변경
+  };
 
   return (
     <div className="schedule-detail">
@@ -302,8 +308,9 @@ function ScheduleDetail() {
             <div className="schedule-detail-middle-info">
               <img
                 className="schedule-detail-small-img"
-                src={meetingimg}
+                src={meetingImg || defaultImg}
                 alt="모임 사진"
+                onError={handleImageError}
               />
               <div className="schedule-detail-first-section">
                 <div>

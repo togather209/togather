@@ -55,6 +55,7 @@ function MeetingDetailPart() {
                 id={item.planId}
                 name={item.title}
                 meetingName={meetingDetail.title}
+                meetingImg={meetingDetail.teamImg}
               />
             ))}
           </div>

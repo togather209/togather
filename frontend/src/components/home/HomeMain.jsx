@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
-import { setMeetings } from '../../redux/slices/meetingSlice';
+import { useDispatch, useSelector } from "react-redux";
+import { setMeetings } from "../../redux/slices/meetingSlice";
 import "./HomeMain.css";
 import logo from "../../assets/icons/common/logo.png";
 import HomeMainCard from "./HomeMainCard";
@@ -29,14 +29,14 @@ function HomeMain() {
   // axios 함수
   const loadingMemberData = async () => {
     try {
-      const response = await axiosInstance.get('/teams/members/me');
+      const response = await axiosInstance.get("/teams/members/me");
       dispatch(setMeetings(response.data.data)); // 리덕스 상태에 데이터 저장
     } catch (error) {
-      console.error('데이터 불러오기 실패', error);
+      console.error("데이터 불러오기 실패", error);
     }
   };
-  
-  console.log(myMeetings)
+
+  console.log(myMeetings);
   return (
     <div>
       <div className="main-header">
@@ -63,26 +63,26 @@ function HomeMain() {
                   전체보기 및 편집 &gt;
                 </button>
               ) : (
-                  <></>
+                <></>
               )}
             </div>
 
             {/* 모임들 */}
             <div className="meeting-cards">
               {myMeetings.length > 0 ? (
-                myMeetings.slice(0, 6).map((item) => (
-                  <HomeMainCard
-                    key={item.teamId}
-                    id={item.teamId}
-                    name={item.title}
-                    image_url={item.teamImg}
-                  />
-                ))
+                myMeetings
+                  .slice(0, 6)
+                  .map((item) => (
+                    <HomeMainCard
+                      key={item.teamId}
+                      id={item.teamId}
+                      name={item.title}
+                      image_url={item.teamImg}
+                    />
+                  ))
               ) : (
                 <div className="no-meeting-at-home">
-                  <p className="no-meeting-text">
-                    모임이 없습니다 !!
-                  </p>
+                  <p className="no-meeting-text">모임이 없습니다 !!</p>
                 </div>
               )}
             </div>
