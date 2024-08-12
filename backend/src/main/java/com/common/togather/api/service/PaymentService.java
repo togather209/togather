@@ -16,14 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.common.togather.common.fcm.AlarmType.*;
-import static com.common.togather.common.fcm.AlarmType.PAYACOUNT_RECEIVED;
 
 @Service
 @RequiredArgsConstructor
@@ -124,7 +120,7 @@ public class PaymentService {
                         receiverMap.put(
                                 sender.getId(),
                                 ReceiverPayment.builder()
-                                        .name(sender.getName())
+                                        .name(sender.getNickname())
                                         .money(memberBalance)
                                         .build()
                         );
@@ -137,7 +133,7 @@ public class PaymentService {
                         senderMap.put(
                                 receiver.getId(),
                                 SenderPayment.builder()
-                                        .name(receiver.getName())
+                                        .name(receiver.getNickname())
                                         .money(memberBalance)
                                         .build()
                         );
@@ -185,7 +181,7 @@ public class PaymentService {
 
         Map<Integer, List<PaymentFindDto>> groupedPayments = groupPaymentsByItemId(paymentFindDtos);
 
-        Map<int[], Payment> paymentMap = new HashMap<>();
+        Map<List<Integer>, Payment> paymentMap = new HashMap<>();
 
         Member system = memberRepository.findByNameAndType(systemName, systemType).get();
 
@@ -196,7 +192,7 @@ public class PaymentService {
             Member receiver = paymentFinds.get(0).getReceiver();
 
             if (systemBalance > 0) {
-                int[] key = new int[]{system.getId(), receiver.getId()};
+                List<Integer> key = Arrays.asList(system.getId(), receiver.getId());
                 setPaymentMap(plan, paymentMap, memberBalance, system, receiver, key);
             }
 
@@ -208,12 +204,12 @@ public class PaymentService {
                 }
 
                 // 상쇄를 위한 key값 하나만 지정
-                int[] key;
+                List<Integer> key;
                 if (sender.getId() > receiver.getId()) {
-                    key = new int[]{receiver.getId(), sender.getId()};
+                    key = Arrays.asList(receiver.getId(), sender.getId());
                     setPaymentMap(plan, paymentMap, -memberBalance, receiver, sender, key);
                 } else {
-                    key = new int[]{sender.getId(), receiver.getId()};
+                    key = Arrays.asList(sender.getId(), receiver.getId());
                     setPaymentMap(plan, paymentMap, memberBalance, sender, receiver, key);
                 }
             }
@@ -305,8 +301,8 @@ public class PaymentService {
                 .build();
     }
 
-    private void setPaymentMap(Plan plan, Map<int[], Payment> paymentMap, int memberBalance, Member sender,
-                               Member receiver, int[] key) {
+    private void setPaymentMap(Plan plan, Map<List<Integer>, Payment> paymentMap, int memberBalance, Member sender,
+                               Member receiver, List<Integer> key) {
         if (paymentMap.containsKey(key)) {
             int currentMoney = paymentMap.get(key).getMoney();
             paymentMap.put(key, Payment.builder()
