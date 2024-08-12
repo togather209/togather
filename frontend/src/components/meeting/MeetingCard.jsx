@@ -56,7 +56,6 @@ function MeetingCard({id, image_url, name, desc, admin, isCheckModalOpen, handel
         //   dispatch(setMeetings(response.data.data)); 
             console.log(response)
             setIsExitModalOpen(false)
-            
         } catch (error) {
           console.error('데이터 불러오기 실패', error);
         }
@@ -76,7 +75,6 @@ function MeetingCard({id, image_url, name, desc, admin, isCheckModalOpen, handel
 
 
     return (
-        
         <div className="meeting-card">
             {errorMessage && <ErrorModal message={errorMessage} onClose={handleCloseModal} />}
 

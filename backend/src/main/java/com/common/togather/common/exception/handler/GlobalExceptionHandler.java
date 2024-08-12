@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handlePayAccountNotFoundException(PayAccountNotFoundException ex) {
         ex.printStackTrace();
         ErrorResponseDto error = new ErrorResponseDto("Pay Account Not Found", ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.NO_CONTENT);
     }
 
     // Pay 계좌가 비밀번호가 틀린 경우
@@ -285,5 +285,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleNotFoundKakaoCodeException(PlanNotFoundException ex) {
         ErrorResponseDto error = new ErrorResponseDto("Kakao Code Not Found", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    // 로그인 방식이 가입 방식과 다를때
+    @ExceptionHandler(LoginMethodMismatchException.class)
+    public ResponseEntity<ErrorResponseDto> handleLoginMethodMismatchException(LoginMethodMismatchException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Login Method Mismatch", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 }

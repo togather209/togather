@@ -30,7 +30,7 @@ function SendForm() {
   }, [password]);
 
   const handleKeypadInput = (value) => {
-    if (amount * 10 + value <= 59000) {
+    if (amount * 10 + value <= account.balance) {
       setAmount((prevAmount) => parseInt(`${prevAmount}${value}`));
     } else {
       setAmountMessage("잔액 초과");
