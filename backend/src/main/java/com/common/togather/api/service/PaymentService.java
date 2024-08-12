@@ -103,6 +103,14 @@ public class PaymentService {
             for (PaymentFindDto paymentFind : paymentFinds) {
                 Member sender = paymentFind.getSender();
 
+                // 소비한 모든 품목
+                if (sender.getId() == member.getId()) {
+                    memberItems.add(MemberItem.builder()
+                            .name(paymentFind.getItemName())
+                            .money(memberBalance)
+                            .build());
+                }
+
                 if (sender.getId() == receiver.getId()) {
                     continue;
                 }
@@ -132,13 +140,7 @@ public class PaymentService {
                                         .money(memberBalance)
                                         .build()
                         );
-
                     }
-
-                    memberItems.add(MemberItem.builder()
-                            .name(paymentFind.getItemName())
-                            .money(memberBalance)
-                            .build());
                 }
             }
         });
