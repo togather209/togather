@@ -250,6 +250,11 @@ border-radius: 100px;
   margin: 5px 10px;
 }
 
+.timer-warning {
+  color: red;
+}
+
+
 .nickname-form {
   display: flex;
   align-items: center;

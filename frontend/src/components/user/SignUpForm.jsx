@@ -445,7 +445,11 @@ function SignUpForm() {
                   확인
                 </button>
               </div>
-              <div className="certification-timer">
+              <div
+                className={`certification-timer ${
+                  timer < 60 ? "timer-warning" : ""
+                }`}
+              >
                 남은 시간: {formatTime(timer)}
               </div>
             </div>
