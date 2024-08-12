@@ -23,11 +23,12 @@ public class PaymentRepositorySupport {
     private QItemMember qitemMember = QItemMember.itemMember;
     private QMember qMember = QMember.member;
 
-    public List<PaymentFindDto> findPaymentByPlanId(int planId) {   // 수량을 안곱했다. 확인 부탁
+    public List<PaymentFindDto> findPaymentByPlanId(int planId) {
         return jpaQueryFactory
                 .select(Projections.fields(PaymentFindDto.class,
                         qreceipt.manager.as("receiver"),
                         qitem.id.as("itemId"),
+                        qitem.name.as("itemName"),
                         qitem.unitPrice.as("price"),
                         qitemMember.member.as("sender")
                 ))
@@ -49,7 +50,8 @@ public class PaymentRepositorySupport {
     }
 
     NumberExpression<Integer> resultStatus = new CaseBuilder()
-            .when(qPlan.status.eq(3)).then(2)   // 전체 동의 후
+            .when(qPlan.status.eq(3)).then(2)   // 전체 완료
+            .when(qPlan.status.eq(2)).then(1)   // 전체 동의 후
             .when(qPlan.status.eq(1).and(qPaymentApproval.status.eq(0))).then(0)    // 정산 동의 전
             .when(qPlan.status.eq(1).and(qPaymentApproval.status.eq(1))).then(1)    // 정산 동의 후
             .when(qPlan.status.eq(3).and(qPaymentApproval.status.eq(2))).then(3)   // 개인 송금 후
