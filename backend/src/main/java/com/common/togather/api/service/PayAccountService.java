@@ -7,10 +7,13 @@ import com.common.togather.api.error.PayAccountNotFoundException;
 import com.common.togather.api.request.*;
 import com.common.togather.api.response.AccountFindByPayAccountIdResponse;
 import com.common.togather.api.response.PayAccountFindByMemberIdResponse;
+import com.common.togather.common.util.FCMUtil;
 import com.common.togather.db.entity.Account;
+import com.common.togather.db.entity.Alarm;
 import com.common.togather.db.entity.Member;
 import com.common.togather.db.entity.PayAccount;
 import com.common.togather.db.repository.AccountRepository;
+import com.common.togather.db.repository.AlarmRepository;
 import com.common.togather.db.repository.MemberRepository;
 import com.common.togather.db.repository.PayAccountRepository;
 import jakarta.transaction.Transactional;
@@ -19,6 +22,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+
+import static com.common.togather.common.fcm.AlarmType.*;
 
 @Service
 @Transactional
@@ -31,6 +36,9 @@ public class PayAccountService {
     private final TransactionService transactionService;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+    private final AlarmRepository alarmRepository;
+    private final FCMUtil fcmUtil;
 
     // 나의 Pay 계좌 조회
     @Transactional
@@ -101,6 +109,21 @@ public class PayAccountService {
                 .build();
 
         transactionService.saveTransaction(transactionSaveRequest);
+
+        // 알림 저장
+        alarmRepository.save(Alarm.builder()
+                .member(member)
+                .title(PAYACOUNT_RECEIVED.getTitle())
+                .content(PAYACOUNT_RECEIVED.getMessage(member.getName(), requestDto.getPrice()))
+                .type(PAYACOUNT_RECEIVED.getType())
+                .build());
+
+        // 알림 전송
+        fcmUtil.pushNotification(
+                member.getFcmToken().getToken(),
+                PAYACOUNT_RECEIVED.getTitle(),
+                PAYACOUNT_RECEIVED.getMessage(PAYACOUNT_RECEIVED.getMessage(member.getName(), requestDto.getPrice()))
+        );
     }
 
     // 송금하기
