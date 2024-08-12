@@ -4,6 +4,8 @@ import com.common.togather.db.entity.Member;
 import com.common.togather.db.entity.Team;
 import com.common.togather.db.entity.TeamMember;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,4 +23,7 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Integer>
     List<TeamMember> findByTeamId(Integer teamId);
     // 팀과 멤버로 팀 멤버 삭제
     void deleteByMemberAndTeam(Member member, Team team);
+    // teamId로 방장이 member를 찾는 메서드
+    @Query("SELECT tm.member FROM TeamMember tm WHERE tm.team.id = :teamId AND tm.role = 1")
+    Member findLeaderByTeamId(@Param("teamId") Integer teamId);
 }
