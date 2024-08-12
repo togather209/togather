@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import "./ScheduleDetail.css";
 import axiosInstance from "../../utils/axiosInstance";
 import meetingimg from "../../../public/다운로드.jpg";
@@ -22,6 +22,7 @@ import SearchForm from "../kakao/SearchForm";
 import PlacesList from "../kakao/PlacesList";
 import Pagination from "../kakao/Pagination";
 import CheckModal from "../common/CheckModal";
+import ScheduleDeleteModal from "./ScheduleDeleteModal";
 
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
@@ -33,6 +34,9 @@ function ScheduleDetail() {
   const navigation = useNavigate();
 
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
+
+  const location = useLocation();
+  const { meetingName } = location.state || {};
 
   console.log(id);
   console.log(schedule_id);
@@ -86,7 +90,7 @@ function ScheduleDetail() {
       );
       const data = response.data.data;
       setScheduleDetail(data);
-      console.log(data);
+      console.log("일정상세조회data", data);
 
       const start = new Date(data.startDate);
       const end = new Date(data.endDate);
@@ -288,7 +292,6 @@ function ScheduleDetail() {
               onSearch={handleSearch}
               isOpenSearch={isOpenSearch}
             />
-            {/* <input className="schedule-detail-header-search" type="text" /> */}
             <img
               className="schedule-detail-alarm-icon"
               src={alarm}
@@ -304,7 +307,7 @@ function ScheduleDetail() {
               />
               <div className="schedule-detail-first-section">
                 <div>
-                  <p className="schedule-detail-meeting-name">모임명</p>
+                  <p className="schedule-detail-meeting-name">{meetingName}</p>
                   <p className="schedule-detail-schedule-name">
                     {scheduleDetail.title}
                   </p>
@@ -336,11 +339,7 @@ function ScheduleDetail() {
                     />
                   </div>
                 ) : (
-                  <img
-                    className="schedule-exit-img"
-                    src={exit}
-                    alt="일정 나가기"
-                  />
+                  <></>
                 )}
               </div>
             </div>
@@ -464,12 +463,13 @@ function ScheduleDetail() {
       )}
     </div> */}
 
-          <CheckModal
+          <ScheduleDeleteModal
             isOpen={isExitModalOpen}
             isClose={() => setIsExitModalOpen(false)}
-            onConfirm={scheduleExit}
-            firstbutton={"취소"}
-            secondbutton={"나가기"}
+            teamId={id}
+            planId={schedule_id}
+            isExitModalOpen={isExitModalOpen}
+            setIsExitModalOpen={setIsExitModalOpen}
           />
         </div>
       ) : (
@@ -489,6 +489,7 @@ function ScheduleDetail() {
             {/* <input className="schedule-detail-header-search" type="text" /> */}
             {/* <img className="schedule-detail-alarm-icon" src={alarm} alt="알람" /> */}
           </div>
+
           <PlacesList
             id={id}
             schedule_id={schedule_id}

@@ -58,10 +58,13 @@ function HomeMain() {
                 <p className="my-meeting-title">나의 모임</p>
                 <p className="my-meeting-content">모임을 더 쉽고 간편하게 !</p>
               </div>
-
-              <button className="seeall" onClick={handleSeeAllClick}>
-                전체보기 및 편집
-              </button>
+              {myMeetings.length > 0 ? (
+                <button className="seeall" onClick={handleSeeAllClick}>
+                  전체보기 및 편집 &gt;
+                </button>
+              ) : (
+                  <></>
+              )}
             </div>
 
             {/* 모임들 */}
@@ -76,7 +79,11 @@ function HomeMain() {
                   />
                 ))
               ) : (
-                <p>모임이 없습니다.</p>
+                <div className="no-meeting-at-home">
+                  <p className="no-meeting-text">
+                    모임이 없습니다 !!
+                  </p>
+                </div>
               )}
             </div>
           </div>

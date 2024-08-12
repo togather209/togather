@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const Pagination = ({ pagination }) => {
   const createPagination = () => {
@@ -8,7 +8,7 @@ const Pagination = ({ pagination }) => {
         <a
           key={i}
           href="#"
-          className={i === pagination.current ? 'on' : ''}
+          className={i === pagination.current ? "on" : ""}
           onClick={(e) => {
             e.preventDefault();
             pagination.gotoPage(i);

@@ -23,7 +23,9 @@ function ScheduleDetailPart() {
   useEffect(() => {
     const fetchSessionId = async () => {
       try {
-        const response = await axiosInstance.get(`/teams/${id}/plans/${schedule_id}`);
+        const response = await axiosInstance.get(
+          `/teams/${id}/plans/${schedule_id}`
+        );
         const newSessionId = response.data.data.sessionId;
         setSessionId(newSessionId);
         localStorage.setItem("sessionId", newSessionId);
@@ -43,7 +45,9 @@ function ScheduleDetailPart() {
 
     try {
       if (sessionId) {
-        const response = await axiosInstance.post(`/sessions/${sessionId}/connections`);
+        const response = await axiosInstance.post(
+          `/sessions/${sessionId}/connections`
+        );
         const token = response.data.data.token;
 
         const OV = new OpenVidu();
@@ -56,20 +60,29 @@ function ScheduleDetailPart() {
           newSession.subscribe(event.stream, subscriberContainer.id);
 
           // 구독자 목록 업데이트
-          setSubscribers(prevSubscribers => [...prevSubscribers, event.stream]);
+          setSubscribers((prevSubscribers) => [
+            ...prevSubscribers,
+            event.stream,
+          ]);
 
           // 구독자에게 음소거 상태 적용
           event.stream.streamManager.subscribeToAudio(!isHeadPhone);
         });
 
         newSession.on("streamDestroyed", (event) => {
-          const subscriberContainer = document.getElementById(event.stream.streamId);
+          const subscriberContainer = document.getElementById(
+            event.stream.streamId
+          );
           if (subscriberContainer) {
             subscriberContainer.remove();
           }
 
           // 구독자 목록 업데이트
-          setSubscribers(prevSubscribers => prevSubscribers.filter(subscriber => subscriber.streamId !== event.stream.streamId));
+          setSubscribers((prevSubscribers) =>
+            prevSubscribers.filter(
+              (subscriber) => subscriber.streamId !== event.stream.streamId
+            )
+          );
         });
 
         // 세션에 연결하기
@@ -102,7 +115,7 @@ function ScheduleDetailPart() {
   const handleCallEnd = async () => {
     if (session) {
       console.log("Ending call...");
-  
+
       try {
         // 세션 종료 요청
         await session.disconnect();
@@ -111,10 +124,11 @@ function ScheduleDetailPart() {
         if (publisherContainer) {
           publisherContainer.remove();
         }
-  
-        const subscriberContainers = document.querySelectorAll("div[id^='stream']");
-        subscriberContainers.forEach(container => container.remove());
-  
+
+        const subscriberContainers =
+          document.querySelectorAll("div[id^='stream']");
+        subscriberContainers.forEach((container) => container.remove());
+
         console.log("Call ended successfully.");
       } catch (error) {
         console.error("Failed to end call:", error);
@@ -122,7 +136,6 @@ function ScheduleDetailPart() {
       }
     }
   };
-  
 
   // 헤드폰 클릭 시 음소거 상태를 토글
   const handleHeadPhone = () => {
@@ -132,9 +145,13 @@ function ScheduleDetailPart() {
     console.log(`Headphone clicked. New mute state: ${newHeadPhoneState}`);
 
     if (session) {
-      subscribers.forEach(subscriber => {
+      subscribers.forEach((subscriber) => {
         subscriber.streamManager.subscribeToAudio(!newHeadPhoneState);
-        console.log(`Audio mute toggled for subscriber: ${subscriber.streamId}. Muted: ${!newHeadPhoneState}`);
+        console.log(
+          `Audio mute toggled for subscriber: ${
+            subscriber.streamId
+          }. Muted: ${!newHeadPhoneState}`
+        );
       });
     }
   };
@@ -175,13 +192,25 @@ function ScheduleDetailPart() {
               통화 종료
             </ScheduleButton>
             <div
-              className={ !isHeadPhone ? "headphone-mic-container-activate" : "headphone-mic-container"}
+              className={
+                !isHeadPhone
+                  ? "headphone-mic-container-activate"
+                  : "headphone-mic-container"
+              }
               onClick={handleHeadPhone}
             >
-              <img className="headphone-mic-size" src={headphone} alt="헤드폰" />
+              <img
+                className="headphone-mic-size"
+                src={headphone}
+                alt="헤드폰"
+              />
             </div>
             <div
-              className={isMic ? "headphone-mic-container-activate" : "headphone-mic-container"}
+              className={
+                isMic
+                  ? "headphone-mic-container-activate"
+                  : "headphone-mic-container"
+              }
               onClick={handleMic}
             >
               <img className="headphone-mic-size" src={mic} alt="마이크" />
