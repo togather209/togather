@@ -28,7 +28,7 @@ public enum AlarmType {
 
     PAYACOUNT_RECEIVED(
             "입금 알림",
-            "'%s'님이 '%d'원을 보냈습니다.",
+            "'%s'님이 '%s'원을 보냈습니다.",
             5
     ),
 
@@ -52,7 +52,7 @@ public enum AlarmType {
 
     WITHDRAWAL_ALERT(
     "출금 알림",
-            "'%s'님에게 '%d'원을 보냈습니다.",
+            "'%s'님에게 '%s'원을 보냈습니다.",
             9
     );
 
