@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.common.togather.common.fcm.AlarmType.PAYMENT_TRANSFER_REQUEST;
+import static com.common.togather.common.fcm.AlarmType.*;
+import static com.common.togather.common.fcm.AlarmType.PAYACOUNT_RECEIVED;
 
 @Service
 @RequiredArgsConstructor
@@ -332,6 +333,7 @@ public class PaymentService {
         // 송금자의 Pay 계좌 확인
         PayAccount payAccount = payAccountRepository.findByMember_Email(email)
                 .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
+        Member member = payAccount.getMember();
 
         // 총 송금할 금액 계산
         int totalAmount = payments.stream().mapToInt(Payment::getMoney).sum();
@@ -353,14 +355,15 @@ public class PaymentService {
         // 송금 처리 및 거래 내역 생성
         for (Payment payment : payments) {
             PayAccount targetPayAccount = targetPayAccounts.get(payment.getReceiver().getId());
+            Member targetMember = targetPayAccount.getMember();
 
             payAccount.decreaseBalance(payment.getMoney());
             targetPayAccount.increaseBalance(payment.getMoney());
 
             // 송금자 거래 내역 생성
             transactionRequests.add(TransactionSaveRequest.builder()
-                    .senderName(payAccount.getMember().getName())
-                    .receiverName(targetPayAccount.getMember().getName())
+                    .senderName(member.getName())
+                    .receiverName(targetMember.getName())
                     .price(payment.getMoney())
                     .balance(payAccount.getBalance())
                     .date(LocalDateTime.now())
@@ -370,14 +373,44 @@ public class PaymentService {
 
             // 수신자 거래 내역 생성
             transactionRequests.add(TransactionSaveRequest.builder()
-                    .senderName(payAccount.getMember().getName())
-                    .receiverName(targetPayAccount.getMember().getName())
+                    .senderName(member.getName())
+                    .receiverName(targetMember.getName())
                     .price(payment.getMoney())
                     .balance(targetPayAccount.getBalance())
                     .date(LocalDateTime.now())
                     .status(0)  // 입금
                     .payAccountId(targetPayAccount.getId())
                     .build());
+
+            // 송금인 알림 저장
+            alarmRepository.save(Alarm.builder()
+                    .member(member)
+                    .title(WITHDRAWAL_ALERT.getTitle())
+                    .content(WITHDRAWAL_ALERT.getMessage(targetMember.getName(), payment.getMoney()))
+                    .type(WITHDRAWAL_ALERT.getType())
+                    .build());
+
+            // 송금인 알림 전송
+            fcmUtil.pushNotification(
+                    member.getFcmToken().getToken(),
+                    WITHDRAWAL_ALERT.getTitle(),
+                    WITHDRAWAL_ALERT.getMessage(PAYACOUNT_RECEIVED.getMessage(targetMember.getName(), payment.getMoney()))
+            );
+
+            // 수취인 알림 저장
+            alarmRepository.save(Alarm.builder()
+                    .member(targetMember)
+                    .title(PAYACOUNT_RECEIVED.getTitle())
+                    .content(PAYACOUNT_RECEIVED.getMessage(member.getName(), payment.getMoney()))
+                    .type(PAYACOUNT_RECEIVED.getType())
+                    .build());
+
+            // 수취인 알림 전송
+            fcmUtil.pushNotification(
+                    targetMember.getFcmToken().getToken(),
+                    PAYACOUNT_RECEIVED.getTitle(),
+                    PAYACOUNT_RECEIVED.getMessage(PAYACOUNT_RECEIVED.getMessage(member.getName(), payment.getMoney()))
+            );
         }
 
         // 거래 내역 배치 저장
