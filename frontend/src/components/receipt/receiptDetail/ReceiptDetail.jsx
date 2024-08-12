@@ -189,7 +189,9 @@ function ReceiptDetail() {
                 {Object.keys(settlements).map((nickname, index) => (
                   <tr key={index}>
                     <td>{nickname}</td>
-                    <td>{settlements[nickname].toLocaleString()}원</td>
+                    <td>
+                      {Math.floor(settlements[nickname]).toLocaleString()}원
+                    </td>
                   </tr>
                 ))}
               </tbody>

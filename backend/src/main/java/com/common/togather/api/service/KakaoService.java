@@ -167,8 +167,8 @@ public class KakaoService {
             Member member = memberOptional.get();
 
             // Member의 type 값을 비교하여 예외 처리
-            if (member.getType() == 1) {
-                throw new LoginMethodMismatchException("카카오 가입 회원입니다.");
+            if (member.getType() == 0) {
+                throw new LoginMethodMismatchException("일반 가입 회원입니다.");
             }
         }
         // 해당 이메일의 회원이 없다면

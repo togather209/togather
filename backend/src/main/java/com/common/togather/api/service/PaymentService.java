@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.common.togather.common.fcm.AlarmType.PAYMENT_TRANSFER_REQUEST;
+import static com.common.togather.common.fcm.AlarmType.*;
+import static com.common.togather.common.fcm.AlarmType.PAYACOUNT_RECEIVED;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class PaymentService {
     private final PaymentRepositorySupport paymentRepositorySupport;
     private final PaymentRepository paymentRepository;
     private final PaymentApprovalRepositorySupport paymentApprovalRepositorySupport;
+    private final PaymentApprovalRepository paymentApprovalRepository;
     private final TeamMemberRepositorySupport teamMemberRepositorySupport;
     private final PlanRepository planRepository;
     private final MemberRepository memberRepository;
@@ -63,102 +65,88 @@ public class PaymentService {
 
         Member system = memberRepository.findByNameAndType(systemName, systemType).get();
 
-        // 돈 받아야하는 사람
-        Map<Integer, ReceiverPayment> receiverAmount = new HashMap<>();
-        receiverAmount.put(
-                system.getId(),
-                ReceiverPayment.builder()
-                        .name(system.getName())
-                        .money(0)
-                        .build()
-        );
+        //최종 정산 내역
+        List<PaymentFindDto> paymentFindDtos = paymentRepositorySupport.findPaymentByPlanId(planId);
 
-        //  돈 보내야 하는 사람
-        Map<Integer, SenderPayment> senderAmount = new HashMap<>();
+        Map<Integer, List<PaymentFindDto>> groupedPayments = groupPaymentsByItemId(paymentFindDtos);
 
-        // 품목에 대한 총 지출액
-        Map<Integer, MemberItem> itemAmount = new HashMap<>();
+        // 돈을 보내야하는 사람 (memberId, senderPayment);
+        Map<Integer, SenderPayment> senderMap = new HashMap<>();
+        // 돈을 받아야하는 사람 (memberId, ReceiverPayment)
+        Map<Integer, ReceiverPayment> receiverMap = new HashMap<>();
+        // 소비 품목 목록 (MemberItem) 
+        List<MemberItem> memberItems = new ArrayList<>();
 
-        // 사용자를 찾는다.
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
 
-        // 해당 사용자의 영수증
-        List<Receipt> receipts = member.getReceipts();
+        groupedPayments.forEach((itemId, paymentFinds) -> {
 
-        // 내가 돈을 받아야하는 사람
-        for (Receipt receipt : receipts) {
-            List<Item> items = receipt.getItems();
-            for (Item item : items) {
-                // 유저당 돈 계산
-                List<ItemMember> itemMembers = item.getItemMembers();
-                int amount = item.getUnitPrice();
-                int count = itemMembers.size();
-                int memberBalance = getMemberBalance(amount, count);
-                int systemBalance = getSystemBalance(amount, count, memberBalance);
-                ReceiverPayment systemPayment = receiverAmount.get(system.getId());
-                systemPayment.setMoney(systemPayment.getMoney() + systemBalance);
+            int memberBalance = getMemberBalance(paymentFinds.get(0).getPrice(), paymentFinds.size());
+            int systemBalance = getSystemBalance(paymentFinds.get(0).getPrice(), paymentFinds.size(), memberBalance);
 
-                for (ItemMember itemMember : itemMembers) {
-                    Member receiver = itemMember.getMember();
+            Member receiver = paymentFinds.get(0).getReceiver();
 
-                    if (receiver.getId() == member.getId()) {
-                        continue;
-                    }
+            if (systemBalance > 0 && member.getId() == receiver.getId()) {
+                if (receiverMap.containsKey(system.getId())) {
+                    receiverMap.get(system.getId()).addMoney(systemBalance);
+                } else {
+                    receiverMap.put(
+                            system.getId(),
+                            ReceiverPayment.builder()
+                                    .name(system.getName())
+                                    .money(systemBalance)
+                                    .build()
+                    );
+                }
+            }
 
-                    if (receiverAmount.containsKey(receiver.getId())) {
-                        ReceiverPayment receiverPayment = receiverAmount.get(receiver.getId());
-                        receiverPayment.setMoney(receiverPayment.getMoney() + memberBalance);
+            for (PaymentFindDto paymentFind : paymentFinds) {
+                Member sender = paymentFind.getSender();
+
+                // 소비한 모든 품목
+                if (sender.getId() == member.getId()) {
+                    memberItems.add(MemberItem.builder()
+                            .name(paymentFind.getItemName())
+                            .money(memberBalance)
+                            .build());
+                }
+
+                if (sender.getId() == receiver.getId()) {
+                    continue;
+                }
+
+                // 영수증 관리자일때
+                if (member.getId() == receiver.getId()) {
+                    if (receiverMap.containsKey(sender.getId())) {
+                        receiverMap.get(sender.getId()).addMoney(memberBalance);
                     } else {
-                        receiverAmount.put(
-                                receiver.getId(),
+                        receiverMap.put(
+                                sender.getId(),
                                 ReceiverPayment.builder()
+                                        .name(sender.getName())
+                                        .money(memberBalance)
+                                        .build()
+                        );
+
+                    }
+                } else if (member.getId() == sender.getId()) {
+                    if (senderMap.containsKey(receiver.getId())) {
+                        senderMap.get(receiver.getId()).addMoney(memberBalance);
+                    } else {
+                        senderMap.put(
+                                receiver.getId(),
+                                SenderPayment.builder()
                                         .name(receiver.getName())
                                         .money(memberBalance)
                                         .build()
-
                         );
                     }
                 }
             }
-        }
+        });
 
-        // 해당 사용자의 품목
-        List<ItemMember> itemMembers = member.getItemMembers();
-
-        for (ItemMember itemMember : itemMembers) {
-            Item item = itemMember.getItem();
-            int amount = item.getUnitPrice();
-            int count = item.getItemMembers().size();
-            int memberBalance = getMemberBalance(amount, count);
-            Member sender = item.getReceipt().getManager();
-
-            if (sender.getId() == member.getId()) {
-                continue;
-            }
-
-            itemAmount.put(
-                    item.getId(),
-                    MemberItem.builder()
-                            .name(item.getName())
-                            .money(memberBalance)
-                            .build()
-            );
-
-            // 돈을 보내야하는 사람
-            if (senderAmount.containsKey(sender.getId())) {
-                SenderPayment senderPayment = senderAmount.get(sender.getId());
-                senderPayment.setMoney(senderPayment.getMoney() + memberBalance);
-            } else {
-                senderAmount.put(
-                        sender.getId(),
-                        SenderPayment.builder()
-                                .name(sender.getName())
-                                .money(memberBalance)
-                                .build()
-                );
-            }
-        }
-
+        System.out.println(member.getId() + " " + planId);
         // 정산 상태 얻기
         int status = paymentRepositorySupport.getStatus(member.getId(), planId);
 
@@ -168,9 +156,9 @@ public class PaymentService {
                 .startDate(plan.getStartDate().toString())
                 .endDate(plan.getEndDate().toString())
                 .status(status)
-                .receiverPayments(new ArrayList<>(receiverAmount.values()))
-                .senderPayments(new ArrayList<>(senderAmount.values()))
-                .memberItems(new ArrayList<>(itemAmount.values()))
+                .receiverPayments(new ArrayList<>(receiverMap.values()))
+                .senderPayments(new ArrayList<>(senderMap.values()))
+                .memberItems(memberItems)
                 .build();
     }
 
@@ -219,10 +207,26 @@ public class PaymentService {
                     continue;
                 }
 
-                int[] key = new int[]{sender.getId(), receiver.getId()};
-                setPaymentMap(plan, paymentMap, memberBalance, sender, receiver, key);
+                // 상쇄를 위한 key값 하나만 지정
+                int[] key;
+                if (sender.getId() > receiver.getId()) {
+                    key = new int[]{receiver.getId(), sender.getId()};
+                    setPaymentMap(plan, paymentMap, -memberBalance, receiver, sender, key);
+                } else {
+                    key = new int[]{sender.getId(), receiver.getId()};
+                    setPaymentMap(plan, paymentMap, memberBalance, sender, receiver, key);
+                }
             }
         });
+
+        // 마이너스인 경우 송금 수신 변경
+        for (Payment payment : paymentMap.values()) {
+            if (payment.getMoney() < 0) {
+                payment.switchSenderToReceiver();
+                payment.updateMoney(-payment.getMoney());
+            }
+        }
+
         paymentRepository.saveAll(paymentMap.values());
 
 
@@ -239,7 +243,7 @@ public class PaymentService {
 
             // 알림 전송
             fcmUtil.pushNotification(
-                    member.getFcmToken().getToken(),
+                    member.getFcmToken(),
                     PAYMENT_TRANSFER_REQUEST.getTitle(),
                     PAYMENT_TRANSFER_REQUEST.getMessage(plan.getTitle())
             );
@@ -346,7 +350,8 @@ public class PaymentService {
 
         // 송금자의 Pay 계좌 확인
         PayAccount payAccount = payAccountRepository.findByMember_Email(email)
-                .orElseThrow(() -> new PayAccountNotFoundException("Pay 계좌가 존재하지 않습니다."));
+                .orElseThrow(() -> new PayAccountPaymentNotFoundException("사용자의 Pay 계좌가 존재하지 않습니다."));
+        Member member = payAccount.getMember();
 
         // 총 송금할 금액 계산
         int totalAmount = payments.stream().mapToInt(Payment::getMoney).sum();
@@ -360,7 +365,7 @@ public class PaymentService {
             int receiverId = payment.getReceiver().getId();
             targetPayAccounts.putIfAbsent(receiverId,
                     payAccountRepository.findByMemberId(receiverId)
-                            .orElseThrow(() -> new PayAccountNotFoundException("Target Pay 계좌가 존재하지 않습니다.")));
+                            .orElseThrow(() -> new PayAccountPaymentNotFoundException("Target Pay 계좌가 존재하지 않습니다.")));
         }
 
         List<TransactionSaveRequest> transactionRequests = new ArrayList<>();
@@ -368,14 +373,15 @@ public class PaymentService {
         // 송금 처리 및 거래 내역 생성
         for (Payment payment : payments) {
             PayAccount targetPayAccount = targetPayAccounts.get(payment.getReceiver().getId());
+            Member targetMember = targetPayAccount.getMember();
 
             payAccount.decreaseBalance(payment.getMoney());
             targetPayAccount.increaseBalance(payment.getMoney());
 
             // 송금자 거래 내역 생성
             transactionRequests.add(TransactionSaveRequest.builder()
-                    .senderName(payAccount.getMember().getName())
-                    .receiverName(targetPayAccount.getMember().getName())
+                    .senderName(member.getName())
+                    .receiverName(targetMember.getName())
                     .price(payment.getMoney())
                     .balance(payAccount.getBalance())
                     .date(LocalDateTime.now())
@@ -385,14 +391,44 @@ public class PaymentService {
 
             // 수신자 거래 내역 생성
             transactionRequests.add(TransactionSaveRequest.builder()
-                    .senderName(payAccount.getMember().getName())
-                    .receiverName(targetPayAccount.getMember().getName())
+                    .senderName(member.getName())
+                    .receiverName(targetMember.getName())
                     .price(payment.getMoney())
                     .balance(targetPayAccount.getBalance())
                     .date(LocalDateTime.now())
                     .status(0)  // 입금
                     .payAccountId(targetPayAccount.getId())
                     .build());
+
+            // 송금인 알림 저장
+            alarmRepository.save(Alarm.builder()
+                    .member(member)
+                    .title(WITHDRAWAL_ALERT.getTitle())
+                    .content(WITHDRAWAL_ALERT.getMessage(targetMember.getName(), String.valueOf(payment.getMoney())))
+                    .type(WITHDRAWAL_ALERT.getType())
+                    .build());
+
+            // 송금인 알림 전송
+            fcmUtil.pushNotification(
+                    member.getFcmToken(),
+                    WITHDRAWAL_ALERT.getTitle(),
+                    WITHDRAWAL_ALERT.getMessage(targetMember.getName(), String.valueOf(payment.getMoney()))
+            );
+
+            // 수취인 알림 저장
+            alarmRepository.save(Alarm.builder()
+                    .member(targetMember)
+                    .title(PAYACOUNT_RECEIVED.getTitle())
+                    .content(PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(payment.getMoney())))
+                    .type(PAYACOUNT_RECEIVED.getType())
+                    .build());
+
+            // 수취인 알림 전송
+            fcmUtil.pushNotification(
+                    targetMember.getFcmToken(),
+                    PAYACOUNT_RECEIVED.getTitle(),
+                    PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(payment.getMoney()))
+            );
         }
 
         // 거래 내역 배치 저장
@@ -407,6 +443,11 @@ public class PaymentService {
             plan.updateStatus(4);
             planRepository.save(plan);
         }
+
+
+        PaymentApproval paymentApproval = paymentApprovalRepository.findByMemberEmailAndPlanId(email, planId)
+                .orElseThrow(() -> new NotFoundPaymentApprovalException("해당 정산 요청이 없습니다."));
+        paymentApproval.updateStatus(2);
     }
 
 }

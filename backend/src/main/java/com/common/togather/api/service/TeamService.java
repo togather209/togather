@@ -5,12 +5,10 @@ import com.common.togather.api.request.TeamJoinSaveRequest;
 import com.common.togather.api.request.TeamSaveRequest;
 import com.common.togather.api.request.TeamUpdateRequest;
 import com.common.togather.api.response.*;
+import com.common.togather.common.util.FCMUtil;
 import com.common.togather.common.util.ImageUtil;
 import com.common.togather.db.entity.*;
-import com.common.togather.db.repository.MemberRepository;
-import com.common.togather.db.repository.TeamJoinRepository;
-import com.common.togather.db.repository.TeamMemberRepository;
-import com.common.togather.db.repository.TeamRepository;
+import com.common.togather.db.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.common.togather.common.fcm.AlarmType.*;
 
 @Service
 @Transactional
@@ -34,6 +34,9 @@ public class TeamService {
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final TeamJoinRepository teamJoinRepository;
+
+    private final AlarmRepository alarmRepository;
+    private final FCMUtil fcmUtil;
 
     // 모임 생성
     public TeamSaveResponse saveTeam(String email, TeamSaveRequest requestDto, MultipartFile profileImage) {
@@ -159,6 +162,7 @@ public class TeamService {
                 .orElseThrow(() -> new MemberNotFoundException("해당 유저가 존재하지 않습니다."));
         Team team = teamRepository.findByCode(requestDto.getCode())
                 .orElseThrow(() -> new TeamNotFoundException("코드에 해당하는 모임이 없습니다."));
+        Member host = teamMemberRepository.findLeaderByTeamId(team.getId());
 
         if (teamMemberRepository.existsByMemberAndTeam(member, team)) {
             throw new AlreadyJoinedTeamException("가입된 모임입니다.");
@@ -180,6 +184,21 @@ public class TeamService {
                 .member(member)
                 .status(0)
                 .build());
+
+        // 알림 저장
+        alarmRepository.save(Alarm.builder()
+                .member(host)
+                .title(JOIN_REQUEST.getTitle())
+                .content(JOIN_REQUEST.getMessage(member.getNickname(), team.getTitle()))
+                .type(JOIN_REQUEST.getType())
+                .build());
+
+        // 알림 전송
+        fcmUtil.pushNotification(
+                host.getFcmToken(),
+                JOIN_REQUEST.getTitle(),
+                JOIN_REQUEST.getMessage(member.getNickname(), team.getTitle())
+        );
     }
 
     // 모임 참여 요청 조회
@@ -243,6 +262,21 @@ public class TeamService {
                     .team(team)
                     .role(0)
                     .build());
+
+            // 알림 저장
+            alarmRepository.save(Alarm.builder()
+                    .member(guest)
+                    .title(JOIN_ACCEPTED.getTitle())
+                    .content(JOIN_ACCEPTED.getMessage(team.getTitle()))
+                    .type(JOIN_ACCEPTED.getType())
+                    .build());
+
+            // 알림 전송
+            fcmUtil.pushNotification(
+                    guest.getFcmToken(),
+                    JOIN_ACCEPTED.getTitle(),
+                    JOIN_ACCEPTED.getMessage(team.getTitle())
+            );
         }
     }
 
@@ -320,5 +354,20 @@ public class TeamService {
                 .member(guest)
                 .status(1)
                 .build());
+
+        // 알림 저장
+        alarmRepository.save(Alarm.builder()
+                .member(guest)
+                .title(KICK_OUT_NOTIFICATION.getTitle())
+                .content(KICK_OUT_NOTIFICATION.getMessage(team.getTitle()))
+                .type(PAYMENT_OBJECTION.getType())
+                .build());
+
+        // 알림 전송
+        fcmUtil.pushNotification(
+                guest.getFcmToken(),
+                KICK_OUT_NOTIFICATION.getTitle(),
+                KICK_OUT_NOTIFICATION.getMessage(team.getTitle())
+        );
     }
 }

@@ -77,7 +77,7 @@ public class PaymentApprovalService {
 
             // 알림 전송
             fcmUtil.pushNotification(
-                    member.getFcmToken().getToken(),
+                    member.getFcmToken(),
                     PAYMENT_APPROVAL_REQUEST.getTitle(),
                     PAYMENT_APPROVAL_REQUEST.getMessage(plan.getTitle())
             );
@@ -147,7 +147,7 @@ public class PaymentApprovalService {
 
         // 알림 전송
         fcmUtil.pushNotification(
-                plan.getManager().getFcmToken().getToken(),
+                plan.getManager().getFcmToken(),
                 PAYMENT_OBJECTION.getTitle(),
                 PAYMENT_OBJECTION.getMessage(member.getName(), plan.getTitle())
         );

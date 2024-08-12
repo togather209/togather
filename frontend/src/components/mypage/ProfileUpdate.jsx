@@ -262,11 +262,13 @@ function ProfileUpdate() {
               onChange={handlePasswordChange}
               onBlur={handlePasswordBlur} // 포커스가 해제될 때 유효성 검사
               className="password-input"
+              readOnly={member.type === 1}
             />
             <button
               type="button"
               className="password-toggle"
               onClick={() => setPasswordVisible(!passwordVisible)}
+              disabled={member.type === 1}
             >
               {passwordVisible ? <FaEyeSlash /> : <FaEye />}
             </button>
@@ -279,6 +281,7 @@ function ProfileUpdate() {
               value={validPassword}
               onChange={handleValidPasswordChange}
               onBlur={handleValidPasswordBlur} // 포커스가 해제될 때 유효성 검사
+              readOnly={member.type === 1}
             />
           </div>
           {passwordMessage && (
