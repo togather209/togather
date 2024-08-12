@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handlePayAccountNotFoundException(PayAccountNotFoundException ex) {
         ex.printStackTrace();
         ErrorResponseDto error = new ErrorResponseDto("Pay Account Not Found", ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.NO_CONTENT);
     }
 
     // Pay 계좌가 비밀번호가 틀린 경우
