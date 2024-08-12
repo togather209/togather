@@ -388,7 +388,7 @@ public class PaymentService {
             alarmRepository.save(Alarm.builder()
                     .member(member)
                     .title(WITHDRAWAL_ALERT.getTitle())
-                    .content(WITHDRAWAL_ALERT.getMessage(targetMember.getName(), payment.getMoney()))
+                    .content(WITHDRAWAL_ALERT.getMessage(targetMember.getName(), String.valueOf(payment.getMoney())))
                     .type(WITHDRAWAL_ALERT.getType())
                     .build());
 
@@ -396,14 +396,14 @@ public class PaymentService {
             fcmUtil.pushNotification(
                     member.getFcmToken().getToken(),
                     WITHDRAWAL_ALERT.getTitle(),
-                    WITHDRAWAL_ALERT.getMessage(PAYACOUNT_RECEIVED.getMessage(targetMember.getName(), payment.getMoney()))
+                    WITHDRAWAL_ALERT.getMessage(PAYACOUNT_RECEIVED.getMessage(targetMember.getName(), String.valueOf(payment.getMoney())))
             );
 
             // 수취인 알림 저장
             alarmRepository.save(Alarm.builder()
                     .member(targetMember)
                     .title(PAYACOUNT_RECEIVED.getTitle())
-                    .content(PAYACOUNT_RECEIVED.getMessage(member.getName(), payment.getMoney()))
+                    .content(PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(payment.getMoney())))
                     .type(PAYACOUNT_RECEIVED.getType())
                     .build());
 
@@ -411,7 +411,7 @@ public class PaymentService {
             fcmUtil.pushNotification(
                     targetMember.getFcmToken().getToken(),
                     PAYACOUNT_RECEIVED.getTitle(),
-                    PAYACOUNT_RECEIVED.getMessage(PAYACOUNT_RECEIVED.getMessage(member.getName(), payment.getMoney()))
+                    PAYACOUNT_RECEIVED.getMessage(PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(payment.getMoney())))
             );
         }
 
