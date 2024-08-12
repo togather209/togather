@@ -44,14 +44,16 @@ public class FCMUtil {
             backoff = @Backoff(delay = 1000, multiplier = 2) // 초기 대기 시간 1초, 지수적 증가
     )
     @SneakyThrows
-    public void pushNotification(String token, String title, String content) {
+    public void pushNotification(FCMToken token, String title, String content) {
 
-        if (token == null) {
+        System.out.println("token= " + token);
+        if (token == null || token.getToken() == null) {
             log.info("fcm 토큰이 없습니다.");
             return;
         }
+
         Message message = Message.builder()
-                .setToken(token)
+                .setToken(token.getToken())
                 .setWebpushConfig(WebpushConfig.builder()
                         .setNotification(new WebpushNotification(title, content, null))
                         .build())

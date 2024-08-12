@@ -131,7 +131,7 @@ public class ReceiptService {
 
             // 알림 전송
             fcmUtil.pushNotification(
-                    member.getFcmToken().getToken(),
+                    member.getFcmToken(),
                     RECEIPT_UPLOADED.getTitle(),
                     RECEIPT_UPLOADED.getMessage(plan.getTitle())
             );
