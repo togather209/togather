@@ -31,6 +31,7 @@ public class PaymentService {
     private final PaymentRepositorySupport paymentRepositorySupport;
     private final PaymentRepository paymentRepository;
     private final PaymentApprovalRepositorySupport paymentApprovalRepositorySupport;
+    private final PaymentApprovalRepository paymentApprovalRepository;
     private final TeamMemberRepositorySupport teamMemberRepositorySupport;
     private final PlanRepository planRepository;
     private final MemberRepository memberRepository;
@@ -407,6 +408,11 @@ public class PaymentService {
             plan.updateStatus(4);
             planRepository.save(plan);
         }
+
+
+        PaymentApproval paymentApproval = paymentApprovalRepository.findByMemberEmailAndPlanId(email, planId)
+                .orElseThrow(() -> new NotFoundPaymentApprovalException("해당 정산 요청이 없습니다."));
+        paymentApproval.updateStatus(2);
     }
 
 }
