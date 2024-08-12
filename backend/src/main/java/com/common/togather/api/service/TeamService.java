@@ -195,7 +195,7 @@ public class TeamService {
 
         // 알림 전송
         fcmUtil.pushNotification(
-                host.getFcmToken().getToken(),
+                host.getFcmToken(),
                 JOIN_REQUEST.getTitle(),
                 JOIN_REQUEST.getMessage(member.getNickname(), team.getTitle())
         );
@@ -273,7 +273,7 @@ public class TeamService {
 
             // 알림 전송
             fcmUtil.pushNotification(
-                    guest.getFcmToken().getToken(),
+                    guest.getFcmToken(),
                     JOIN_ACCEPTED.getTitle(),
                     JOIN_ACCEPTED.getMessage(team.getTitle())
             );
@@ -365,7 +365,7 @@ public class TeamService {
 
         // 알림 전송
         fcmUtil.pushNotification(
-                guest.getFcmToken().getToken(),
+                guest.getFcmToken(),
                 KICK_OUT_NOTIFICATION.getTitle(),
                 KICK_OUT_NOTIFICATION.getMessage(team.getTitle())
         );
