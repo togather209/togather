@@ -24,7 +24,7 @@ function UnderBar() {
       <AppRoutes />
       <div className="underbar">
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/home")}
           className={`underbar-button ${isActive("/home") ? "active" : ""}`}
         >
           <img
