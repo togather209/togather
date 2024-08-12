@@ -3,6 +3,7 @@ import "./App.css";
 import UnderBar from "./components/common/UnderBar";
 import { useFirebase } from "./firebaseContext";
 import TokenRefresher from "./utils/TokenRefresher";
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
   const { onMessageListener } = useFirebase();
@@ -17,10 +18,10 @@ function App() {
   }, [onMessageListener]);
 
   return (
-
-      <TokenRefresher>
-        <UnderBar />
-      </TokenRefresher>
+    <TokenRefresher>
+      <AppRoutes />
+      <UnderBar />
+    </TokenRefresher>
   );
 }
 
