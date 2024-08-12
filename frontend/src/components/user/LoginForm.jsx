@@ -9,8 +9,10 @@ import { Link } from "react-router-dom";
 import kakao from "../../assets/icons/common/kakao.png";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { setToken } from "../../redux/slices/authSlice";
+import { clearToken, setToken } from "../../redux/slices/authSlice";
 import { useFirebase } from "../../firebaseContext";
+import axiosInstance from "../../utils/axiosInstance";
+import Modal from "../common/Modal";
 
 function LoginForm() {
   const API_LINK = import.meta.env.VITE_API_URL;
@@ -24,6 +26,7 @@ function LoginForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { fcmToken } = useFirebase();
+  const [isAlreadyRegistKakao, setIsAlreadyRegistKakao] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -35,7 +38,7 @@ function LoginForm() {
     const memberData = {
       email: email,
       password: password,
-      fcmtoken: fcmToken
+      fcmtoken: fcmToken,
     };
 
     try {
@@ -60,7 +63,24 @@ function LoginForm() {
         })
       );
 
-      navigate("/");
+      try {
+        const memberResponse = await axiosInstance.get("/members/me");
+
+        //만약 카카오로 가입된 회원이라면...
+        if (memberResponse.data.data.type === 1) {
+          //로그아웃
+          await axiosInstance.post("/members/logout");
+          //토큰 초기화
+          dispatch(clearToken());
+          setIsAlreadyRegistKakao(true);
+        }
+        else {//아니면 홈으로~
+          navigate("/");
+        }
+      } catch (error) {
+        console.log("에러다에러");
+      }
+
     } catch (error) {
       console.log("로그인 에러", error);
       alert("존재하지 않는 아이디입니다. 아이디와 비밀번호를 확인해주세요.");
@@ -71,7 +91,7 @@ function LoginForm() {
   const handleKakaoLogin = () => {
     const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&`;
     window.location.href = kakaoAuthUrl;
-  }
+  };
 
   return (
     <div className="login-container">
@@ -136,6 +156,7 @@ function LoginForm() {
         />
         카카오 로그인
       </button>
+      {isAlreadyRegistKakao && <Modal mainMessage={"이미 카카오로 가입된 계정입니다."} subMessage={"카카오 로그인을 이용해 주세요!"} onClose={() => navigate("/login")}/>}
     </div>
   );
 }
