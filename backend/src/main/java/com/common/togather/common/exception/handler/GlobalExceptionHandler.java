@@ -286,4 +286,11 @@ public class GlobalExceptionHandler {
         ErrorResponseDto error = new ErrorResponseDto("Kakao Code Not Found", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+
+    // 로그인 방식이 가입 방식과 다를때
+    @ExceptionHandler(LoginMethodMismatchException.class)
+    public ResponseEntity<ErrorResponseDto> handleLoginMethodMismatchException(LoginMethodMismatchException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Login Method Mismatch", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }
