@@ -200,6 +200,7 @@ function CreatePayment() {
             placeholder="계좌 별칭(미입력시 실명)"
             value={accountName}
             onChange={(e) => setAccountName(e.target.value)}
+            maxLength={6}
           />
           <CommonInput
             id="password"
