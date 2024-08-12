@@ -114,7 +114,7 @@ public class PayAccountService {
         alarmRepository.save(Alarm.builder()
                 .member(member)
                 .title(PAYACOUNT_RECEIVED.getTitle())
-                .content(PAYACOUNT_RECEIVED.getMessage(member.getName(), requestDto.getPrice()))
+                .content(PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(requestDto.getPrice())))
                 .type(PAYACOUNT_RECEIVED.getType())
                 .build());
 
@@ -122,7 +122,7 @@ public class PayAccountService {
         fcmUtil.pushNotification(
                 member.getFcmToken().getToken(),
                 PAYACOUNT_RECEIVED.getTitle(),
-                PAYACOUNT_RECEIVED.getMessage(PAYACOUNT_RECEIVED.getMessage(member.getName(), requestDto.getPrice()))
+                PAYACOUNT_RECEIVED.getMessage(PAYACOUNT_RECEIVED.getMessage(member.getName(),String.valueOf( requestDto.getPrice())))
         );
     }
 
@@ -177,7 +177,7 @@ public class PayAccountService {
         alarmRepository.save(Alarm.builder()
                 .member(member)
                 .title(WITHDRAWAL_ALERT.getTitle())
-                .content(WITHDRAWAL_ALERT.getMessage(targetMember.getName(), requestDto.getPrice()))
+                .content(WITHDRAWAL_ALERT.getMessage(targetMember.getName(), String.valueOf(requestDto.getPrice())))
                 .type(WITHDRAWAL_ALERT.getType())
                 .build());
 
@@ -185,14 +185,14 @@ public class PayAccountService {
         fcmUtil.pushNotification(
                 member.getFcmToken().getToken(),
                 WITHDRAWAL_ALERT.getTitle(),
-                WITHDRAWAL_ALERT.getMessage(PAYACOUNT_RECEIVED.getMessage(targetMember.getName(), requestDto.getPrice()))
+                WITHDRAWAL_ALERT.getMessage(PAYACOUNT_RECEIVED.getMessage(targetMember.getName(), String.valueOf(requestDto.getPrice())))
         );
 
         // 수취인 알림 저장
         alarmRepository.save(Alarm.builder()
                 .member(targetMember)
                 .title(PAYACOUNT_RECEIVED.getTitle())
-                .content(PAYACOUNT_RECEIVED.getMessage(member.getName(), requestDto.getPrice()))
+                .content(PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(requestDto.getPrice())))
                 .type(PAYACOUNT_RECEIVED.getType())
                 .build());
 
@@ -200,7 +200,7 @@ public class PayAccountService {
         fcmUtil.pushNotification(
                 targetMember.getFcmToken().getToken(),
                 PAYACOUNT_RECEIVED.getTitle(),
-                PAYACOUNT_RECEIVED.getMessage(PAYACOUNT_RECEIVED.getMessage(member.getName(), requestDto.getPrice()))
+                PAYACOUNT_RECEIVED.getMessage(PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(requestDto.getPrice())))
         );
     }
 
@@ -265,7 +265,7 @@ public class PayAccountService {
         alarmRepository.save(Alarm.builder()
                 .member(member)
                 .title(WITHDRAWAL_ALERT.getTitle())
-                .content(WITHDRAWAL_ALERT.getMessage(member.getName(), requestDto.getPrice()))
+                .content(WITHDRAWAL_ALERT.getMessage(member.getName(), String.valueOf(requestDto.getPrice())))
                 .type(WITHDRAWAL_ALERT.getType())
                 .build());
 
@@ -273,7 +273,7 @@ public class PayAccountService {
         fcmUtil.pushNotification(
                 member.getFcmToken().getToken(),
                 WITHDRAWAL_ALERT.getTitle(),
-                WITHDRAWAL_ALERT.getMessage(PAYACOUNT_RECEIVED.getMessage(member.getName(), requestDto.getPrice()))
+                WITHDRAWAL_ALERT.getMessage(PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(requestDto.getPrice())))
         );
     }
 
