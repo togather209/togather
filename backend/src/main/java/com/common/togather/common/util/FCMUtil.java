@@ -1,18 +1,19 @@
 package com.common.togather.common.util;
 
-import com.common.togather.api.error.MissingTokenException;
 import com.common.togather.db.entity.FCMToken;
 import com.common.togather.db.entity.Member;
 import com.common.togather.db.repository.FCMTokenRepository;
 import com.google.firebase.messaging.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FCMUtil {
@@ -46,7 +47,8 @@ public class FCMUtil {
     public void pushNotification(String token, String title, String content) {
 
         if (token == null) {
-            throw new MissingTokenException("fcm 토큰이 없습니다.");
+            log.info("fcm 토큰이 없습니다.");
+            return;
         }
         Message message = Message.builder()
                 .setToken(token)
