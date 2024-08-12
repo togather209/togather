@@ -17,16 +17,17 @@ const PrivateRoute = ({ children }) => {
         try {
           const memberResponse = await axiosInstance.get("/members/me");
           dispatch(setUser({ member: memberResponse.data.data }));
-          // try {
-          //   const accountResponse = await axiosInstance.get("/pay-accounts/members/me");
-          //   await dispatch(setAccount({ account: accountResponse.data.data }));
-          // } catch (error) {
-          //   if (error.response && error.response.status === 404) {
-          //     console.log("계좌가 생성되지 않았습니다.");
-          //   } else {
-          //     console.error("계좌 정보를 불러오는 도중 에러가 발생했습니다.", error);
-          //   }
-          // }
+          try {
+            const accountResponse = await axiosInstance.get("/pay-accounts/members/me");
+            if(accountResponse.status === 204){
+              return;
+            }
+            else{
+              await dispatch(setAccount({ account: accountResponse.data.data }));
+            }
+          } catch (error) {
+            console.log("불러오기 에러", error);
+          }
         } catch (error) {
           console.log("데이터 불러오기 에러", error);
         }
