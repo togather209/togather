@@ -47,7 +47,7 @@ function SendForm() {
 
   const handlePasswordInput = (value) => {
     if (password.length < 6) {
-      setPassword((prevPassword) => [...prevPassword, value]);
+      setPassword((prevPassword) => prevPassword + value);
     }
   };
 
@@ -80,6 +80,8 @@ function SendForm() {
       console.log("잔액 초과");
       return;
     }
+
+    console.log(password);
 
     const formData = {
       targetMemberId: memberId,
