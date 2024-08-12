@@ -197,7 +197,7 @@ public class TeamService {
         fcmUtil.pushNotification(
                 host.getFcmToken().getToken(),
                 JOIN_REQUEST.getTitle(),
-                JOIN_REQUEST.getMessage(KICK_OUT_NOTIFICATION.getMessage(member.getNickname(), team.getTitle()))
+                JOIN_REQUEST.getMessage(member.getNickname(), team.getTitle())
         );
     }
 
@@ -275,7 +275,7 @@ public class TeamService {
             fcmUtil.pushNotification(
                     guest.getFcmToken().getToken(),
                     JOIN_ACCEPTED.getTitle(),
-                    JOIN_ACCEPTED.getMessage(JOIN_ACCEPTED.getMessage(team.getTitle()))
+                    JOIN_ACCEPTED.getMessage(team.getTitle())
             );
         }
     }
@@ -367,7 +367,7 @@ public class TeamService {
         fcmUtil.pushNotification(
                 guest.getFcmToken().getToken(),
                 KICK_OUT_NOTIFICATION.getTitle(),
-                KICK_OUT_NOTIFICATION.getMessage(KICK_OUT_NOTIFICATION.getMessage(team.getTitle()))
+                KICK_OUT_NOTIFICATION.getMessage(team.getTitle())
         );
     }
 }
