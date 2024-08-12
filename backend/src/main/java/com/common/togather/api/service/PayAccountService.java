@@ -122,7 +122,7 @@ public class PayAccountService {
         fcmUtil.pushNotification(
                 member.getFcmToken().getToken(),
                 PAYACOUNT_RECEIVED.getTitle(),
-                PAYACOUNT_RECEIVED.getMessage(PAYACOUNT_RECEIVED.getMessage(member.getName(),String.valueOf( requestDto.getPrice())))
+                PAYACOUNT_RECEIVED.getMessage(member.getName(),String.valueOf( requestDto.getPrice()))
         );
     }
 
@@ -185,7 +185,7 @@ public class PayAccountService {
         fcmUtil.pushNotification(
                 member.getFcmToken().getToken(),
                 WITHDRAWAL_ALERT.getTitle(),
-                WITHDRAWAL_ALERT.getMessage(PAYACOUNT_RECEIVED.getMessage(targetMember.getName(), String.valueOf(requestDto.getPrice())))
+                WITHDRAWAL_ALERT.getMessage(targetMember.getName(), String.valueOf(requestDto.getPrice()))
         );
 
         // 수취인 알림 저장
@@ -200,7 +200,7 @@ public class PayAccountService {
         fcmUtil.pushNotification(
                 targetMember.getFcmToken().getToken(),
                 PAYACOUNT_RECEIVED.getTitle(),
-                PAYACOUNT_RECEIVED.getMessage(PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(requestDto.getPrice())))
+                PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(requestDto.getPrice()))
         );
     }
 
@@ -273,7 +273,7 @@ public class PayAccountService {
         fcmUtil.pushNotification(
                 member.getFcmToken().getToken(),
                 WITHDRAWAL_ALERT.getTitle(),
-                WITHDRAWAL_ALERT.getMessage(PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(requestDto.getPrice())))
+                WITHDRAWAL_ALERT.getMessage(member.getName(), String.valueOf(requestDto.getPrice()))
         );
     }
 
