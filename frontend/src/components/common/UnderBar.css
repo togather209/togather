@@ -13,8 +13,6 @@
   /* box-shadow: 0 -2px 5px rgba(0,0,0,0.1); */
 }
 
-
-
 .underbar-button {
   background: none;
   border: none;
@@ -28,8 +26,7 @@
   margin : 10px 20px 0 20px;
 }
 
-.underbar-button:hover,
-.underbar-button:focus {
+.underbar-button.active {
   color: #6200ea;
 }
 
