@@ -217,6 +217,21 @@ public class PayAccountService {
                 .build();
 
         transactionService.saveTransaction(transactionSaveRequest);
+
+        // 알림 저장
+        alarmRepository.save(Alarm.builder()
+                .member(member)
+                .title(WITHDRAWAL_ALERT.getTitle())
+                .content(WITHDRAWAL_ALERT.getMessage(member.getName(), requestDto.getPrice()))
+                .type(WITHDRAWAL_ALERT.getType())
+                .build());
+
+        // 알림 전송
+        fcmUtil.pushNotification(
+                member.getFcmToken().getToken(),
+                WITHDRAWAL_ALERT.getTitle(),
+                WITHDRAWAL_ALERT.getMessage(PAYACOUNT_RECEIVED.getMessage(member.getName(), requestDto.getPrice()))
+        );
     }
 
     // 계좌 조회
