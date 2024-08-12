@@ -147,8 +147,8 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
       )}
       {accountError && (
         <Modal
-          mainMessage="Pay 계좌가 없는 모임원이 있습니다."
-          subMessage="지금 바로 만들어보세요 !"
+          mainMessage="계좌가 없는 모임원이 있어요."
+          subMessage="지금 바로 Pay 계좌를 만들어보세요 !"
           onClose={() => setAccountError(false)}
         />
       )}
