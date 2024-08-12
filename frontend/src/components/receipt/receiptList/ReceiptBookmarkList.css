@@ -1,0 +1,67 @@
+.receipt-bookmark-container {
+  padding: 16px;
+}
+
+.bookmark-list-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.receipt-bookmark-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(102px, 1fr));
+  gap: 0 10px;
+  margin-bottom: 200px;
+}
+
+.receipt-card {
+  position: relative;
+  width: 102px;
+  height: 140px;
+  padding: 0 5px;
+  border-radius: 8px;
+  box-shadow: 0px 5px 10px #eeeeee;
+  margin: 10px 2px;
+  box-sizing: border-box;
+}
+
+.receipt-card.pink {
+  background-color: #fdeae8;
+}
+
+.receipt-card.sky {
+  background-color: #e6f2fa;
+}
+
+.receipt-card.yellow {
+  background-color: #fff3dc;
+}
+
+.receipt-card h3 {
+  margin: 15px 0;
+  font-size: 10px;
+  font-weight: bolder;
+  text-align: center;
+}
+
+.receipt-card p:nth-child(2) {
+  font-weight: 500;
+  font-size: 10px;
+  margin-left: 5px;
+}
+
+.receipt-card .receipt-amount {
+  margin-right: 5px;
+  font-size: 16px;
+  text-align: end;
+  font-weight: 800;
+}
+
+.receipt-card .receipt-date {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  font-size: 11px;
+}

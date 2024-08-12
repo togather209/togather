@@ -26,7 +26,7 @@ import ScheduleDetailContainer from "../components/schedule/ScheduleDetailContai
 import ScheduleUpdate from "../components/schedule/ScheduleUpdate";
 
 import ScheduleDetailPart from "../components/schedule/ScheduleDetailPart";
-import MeetingUpdate from "../components/meeting/MeetingUpdate"
+import MeetingUpdate from "../components/meeting/MeetingUpdate";
 
 // 게임 페이지
 import Game from "../pages/Game";
@@ -39,6 +39,7 @@ import ReceiptFormContainer from "../components/receipt/receiptForm/ReceiptFormC
 import ReceiptDetail from "../components/receipt/receiptDetail/ReceiptDetail";
 import ReceiptUpdateContainer from "../components/receipt/receiptUpdate/ReceiptUpdateContainer";
 import CameraCapture from "../components/receipt/receiptForm/recognizeDetail/CameraCapture";
+import ReceiptBookmarkList from "../components/receipt/receiptList/ReceiptBookmarkList";
 
 import ProfileUpdate from "../components/mypage/ProfileUpdate";
 import Terms from "../components/mypage/Terms";
@@ -47,6 +48,7 @@ import MeetingSetting from "../components/meeting/MeetingSetting";
 import MeetingDetailPart from "../components/meeting/MeetingDetailPart";
 import Payment from "../pages/Payment";
 import SearchPasswordForm from "../components/user/SearchPasswordForm";
+import KakaoLogin from "../components/user/KakaoLogin";
 
 function AppRoutes() {
   return (
@@ -54,7 +56,8 @@ function AppRoutes() {
       <Route path="/" element={<Landing />} />
       <Route path="/signup" element={<SignUpForm />} />
       <Route path="/login" element={<User />} />
-      <Route path="search_password" element={<SearchPasswordForm />}/>
+      <Route path="search_password" element={<SearchPasswordForm />} />
+      <Route path="/api/auth/kakao/callback" element={<KakaoLogin/>} />
       <Route
         path="/mypage"
         element={
@@ -79,7 +82,7 @@ function AppRoutes() {
         <Route path="meeting" element={<MeetingContainer />}>
           <Route index element={<Meetings />} />
           <Route path=":id" element={<MeetingDetailContainer />}>
-            <Route path="" element={<MeetingDetail />}> 
+            <Route path="" element={<MeetingDetail />}>
               <Route index element={<MeetingDetailPart />} />
               <Route path="manage" element={<MeetingSetting />} />
             </Route>
@@ -164,7 +167,7 @@ function AppRoutes() {
         <Route path="regist-form" element={<ReceiptFormContainer />} />
         <Route path="camera-capture" element={<CameraCapture />} />
         <Route path="update-form" element={<ReceiptUpdateContainer />} />
-        <Route path="bookmark" element={<></>} />
+        <Route path="bookmark" element={<ReceiptBookmarkList />} />
       </Route>
 
       <Route

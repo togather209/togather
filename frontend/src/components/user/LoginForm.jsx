@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import CommonInput from "../common/CommonInput";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SubmitButton from "./SubmitButton";
 import "./User.css";
 import "../common/CommonInput.css";
@@ -9,17 +9,21 @@ import { Link } from "react-router-dom";
 import kakao from "../../assets/icons/common/kakao.png";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { setUser } from "../../redux/slices/userSlice";
 import { setToken } from "../../redux/slices/authSlice";
+import { useFirebase } from "../../firebaseContext";
 
 function LoginForm() {
   const API_LINK = import.meta.env.VITE_API_URL;
+  //리다이렉트 URI
+  const CLIENT_ID = import.meta.env.VITE_KAKAO_LOGIN_CLIENT_ID;
+  const REDIRECT_URI = import.meta.env.VITE_KAKAO_LOGIN_REDIRECT_URI;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberEmail, setRememberEmail] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { fcmToken } = useFirebase();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -31,6 +35,7 @@ function LoginForm() {
     const memberData = {
       email,
       password,
+      fcmToken
     };
 
     try {
@@ -43,6 +48,7 @@ function LoginForm() {
       });
 
       console.log("로그인 성공!", response.data);
+      console.log(memberData);
 
       //토큰 가져오기
       const { accessToken, refreshToken } = response.data.data;
@@ -60,6 +66,12 @@ function LoginForm() {
       alert("존재하지 않는 아이디입니다. 아이디와 비밀번호를 확인해주세요.");
     }
   };
+
+  // 카카오 로그인
+  const handleKakaoLogin = () => {
+    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&`;
+    window.location.href = kakaoAuthUrl;
+  }
 
   return (
     <div className="login-container">
@@ -114,7 +126,8 @@ function LoginForm() {
       </div>
       <button
         className="loginWithKakao"
-        onClick={() => navigate("/loginWithKakao")}
+        // onClick={() => navigate("/loginWithKakao")}
+        onClick={handleKakaoLogin}
       >
         <img
           src={kakao}

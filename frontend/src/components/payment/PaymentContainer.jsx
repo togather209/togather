@@ -49,7 +49,7 @@ function PaymentContainer() {
 
     fetchPayment();
     fetchNickname();
-  }, [teamId, planId]);
+  }, [teamId, planId, loginUserName]);
 
   if (error) {
     return (

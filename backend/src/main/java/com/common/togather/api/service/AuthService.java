@@ -4,13 +4,11 @@ import com.common.togather.api.error.*;
 import com.common.togather.api.request.LoginRequest;
 import com.common.togather.api.request.MemberSaveRequest;
 import com.common.togather.common.auth.TokenInfo;
-import com.common.togather.common.exception.handler.NotFoundHandler;
+import com.common.togather.common.util.FCMUtil;
 import com.common.togather.common.util.ImageUtil;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
 import com.common.togather.db.repository.MemberRepository;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,6 +31,7 @@ public class AuthService {
     private final RedisService redisService;
     private final JwtUtil jwtUtil;
     private final ImageUtil imageUtil;
+    private final FCMUtil fcmUtil;
 
     // 회원가입
     @Transactional
@@ -52,7 +51,7 @@ public class AuthService {
 
         String imageUrl = null;
 
-        if(profileImg != null && !profileImg.isEmpty()) {
+        if (profileImg != null && !profileImg.isEmpty()) {
             imageUrl = imageUtil.uploadImage(profileImg);
         }
 
@@ -73,7 +72,7 @@ public class AuthService {
         String email = loginRequest.getEmail();
 
         // 이메일 존재 여부 확인
-        if(!memberRepository.existsByEmail(email)) {
+        if (!memberRepository.existsByEmail(email)) {
             throw new EmailNotFoundException("가입되지 않은 이메일입니다.");
         }
 
@@ -88,6 +87,11 @@ public class AuthService {
             String refreshToken = jwtUtil.generateRefreshToken(email); // Refresh Token 생성
 
             redisService.saveRefreshToken(email, refreshToken); // Redis에 Refresh Token 저장 (유효기간 7일)
+
+            Member member = memberRepository.findByEmail(email)
+                    .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
+
+            fcmUtil.saveToken(member, loginRequest.getFcmToken());
 
             return new TokenInfo(accessToken, refreshToken); // Access Token과 Refresh Token 반환
         } catch (AuthenticationException e) {
@@ -106,7 +110,7 @@ public class AuthService {
 
         return tokenInfo;
     }
-    
+
     // 임시 비밀번호로 변경
     @Transactional
     public void updatePassword(String email, String temporaryPassword) {

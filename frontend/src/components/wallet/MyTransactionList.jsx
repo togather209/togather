@@ -3,6 +3,8 @@ import image from "../../assets/icons/common/chunsik.png";
 import "./MyTransactionList.css";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
+import deposit from "../../assets/wallet/deposit.png";
+import withdraw from "../../assets/wallet/withdraw.png";
 
 function MyTransactionList() {
   const [transactions, setTransactions] = useState([]);
@@ -68,7 +70,7 @@ function MyTransactionList() {
               <p className="transaction-date">{transaction.date}</p>
             ) : null}
             <div className="transaction-item">
-            <img src={image} alt="Avatar" className="avatar" />
+            <img src={transaction.type === "positive" ? deposit : withdraw} alt="Avatar" className="avatar" />
               <div className="transaction-details">
                 <div>
                   <p className="transaction-name">{transaction.name}</p>

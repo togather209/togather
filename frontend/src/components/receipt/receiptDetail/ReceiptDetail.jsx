@@ -112,9 +112,7 @@ function ReceiptDetail() {
   };
 
   const handleCheck = () => {
-    navigate("/receipt", {
-      state: { teamId: teamId, planId: planId, receiptId: receiptId },
-    });
+    navigate(-1);
   };
 
   return (
