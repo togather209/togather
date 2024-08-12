@@ -141,7 +141,7 @@ public class PaymentApprovalService {
         alarmRepository.save(Alarm.builder()
                 .member(plan.getManager())
                 .title(PAYMENT_OBJECTION.getTitle())
-                .content(PAYMENT_OBJECTION.getMessage(member.getName(), plan.getTitle()))
+                .content(PAYMENT_OBJECTION.getMessage(member.getNickname(), plan.getTitle()))
                 .type(PAYMENT_OBJECTION.getType())
                 .build());
 
@@ -149,7 +149,7 @@ public class PaymentApprovalService {
         fcmUtil.pushNotification(
                 plan.getManager().getFcmToken(),
                 PAYMENT_OBJECTION.getTitle(),
-                PAYMENT_OBJECTION.getMessage(member.getName(), plan.getTitle())
+                PAYMENT_OBJECTION.getMessage(member.getNickname(), plan.getTitle())
         );
 
     }
