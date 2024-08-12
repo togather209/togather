@@ -16,8 +16,8 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
   const [insufficientError, setInsufficientError] = useState(false);
   const [noHistory, setNoHistory] = useState(false);
 
+  // 정산 수락하기 요청
   const handleAgree = () => {
-    // 정산 수락하기
     const patchPayment = async () => {
       const response = await axiosInstance.patch(
         `/teams/${teamId}/plans/${planId}/payments/approvals`
@@ -40,8 +40,8 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
     patchPayment();
   };
 
+  // 정산 내역 송금하기 요청
   const handleSend = () => {
-    // 정산 내역 송금하기 요청
     const sendPayments = async () => {
       try {
         const state = store.getState();
@@ -61,16 +61,13 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
         console.log(response);
         // 송금 성공 처리
         if (response) {
-          if (response.data.status === 204) {
+          if (response.status === 204) {
+            console.log(204);
             // 송금 요청 시에 상쇄로 인해 보낼 내역이 없는 경우
             setNoHistory(true);
           } else {
+            console.log(200);
             setCompletePayment(true);
-          }
-
-          if (!noHistory && !completePayment) {
-            // 송금 후 페이지 새로고침
-            window.location.reload();
           }
         }
       } catch (error) {
@@ -91,6 +88,15 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
     sendPayments();
   };
 
+  // 모달 닫고 리로드
+  const handleCloseAndReload = () => {
+    // 모든 모달 닫기
+    setNoHistory(false);
+    setCompletePayment(false);
+    window.location.reload(); // 이후 새로고침
+  };
+
+  // 현재 페이먼트 상태로 렌더링할 버튼 지정
   const renderButton = () => {
     if (paymentData.status === 0) {
       // (개인) 정산 동의 전 상태
@@ -163,13 +169,19 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
         <Modal
           mainMessage="이체할 내역이 없습니다."
           subMessage="다른 사람의 송금을 기다려보세요 !"
-          onClose={() => setInsufficientError(false)}
+          onClose={() => {
+            setNoHistory(false);
+            handleCloseAndReload();
+          }}
         />
       )}
       {completePayment && (
         <Modal
           mainMessage="송금 완료 !"
-          onClose={() => setCompletePayment(false)}
+          onClose={() => {
+            setCompletePayment(false);
+            handleCloseAndReload();
+          }}
         />
       )}
     </>
