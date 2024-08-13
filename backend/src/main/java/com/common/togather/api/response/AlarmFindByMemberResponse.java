@@ -17,6 +17,8 @@ public class AlarmFindByMemberResponse {
 
     private int type;
 
+    private String image;
+
     private AlarmDto alarmDto;
 
     @Getter
@@ -24,7 +26,7 @@ public class AlarmFindByMemberResponse {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    public static class AlarmDto{
+    public static class AlarmDto {
         private Integer teamId;
         private Integer planId;
     }

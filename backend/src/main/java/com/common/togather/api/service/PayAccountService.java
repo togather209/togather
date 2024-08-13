@@ -116,13 +116,14 @@ public class PayAccountService {
                 .title(PAYACOUNT_RECEIVED.getTitle())
                 .content(PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(requestDto.getPrice())))
                 .type(PAYACOUNT_RECEIVED.getType())
+                .memberId(member.getId())
                 .build());
 
         // 알림 전송
         fcmUtil.pushNotification(
                 member.getFcmToken(),
                 PAYACOUNT_RECEIVED.getTitle(),
-                PAYACOUNT_RECEIVED.getMessage(member.getName(),String.valueOf( requestDto.getPrice()))
+                PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(requestDto.getPrice()))
         );
     }
 
@@ -179,6 +180,7 @@ public class PayAccountService {
                 .title(WITHDRAWAL_ALERT.getTitle())
                 .content(WITHDRAWAL_ALERT.getMessage(targetMember.getName(), String.valueOf(requestDto.getPrice())))
                 .type(WITHDRAWAL_ALERT.getType())
+                .memberId(member.getId())
                 .build());
 
         // 송금인 알림 전송
@@ -194,6 +196,7 @@ public class PayAccountService {
                 .title(PAYACOUNT_RECEIVED.getTitle())
                 .content(PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(requestDto.getPrice())))
                 .type(PAYACOUNT_RECEIVED.getType())
+                .memberId(member.getId())
                 .build());
 
         // 수취인 알림 전송
