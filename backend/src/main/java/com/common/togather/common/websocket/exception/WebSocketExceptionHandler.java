@@ -1,8 +1,6 @@
-package com.common.togather.common.websocket;
+package com.common.togather.common.websocket.exception;
 
 import com.common.togather.common.websocket.error.WebSocketErrorResponse;
-import com.common.togather.common.websocket.exception.PlaceConflictException;
-import com.common.togather.common.websocket.exception.UpdateNotAllowedException;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.SendTo;
 
