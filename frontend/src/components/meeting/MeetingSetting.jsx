@@ -62,7 +62,7 @@ function MeetingSetting () {
         <div>
             <div className="meeting-setting-member-manage-box">
                 <div className="setting-member-manage">멤버 관리</div>
-                <div className="part-code" onClick={copyToClipboard} style={{ cursor: 'pointer' }}>{state.code}</div>
+                <div className="part-code" onClick={copyToClipboard} style={{ cursor: 'pointer' }}>{state?.code}</div>
                 {copySuccess && (
                     <Modal mainMessage={"초대코드가 복사됐어요!"} onClose={() => setCopySuccess(false)}/>
                 )}
