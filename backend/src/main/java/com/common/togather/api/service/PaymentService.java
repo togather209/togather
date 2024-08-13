@@ -252,8 +252,8 @@ public class PaymentService {
                     .title(PAYMENT_TRANSFER_REQUEST.getTitle())
                     .content(PAYMENT_TRANSFER_REQUEST.getMessage(plan.getTitle()))
                     .type(PAYMENT_TRANSFER_REQUEST.getType())
-                    .teamId(plan.getTeam().getId())
-                    .planId(planId)
+                    .tId(plan.getTeam().getId())
+                    .pId(planId)
                     .build());
 
             // 알림 전송
@@ -422,7 +422,7 @@ public class PaymentService {
                     .title(WITHDRAWAL_ALERT.getTitle())
                     .content(WITHDRAWAL_ALERT.getMessage(targetMember.getName(), String.valueOf(payment.getMoney())))
                     .type(WITHDRAWAL_ALERT.getType())
-                    .memberId(member.getId())
+                    .mId(member.getId())
                     .build());
 
             // 송금인 알림 전송
@@ -438,7 +438,7 @@ public class PaymentService {
                     .title(PAYACOUNT_RECEIVED.getTitle())
                     .content(PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(payment.getMoney())))
                     .type(PAYACOUNT_RECEIVED.getType())
-                    .memberId(member.getId())
+                    .mId(member.getId())
                     .build());
 
             // 수취인 알림 전송

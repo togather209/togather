@@ -127,8 +127,8 @@ public class ReceiptService {
                     .title(RECEIPT_UPLOADED.getTitle())
                     .content(RECEIPT_UPLOADED.getMessage(plan.getTitle()))
                     .type(RECEIPT_UPLOADED.getType())
-                    .teamId(teamId)
-                    .planId(planId)
+                    .tId(teamId)
+                    .pId(planId)
                     .build());
 
             // 알림 전송
