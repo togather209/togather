@@ -27,6 +27,11 @@ public class FCMUtil {
             return;
         }
 
+        if (token == null || token.isBlank()) {
+            log.info("fcm 토큰이 비어 있습니다.");
+            return;
+        }
+
         fcmTokenRepository.save(FCMToken.builder()
                 .member(member)
                 .token(token)
@@ -46,9 +51,8 @@ public class FCMUtil {
     @SneakyThrows
     public void pushNotification(FCMToken token, String title, String content) {
 
-        System.out.println("token= " + token);
         if (token == null || token.getToken() == null) {
-            log.info("fcm 토큰이 없습니다.");
+            log.info("fcm 토큰이 비어 있습니다.");
             return;
         }
 

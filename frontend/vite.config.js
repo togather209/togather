@@ -48,4 +48,8 @@ export default defineConfig({
       }
     },
   },
+  //웹소켓 설정이래..
+  define: {
+    global: 'window',
+  }
 });

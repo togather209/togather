@@ -31,4 +31,13 @@ public class Alarm {
     // 0: 정산, 1: 초대,
     @Column(name = "type", nullable = false)
     private int type;
+
+    @Column(name = "tid")
+    private Integer tId;
+
+    @Column(name = "pid")
+    private Integer pId;
+
+    @Column(name = "mid")
+    private Integer mId;
 }

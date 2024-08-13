@@ -16,4 +16,18 @@ public class AlarmFindByMemberResponse {
     private String content;
 
     private int type;
+
+    private String image;
+
+    private AlarmDto alarmDto;
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class AlarmDto {
+        private Integer teamId;
+        private Integer planId;
+    }
 }

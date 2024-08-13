@@ -5,6 +5,7 @@ import "./MeetingDetail.css";
 import meetingsetting from "../../assets/meeting/meetingsetting.png";
 import BackButton from "../common/BackButton";
 import axiosInstance from "../../utils/axiosInstance";
+import defaultImage from "../../../public/defaultimage.png";
 
 function MeetingDetail() {
   const navigation = useNavigate();
@@ -59,6 +60,10 @@ function MeetingDetail() {
     }
   };
 
+  const handleImageError = (e) => {
+    e.target.src = defaultImage; // 이미지 로드 실패 시 디폴트 이미지로 변경
+  };
+
   return (
     <div className="none-meetingdetail">
       <div className="none-meetingdetail-header">
@@ -83,8 +88,9 @@ function MeetingDetail() {
       <div className="meeting-info-container">
         <img
           className="meetingdetail-img"
-          src={meetingDetail.teamImg}
+          src={meetingDetail.teamImg || defaultImage} // 디폴트 이미지 사용
           alt="모임 이미지"
+          onError={handleImageError} // 이미지 로드 실패 시 핸들러 호출
         />
         <div className="overlay">
           <p className="meeting-name-in-detail">{meetingDetail.title}</p>

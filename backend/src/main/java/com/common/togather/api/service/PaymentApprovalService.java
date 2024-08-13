@@ -73,6 +73,8 @@ public class PaymentApprovalService {
                     .title(PAYMENT_APPROVAL_REQUEST.getTitle())
                     .content(PAYMENT_APPROVAL_REQUEST.getMessage(plan.getTitle()))
                     .type(PAYMENT_APPROVAL_REQUEST.getType())
+                    .tId(plan.getTeam().getId())
+                    .pId(planId)
                     .build());
 
             // 알림 전송
@@ -143,6 +145,8 @@ public class PaymentApprovalService {
                 .title(PAYMENT_OBJECTION.getTitle())
                 .content(PAYMENT_OBJECTION.getMessage(member.getNickname(), plan.getTitle()))
                 .type(PAYMENT_OBJECTION.getType())
+                .tId(plan.getTeam().getId())
+                .pId(planId)
                 .build());
 
         // 알림 전송

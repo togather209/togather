@@ -216,17 +216,34 @@ public class PaymentService {
         });
 
         // 마이너스인 경우 송금 수신 변경
-        for (Payment payment : paymentMap.values()) {
+        Collection<Payment> payments = paymentMap.values();
+
+        for (Payment payment : payments) {
             if (payment.getMoney() < 0) {
                 payment.switchSenderToReceiver();
                 payment.updateMoney(-payment.getMoney());
             }
         }
 
-        paymentRepository.saveAll(paymentMap.values());
+        paymentRepository.saveAll(payments);
 
 
         List<Member> members = paymentApprovalRepositorySupport.getMembers(planId);
+
+        // 정산할 필요 없는 member의 approval의 상태값을 2로 지정
+        for (Member member : members) {
+            boolean flag = false;
+            for (Payment payment : payments) {
+                if (member.getId() == payment.getSender().getId()) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag) {
+                updatePaymentApproval(member.getEmail(), planId);
+            }
+        }
+
 
         for (Member member : members) {
             // 알림 저장
@@ -235,6 +252,8 @@ public class PaymentService {
                     .title(PAYMENT_TRANSFER_REQUEST.getTitle())
                     .content(PAYMENT_TRANSFER_REQUEST.getMessage(plan.getTitle()))
                     .type(PAYMENT_TRANSFER_REQUEST.getType())
+                    .tId(plan.getTeam().getId())
+                    .pId(planId)
                     .build());
 
             // 알림 전송
@@ -341,6 +360,7 @@ public class PaymentService {
         // 송금할 Payment 목록 조회
         List<Payment> payments = paymentRepository.findByPlanIdAndSenderEmail(planId, email);
         if (payments.isEmpty()) {
+            updatePaymentApproval(email, planId);
             throw new PaymentNotFoundException("정산할 내역이 없습니다.");
         }
 
@@ -402,6 +422,7 @@ public class PaymentService {
                     .title(WITHDRAWAL_ALERT.getTitle())
                     .content(WITHDRAWAL_ALERT.getMessage(targetMember.getName(), String.valueOf(payment.getMoney())))
                     .type(WITHDRAWAL_ALERT.getType())
+                    .mId(member.getId())
                     .build());
 
             // 송금인 알림 전송
@@ -417,6 +438,7 @@ public class PaymentService {
                     .title(PAYACOUNT_RECEIVED.getTitle())
                     .content(PAYACOUNT_RECEIVED.getMessage(member.getName(), String.valueOf(payment.getMoney())))
                     .type(PAYACOUNT_RECEIVED.getType())
+                    .mId(member.getId())
                     .build());
 
             // 수취인 알림 전송
@@ -440,10 +462,12 @@ public class PaymentService {
             planRepository.save(plan);
         }
 
+        updatePaymentApproval(email, planId);
+    }
 
+    private void updatePaymentApproval(String email, int planId) {
         PaymentApproval paymentApproval = paymentApprovalRepository.findByMemberEmailAndPlanId(email, planId)
                 .orElseThrow(() -> new NotFoundPaymentApprovalException("해당 정산 요청이 없습니다."));
         paymentApproval.updateStatus(2);
     }
-
 }
