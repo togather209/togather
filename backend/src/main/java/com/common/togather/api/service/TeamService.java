@@ -191,7 +191,7 @@ public class TeamService {
                 .title(JOIN_REQUEST.getTitle())
                 .content(JOIN_REQUEST.getMessage(member.getNickname(), team.getTitle()))
                 .type(JOIN_REQUEST.getType())
-                .teamId(team.getId())
+                .tId(team.getId())
                 .build());
 
         // 알림 전송
@@ -270,7 +270,7 @@ public class TeamService {
                     .title(JOIN_ACCEPTED.getTitle())
                     .content(JOIN_ACCEPTED.getMessage(team.getTitle()))
                     .type(JOIN_ACCEPTED.getType())
-                    .teamId(teamId)
+                    .tId(teamId)
                     .build());
 
             // 알림 전송

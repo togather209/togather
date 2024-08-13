@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 
 function SendForm() {
   const [amount, setAmount] = useState(0);
-  const [password, setPassword] = useState([]);
+  const [password, setPassword] = useState("");
   const [passwordModal, setPasswordModal] = useState(false);
   const account = useSelector((state) => state.account.account);
   const member = useSelector((state) => state.user.member);
@@ -56,7 +56,7 @@ function SendForm() {
   };
 
   const handlePasswordClear = () => {
-    setPassword([]);
+    setPassword("");
   };
 
   const openPasswordModal = (e) => {

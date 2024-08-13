@@ -2,19 +2,10 @@
     padding: 20px;
 }
 
-.alarm-page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* 백버튼과 타이틀 사이에 공간을 분배 */
-    position: relative; /* 타이틀을 절대 위치로 중앙 정렬하기 위해 relative 설정 */
-}
-
 .alarm-page-title {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%); /* 정확하게 가운데 정렬 */
     font-size: 16px;
-    font-weight: bold;
+    margin-top: 20px;
+    margin-left: 20px;
 }
 
 .alarm-list {
@@ -23,24 +14,28 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-top: 20px;
+    max-height: 480px;
+    overflow-y: auto;
 }
 
 .alarm-item {
-    padding: 15px;
-    border-bottom: 1px solid #ddd;
+    display: flex;
+    border: none;
+    align-items: center;
+    background-color: white;
+    text-align: start;
+    margin-top: 10px;
+    margin-bottom: 20px;
 }
 
-.alarm-item:last-child {
-    border-bottom: none;
+.alarm-item-img {
+    margin-right: 10px;
+    width: 40px;
+    height: 40px;
 }
 
-.alarm-message {
-    font-size: 16px;
-}
-
-.alarm-timestamp {
+.alarm-item-content {
     display: block;
-    font-size: 12px;
-    color: #999;
+    font-size: 14px;
     margin-top: 5px;
 }

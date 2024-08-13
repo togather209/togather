@@ -51,7 +51,7 @@ public class FCMUtil {
     @SneakyThrows
     public void pushNotification(FCMToken token, String title, String content) {
 
-        if (token == null) {
+        if (token == null || token.getToken() == null) {
             log.info("fcm 토큰이 비어 있습니다.");
             return;
         }
