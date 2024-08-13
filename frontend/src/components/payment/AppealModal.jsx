@@ -14,7 +14,8 @@ function AppealModal({ onClose, teamId, planId }) {
       // TODO : request 담기
       const deleteAppeal = async () => {
         const response = await axiosInstance.delete(
-          `/teams/${teamId}/plans/${planId}/payments/approvals`
+          `/teams/${teamId}/plans/${planId}/payments/approvals`,
+          { data: { contents: inputValue } }
         );
 
         console.log(response.data);

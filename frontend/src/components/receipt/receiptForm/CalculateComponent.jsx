@@ -32,6 +32,7 @@ function CalculateComponent() {
   const [currentItemIndex, setCurrentItemIndex] = useState(null); // 현재 선택된 품목의 인덱스를 저장
   const [participants, setParticipants] = useState(null);
   const [generalParticipants, setGeneralParticipants] = useState([]); // 일반적인 참가자 정보를 저장
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     // teamId, planId 없을 때 localStorage에서 가져오기
@@ -66,12 +67,17 @@ function CalculateComponent() {
 
   // 영수증 등록 요청
   const handleRegister = async () => {
+    // 이미 등록 버튼을 눌렀다면 재등록 방지
+    if (isSubmitting) return;
+
+    // 등록 버튼 클릭시 등록 중 상태
+    setIsSubmitting(true);
+
     // paymentDate를 ISO 8601 형식으로 변환
     const receiptTempInfo = {
       businessName,
       paymentDate: formattedPaymentDate,
       totalPrice,
-      bookmarkId,
       color,
       items: items.map((item, index) => ({
         name: item.name,
@@ -87,6 +93,12 @@ function CalculateComponent() {
               })),
       })),
     };
+
+    if (bookmarkId !== null) {
+      receiptTempInfo.bookmarkId = bookmarkId;
+    }
+
+    console.log(receiptTempInfo);
 
     try {
       const response = await axiosInstance.post(
@@ -113,7 +125,6 @@ function CalculateComponent() {
       businessName,
       paymentDate: formattedPaymentDate,
       totalPrice,
-      bookmarkId,
       color,
       items: items.map((item, index) => ({
         name: item.name,
@@ -129,6 +140,10 @@ function CalculateComponent() {
               })),
       })),
     };
+
+    if (bookmarkId !== null) {
+      receiptUpdatepInfo.bookmarkId = bookmarkId;
+    }
 
     try {
       const response = await axiosInstance.put(

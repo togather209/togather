@@ -154,7 +154,7 @@ function RechargeModal({ closeModal }) {
           충전
         </button>
       </div>
-      {isCompleteRecharge && <Modal mainMessage={`${amount}원 충전`} subMessage={"충전이 완료되었습니다."} onClose={() => navigate(0)}/>}
+      {isCompleteRecharge && <Modal mainMessage={`${amount.toLocaleString()}원 충전`} subMessage={"충전이 완료되었습니다."} onClose={() => navigate(0)}/>}
     </div>
   );
 }

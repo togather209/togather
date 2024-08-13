@@ -28,7 +28,8 @@ public class PaymentRepositorySupport {
                 .select(Projections.fields(PaymentFindDto.class,
                         qreceipt.manager.as("receiver"),
                         qitem.id.as("itemId"),
-                        qitem.unitPrice.multiply(qitem.count).as("price"),
+                        qitem.name.as("itemName"),
+                        qitem.unitPrice.as("price"),
                         qitemMember.member.as("sender")
                 ))
                 .from(qreceipt)
@@ -49,11 +50,11 @@ public class PaymentRepositorySupport {
     }
 
     NumberExpression<Integer> resultStatus = new CaseBuilder()
-            .when(qPlan.status.eq(2)).then(2)   // 전체 동의 후
-            .when(qPlan.status.eq(3)).then(3)   // 송금 완료
+            .when(qPlan.status.eq(3).and(qPaymentApproval.status.eq(2))).then(3)   // 개인 송금 후
+            .when(qPlan.status.eq(3)).then(2)   // 전체 완료
+            .when(qPlan.status.eq(2)).then(1)   // 전체 동의 후
             .when(qPlan.status.eq(1).and(qPaymentApproval.status.eq(0))).then(0)    // 정산 동의 전
             .when(qPlan.status.eq(1).and(qPaymentApproval.status.eq(1))).then(1)    // 정산 동의 후
-            .when(qPlan.status.eq(1).and(qPaymentApproval.status.eq(2))).then(-1)   // 정산 거절 후
             .otherwise(-999)
             .as("status");
 }

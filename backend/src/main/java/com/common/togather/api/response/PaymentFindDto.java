@@ -10,11 +10,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentFindDto {
+public class  PaymentFindDto {
 
     Member receiver;
 
     int itemId;
+
+    String itemName;
 
     int price;
 

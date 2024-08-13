@@ -11,8 +11,9 @@ function RegistForm() {
 
   // 제목, 이미지주소, 설명
   const [title, setTitle] = useState("");
-  const [teamimg, setTeamImg] = useState(null);
+  const [teamImg, setTeamImg] = useState(null); // 이미지 파일 상태
   const [description, setDescription] = useState("");
+  const [imagePreview, setImagePreview] = useState(null); // 이미지 미리보기 상태
 
   // 제목 값 갱신
   const handleMeetingTitleChange = (e) => {
@@ -24,9 +25,21 @@ function RegistForm() {
     setDescription(e.target.value);
   };
 
-  // 이미지 값 갱신
+  // 이미지 값 갱신 및 미리보기 설정
   const handleMeetingImageChange = (e) => {
-    setTeamImg(e.target.files[0]); // 파일 객체를 저장
+    const file = e.target.files[0]; // 선택된 파일
+    if (file) {
+      setTeamImg(file); // 파일 객체를 상태에 저장
+
+      // 미리보기 URL 생성 및 상태에 저장
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    }
+  };
+
+  // 이미지 파일 입력 필드를 클릭할 수 있도록 설정
+  const handleImageContainerClick = () => {
+    document.getElementById("image-input").click();
   };
 
   // axios 요청 함수
@@ -43,11 +56,14 @@ function RegistForm() {
     });
 
     // 요청 파라미터 값 생성
-    formData.append("member", new Blob([memberData], { type: "application/json" })); // JSON 데이터 추가
-    if (teamimg) {
-      const teamImgBlob = new Blob([teamimg], {type : 'image/png'});
-      const teamImgFile = new File([teamImgBlob], "image.png");
-      formData.append("image", teamImgFile); // 파일 객체를 추가
+    formData.append(
+      "member",
+      new Blob([memberData], { type: "application/json" })
+    ); // JSON 데이터 추가
+    if (teamImg) {
+      const fileBlob = new Blob([teamImg], { type: "image/png" });
+      const fileData = new File([fileBlob], "image.png");
+      formData.append("image", fileData); // 파일 객체를 추가
     }
 
     // axios요청
@@ -79,12 +95,32 @@ function RegistForm() {
           <form onSubmit={addMeeting} className="regist-input">
             <div className="img-container">
               <div className="content-container">
-                <p className="img-input-desc">모임 대표 사진</p>
-                <input
-                  className=""
-                  type="file"
-                  onChange={handleMeetingImageChange}
-                />
+                <div>
+                  <p className="img-input-desc">모임 대표 사진</p>
+                </div>
+                <div
+                  className="meeting-regist-input-image-container"
+                  onClick={handleImageContainerClick}
+                >
+                  {/* 이미지 미리보기를 표시할 부분 */}
+                  {imagePreview && (
+                    <div className="image-preview">
+                      <img
+                        src={imagePreview}
+                        alt="미리보기"
+                        className="preview-img"
+                      />
+                    </div>
+                  )}
+                  {/* 실제 파일 입력 필드는 숨김 */}
+                  <input
+                    id="image-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleMeetingImageChange}
+                    style={{ display: "none" }} // input 태그를 숨김
+                  />
+                </div>
               </div>
             </div>
             <div className="meeting-name">

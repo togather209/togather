@@ -30,7 +30,7 @@ public class ImageUtil {
     @Value("${aws.s3.base-url}")
     private String baseUrl;
 
-    private final static Integer IMAGE_MAX_SIZE = 5 * 1024 * 1024;
+    private final static Integer IMAGE_MAX_SIZE = 5 * 1024 * 1024 * 2;
     ;
     private final AmazonS3 amazonS3;
 

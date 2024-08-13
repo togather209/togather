@@ -44,6 +44,10 @@ public class PaymentFindByPlanIdResponse {
     public static class SenderPayment {
         private String name;
         private Integer money;
+
+        public void addMoney(Integer money) {
+            this.money += money;
+        }
     }
 
     @Data
@@ -53,6 +57,10 @@ public class PaymentFindByPlanIdResponse {
     public static class ReceiverPayment {
         private String name;
         private Integer money;
+
+        public void addMoney(Integer money) {
+            this.money += money;
+        }
     }
 
     @Data

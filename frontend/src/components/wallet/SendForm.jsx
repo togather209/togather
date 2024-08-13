@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 
 function SendForm() {
   const [amount, setAmount] = useState(0);
-  const [password, setPassword] = useState([]);
+  const [password, setPassword] = useState("");
   const [passwordModal, setPasswordModal] = useState(false);
   const account = useSelector((state) => state.account.account);
   const member = useSelector((state) => state.user.member);
@@ -30,7 +30,7 @@ function SendForm() {
   }, [password]);
 
   const handleKeypadInput = (value) => {
-    if (amount * 10 + value <= 59000) {
+    if (amount * 10 + value <= account.balance) {
       setAmount((prevAmount) => parseInt(`${prevAmount}${value}`));
     } else {
       setAmountMessage("잔액 초과");
@@ -47,7 +47,7 @@ function SendForm() {
 
   const handlePasswordInput = (value) => {
     if (password.length < 6) {
-      setPassword((prevPassword) => [...prevPassword, value]);
+      setPassword((prevPassword) => prevPassword + value);
     }
   };
 
@@ -56,7 +56,7 @@ function SendForm() {
   };
 
   const handlePasswordClear = () => {
-    setPassword([]);
+    setPassword("");
   };
 
   const openPasswordModal = (e) => {
@@ -80,6 +80,8 @@ function SendForm() {
       console.log("잔액 초과");
       return;
     }
+
+    console.log(password);
 
     const formData = {
       targetMemberId: memberId,
