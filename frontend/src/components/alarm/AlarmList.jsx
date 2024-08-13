@@ -78,7 +78,7 @@ function AlarmList() {
         {alarms.length > 0 ? (
           alarms.map((alarm) => (
             <button key={alarm.id} className="alarm-item" onClick={() => moveToPage(alarm.type, alarm.alarmDto)}>
-              <img src={profile} alt="안떠" className="alarm-item-img"/>
+              <img src={alarm.image} alt="안떠" className="alarm-item-img"/>
               <span className="alarm-item-content">{alarm?.content}</span>
             </button>
           ))
@@ -91,3 +91,5 @@ function AlarmList() {
 }
 
 export default AlarmList;
+
+
