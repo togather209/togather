@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import "./AlarmList.css";
 import BackButton from "../common/BackButton";
+import profile from "../../assets/icons/common/defaultProfile.png";
+import { useNavigate } from "react-router-dom";
 
 function AlarmList() {
   const [alarms, setAlarms] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAlarm = async () => {
@@ -19,6 +22,54 @@ function AlarmList() {
     fetchAlarm();
   }, [])
 
+  const moveToPage = (type, alarmDto) => {
+    switch (type) {
+      // 최종 정산 동의 요청 및 최종 정산 송금 요청
+      case 1:
+      case 6:
+        navigate('/receipt/bookmark', { state: { teamId: alarmDto.teamId, planId: alarmDto.planId } });
+        break;
+  
+      // 최종 정산 이의 신청
+      case 2:
+        navigate('/receipt', { state: { teamId: alarmDto.teamId, planId: alarmDto.planId } });
+        break;
+  
+      // 모임 추방 알림 (페이지 이동 없음)
+      case 3:
+        break;
+  
+      // 모임 가입 신청
+      case 4:
+        navigate(`/home/meeting/${alarmDto.teamId}/manage`);
+        break;
+  
+      // 입금 알림
+      case 5:
+        navigate('/wallet');
+        break;
+  
+      // 모임 요청 수락 알림
+      case 7:
+        navigate(`/home/meeting/${alarmDto.teamId}`);
+        break;
+  
+      // 영수증 업로드 알림
+      case 8:
+        navigate('/receipt', { state: { teamId: alarmDto.teamId, planId: alarmDto.planId } });
+        break;
+  
+      // 출금 알림
+      case 9:
+        navigate('/wallet');
+        break;
+  
+      default:
+        break;
+    }
+  };
+  
+
   return (
     <div className="alarm-page">
         <BackButton />
@@ -26,9 +77,10 @@ function AlarmList() {
       <div className="alarm-list">
         {alarms.length > 0 ? (
           alarms.map((alarm) => (
-            <div key={alarm.id} className="alarm-item">
-              <span className="alarm-content">{alarm?.content}</span>
-            </div>
+            <button key={alarm.id} className="alarm-item" onClick={() => moveToPage(alarm.type, alarm.alarmDto)}>
+              <img src={profile} alt="안떠" className="alarm-item-img"/>
+              <span className="alarm-item-content">{alarm?.content}</span>
+            </button>
           ))
         ) : (
           <p>알림이 없습니다.</p>
