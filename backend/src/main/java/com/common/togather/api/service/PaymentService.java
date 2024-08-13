@@ -252,6 +252,8 @@ public class PaymentService {
                     .title(PAYMENT_TRANSFER_REQUEST.getTitle())
                     .content(PAYMENT_TRANSFER_REQUEST.getMessage(plan.getTitle()))
                     .type(PAYMENT_TRANSFER_REQUEST.getType())
+                            .teamId(plan.getTeam().getId())
+                            .planId(planId)
                     .build());
 
             // 알림 전송
