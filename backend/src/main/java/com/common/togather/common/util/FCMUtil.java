@@ -27,6 +27,11 @@ public class FCMUtil {
             return;
         }
 
+        if (token == null || token.isBlank()) {
+            log.info("fcm 토큰이 비어 있습니다.");
+            return;
+        }
+
         fcmTokenRepository.save(FCMToken.builder()
                 .member(member)
                 .token(token)
