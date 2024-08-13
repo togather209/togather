@@ -33,11 +33,11 @@ public class Alarm {
     private int type;
 
     @Column(name = "tid")
-    private Integer teamId;
+    private Integer tId;
 
     @Column(name = "pid")
-    private Integer planId;
+    private Integer pId;
 
     @Column(name = "mid")
-    private Integer memberId;
+    private Integer mId;
 }

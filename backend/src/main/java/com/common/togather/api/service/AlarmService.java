@@ -40,9 +40,9 @@ public class AlarmService {
             // 타입에 따른 필요한 이미지 분류
             String image;
             if (alarm.getType() == PAYACOUNT_RECEIVED.getType() || alarm.getType() == WITHDRAWAL_ALERT.getType()) {
-                image = getMemberProfileImgByMemberId(alarm.getMemberId());
+                image = getMemberProfileImgByMemberId(alarm.getMId());
             } else {
-                image = getTeamImageByTeamId(alarm.getTeamId());
+                image = getTeamImageByTeamId(alarm.getTId());
             }
 
 
@@ -55,8 +55,8 @@ public class AlarmService {
                             .image(image)
                             .alarmDto(
                                     AlarmDto.builder()
-                                            .teamId(alarm.getTeamId())
-                                            .planId(alarm.getPlanId())
+                                            .teamId(alarm.getTId())
+                                            .planId(alarm.getPId())
                                             .build()
                             )
                             .build()
