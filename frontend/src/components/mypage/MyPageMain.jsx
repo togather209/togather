@@ -3,6 +3,8 @@ import defaultImage from "../../assets/icons/common/defaultProfile.png";
 import profile from "../../assets/mypage/profile.png";
 import terms from "../../assets/mypage/terms.png";
 import wallet from "../../assets/wallet/wallet.png";
+import Edit from "../../assets/icons/common/edit.png";
+import Background from "../../assets/user/background.png";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -120,18 +122,28 @@ function MyPageMain() {
       {isLoading ? (
         <Loading />
       ) : (
-        <div className="mypage-container">
-          <div className="mypage-profile">
-            <img
-              src={member?.profileImg ? member.profileImg : defaultImage}
-              alt="기본"
-              className="mypage-profile-image"
-            />
-            <p className="mypage-profile-name">{member?.nickname}</p>
-            <p className="mypage-profile-email">{member?.email}</p>
-            <button className="mypage-logout-button" onClick={handleLogout}>
-              로그아웃
-            </button>
+        <>
+          <div className="mypage-container">
+            <div className="mypage-profile">
+              <div className="profile-image-container">
+                <img
+                  src={Edit}
+                  alt=""
+                  className="profile-edit-button"
+                  onClick={() => navigate("profile_update")}
+                />
+                <img
+                  src={member?.profileImg ? member.profileImg : defaultImage}
+                  alt="기본"
+                  className="mypage-profile-image"
+                />
+              </div>
+              <p className="mypage-profile-name">{member?.nickname}</p>
+              <p className="mypage-profile-email">{member?.email}</p>
+              <button className="mypage-logout-button" onClick={handleLogout}>
+                로그아웃
+              </button>
+            </div>
           </div>
           <div className="mypage-content">
             {account ? (
@@ -139,11 +151,6 @@ function MyPageMain() {
                 className="mypage-my-wallet"
                 onClick={() => navigate("/wallet")}
               >
-                <img
-                  src={wallet}
-                  alt="지갑"
-                  className="mypage-my-wallet-image"
-                />
                 <div>
                   <p className="mypage-my-wallet-summary">
                     {account?.memberName} 지갑
@@ -152,6 +159,7 @@ function MyPageMain() {
                     {formatBalance(account?.balance)}원
                   </p>
                 </div>
+                <img src={wallet} alt="" className="coin" />
               </button>
             ) : (
               <button
@@ -163,28 +171,6 @@ function MyPageMain() {
                 </p>
               </button>
             )}
-            <button
-              className="mypage-my-profile-update"
-              onClick={() => navigate("profile_update")}
-            >
-              <img
-                src={profile}
-                alt="내정보"
-                className="mypage-my-profile-update-image"
-              />
-              <p>내 정보 수정</p>
-            </button>
-            <button
-              className="mypage-my-profile-terms"
-              onClick={() => navigate("terms")}
-            >
-              <img
-                src={terms}
-                alt="약관"
-                className="mypage-my-profile-terms-image"
-              />
-              <p>약관 보기</p>
-            </button>
             <div className="mypage-secession-container">
               <button className="mypage-secession" onClick={openSecessionModal}>
                 회원 탈퇴
@@ -243,7 +229,7 @@ function MyPageMain() {
               onClose={logoutConfirm}
             />
           )}
-        </div>
+        </>
       )}
     </>
   );

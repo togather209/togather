@@ -1,21 +1,28 @@
 .mypage-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 16px;
   margin-left: auto;
   margin-right: auto;
+  background-color: #f5f5f5;
 }
 
 .mypage-profile {
+  z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 20px;
-  width: 85%;
+  padding: 20px 0 10px 0;
+  width: 80%;
+}
+
+.profile-edit-button {
+  position: absolute;
+  width: 40px;
+  transform: translate(170%, 200%);
 }
 
 .mypage-content {
@@ -31,74 +38,79 @@
   height: 100px;
   object-fit: cover;
   border-radius: 50%;
-  border: 1px solid #d9d9d9;
+  border: 3px solid #eeeeee;
+  margin-top: 15px;
+  margin-bottom: 20px;
 }
 
 .mypage-profile-name {
-  font-weight: 600;
-  font-size: 18px;
+  font-weight: bold;
+  font-size: 24px;
+  margin-bottom: 5px;
+  padding: 0 5px 2px 5px;
 }
 
 .mypage-profile-email {
   font-size: 14px;
+  background-color: #8d8d8d20;
+  padding: 7px 14px;
+  border-radius: 20px;
+  margin: 2px 0;
+}
+
+.mypage-my-wallet{
+  margin: 20px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 85%;
+  height: 100px;
+  padding: 20px 15px;
+  border-radius: 18px;
+  border: none;
+  background-color: #712fff;
+  color: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  text-align: start;
+  box-shadow: 0 10px 20px #b5b5b542;
+  z-index: 3px;
+}
+
+.mypage-my-wallet .coin {
+  width: 60px;
+  margin-left: auto;
+  margin-right: 10px;
 }
 
 .mypage-my-wallet-summary {
   margin-left: 10px;
-  font-size: 12px;
+  font-size: 14px;
+  margin-bottom: 3px;
 }
 
 .mypage-my-wallet-balance {
   margin-left: 10px;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 600;
 }
 
-.mypage-my-wallet,
-.mypage-my-profile-update,
-.mypage-my-profile-terms {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin-top: 20px;
-  width: 85%;
-  padding: 20px 30px;
-  border-radius: 6px;
-  border: none;
-  background-color: #f0f0f0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
-}
 
-.mypage-my-wallet {
-  background: linear-gradient(to right, #712fff, #925eff);
-  text-align: start;
-  color: white;
-  box-shadow: 0 4px 6px rgba(227, 136, 250, 0.25);
-}
-
-.mypage-my-profile-update-image,
-.mypage-my-profile-terms-image,
 .mypage-my-wallet-image {
   width: 30px;
   height: 30px;
-}
-
-.mypage-my-profile-update p,
-.mypage-my-profile-terms p {
-  font-size: 14px;
-  margin-left: 10px;
 }
 
 .mypage-secession-container {
   width: 85%;
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
+  margin-right: 20px;
 }
 
 .mypage-secession {
+  color: #575757;
   border: none;
-  background-color: white;
+  background: none;
 }
 
 .mypage-secession-modal-container {
@@ -185,10 +197,9 @@
 }
 
 .mypage-logout-button {
-  margin-top: 15px;
-  border-radius: 6px;
-  border: 1px solid #f0f0f0;
+  margin: 15px auto 0 auto;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
   padding: 5px 10px;
-  background-color: white;
-  color: #9b9a9a;
+  background: none;
 }
