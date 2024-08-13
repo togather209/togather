@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { clearToken, setToken } from "../../redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Modal from "../common/Modal";
-import axiosInstance from "../../utils/axiosInstance";
 
 function KakaoLogin() {
   const navigate = useNavigate();
@@ -39,28 +38,7 @@ function KakaoLogin() {
                   refreshToken,
                 })
               );
-
-              try {
-                const memberResponse = await axiosInstance.get("/members/me");
-                // 이미 일반 로그인으로 가입이 되어있다면
-                console.log("데이터는: ", memberResponse.data.data.type);
-                if (memberResponse.data.data.type === 0) {
-                  // 토큰 삭제 및 모달 상태 업데이트
-                  try {
-                    //로그아웃 요청 및 토큰 삭제
-                    await axiosInstance.post("/members/logout");
-                    await dispatch(clearToken());
-                  } catch (error) {
-                    console.log("에러..에러..로그아웃 에러...");
-                  }
-                  return;
-                } else {
-                  // 일반적인 로그인 후 리다이렉트 처리
-                  navigate("/home");
-                }
-              } catch (error) {
-                console.log("못받아옴", error);
-              }
+              
             } else {
               // 회원가입으로 이동
               navigate("/signupWithKakao", {

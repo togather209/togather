@@ -50,6 +50,7 @@ import Payment from "../pages/Payment";
 import SearchPasswordForm from "../components/user/SearchPasswordForm";
 import KakaoLogin from "../components/user/KakaoLogin";
 import SignupWithKakao from "../components/user/SignupWithKakao";
+import AlarmList from "../components/alarm/AlarmList";
 
 function AppRoutes() {
   return (
@@ -58,7 +59,7 @@ function AppRoutes() {
       <Route path="/signup" element={<SignUpForm />} />
       <Route path="/login" element={<User />} />
       <Route path="search_password" element={<SearchPasswordForm />} />
-      <Route path="/api/auth/kakao/callback" element={<KakaoLogin/>} />
+      <Route path="/api/auth/kakao/callback" element={<KakaoLogin />} />
       <Route path="/signupWithKakao" element={<SignupWithKakao />} />
       <Route
         path="/mypage"
@@ -191,6 +192,14 @@ function AppRoutes() {
           </PrivateRoute>
         }
       ></Route>
+      <Route
+        path="/alarm"
+        element={
+          <PrivateRoute>
+            <AlarmList />
+          </PrivateRoute>
+        }
+      />
     </Routes>
   );
 }
