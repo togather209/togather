@@ -3,6 +3,11 @@
   margin-bottom: 500px;
 }
 
+.schedule-detail-alarm-button {
+  border: none;
+  background-color: white;
+}
+
 .schedule-detail-alarm-icon {
   width: 28px;
   height: 28px;

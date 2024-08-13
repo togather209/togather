@@ -36,9 +36,9 @@ function HomeMain() {
       console.error("데이터 불러오기 실패", error);
     }
   };
-  
+
   return (
-    <div>
+    <div className="home-container">
       <div className="main-header">
         <img
           onClick={() => navigation("/")}
@@ -46,7 +46,10 @@ function HomeMain() {
           src={logo}
           alt="로고 이미지"
         />
-        <button className="main-header-button" onClick={() => navigation("/alarm")}>
+        <button
+          className="main-header-button"
+          onClick={() => navigation("/alarm")}
+        >
           <img className="home-alarm-button" src={alarm} alt="알람 버튼" />
         </button>
       </div>
@@ -82,7 +85,10 @@ function HomeMain() {
                   ))
               ) : (
                 <div className="no-meeting-at-home">
-                  <p className="no-meeting-text">모임이 없습니다 !!</p>
+                  <p className="no-meeting-text">모임이 없습니다</p>
+                  <p className="no-meeting-sub-text">
+                    지금 바로 만들어보세요 !
+                  </p>
                 </div>
               )}
             </div>

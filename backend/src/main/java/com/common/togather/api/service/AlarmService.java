@@ -9,6 +9,7 @@ import com.common.togather.db.entity.Team;
 import com.common.togather.db.repository.AlarmRepository;
 import com.common.togather.db.repository.MemberRepository;
 import com.common.togather.db.repository.TeamRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -65,6 +66,7 @@ public class AlarmService {
         return responses;
     }
 
+    @Transactional
     public void DeleteAlarmByAlarmId(String email, int alarmId) {
 
         int deletedCount = alarmRepository.deleteByIdAndMemberEmail(alarmId, email);

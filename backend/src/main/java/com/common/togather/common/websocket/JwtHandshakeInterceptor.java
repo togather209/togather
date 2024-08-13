@@ -3,7 +3,6 @@ package com.common.togather.common.websocket;
 import com.common.togather.common.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.socket.WebSocketHandler;
@@ -16,8 +15,10 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
     private final JwtUtil jwtUtil;
 
+
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
+
         HttpHeaders headers = request.getHeaders();
         String token = headers.getFirst("Authorization");
 
@@ -30,7 +31,6 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
             }
         }
 
-        response.setStatusCode(HttpStatus.UNAUTHORIZED);
         return false;
     }
 
