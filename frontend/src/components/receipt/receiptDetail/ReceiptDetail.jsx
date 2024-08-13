@@ -7,6 +7,7 @@ import Delete from "../../../assets/receipt/delete.png";
 import Button from "../../common/Button";
 import axiosInstance from "../../../utils/axiosInstance";
 import DeleteReceiptModal from "./DeleteReceiptModal";
+import DefaultImage from "../../../assets/icons/common/defaultProfile.png";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setTeamPlan } from "../../../redux/slices/receiptSlice";
@@ -167,7 +168,11 @@ function ReceiptDetail() {
                         {item.members.map((member, idx) => (
                           <img
                             key={idx}
-                            src={member.profileImg}
+                            src={
+                              member?.profileImg
+                                ? member.profileImg
+                                : DefaultImage
+                            }
                             alt={member.nickname}
                             className="tagged-avatar"
                             onClick={() => handleViewParticipants(item)} // 이미지 클릭 시에도 모달 열림
