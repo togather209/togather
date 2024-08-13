@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { setMeetings } from '../../redux/slices/meetingSlice';
@@ -9,6 +9,7 @@ import FolderIcon from "../../assets/icons/common/foldericon.png";
 import MouseIcon from "../../assets/icons/common/mouseicon.png";
 import alarm from "../../assets/icons/common/alarm.png";
 import axiosInstance from "../../utils/axiosInstance";
+import AlarmModalList from "../alarm/AlarmList";
 
 // 홈 메인페이지
 function HomeMain() {
@@ -36,7 +37,6 @@ function HomeMain() {
     }
   };
   
-  console.log(myMeetings)
   return (
     <div>
       <div className="main-header">
@@ -46,9 +46,9 @@ function HomeMain() {
           src={logo}
           alt="로고 이미지"
         />
-        <div>
+        <button className="main-header-button" onClick={() => navigation("/alarm")}>
           <img className="home-alarm-button" src={alarm} alt="알람 버튼" />
-        </div>
+        </button>
       </div>
       <div className="homemain">
         <div className="homemain-container">

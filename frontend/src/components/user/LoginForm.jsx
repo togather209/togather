@@ -38,7 +38,7 @@ function LoginForm() {
     const memberData = {
       email: email,
       password: password,
-      fcmtoken: fcmToken,
+      fcmToken: fcmToken,
     };
 
     try {

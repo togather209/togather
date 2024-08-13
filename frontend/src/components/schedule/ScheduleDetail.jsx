@@ -34,8 +34,8 @@ function ScheduleDetail() {
 
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
-  console.log(id);
-  console.log(schedule_id);
+  // console.log(id);
+  // console.log(schedule_id);
 
   // 카카오 API가 로드되었는지 확인
   useEffect(() => {
@@ -86,7 +86,7 @@ function ScheduleDetail() {
       );
       const data = response.data.data;
       setScheduleDetail(data);
-      console.log(data);
+      // console.log(data);
 
       const start = new Date(data.startDate);
       const end = new Date(data.endDate);
@@ -183,8 +183,7 @@ function ScheduleDetail() {
           const response = await axiosInstance.get(
             `/teams/${id}/plans/${schedule_id}/bookmarks/jjim`
           );
-          console.log(response);
-          console.log("dddd");
+          // console.log(response);
           // console.log("dychdsfhasdfkljalfj")
           setFavoritePlaces(response.data.data);
           // console.log(favoritePlaces)

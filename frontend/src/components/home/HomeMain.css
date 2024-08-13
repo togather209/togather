@@ -16,6 +16,11 @@
   margin-bottom: 24px;
 }
 
+.main-header-button {
+  border: none;
+  background-color: white;
+}
+
 .logo {
   width: 96px;
   height: 25px;
