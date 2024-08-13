@@ -216,17 +216,34 @@ public class PaymentService {
         });
 
         // 마이너스인 경우 송금 수신 변경
-        for (Payment payment : paymentMap.values()) {
+        Collection<Payment> payments = paymentMap.values();
+
+        for (Payment payment : payments) {
             if (payment.getMoney() < 0) {
                 payment.switchSenderToReceiver();
                 payment.updateMoney(-payment.getMoney());
             }
         }
 
-        paymentRepository.saveAll(paymentMap.values());
+        paymentRepository.saveAll(payments);
 
 
         List<Member> members = paymentApprovalRepositorySupport.getMembers(planId);
+
+        // 정산할 필요 없는 member의 approval의 상태값을 2로 지정
+        for (Member member : members) {
+            boolean flag = false;
+            for (Payment payment : payments) {
+                if (member.getId() == payment.getReceiver().getId()) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag) {
+                updatePaymentApproval(email, planId);
+            }
+        }
+
 
         for (Member member : members) {
             // 알림 저장
