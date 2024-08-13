@@ -1,101 +1,127 @@
 .regist-form {
-    margin: 60px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 60px;
-    padding: 16px;
+  margin: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 60px;
+  padding: 16px;
+}
+
+.meeting-regist-input-image-container {
+  background-color: #e9eaeb;
+  width: 256px;
+  height: 172px;
+  border-radius: 13px;
 }
 
 .regist-form-container {
-    width: 300px;
+  width: 300px;
 }
 
 .regist-header {
-    margin-bottom: 19px;
+  margin-bottom: 19px;
 }
 
 .create-ques {
-    font-size: 16px;
-    margin-bottom: 8px;
+  font-size: 16px;
+  margin-bottom: 8px;
 }
 
 .ques-desc {
-    font-size: 14px;
-    color: #131212;
-    opacity: 70%;
-    margin-bottom: 19px;
+  font-size: 14px;
+  color: #131212;
+  opacity: 70%;
+  margin-bottom: 19px;
 }
 
 .regist-input {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .content-container {
-    width: 300px;
-    height: 247px;
-    background-color: #F9F9F9;
-    border-radius: 15px;
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  height: 247px;
+  background-color: #f9f9f9;
+  border-radius: 15px;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .img-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
 }
 
 .img-input-desc {
-    margin-top: 15px;
-    text-align: start;
-    padding-left: 20px;
-    margin-bottom: 15px;
+  width: 256px;
+  text-align: start;
+  margin-bottom: 15px;
+  margin-right: auto;
 }
 
 .meeting-name {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 30px;
-    border: none;
-    width: 300px;
-    height: 53px;
-    border-radius: 15px;
-    background-color: #F9F9F9;
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+  border: none;
+  width: 300px;
+  height: 53px;
+  border-radius: 15px;
+  background-color: #f9f9f9;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
 }
 
 .meeting-desc {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 67px;
-    border: none;
-    width: 300px;
-    height: 53px;
-    border-radius: 15px;
-    background-color: #F9F9F9;
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 67px;
+  border: none;
+  width: 300px;
+  height: 53px;
+  border-radius: 15px;
+  background-color: #f9f9f9;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
 }
 
 .name-input {
-    width: 90%;
-    height: 50%;
-    border: none;
-    background-color: #F9F9F9;
+  width: 90%;
+  height: 50%;
+  border: none;
+  background-color: #f9f9f9;
 }
 
 .desc-input {
-    width: 90%;
-    height: 50%;
-    border: none;
-    background-color: #F9F9F9;
+  width: 90%;
+  height: 50%;
+  border: none;
+  background-color: #f9f9f9;
+}
+
+.image-preview {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 이미지가 div 크기에 맞게 조정 */
+  border-radius: 13px;
 }
