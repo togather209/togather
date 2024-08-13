@@ -240,7 +240,7 @@ public class PaymentService {
                 }
             }
             if (!flag) {
-                updatePaymentApproval(email, planId);
+                updatePaymentApproval(member.getEmail(), planId);
             }
         }
 
