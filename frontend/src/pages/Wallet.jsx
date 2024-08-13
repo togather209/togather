@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 function Wallet() {
   const [isExistPayment, setIsExistsPayment] = useState(false);
   const account = useSelector((state) => state.account.account);
-  console.log(account);
 
   useEffect(() => {
     //계좌가 있으면...
