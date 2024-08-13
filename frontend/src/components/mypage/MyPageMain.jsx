@@ -166,7 +166,7 @@ function MyPageMain() {
                 className="mypage-my-wallet"
                 onClick={() => navigate("/wallet")}
               >
-                <p className="mypage-my-wallet-summary">
+                <p className="mypage-my-wallet-summary-no-content">
                   Pay 계좌가 존재 하지 않습니다.
                 </p>
               </button>

@@ -21,7 +21,9 @@ function ProfileUpdate() {
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
   const [validPassword, setValidPassword] = useState("");
-  const [passwordMessage, setPasswordMessage] = useState("미 입력시 기존 비밀번호가 유지 됩니다.");
+  const [passwordMessage, setPasswordMessage] = useState(
+    "미 입력시 기존 비밀번호가 유지 됩니다."
+  );
   const [passwordVisible, setPasswordVisible] = useState(false); // 비밀번호 가시성 상태
   const [nicknameMessage, setNicknameMessage] = useState(""); // 닉네임 메시지
   const member = useSelector((state) => state.user.member);
@@ -40,7 +42,10 @@ function ProfileUpdate() {
   const handleUpdate = async (e) => {
     e.preventDefault();
 
-    if (password !== "" && !validatePassword(password) || password !== validPassword) {
+    if (
+      (password !== "" && !validatePassword(password)) ||
+      password !== validPassword
+    ) {
       setPasswordMessage("비밀번호를 확인해주세요.");
       return;
     }
@@ -55,7 +60,7 @@ function ProfileUpdate() {
     };
 
     //비밀번호가 비어있지 않다면.
-    if(password !== "") {
+    if (password !== "") {
       memData.password = password;
     }
 
@@ -72,11 +77,11 @@ function ProfileUpdate() {
       formData.append("image", fileData);
     }
 
-    try{
-      const response = await axiosInstance.patch('/members/me', formData, {
+    try {
+      const response = await axiosInstance.patch("/members/me", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-        }
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       if (response.status === 200) {
@@ -84,9 +89,8 @@ function ProfileUpdate() {
       }
 
       console.log("수정 됐다요요요요");
-      navigate('/mypage');
-    }
-    catch(error){
+      navigate("/mypage");
+    } catch (error) {
       console.log("수정 에러", error);
     }
   };
@@ -187,9 +191,13 @@ function ProfileUpdate() {
   };
 
   const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0] && e.target.files[0].size <= 1048576) {
+    if (
+      e.target.files &&
+      e.target.files[0] &&
+      e.target.files[0].size <= 1048576
+    ) {
       const file = e.target.files[0];
-  
+
       setProfileImage(file); // 선택된 파일을 프로필 이미지로 설정
       setProfileImagePreview(URL.createObjectURL(file)); // 미리보기를 위해 파일 URL 생성
     } else {
@@ -198,7 +206,7 @@ function ProfileUpdate() {
   };
 
   return (
-    <>
+    <div className="profile-update-container">
       <div className="signup-back-button">
         <BackButton />
       </div>
@@ -305,9 +313,13 @@ function ProfileUpdate() {
         </form>
       </div>
       {isImageBig && (
-        <Modal mainMessage={"사진 용량 초과!"} subMessage={"1MB이하의 크기만 첨부 가능합니다."} onClose={() => setIsImageBig(false)}/>
+        <Modal
+          mainMessage={"사진 용량 초과!"}
+          subMessage={"1MB이하의 크기만 첨부 가능합니다."}
+          onClose={() => setIsImageBig(false)}
+        />
       )}
-    </>
+    </div>
   );
 }
 

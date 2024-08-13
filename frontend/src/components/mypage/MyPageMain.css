@@ -68,7 +68,7 @@
   padding: 20px 15px;
   border-radius: 18px;
   border: none;
-  background-color: #712fff;
+  background-color: #712fffa1;
   color: white;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
   text-align: start;
@@ -92,6 +92,13 @@
   margin-left: 10px;
   font-size: 22px;
   font-weight: 600;
+}
+
+.mypage-my-wallet-summary-no-content {
+  margin-left: 10px;
+  font-weight: bold;
+  font-size: 16px;
+  display: flex;
 }
 
 
@@ -202,4 +209,8 @@
   border: 1px solid #e0e0e0;
   padding: 5px 10px;
   background: none;
+}
+
+.profile-update-container {
+  padding: 16px;
 }
