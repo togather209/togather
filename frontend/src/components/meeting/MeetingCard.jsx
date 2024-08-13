@@ -4,9 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Delete from "../../assets/meeting/delete.png";
 import Change from "../../assets/meeting/change.png";
 import Out from "../../assets/meeting/out.png";
-import axiosInstance from "../../utils/axiosInstance";
-
-// import ErrorModal from "./ErrorModal";
+import defaultImage from "../../../public/defaultimage.png";
 import CheckModal from "../common/CheckModal";
 import ExitModal from "./ExitModal";
 
@@ -24,72 +22,15 @@ function MeetingCard({ id, image_url, name, desc, admin, setForR, forR }) {
     setIsExitModalOpen(true);
   };
 
-  // const [errorMessage, setErrorMessage] = useState(null);
-  console.log(id);
-  // 모임장인지 아닌지 나타내는 상태 (임시)
-  // const a = true
-
-  // 모임 삭제 요청 axios
-  // const deleteMeeting = async () => {
-  //     try {
-  //       const response = await axiosInstance.delete(`/teams/${id}`);
-  //       // 리덕스 상태에 데이터 저장
-  //     //   dispatch(setMeetings(response.data.data));
-  //         console.log(response)
-  //     } catch (error) {
-  //       console.error('데이터 불러오기 실패', error);
-  //       alert("모임에 일정이 남아있습니다.")
-  //       console.log("모임에 일정이 남아있습니다.")
-  //       setErrorMessage("일정이 남아있으면 모임을 삭제할 수 없습니다.");
-  //     }
-  //   };
-
-  // 모임 삭제 요청 axios
-  // const deleteMeeting = async (teamId) => {
-
-  //     console.log(teamId)
-
-  //     try {
-  //         const response = await axiosInstance.delete(`/teams/${id}`);
-  //         console.log(response);
-  //         if (!response) {
-  //             setErrorMessage("일정이 남아있어 모임을 삭제할 수 없습니다.");
-  //         } else {
-  //             // handelCheckModalOpen()
-  //             // navigation("/home/meeting")
-  //             setIsCheckModalOpen(false)
-  //         }
-  //     } catch (error) {
-  //         console.error('데이터 불러오기 실패', error);
-  //     }
-  // };
-
-  //   // 모임 나가기 요청
-  //   const exitMeeting = async () => {
-  //     try {
-  //       const response = await axiosInstance.delete(`/teams/${id}/members/me`);
-  //       // 리덕스 상태에 데이터 저장
-  //       //   dispatch(setMeetings(response.data.data));
-  //       console.log(response);
-  //       setIsExitModalOpen(false);
-  //     } catch (error) {
-  //       console.error("데이터 불러오기 실패", error);
-  //     }
-  //   };
-
-  //   삭제 불가 알림 모달
-  //   const handleCloseModal = () => {
-  //     setErrorMessage(null);
-  //   };
+  const handleImageError = (e) => {
+    e.target.src = defaultImage; // 이미지 로드 실패 시 디폴트 이미지로 변경
+  };
 
   return (
     <div className="meeting-card">
-      {/* {errorMessage && <ErrorModal message={errorMessage} onClose={handleCloseModal} />} */}
-
       <CheckModal
         isOpen={isCheckModalOpen}
         isClose={() => setIsCheckModalOpen(false)}
-        // onConfirm={deleteMeeting}
         firstbutton={"취소"}
         secondbutton={"삭제"}
         teamId={id}
@@ -100,7 +41,6 @@ function MeetingCard({ id, image_url, name, desc, admin, setForR, forR }) {
       <ExitModal
         isOpen={isExitModalOpen}
         isClose={() => setIsExitModalOpen(false)}
-        // onConfirm={exitMeeting}
         firstbutton={"취소"}
         secondbutton={"나가기"}
         teamId={id}
@@ -109,7 +49,12 @@ function MeetingCard({ id, image_url, name, desc, admin, setForR, forR }) {
       />
 
       <div onClick={() => navigation(`${id}`)}>
-        <img className="meeting-img" src={image_url} alt="" />
+        <img
+          className="meeting-img"
+          src={image_url || defaultImage}
+          alt="모임사진"
+          onError={handleImageError}
+        />
         <div className="text-section">
           <h3 className="title">{name}</h3>
           <p className="desc">{desc}</p>
@@ -129,7 +74,6 @@ function MeetingCard({ id, image_url, name, desc, admin, setForR, forR }) {
             >
               <img className="update-button" src={Change} alt="수정버튼" />
             </button>
-            {/* 모임 삭제 버튼입니다. */}
             <button
               onClick={handelCheckModalOpen}
               className="meeting-card-button-form"
