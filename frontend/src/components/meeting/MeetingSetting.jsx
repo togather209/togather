@@ -4,12 +4,14 @@ import "./MeetingSetting.css"
 import MeetingParticipants from "./MeetingParticipants";
 import MeetingParticipantManage from "./MeetingParticipantManage";
 import axiosInstance from "../../utils/axiosInstance";
+import Modal from "../common/Modal";
 
 function MeetingSetting () {
     const {id} = useParams()
     const {state} = useLocation()
     const [joinMembersRequest, setJoinMembersRequest] = useState([])
-    const [joinMember, setJoinMember] = useState([])
+    const [joinMember, setJoinMember] = useState([]);
+    const [copySuccess, setCopySuccess] = useState(false);
 
     const [forR, setForR] = useState(true)
 
@@ -42,12 +44,28 @@ function MeetingSetting () {
     }
   }
 
+  // 코드 복사 함수
+  const copyToClipboard = () => {
+    if (state && state.code) {
+        navigator.clipboard.writeText(state.code)
+            .then(() => {
+                setCopySuccess(true);
+            })
+            .catch((err) => {
+                setCopySuccess(false);
+            });
+    }
+};
+
 
     return (
         <div>
             <div className="meeting-setting-member-manage-box">
                 <div className="setting-member-manage">멤버 관리</div>
-                <div className="part-code">{state.code}</div>
+                <div className="part-code" onClick={copyToClipboard} style={{ cursor: 'pointer' }}>{state?.code}</div>
+                {copySuccess && (
+                    <Modal mainMessage={"초대코드가 복사됐어요!"} onClose={() => setCopySuccess(false)}/>
+                )}
             </div>
             <div className="hr"></div>
             <div>

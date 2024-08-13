@@ -6,6 +6,7 @@ import com.common.togather.api.request.ReceiptUpdateRequest;
 import com.common.togather.api.response.ReceiptFinalAllByBookmarkResponse;
 import com.common.togather.api.response.ReceiptFindAllByPlanIdResponse;
 import com.common.togather.api.response.ReceiptFindByReceiptIdResponse;
+import com.common.togather.common.util.FCMUtil;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.*;
 import com.common.togather.db.repository.*;
@@ -13,8 +14,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.common.togather.common.fcm.AlarmType.RECEIPT_UPLOADED;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +33,8 @@ public class ReceiptService {
     private final PlanRepository planRepository;
     private final ItemRepository itemRepository;
     private final JwtUtil jwtUtil;
+    private final AlarmRepository alarmRepository;
+    private final FCMUtil fcmUtil;
 
     public ReceiptFindByReceiptIdResponse findReceiptByReceiptId(String email, int teamId, int receiptId) {
 
@@ -66,6 +73,9 @@ public class ReceiptService {
             bookmark = getBookmark(requestDto.getBookmarkId());
         }
 
+        // 알림을 보내야하는 대상
+        Map<Integer, Member> members = new HashMap<>();
+
         Receipt receipt = Receipt.builder()
                 .plan(plan)
                 .manager(manager)
@@ -88,6 +98,11 @@ public class ReceiptService {
                 item.saveItemMembers(itemRequest.getMembers().stream()
                         .map(memberRequest -> {
                             Member member = getMember(memberRequest.getMemberId());
+
+                            if (!members.containsKey(memberRequest.getMemberId())) {
+                                members.put(memberRequest.getMemberId(), member);
+                            }
+
                             return ItemMember.builder()
                                     .member(member)
                                     .item(item)
@@ -103,6 +118,26 @@ public class ReceiptService {
         receipt.saveItems(items);
 
         receiptRepository.save(receipt);
+
+
+        for (Member member : members.values()) {
+            // 알림 저장
+            alarmRepository.save(Alarm.builder()
+                    .member(member)
+                    .title(RECEIPT_UPLOADED.getTitle())
+                    .content(RECEIPT_UPLOADED.getMessage(plan.getTitle()))
+                    .type(RECEIPT_UPLOADED.getType())
+                    .tId(teamId)
+                    .pId(planId)
+                    .build());
+
+            // 알림 전송
+            fcmUtil.pushNotification(
+                    member.getFcmToken(),
+                    RECEIPT_UPLOADED.getTitle(),
+                    RECEIPT_UPLOADED.getMessage(plan.getTitle())
+            );
+        }
     }
 
     @Transactional

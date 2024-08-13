@@ -1,19 +1,32 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import "./ScheduleDetailPlaces.css";
 import ScheduleReceiptPurple from "../../assets/schedule/schedulereceiptpurple.png";
 import SideStick from "../../assets/schedule/sidestick.png";
 import matjip from "../../assets/schedule/mayjip.jpg";
 import SchedulePlaceCal from "./SchedulePlaceCal";
+import { useNavigate } from "react-router-dom";
+import { Draggable } from "react-beautiful-dnd";
 
-import { Draggable } from "react-beautiful-dnd"
-
-function ScheduleDetailPlaces({ img_url, name, address, meetingId, scheduleId, bookmarkId, datedate, firstDate, lastDate, forRendering, setForRendering, index }) {
-  
+function ScheduleDetailPlaces({
+  img_url,
+  name,
+  address,
+  meetingId,
+  scheduleId,
+  bookmarkId,
+  datedate,
+  firstDate,
+  lastDate,
+  forRendering,
+  setForRendering,
+  index,
+}) {
+  const navigation = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  console.log("ssssssssssssss")
-  console.log(bookmarkId)
-  console.log("ssssssssssssss")
+  console.log("ssssssssssssss");
+  console.log(bookmarkId);
+  console.log("ssssssssssssss");
 
   const openModalFunction = () => {
     setIsModalOpen(true);
@@ -23,11 +36,11 @@ function ScheduleDetailPlaces({ img_url, name, address, meetingId, scheduleId, b
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setForRendering(!forRendering)
+    setForRendering(!forRendering);
   };
-  
+
   return (
-<Draggable draggableId={`draggable-${bookmarkId}`} index={index}>
+    <Draggable draggableId={`draggable-${bookmarkId}`} index={index}>
       {(provided) => (
         <div
           className="schedule-detail-list-box"
@@ -57,7 +70,11 @@ function ScheduleDetailPlaces({ img_url, name, address, meetingId, scheduleId, b
               <img className="side-stick" src={SideStick} alt="sidestick" />
             </div>
             <div>
-              <img className="schedule-detail-place-img" src={matjip} alt="임시" />
+              <img
+                className="schedule-detail-place-img"
+                src={matjip}
+                alt="임시"
+              />
             </div>
             <div>
               <p className="schedule-detail-place-name">{name}</p>
@@ -68,6 +85,15 @@ function ScheduleDetailPlaces({ img_url, name, address, meetingId, scheduleId, b
             <img
               className="schedule-detail-place-receipt-img"
               src={ScheduleReceiptPurple}
+              onClick={() =>
+                navigation("/receipt/bookmark", {
+                  state: {
+                    teamId: meetingId,
+                    planId: scheduleId,
+                    bookmarkId: bookmarkId,
+                  },
+                })
+              }
               alt="영수증 이미지"
             />
             <p className="schedule-detail-place-receipt-num">1</p>

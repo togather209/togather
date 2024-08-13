@@ -17,8 +17,9 @@ function UpdateForm() {
   // 제목, 이미지주소, 설명
   const [title, setTitle] = useState(state.title);
   const [teamimg, setTeamImg] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null); // 이미지 미리보기 상태
   const [description, setDescription] = useState(state.description);
-  const [stateId, setStateId] = useState(state.id)
+  const [stateId, setStateId] = useState(state.id);
 
   // console.log(stateId)
   // 제목 값 갱신
@@ -33,7 +34,19 @@ function UpdateForm() {
 
   // 이미지 값 갱신
   const handleMeetingImageChange = (e) => {
-    setTeamImg(e.target.files[0]); // 파일 객체를 저장
+    const file = e.target.files[0]; // 선택된 파일
+    if (file) {
+      setTeamImg(file); // 파일 객체를 상태에 저장
+
+      // 미리보기 URL 생성 및 상태에 저장
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    }
+  };
+
+  // 이미지 파일 입력 필드를 클릭할 수 있도록 설정
+  const handleImageContainerClick = () => {
+    document.getElementById("image-input").click();
   };
 
   // axios 요청 함수
@@ -50,20 +63,27 @@ function UpdateForm() {
     });
 
     // 요청 파라미터 값 생성
-    formData.append("team", new Blob([memberData], { type: "application/json" })); // JSON 데이터 추가
+    formData.append(
+      "team",
+      new Blob([memberData], { type: "application/json" })
+    ); // JSON 데이터 추가
     if (teamimg) {
-      const teamImgBlob = new Blob([teamimg], {type : 'image/png'});
+      const teamImgBlob = new Blob([teamimg], { type: "image/png" });
       const teamImgFile = new File([teamImgBlob], "image.png");
       formData.append("image", teamImgFile); // 파일 객체를 추가
     }
 
     // axios요청
     try {
-      const response = await axiosInstance.patch(`/teams/${stateId}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data", // 파일 업로드 시 필요한 헤더
-        },
-      });
+      const response = await axiosInstance.patch(
+        `/teams/${stateId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // 파일 업로드 시 필요한 헤더
+          },
+        }
+      );
       console.log(response);
       navigation("/home/meeting");
     } catch (error) {
@@ -86,12 +106,32 @@ function UpdateForm() {
           <form onSubmit={updateMeeting} className="regist-input">
             <div className="img-container">
               <div className="content-container">
-                <p className="img-input-desc">모임 대표 사진</p>
-                <input
-                  className=""
-                  type="file"
-                  onChange={handleMeetingImageChange}
-                />
+                <div>
+                  <p className="img-input-desc">모임 대표 사진</p>
+                </div>
+                <div
+                  className="meeting-regist-input-image-container"
+                  onClick={handleImageContainerClick}
+                >
+                  {/* 이미지 미리보기를 표시할 부분 */}
+                  {imagePreview && (
+                    <div className="image-preview">
+                      <img
+                        src={imagePreview}
+                        alt="미리보기"
+                        className="preview-img"
+                      />
+                    </div>
+                  )}
+                  {/* 실제 파일 입력 필드는 숨김 */}
+                  <input
+                    id="image-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleMeetingImageChange}
+                    style={{ display: "none" }} // input 태그를 숨김
+                  />
+                </div>
               </div>
             </div>
             <div className="meeting-name">
