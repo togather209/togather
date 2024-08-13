@@ -11,7 +11,6 @@ import WalletIcon from "../../assets/icons/common/wallet.png";
 import WalletIconActive from "../../assets/icons/common/wallet-active.png";
 import MyIcon from "../../assets/icons/common/my.png";
 import MyIconActive from "../../assets/icons/common/my-active.png";
-import AppRoutes from "../../routes/AppRoutes";
 
 function UnderBar() {
   const navigate = useNavigate();
@@ -19,9 +18,14 @@ function UnderBar() {
 
   const isActive = (path) => location.pathname === path;
 
+  // 로그인 및 회원가입 페이지에서 하단 바 숨김
+  const hideUnderBarPaths = ["/login", "/signup"];
+  if (hideUnderBarPaths.includes(location.pathname)) {
+    return null;
+  }
+
   return (
     <>
-      <AppRoutes />
       <div className="underbar">
         <button
           onClick={() => navigate("/home")}

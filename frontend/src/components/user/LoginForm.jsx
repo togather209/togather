@@ -73,14 +73,13 @@ function LoginForm() {
           //토큰 초기화
           dispatch(clearToken());
           setIsAlreadyRegistKakao(true);
-        }
-        else {//아니면 홈으로~
+        } else {
+          //아니면 홈으로~
           navigate("/");
         }
       } catch (error) {
         console.log("에러다에러");
       }
-
     } catch (error) {
       console.log("로그인 에러", error);
       alert("존재하지 않는 아이디입니다. 아이디와 비밀번호를 확인해주세요.");
@@ -128,7 +127,7 @@ function LoginForm() {
         </SubmitButton>
       </form>
 
-      <div className="signupAndSearchpassword">
+      <div className="signup-search-password">
         <Link to="/signup" style={{ textDecoration: "none", color: "black" }}>
           회원가입
         </Link>
@@ -144,19 +143,23 @@ function LoginForm() {
       <div>
         <p className="easy-login">{"━━━━━━   간편로그인   ━━━━━━"}</p>
       </div>
-      <button
-        className="loginWithKakao"
-        // onClick={() => navigate("/loginWithKakao")}
-        onClick={handleKakaoLogin}
-      >
-        <img
-          src={kakao}
-          alt="카카오"
-          style={{ width: "20px", marginRight: "5px" }}
+      <div className="login-with-kakao-box">
+        <button className="login-with-kakao" onClick={handleKakaoLogin}>
+          <img
+            src={kakao}
+            alt="카카오"
+            style={{ width: "20px", marginRight: "5px" }}
+          />
+          카카오 로그인
+        </button>
+      </div>
+      {isAlreadyRegistKakao && (
+        <Modal
+          mainMessage={"이미 카카오로 가입된 계정입니다."}
+          subMessage={"카카오 로그인을 이용해 주세요!"}
+          onClose={() => navigate("/login")}
         />
-        카카오 로그인
-      </button>
-      {isAlreadyRegistKakao && <Modal mainMessage={"이미 카카오로 가입된 계정입니다."} subMessage={"카카오 로그인을 이용해 주세요!"} onClose={() => navigate("/login")}/>}
+      )}
     </div>
   );
 }

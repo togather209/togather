@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./User.css";
 import "../common/CommonInput.css";
 import logo from "../../assets/icons/common/logo.png";
+import Close from "../../assets/user/close.png";
 import SubmitButton from "./SubmitButton";
 import CommonInput from "../common/CommonInput";
 import BackButton from "../common/BackButton";
@@ -30,6 +31,7 @@ function SignUpForm() {
   const [validPasswordVisible, setValidPasswordVisible] = useState(false); // 비밀번호 확인 가시성 상태
   const [nicknameMessage, setNicknameMessage] = useState(""); //닉네임 메시지
   const [signupOk, setSignupOk] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -349,7 +351,7 @@ function SignUpForm() {
   };
 
   return (
-    <>
+    <div className="signup-box">
       <div className="signup-back-button">
         <BackButton />
       </div>
@@ -362,11 +364,19 @@ function SignUpForm() {
           <div className="profile-image-upload">
             <label htmlFor="profileImageUpload" className="image-upload-label">
               {profileImagePreview ? (
-                <img
-                  src={profileImagePreview}
-                  alt="Profile"
-                  className="profile-image"
-                />
+                <>
+                  <img
+                    src={Close}
+                    alt=""
+                    className="image-close-button"
+                    onClick={deleteImage}
+                  />
+                  <img
+                    src={profileImagePreview}
+                    alt="Profile"
+                    className="profile-image"
+                  />
+                </>
               ) : (
                 <div className="placeholder-image">+</div>
               )}
@@ -379,21 +389,22 @@ function SignUpForm() {
               onChange={handleImageChange}
               style={{ display: "none" }}
             />
-            <button
-              className="profile-image-delete-button"
-              onClick={deleteImage}
-            >
-              삭제
-            </button>
           </div>
           <div className="emailForm">
-            <CommonInput
+            <label
+              htmlFor="email"
+              className={`input-label ${isFocused ? "focused" : ""}`}
+            >
+              이메일
+            </label>
+            <input
               id="email"
               type="email"
-              placeholder="이메일"
               value={email}
+              onFocus={() => setIsFocused(true)}
               onChange={(e) => setEmail(e.target.value)}
               onBlur={handleEmailBlur}
+              className="email-input"
             />
             <button
               className="email-certification"
@@ -402,6 +413,7 @@ function SignUpForm() {
               인증
             </button>
           </div>
+
           {/* 이메일 유효성 검사 */}
           {emailMessage && (
             <p
@@ -433,7 +445,11 @@ function SignUpForm() {
                   확인
                 </button>
               </div>
-              <div className="certification-timer">
+              <div
+                className={`certification-timer ${
+                  timer < 60 ? "timer-warning" : ""
+                }`}
+              >
                 남은 시간: {formatTime(timer)}
               </div>
             </div>
@@ -528,7 +544,7 @@ function SignUpForm() {
           onClose={() => navigate("/login")}
         />
       )}
-    </>
+    </div>
   );
 }
 

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import "./SearchForm.css"
+import React, { useState, useEffect } from "react";
+import "./SearchForm.css";
+import Search from "../../assets/schedule/search.png";
 
 const SearchForm = ({ onSearch, onOpenSearch, isOpenSearch }) => {
   const [keyword, setKeyword] = useState("");
@@ -10,21 +11,29 @@ const SearchForm = ({ onSearch, onOpenSearch, isOpenSearch }) => {
   };
 
   useEffect(() => {
-    setKeyword("")
-  }, [isOpenSearch])
-  
+    setKeyword("");
+  }, [isOpenSearch]);
+
   return (
-    <form onSubmit={handleSubmit} className='schedule-detail-header-search-container'>
+    <form
+      onSubmit={handleSubmit}
+      className="schedule-detail-header-search-container"
+    >
       <input
-      className='schedule-detail-header-search'
+        className="schedule-detail-header-search"
         type="text"
         value={keyword}
         onChange={(e) => setKeyword(e.target.value)}
         size="15"
         onFocus={onOpenSearch}
       />
-      {isOpenSearch ? (<button type="submit">검색하기</button>) : (<></>)}
-      
+      {isOpenSearch ? (
+        <button className="search-button" type="submit">
+          <img className="search-button-img" src={Search} alt="돋보기" />
+        </button>
+      ) : (
+        <></>
+      )}
     </form>
   );
 };

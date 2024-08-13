@@ -16,14 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.common.togather.common.fcm.AlarmType.*;
-import static com.common.togather.common.fcm.AlarmType.PAYACOUNT_RECEIVED;
 
 @Service
 @RequiredArgsConstructor
@@ -124,7 +120,7 @@ public class PaymentService {
                         receiverMap.put(
                                 sender.getId(),
                                 ReceiverPayment.builder()
-                                        .name(sender.getName())
+                                        .name(sender.getNickname())
                                         .money(memberBalance)
                                         .build()
                         );
@@ -137,7 +133,7 @@ public class PaymentService {
                         senderMap.put(
                                 receiver.getId(),
                                 SenderPayment.builder()
-                                        .name(receiver.getName())
+                                        .name(receiver.getNickname())
                                         .money(memberBalance)
                                         .build()
                         );
@@ -185,7 +181,7 @@ public class PaymentService {
 
         Map<Integer, List<PaymentFindDto>> groupedPayments = groupPaymentsByItemId(paymentFindDtos);
 
-        Map<int[], Payment> paymentMap = new HashMap<>();
+        Map<List<Integer>, Payment> paymentMap = new HashMap<>();
 
         Member system = memberRepository.findByNameAndType(systemName, systemType).get();
 
@@ -196,7 +192,7 @@ public class PaymentService {
             Member receiver = paymentFinds.get(0).getReceiver();
 
             if (systemBalance > 0) {
-                int[] key = new int[]{system.getId(), receiver.getId()};
+                List<Integer> key = Arrays.asList(system.getId(), receiver.getId());
                 setPaymentMap(plan, paymentMap, memberBalance, system, receiver, key);
             }
 
@@ -208,29 +204,46 @@ public class PaymentService {
                 }
 
                 // 상쇄를 위한 key값 하나만 지정
-                int[] key;
+                List<Integer> key;
                 if (sender.getId() > receiver.getId()) {
-                    key = new int[]{receiver.getId(), sender.getId()};
+                    key = Arrays.asList(receiver.getId(), sender.getId());
                     setPaymentMap(plan, paymentMap, -memberBalance, receiver, sender, key);
                 } else {
-                    key = new int[]{sender.getId(), receiver.getId()};
+                    key = Arrays.asList(sender.getId(), receiver.getId());
                     setPaymentMap(plan, paymentMap, memberBalance, sender, receiver, key);
                 }
             }
         });
 
         // 마이너스인 경우 송금 수신 변경
-        for (Payment payment : paymentMap.values()) {
+        Collection<Payment> payments = paymentMap.values();
+
+        for (Payment payment : payments) {
             if (payment.getMoney() < 0) {
                 payment.switchSenderToReceiver();
                 payment.updateMoney(-payment.getMoney());
             }
         }
 
-        paymentRepository.saveAll(paymentMap.values());
+        paymentRepository.saveAll(payments);
 
 
         List<Member> members = paymentApprovalRepositorySupport.getMembers(planId);
+
+        // 정산할 필요 없는 member의 approval의 상태값을 2로 지정
+        for (Member member : members) {
+            boolean flag = false;
+            for (Payment payment : payments) {
+                if (member.getId() == payment.getSender().getId()) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag) {
+                updatePaymentApproval(member.getEmail(), planId);
+            }
+        }
+
 
         for (Member member : members) {
             // 알림 저장
@@ -305,8 +318,8 @@ public class PaymentService {
                 .build();
     }
 
-    private void setPaymentMap(Plan plan, Map<int[], Payment> paymentMap, int memberBalance, Member sender,
-                               Member receiver, int[] key) {
+    private void setPaymentMap(Plan plan, Map<List<Integer>, Payment> paymentMap, int memberBalance, Member sender,
+                               Member receiver, List<Integer> key) {
         if (paymentMap.containsKey(key)) {
             int currentMoney = paymentMap.get(key).getMoney();
             paymentMap.put(key, Payment.builder()
@@ -345,6 +358,7 @@ public class PaymentService {
         // 송금할 Payment 목록 조회
         List<Payment> payments = paymentRepository.findByPlanIdAndSenderEmail(planId, email);
         if (payments.isEmpty()) {
+            updatePaymentApproval(email, planId);
             throw new PaymentNotFoundException("정산할 내역이 없습니다.");
         }
 
@@ -444,10 +458,12 @@ public class PaymentService {
             planRepository.save(plan);
         }
 
+        updatePaymentApproval(email, planId);
+    }
 
+    private void updatePaymentApproval(String email, int planId) {
         PaymentApproval paymentApproval = paymentApprovalRepository.findByMemberEmailAndPlanId(email, planId)
                 .orElseThrow(() -> new NotFoundPaymentApprovalException("해당 정산 요청이 없습니다."));
         paymentApproval.updateStatus(2);
     }
-
 }
