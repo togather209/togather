@@ -341,6 +341,7 @@ public class PaymentService {
         // 송금할 Payment 목록 조회
         List<Payment> payments = paymentRepository.findByPlanIdAndSenderEmail(planId, email);
         if (payments.isEmpty()) {
+            updatePaymentApproval(email, planId);
             throw new PaymentNotFoundException("정산할 내역이 없습니다.");
         }
 
@@ -440,10 +441,12 @@ public class PaymentService {
             planRepository.save(plan);
         }
 
+        updatePaymentApproval(email, planId);
+    }
 
+    private void updatePaymentApproval(String email, int planId) {
         PaymentApproval paymentApproval = paymentApprovalRepository.findByMemberEmailAndPlanId(email, planId)
                 .orElseThrow(() -> new NotFoundPaymentApprovalException("해당 정산 요청이 없습니다."));
         paymentApproval.updateStatus(2);
     }
-
 }
