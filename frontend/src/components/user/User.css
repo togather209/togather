@@ -8,9 +8,8 @@
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;
-  transition: background 0.3s ease;
   margin-bottom: 20px;
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 .logo-container {
@@ -48,7 +47,7 @@
   flex-direction: column;
   align-items: center;
   width: 70%;
-  margin: 50px auto;
+  margin: 40px auto;
   box-sizing: border-box;
 }
 
@@ -70,7 +69,7 @@
 }
 
 .remember-email input {
-  margin-right: 10px;
+  margin-right: 5px;
 }
 
 .remember-email input:checked {
@@ -154,12 +153,23 @@
   color: #712fff;
 }
 
+.complete-certification {
+  color: #712fff;
+  font-size: 12px;
+  margin-left: 10px;
+  margin-bottom: 5px;
+}
+
 .valid-password, .valid-nickname {
   font-size: 12px;
-  color: blue;
+  margin-left: 10px;
+  margin-bottom: 5px;
+  color: #712fff;
 }
 
 .invalid-password, .invalid-email, .invalid-nickname, .duplicated-email, .duplicated-nickname {
+  margin-left: 10px;
+  margin-bottom: 10px;
   color: red;
   font-size: 12px;
 }
@@ -275,6 +285,7 @@ border-radius: 100px;
 
 .password-toggle {
   position: absolute;
+  top: 25px;
   right: 10px;
   background: none;
   border: none;
