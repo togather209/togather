@@ -1,16 +1,19 @@
 package com.common.togather.common.websocket.message;
 
-import com.common.togather.api.response.BookmarkDateUpdateResponse;
-import com.common.togather.db.entity.Bookmark;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class DateUpdateResponseMessage {
 
     LocalDate oldDate;
-    List<BookmarkDateUpdateResponse> oldDateList;
+    List<OneBookmarkMessage> oldDateList;
     LocalDate newDate;
-    List<BookmarkDateUpdateResponse> newDateList;
+    List<OneBookmarkMessage> newDateList;
 
 }

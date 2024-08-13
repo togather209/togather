@@ -1,9 +1,7 @@
 package com.common.togather.api.controller;
 
 import com.common.togather.api.request.BookmarkSaveRequest;
-import com.common.togather.common.websocket.message.DateUpdateRequestMessage;
-import com.common.togather.common.websocket.message.DateUpdateResponseMessage;
-import com.common.togather.common.websocket.message.OneBookmarkMessage;
+import com.common.togather.common.websocket.message.*;
 import com.common.togather.api.service.BookmarkWebSocketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -32,12 +30,18 @@ public class BookmarkWebSocketController {
         return bookmarkId;
     }
 
-    // 날짜 정보 변경
+    // 날짜 정보 변경 -> 기존날짜, 기존날짜 업데이트 리스트, 변경날짜, 변경날짜 업데이트 리스트 전송
     @MessageMapping("/{planId}/bookmark/date")
     @SendTo("/topic/plan/{planId}")
-    public DateUpdateResponseMessage date(@DestinationVariable int planId, DateUpdateRequestMessage dateUpdateRequestMessage) {
-        bookmarkWebSocketService.updateDate(planId, dateUpdateRequestMessage);
+    public DateUpdateResponseMessage updateDate(@DestinationVariable int planId, DateUpdateRequestMessage dateUpdateRequestMessage) {
+        return bookmarkWebSocketService.updateDate(planId, dateUpdateRequestMessage);
+    }
 
+    // 순서 변경 -> 순서 변경된 리스트 전송
+    @MessageMapping("/{planId}/bookmark/order")
+    @SendTo("/topic/plan/{planId}")
+    public OrderUpdateResponseMessage updateOrder(@DestinationVariable int planId, OrderUpdateRequestMessage orderUpdateRequestMessage) {
+        return bookmarkWebSocketService.updateOrder(planId, orderUpdateRequestMessage);
     }
 
 }
