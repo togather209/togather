@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.common.togather.api.response.AlarmFindByMemberResponse.*;
+
 @Service
 @RequiredArgsConstructor
 public class AlarmService {
@@ -30,11 +32,17 @@ public class AlarmService {
 
         for (Alarm alarm : alarms) {
             responses.add(
-                    AlarmFindByMemberResponse.builder()
+                    builder()
                             .id(alarm.getId())
                             .title(alarm.getTitle())
                             .content(alarm.getContent())
                             .type(alarm.getType())
+                            .alarmDto(
+                                    AlarmDto.builder()
+                                            .teamId(alarm.getTeamId())
+                                            .planId(alarm.getPlanId())
+                                            .build()
+                            )
                             .build()
             );
         }
