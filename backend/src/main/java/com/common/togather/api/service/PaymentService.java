@@ -234,7 +234,7 @@ public class PaymentService {
         for (Member member : members) {
             boolean flag = false;
             for (Payment payment : payments) {
-                if (member.getId() == payment.getReceiver().getId()) {
+                if (member.getId() == payment.getSender().getId()) {
                     flag = true;
                     break;
                 }
