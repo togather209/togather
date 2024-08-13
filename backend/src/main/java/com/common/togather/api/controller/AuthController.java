@@ -2,15 +2,14 @@ package com.common.togather.api.controller;
 
 import com.common.togather.api.error.EmailNotFoundException;
 import com.common.togather.api.error.MissingTokenException;
+import com.common.togather.api.error.NotFoundKakaoException;
 import com.common.togather.api.request.*;
+import com.common.togather.api.response.KakaoLoginResponse;
+import com.common.togather.api.response.KakaoUserInfoResponse;
 import com.common.togather.api.response.ResponseDto;
-import com.common.togather.api.service.AuthService;
-import com.common.togather.api.service.MailService;
-import com.common.togather.api.service.MemberService;
-import com.common.togather.api.service.RedisService;
+import com.common.togather.api.service.*;
 import com.common.togather.common.auth.TokenInfo;
 import com.common.togather.common.util.JwtUtil;
-import com.common.togather.db.entity.Member;
 import com.common.togather.db.repository.MemberRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,8 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "AuthController", description = "토큰 없어도 접근 가능한 요청")
@@ -38,6 +35,7 @@ public class AuthController {
     private final RedisService redisService;
     private final MemberService memberService;
     private final MemberRepository memberRepository;
+    private final KakaoService kakaoService;
 
     // 회원가입
     @Operation(summary = "회원가입")
@@ -266,4 +264,74 @@ public class AuthController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
+    // 카카오 로그인
+    @Operation(summary = "카카오 로그인")
+    @PostMapping("/kakao")
+    public ResponseEntity<ResponseDto<KakaoLoginResponse>> kakaoLogin(@RequestBody KakaoLoginRequest request, HttpServletResponse response){
+
+        if(request.getCode() == null){
+            throw new NotFoundKakaoException("카카오 인가 코드가 존재하지 않습니다.");
+        }
+
+        // 카카오로 토큰 발급 요청하기
+        String kakaoToken = kakaoService.getAccessToken(request.getCode());
+
+        // 받은 토큰으로 카카오에서 유저 정보 가져오기
+        KakaoUserInfoResponse userInfo = kakaoService.getUserInfo(kakaoToken);
+
+        ResponseDto<KakaoLoginResponse> responseDto;
+
+        // 만약 해당 이메일의 회원이 있다면 로그인 완료
+        if(memberRepository.existsByEmail(userInfo.getEmail())){
+            KakaoLoginResponse kakaoLoginResponse = kakaoService.login(userInfo);
+
+            // refresh token은 쿠키에 저장하여 응답 보내줌
+            ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", kakaoLoginResponse.getTokenInfo().getRefreshToken())
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(7*24*60*60)
+                    .sameSite("Strict")
+                    .build();
+
+            response.setHeader("Set-Cookie", refreshCookie.toString());
+
+            responseDto = ResponseDto.<KakaoLoginResponse>builder()
+                    .status(HttpStatus.OK.value())
+                    .message("카카오 로그인에 성공했습니다.")
+                    .data(kakaoLoginResponse)
+                    .build();
+
+        }
+        // 회원이 아니라면 회원가입 정보 입력으로 이동
+        else{
+            KakaoLoginResponse kakaoLoginResponse = KakaoLoginResponse.builder()
+                    .isMember(false)
+                    .kakaoUserInfo(userInfo)
+                    .build();
+
+            responseDto = ResponseDto.<KakaoLoginResponse>builder()
+                    .status(HttpStatus.OK.value())
+                    .message("카카오 유저 정보로 회원가입을 시도합니다.")
+                    .data(kakaoLoginResponse)
+                    .build();
+        }
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+
+    }
+
+    @Operation(summary = "카카오 정보로 회원가입하기")
+    @PostMapping("/kakao/register")
+    public ResponseEntity<ResponseDto<String>> kakaoSignup(@Valid @RequestBody KakaoMemverSaveRequest request){
+
+        kakaoService.signup(request);
+
+        ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                .status(HttpStatus.OK.value())
+                .message("카카오 정보로 회원가입에 성공했습니다.")
+                .data(null)
+                .build();
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 }

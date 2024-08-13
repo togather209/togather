@@ -1,11 +1,33 @@
 .schedule-detail-header-search-container {
-    width: 65%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 88%;
+}
+
+.search-button {
+  margin-right: 16px;
+  margin-top: 14px;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  padding-left: 1px;
+}
+
+.schedule-detail-header-search:focus {
+  outline: none;
 }
 
 .schedule-detail-header-search {
-    margin-top: 14px;
-    width: 100%;
-    height: 36px;
-    border-radius: 20px;
-    border: 1px solid #d7dedd;
-  }
+  margin-top: 14px;
+  width: 100%;
+  height: 36px;
+  border-radius: 20px;
+  border: 1px solid #d7dedd;
+}
+
+.search-button-img {
+  width: 28px;
+  height: 28px;
+}

@@ -6,15 +6,19 @@ import com.common.togather.api.request.BookmarkOrderUpdateRequest;
 import com.common.togather.api.request.BookmarkSaveRequest;
 import com.common.togather.api.response.*;
 import com.common.togather.common.util.JwtUtil;
+import com.common.togather.common.websocket.BookmarkWebSocketHandler;
 import com.common.togather.db.entity.Bookmark;
 import com.common.togather.db.entity.Plan;
 import com.common.togather.db.repository.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +32,7 @@ public class BookmarkService {
     private final PlanRepository planRepository;
     private final TeamRepository teamRepository;
     private final TeamMemberRepositorySupport teamMemberRepositorySupport;
+    private final BookmarkWebSocketHandler webSocketHandler;
 
     public List<BookmarkFindAllByPlanIdResponse> findAllBookmarkByPlanId(String email, int teamId, int planId) {
 
@@ -70,6 +75,26 @@ public class BookmarkService {
                 .build();
 
         bookmarkRepository.save(bookmark);
+
+        // 새로 추가된 북마크 정보를 WebSocket을 통해 브로드캐스트
+        BookmarkFindAllInJjinResponse response = BookmarkFindAllInJjinResponse.builder()
+                .bookmarkId(bookmark.getId())
+                .date(bookmark.getDate())
+                .placeId(bookmark.getPlaceId())
+                .placeImg(bookmark.getPlaceImg())
+                .placeName(bookmark.getPlaceName())
+                .placeAddr(bookmark.getPlaceAddr())
+                .itemOrder(bookmark.getItemOrder())
+                .receiptCnt(bookmark.getReceipts() != null ? bookmark.getReceipts().size() : 0)
+                .build();
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String message = objectMapper.writeValueAsString(response);
+            webSocketHandler.broadcastMessage(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -143,16 +168,25 @@ public class BookmarkService {
             bookmarkRepository.save(updatedBookmark); // 변경사항 저장
         }
 
-        List<Bookmark> bookmarkList;
-        // 해당 날짜인 모든 북마크 리스트
+        // OldDate 북마크 리스트
+        List<Bookmark> oldDateBookmarkList;
         if(oldDate == null){ // 찜에서 이동한거면 변경된 찜 리스트 보여주기
-            bookmarkList = bookmarkRepositorySupport.findAllBookmarkByNullDateInSamePlan(planId);
+            oldDateBookmarkList = bookmarkRepositorySupport.findAllBookmarkByNullDateInSamePlan(planId);
         }
         else{ // 변경된 기존 날짜 북마크 보여주기
-            bookmarkList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, oldDate);
+            oldDateBookmarkList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, oldDate);
         }
 
-        return bookmarkList.stream()
+        // NewDate 북마크 리스트
+        List<Bookmark> newDateBookmarkList;
+        if(newDate == null){
+            newDateBookmarkList = bookmarkRepositorySupport.findAllBookmarkByNullDateInSamePlan(planId);
+        }
+        else {
+            newDateBookmarkList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, newDate);
+        }
+
+        List<BookmarkDateUpdateResponse> oldDateResponseList = oldDateBookmarkList.stream()
                 .sorted(((o1, o2) -> Integer.compare(o1.getItemOrder(), o2.getItemOrder())))
                 .map(bookmark -> BookmarkDateUpdateResponse.builder()
                         .bookmarkId(bookmark.getId())
@@ -166,6 +200,38 @@ public class BookmarkService {
                         .build())
                 .collect(Collectors.toList());
 
+        List<BookmarkDateUpdateResponse> newDateResponseList = newDateBookmarkList.stream()
+                .sorted(((o1, o2) -> Integer.compare(o1.getItemOrder(), o2.getItemOrder())))
+                .map(bookmark -> BookmarkDateUpdateResponse.builder()
+                        .bookmarkId(bookmark.getId())
+                        .date(bookmark.getDate())
+                        .placeId(bookmark.getPlaceId())
+                        .placeImg(bookmark.getPlaceImg())
+                        .placeName(bookmark.getPlaceName())
+                        .placeAddr(bookmark.getPlaceAddr())
+                        .itemOrder(bookmark.getItemOrder())
+                        .receiptCnt(bookmark.getReceipts() != null ? bookmark.getReceipts().size() : 0)
+                        .build())
+                .collect(Collectors.toList());
+
+        // web socket에 보내줄 DTO
+        BookmarkWebSocketResponse response = BookmarkWebSocketResponse.builder()
+                .oldDate(oldDate)
+                .oldDateBookmarks(oldDateResponseList)
+                .newDate(newDate)
+                .newDateBookmarks(newDateResponseList)
+                .build();
+
+        // WebSocket을 통해 변경 사항을 브로드캐스트
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String message = objectMapper.writeValueAsString(response);
+            webSocketHandler.broadcastMessage(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return oldDateResponseList; // 서비스 return
 
     }
 
@@ -274,7 +340,7 @@ public class BookmarkService {
         }
 
         List<Bookmark> updateList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, movedBookmark.getDate());
-        return updateList.stream()
+        List<BookmarkOrderUpdateResponse> responseList = updateList.stream()
                 .sorted(((o1, o2) -> Integer.compare(o1.getItemOrder(), o2.getItemOrder())))
                 .map(bookmark -> BookmarkOrderUpdateResponse.builder()
                         .bookmarkId(bookmark.getId())
@@ -288,6 +354,17 @@ public class BookmarkService {
                         .build())
                 .collect(Collectors.toList());
 
+        // WebSocket을 통해 변경 사항을 브로드캐스트
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String message = objectMapper.writeValueAsString(responseList);
+            webSocketHandler.broadcastMessage(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // WebSocket 메시지 전송에 실패해도 트랜잭션은 성공해야 하므로 여기서 에러를 전파하지는 않음
+        }
+
+        return responseList;
     }
 
     // 찜 목록에서 삭제
@@ -311,7 +388,7 @@ public class BookmarkService {
 
         // 해당 일정 찜 리스트
         List<Bookmark> bookmarkList = bookmarkRepositorySupport.findAllBookmarkByNullDateInSamePlan(planId);
-        return bookmarkList.stream()
+        List<BookmarkFindAllInJjinResponse> responseList = bookmarkList.stream()
                 .map(bookmark -> BookmarkFindAllInJjinResponse.builder()
                         .bookmarkId(bookmark.getId())
                         .date(bookmark.getDate())
@@ -324,5 +401,16 @@ public class BookmarkService {
                         .build())
                 .collect(Collectors.toList());
 
+        // WebSocket을 통해 변경 사항을 브로드캐스트
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String message = objectMapper.writeValueAsString(responseList);
+            webSocketHandler.broadcastMessage(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // WebSocket 메시지 전송에 실패해도 트랜잭션은 성공해야 하므로 여기서 에러를 전파하지는 않음
+        }
+
+        return responseList;
     }
 }

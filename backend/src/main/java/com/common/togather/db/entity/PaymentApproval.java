@@ -27,4 +27,9 @@ public class PaymentApproval {
 
     // 수락 여부
     private Integer status;
+
+    // status 변경 메서드
+    public void updateStatus(Integer status) {
+        this.status = status;
+    }
 }

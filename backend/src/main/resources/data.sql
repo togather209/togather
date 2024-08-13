@@ -19,12 +19,15 @@ VALUES (1, 1, 'Plan A', 'Description for Plan A', '2024-08-01 10:00:00', '2024-0
 
 INSERT INTO receipt (plan_id, member_id, bookmark_id, business_name, payment_date, total_price, color)
 VALUES (1, 1, NULL, 'Business A', '2024-08-01 10:00:00', 10000, 0),
+       (1, 2, NULL, 'Business D', '2024-08-01 10:00:00', 500000, 0),
        (2, 2, NULL, 'Business B', '2024-08-02 11:00:00', 15000, 1);
 
 INSERT INTO item (receipt_id, name, unit_price, count)
 VALUES (1, 'Item A', 5000, 2),
        (1, 'Item B', 3000, 1),
        (2, 'Item C', 7000, 2),
+       (2, 'Item A', 5000, 2),
+       (2, 'Item B', 3000, 1),
        (2, 'Item D', 6000, 1);
 
 INSERT INTO item_member (item_id, member_id)
@@ -33,6 +36,11 @@ VALUES (1, 1), -- User 1 is associated with Item A
        (2, 1), -- User 1 is associated with Item B
        (3, 2), -- User 2 is associated with Item C
        (3, 3), -- User 3 is associated with Item C
+       (4, 1),
+       (5, 2),
+       (5, 3),
+       (6, 1),
+       (6, 3),
        (4, 2); -- User 2 is associated with Item D
 
 INSERT INTO bookmark (plan_id, place_id, place_img, place_name, place_addr, date, item_order)
@@ -45,12 +53,7 @@ VALUES (1, 1, 1), -- User 1 is a member of Team A with role 1
        (2, 1, 2), -- User 2 is a member of Team A with role 2
        (3, 2, 1); -- User 3 is a member of Team B with role 1
 
-INSERT INTO payment (plan_id, sender_id, receiver_id, total_price)
-VALUES (1, 1, 2, 1000),
-       (2, 2, 1, 1500),
-       (3, 1, 2, 2000);
-
-INSERT INTO payment_approval (plan_id, member_id, status)
-VALUES (1, 1, 0),
-       (1, 2, 1),
-       (2, 3, 2);
+INSERT INTO transaction (sender_name, receiver_name, price, balance, date, status)
+VALUES
+    ('John Doe', 'Jane Smith', 50000, 50000, '2024-08-15 10:00:00', 1),  -- John sends money to Jane
+    ('Jane Smith', 'John Doe', 75000, 425000, '2024-08-17 15:00:00', 0);  -- Jane sends money to John

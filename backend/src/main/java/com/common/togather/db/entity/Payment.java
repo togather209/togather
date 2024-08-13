@@ -33,4 +33,14 @@ public class Payment {
     // 총 금액
     @Column(name = "total_price", nullable = false)
     private int money;
+
+    public void switchSenderToReceiver() {
+        Member temp = sender;
+        this.sender = receiver;
+        this.receiver = temp;
+    }
+
+    public void updateMoney(int money) {
+        this.money = money;
+    }
 }

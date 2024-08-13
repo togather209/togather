@@ -36,6 +36,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handlePayAccountNotFoundException(PayAccountNotFoundException ex) {
         ex.printStackTrace();
         ErrorResponseDto error = new ErrorResponseDto("Pay Account Not Found", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NO_CONTENT);
+    }
+
+    // 정산 시 Pay 계좌가 존재 하지 않을 경우
+    @ExceptionHandler(PayAccountPaymentNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handlePayAccountPaymentNotFoundException(PayAccountPaymentNotFoundException ex) {
+        ex.printStackTrace();
+        ErrorResponseDto error = new ErrorResponseDto("Pay Account Not Found", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
@@ -108,7 +116,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handlePaymentNotFoundException(PaymentNotFoundException ex) {
         ex.printStackTrace();
         ErrorResponseDto error = new ErrorResponseDto("Payment Not Found", ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.NO_CONTENT);
     }
 
     // 정산 되지 않은 일정이 존재하는 경우
@@ -277,6 +285,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleInvalidPlanStatusException(InvalidPlanStatusException ex) {
         ex.printStackTrace();
         ErrorResponseDto error = new ErrorResponseDto("Invalid plan status Password", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    // 카카오 코드가 존재하지 않는 경우(유저가 동의 화면에서 카카오 로그인 취소했을 경우)
+    @ExceptionHandler(NotFoundKakaoException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotFoundKakaoCodeException(PlanNotFoundException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Kakao Code Not Found", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    // 로그인 방식이 가입 방식과 다를때
+    @ExceptionHandler(LoginMethodMismatchException.class)
+    public ResponseEntity<ErrorResponseDto> handleLoginMethodMismatchException(LoginMethodMismatchException ex) {
+        ErrorResponseDto error = new ErrorResponseDto("Login Method Mismatch", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 }

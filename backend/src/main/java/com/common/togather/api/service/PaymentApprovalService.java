@@ -2,18 +2,21 @@ package com.common.togather.api.service;
 
 import com.common.togather.api.error.*;
 import com.common.togather.api.response.PaymentApprovalUpdateByPlanIdResponse;
+import com.common.togather.common.util.FCMUtil;
+import com.common.togather.db.entity.Alarm;
 import com.common.togather.db.entity.Member;
 import com.common.togather.db.entity.PaymentApproval;
 import com.common.togather.db.entity.Plan;
-import com.common.togather.db.repository.PaymentApprovalRepository;
-import com.common.togather.db.repository.PaymentApprovalRepositorySupport;
-import com.common.togather.db.repository.PlanRepository;
+import com.common.togather.db.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.common.togather.common.fcm.AlarmType.PAYMENT_APPROVAL_REQUEST;
+import static com.common.togather.common.fcm.AlarmType.PAYMENT_OBJECTION;
 
 @Service
 @Transactional
@@ -23,7 +26,11 @@ public class PaymentApprovalService {
     private final PlanRepository planRepository;
     private final PaymentApprovalRepositorySupport paymentApprovalRepositorySupport;
     private final PaymentApprovalRepository paymentApprovalRepository;
+    private final MemberRepository memberRepository;
+    private final AlarmRepository alarmRepository;
+    private final FCMUtil fcmUtil;
 
+    // 일정 종료 및 정산 요청
     @Transactional
     public void savePaymentApprovalByPlanId(String email, int planId) {
 
@@ -58,8 +65,28 @@ public class PaymentApprovalService {
             );
         }
         paymentApprovalRepository.saveAll(paymentApprovals);
+
+        for (Member member : members) {
+            // 알림 저장
+            alarmRepository.save(Alarm.builder()
+                    .member(member)
+                    .title(PAYMENT_APPROVAL_REQUEST.getTitle())
+                    .content(PAYMENT_APPROVAL_REQUEST.getMessage(plan.getTitle()))
+                    .type(PAYMENT_APPROVAL_REQUEST.getType())
+                    .teamId(plan.getTeam().getId())
+                    .planId(planId)
+                    .build());
+
+            // 알림 전송
+            fcmUtil.pushNotification(
+                    member.getFcmToken(),
+                    PAYMENT_APPROVAL_REQUEST.getTitle(),
+                    PAYMENT_APPROVAL_REQUEST.getMessage(plan.getTitle())
+            );
+        }
     }
 
+    // 정산 수락
     @Transactional
     public PaymentApprovalUpdateByPlanIdResponse UpdatePaymentApprovalByPlanId(String email, int planId) {
 
@@ -88,6 +115,7 @@ public class PaymentApprovalService {
                 .build();
     }
 
+    // 정산 거절
     @Transactional
     public void DeletePaymentApprovalByPlanId(String email, int planId, String contents) {
 
@@ -107,5 +135,26 @@ public class PaymentApprovalService {
 
         // 일정의 모든 요청 지우기
         paymentApprovalRepository.deleteAllByPlanId(planId);
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
+
+        // 알림 저장
+        alarmRepository.save(Alarm.builder()
+                .member(plan.getManager())
+                .title(PAYMENT_OBJECTION.getTitle())
+                .content(PAYMENT_OBJECTION.getMessage(member.getNickname(), plan.getTitle()))
+                .type(PAYMENT_OBJECTION.getType())
+                .teamId(plan.getTeam().getId())
+                .planId(planId)
+                .build());
+
+        // 알림 전송
+        fcmUtil.pushNotification(
+                plan.getManager().getFcmToken(),
+                PAYMENT_OBJECTION.getTitle(),
+                PAYMENT_OBJECTION.getMessage(member.getNickname(), plan.getTitle())
+        );
+
     }
 }
