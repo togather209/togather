@@ -174,20 +174,6 @@ public class BookmarkService {
                         .build())
                 .collect(Collectors.toList());
 
-//        List<BookmarkDateUpdateResponse> newDateResponseList = newDateBookmarkList.stream()
-//                .sorted(((o1, o2) -> Integer.compare(o1.getItemOrder(), o2.getItemOrder())))
-//                .map(bookmark -> BookmarkDateUpdateResponse.builder()
-//                        .bookmarkId(bookmark.getId())
-//                        .date(bookmark.getDate())
-//                        .placeId(bookmark.getPlaceId())
-//                        .placeImg(bookmark.getPlaceImg())
-//                        .placeName(bookmark.getPlaceName())
-//                        .placeAddr(bookmark.getPlaceAddr())
-//                        .itemOrder(bookmark.getItemOrder())
-//                        .receiptCnt(bookmark.getReceipts() != null ? bookmark.getReceipts().size() : 0)
-//                        .build())
-//                .collect(Collectors.toList());
-
         return oldDateResponseList; // 서비스 return
 
     }
