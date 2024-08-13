@@ -32,9 +32,12 @@ public class Alarm {
     @Column(name = "type", nullable = false)
     private int type;
 
-    @Column(name = "team_id")
+    @Column(name = "tid")
     private Integer teamId;
 
-    @Column(name = "plan_id")
+    @Column(name = "pid")
     private Integer planId;
+
+    @Column(name = "mid")
+    private Integer memberId;
 }
