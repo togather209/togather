@@ -36,7 +36,6 @@ function AlarmList() {
   const handleSelectAlarm = (alarmId) => {
     if (selectedAlarms.includes(alarmId)) {
       setSelectedAlarms(selectedAlarms.filter((id) => id !== alarmId));
-      console.log(alarmId);
     } else {
       setSelectedAlarms([...selectedAlarms, alarmId]);
     }
@@ -128,9 +127,9 @@ function AlarmList() {
         <button
           className="alarm-delete-button"
           onClick={deleteSelectedAlarms}
-          disabled={selectedAlarms.length === 0}
+          disabled={selectedAlarms?.length === 0}
         >
-          삭제
+          삭제 
         </button>
         {deleteAlarm && (
           <Modal
