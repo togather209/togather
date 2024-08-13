@@ -9,9 +9,11 @@ function AlarmList() {
   useEffect(() => {
     const fetchAlarm = async () => {
       const response = await axiosInstance.get("/alarms");
-      console.log(response.data);
-      setAlarms(response.data.data);
-      console.log(alarms);
+      const sortedAlarms = response.data.data.sort((a, b) => b.id - a.id);
+
+      setAlarms(sortedAlarms);
+      console.log(sortedAlarms);
+
     };
 
     fetchAlarm();
@@ -19,16 +21,13 @@ function AlarmList() {
 
   return (
     <div className="alarm-page">
-      <div className="alarm-page-header">
         <BackButton />
-        <h1 className="alarm-page-title">알림</h1>
-      </div>
+      <h1 className="alarm-page-title">알림</h1>
       <div className="alarm-list">
         {alarms.length > 0 ? (
           alarms.map((alarm) => (
             <div key={alarm.id} className="alarm-item">
-              <p className="alarm-message">{alarm?.title}</p>
-              <span className="alarm-timestamp">{alarm?.content}</span>
+              <span className="alarm-content">{alarm?.content}</span>
             </div>
           ))
         ) : (
