@@ -36,7 +36,7 @@ function HomeMain() {
       console.error("데이터 불러오기 실패", error);
     }
   };
-  
+
   return (
     <div>
       <div className="main-header">
@@ -46,7 +46,10 @@ function HomeMain() {
           src={logo}
           alt="로고 이미지"
         />
-        <button className="main-header-button" onClick={() => navigation("/alarm")}>
+        <button
+          className="main-header-button"
+          onClick={() => navigation("/alarm")}
+        >
           <img className="home-alarm-button" src={alarm} alt="알람 버튼" />
         </button>
       </div>
