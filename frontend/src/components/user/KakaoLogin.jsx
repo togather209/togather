@@ -18,6 +18,7 @@ function KakaoLogin() {
   const code = new URL(window.location.href).searchParams.get("code");
   console.log("Extracted code:", code);
 
+
   useEffect(() => {
     //console.log("useEffect is triggered"); // 이 로그가 출력되는지 확인
     const checkCode = async () => {
@@ -25,7 +26,7 @@ function KakaoLogin() {
         await axios
           .post(
             `${API_LINK}/auth/kakao`,
-            { code },
+            { code, fcmToken },
             {
               withCredentials: true,
             }
