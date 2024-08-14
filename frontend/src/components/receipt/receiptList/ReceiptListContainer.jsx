@@ -54,7 +54,6 @@ function ReceiptListContainer() {
         if (responseStatus === 0) {
           fetchLiveStatus();
         }
-        console.log(response.data);
       } catch (error) {
         console.error("영수증 데이터를 가져오는 데 실패했습니다.", error);
         setError(true);
@@ -68,7 +67,6 @@ function ReceiptListContainer() {
           `/teams/${teamId}/plans/${planId}/auths`
         );
         setAuth(response.data.data.isManager);
-        console.log(response.data);
       } catch (error) {
         console.error("일정 권한 조회 요청 중 문제 발생", error);
       }
@@ -81,7 +79,6 @@ function ReceiptListContainer() {
           `/teams/${teamId}/plans/${planId}/payments/me`
         );
 
-        console.log(response.data);
         setLiveStatus(response.data.data.money);
       } catch (error) {
         console.error("실시간 정산 현황 요청 중 문제 발생", error);
@@ -119,8 +116,6 @@ function ReceiptListContainer() {
       const response = await axiosInstance.post(
         `/teams/${teamId}/plans/${planId}/payments/approvals`
       );
-
-      console.log(response.data);
     } catch (error) {
       console.error("");
     }
@@ -144,7 +139,6 @@ function ReceiptListContainer() {
 
   // 일정 상세보기 버튼
   const handleReceiptCard = (receipt) => {
-    // console.log(receipt);
     navigate(`/receipt/${receipt.receiptId}`, {
       state: { teamId: teamId, planId: planId, status: status },
     });

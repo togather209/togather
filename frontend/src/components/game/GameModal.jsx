@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "./GameModal.css";
 import Close from "../../assets/icons/common/close.png";
+import DefaultProfile from "../../assets/icons/common/defaultProfile.png";
 import axiosInstance from "../../utils/axiosInstance";
 
 function GameModal({ onClose, onConfirm }) {
   const [expandedTeamId, setExpandedTeamId] = useState(null);
   const [teams, setTeams] = useState([]);
   const [participantsByTeamId, setParticipantsByTeamId] = useState({});
-  const [tempSelectedParticipants, setTempSelectedParticipants] = useState();
+  const [tempSelectedParticipants, setTempSelectedParticipants] = useState([]);
 
   useEffect(() => {
     // 컴포넌트가 마운트될 때 팀과 참여자 데이터를 가져옵니다.
@@ -104,7 +105,11 @@ function GameModal({ onClose, onConfirm }) {
                         <div className="game-participant-info">
                           <img
                             className="game-participant-info-img"
-                            src={participant.profileImg}
+                            src={
+                              participant?.profileImg
+                                ? participant.profileImg
+                                : DefaultProfile
+                            }
                             alt="프로필"
                           />
                           {participant.nickname}
@@ -124,7 +129,9 @@ function GameModal({ onClose, onConfirm }) {
             );
             onConfirm(selectedTeam, tempSelectedParticipants); // 선택된 팀과 참여자들을 onConfirm으로 전달
           }}
-          className="game-modal-confirm-button"
+          className={`game-modal-confirm-button ${
+            tempSelectedParticipants.length === 0 ? "unactive" : ""
+          }`}
         >
           확인
         </button>

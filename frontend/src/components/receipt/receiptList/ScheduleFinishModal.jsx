@@ -1,7 +1,6 @@
 import React from "react";
 import "./ScheduleFinishModal.css";
 import Close from "../../../assets/icons/common/close.png";
-import MiddleButton from "../../common/MiddleButton";
 
 function ScheduleFinishModal({ onClose, onConfirm }) {
   return (
