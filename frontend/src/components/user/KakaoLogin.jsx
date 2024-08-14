@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { clearToken, setToken } from "../../redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Modal from "../common/Modal";
+import { useFirebase } from "../../firebaseContext";
 
 function KakaoLogin() {
   const navigate = useNavigate();
@@ -11,12 +12,14 @@ function KakaoLogin() {
   const dispatch = useDispatch();
   const [isAlreadyRegist, setIsAlreadyRegist] = useState(false);
   const token = useSelector((state) => state.auth.accessToken);
+  const fcmToken = useFirebase();
+  console.log(fcmToken);
 
   const code = new URL(window.location.href).searchParams.get("code");
   console.log("Extracted code:", code);
 
   useEffect(() => {
-    console.log("useEffect is triggered"); // 이 로그가 출력되는지 확인
+    //console.log("useEffect is triggered"); // 이 로그가 출력되는지 확인
     const checkCode = async () => {
       if (code) {
         await axios

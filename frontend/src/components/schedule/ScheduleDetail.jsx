@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useParams, useNavigate, useLocation, useOutletContext } from "react-router-dom";
+import {
+  useParams,
+  useNavigate,
+  useLocation,
+  useOutletContext,
+} from "react-router-dom";
 import "./ScheduleDetail.css";
 import axiosInstance from "../../utils/axiosInstance";
 
@@ -91,15 +96,16 @@ function ScheduleDetail() {
   );
 
   const { deletedBookmarkId } = useOutletContext();
+  const { newBookmark } = useOutletContext();
 
   useEffect(() => {
-    if (deletedBookmarkId){
-      setFavoritePlaces((prevPlaces) =>{
+    if (deletedBookmarkId) {
+      setFavoritePlaces((prevPlaces) => {
         prevPlaces?.filter((place) => place.bookmarkId !== deletedBookmarkId);
       });
       setDatePlaces((prevPlaces) => {
-        prevPlaces?.filter((place) => place.bookmarkId !== deletedBookmarkId)
-      })
+        prevPlaces?.filter((place) => place.bookmarkId !== deletedBookmarkId);
+      });
     }
   }, [deletedBookmarkId]);
 
@@ -117,7 +123,7 @@ function ScheduleDetail() {
       );
       const data = response.data.data;
       setScheduleDetail(data);
-      console.log("일정상세조회data", data);
+      //console.log("일정상세조회data", data);
 
       const start = new Date(data.startDate);
       const end = new Date(data.endDate);
@@ -176,14 +182,13 @@ function ScheduleDetail() {
   // const [isHeadPhone, setIsHeadPhone] = useState(false);
   // const [isMic, setIsMic] = useState(false);
 
-
   // const handleCallStart = () => setIsCallStarted(!isCallStarted);
   // const handleHeadPhone = () => setIsHeadPhone(!isHeadPhone);
   // const handleMic = () => setIsMic(!isMic);
   const handleDateClick = (date) => {
     setSelectedDate(date);
     setIsHeartClicked(false);
-    console.log(date);
+    //console.log(date);
   };
   const handleHeartClick = () => {
     setSelectedDate(null);
@@ -202,6 +207,8 @@ function ScheduleDetail() {
   }, []);
 
   const [forRendering, setForRendering] = useState(true);
+  const { newDay } = useOutletContext();
+  const { newOrder } = useOutletContext();
 
   // 찜목록 조회하는 요청
   useEffect(() => {
@@ -222,15 +229,24 @@ function ScheduleDetail() {
       };
       favoritePlace();
     }
-  }, [isHeartClicked, id, schedule_id, isOpenSearch, forRendering, deletedBookmarkId]);
+  }, [
+    isHeartClicked,
+    id,
+    schedule_id,
+    isOpenSearch,
+    forRendering,
+    deletedBookmarkId,
+    newBookmark,
+    newDay,
+  ]);
 
   useEffect(() => {
-    console.log("Updated favoritePlaces:", favoritePlaces);
+    //console.log("Updated favoritePlaces:", favoritePlaces);
   }, [favoritePlaces]);
 
   // 날짜가 정해진 장소들 요청하는 axios
   useEffect(() => {
-    console.log(selectedDate);
+    //console.log(selectedDate);
     if (!selectedDate) {
       return;
     }
@@ -239,14 +255,14 @@ function ScheduleDetail() {
         const response = await axiosInstance.get(
           `/teams/${id}/plans/${schedule_id}/bookmarks/${selectedDate}`
         );
-        console.log(response.data.data);
+        //console.log(response.data.data);
         setDatePlaces(response.data.data);
       } catch (error) {
         console.error("데이터 불러오기 실패", error);
       }
     };
     getDatePlaces();
-  }, [selectedDate, forRendering]);
+  }, [selectedDate, forRendering, deletedBookmarkId, newBookmark, newDay, newOrder]);
 
   // 일정 삭제 axios 요청
   const scheduleExit = async () => {
@@ -285,11 +301,11 @@ function ScheduleDetail() {
     // 날짜 북마크 내에서 순서 수정 (드래그 앤 드롭)
     const newBookMarkOrder = async () => {
       const orderForm = {
-        newOrder: destination.index,
+        newOrder: destination.index
       };
 
       try {
-        console.log(orderForm);
+        // console.log(orderForm);
         const response = await axiosInstance.patch(
           `/teams/${id}/plans/${schedule_id}/bookmarks/${newbookmarkid}/order`,
           orderForm,
@@ -299,7 +315,7 @@ function ScheduleDetail() {
             },
           }
         );
-        console.log(response.data);
+        //console.log(response.data);
       } catch (error) {
         console.error("데이터 불러오기 실패", error.response);
       }
