@@ -21,6 +21,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: start;
+  margin-left: 15px;
 }
 
 .place-list-name {
@@ -43,4 +44,15 @@
   color: white;
   background: linear-gradient(45deg, #712fff, #a074ff);
   box-shadow: 5px 10px 20px #b08cff;
+}
+
+.place-image {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+}
+
+.search-place-detail-info {
+  font-size: 10px;
+  text-decoration: none;
 }

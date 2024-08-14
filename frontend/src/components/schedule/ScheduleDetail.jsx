@@ -262,7 +262,14 @@ function ScheduleDetail() {
       }
     };
     getDatePlaces();
-  }, [selectedDate, forRendering, deletedBookmarkId, newBookmark, newDay, newOrder]);
+  }, [
+    selectedDate,
+    forRendering,
+    deletedBookmarkId,
+    newBookmark,
+    newDay,
+    newOrder,
+  ]);
 
   // 일정 삭제 axios 요청
   const scheduleExit = async () => {
@@ -301,7 +308,7 @@ function ScheduleDetail() {
     // 날짜 북마크 내에서 순서 수정 (드래그 앤 드롭)
     const newBookMarkOrder = async () => {
       const orderForm = {
-        newOrder: destination.index
+        newOrder: destination.index,
       };
 
       try {
@@ -327,6 +334,24 @@ function ScheduleDetail() {
   const handleImageError = (e) => {
     e.target.src = defaultImg; // 이미지 로드 실패 시 디폴트 이미지로 변경
   };
+
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleWheel = (e) => {
+      if (containerRef.current) {
+        containerRef.current.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+    };
+
+    const container = containerRef.current;
+    container.addEventListener("wheel", handleWheel);
+
+    return () => {
+      container.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
 
   return (
     <div className="schedule-detail">
@@ -412,7 +437,7 @@ function ScheduleDetail() {
               </ScheduleButton>
             </div>
           </div>
-          <div className="schedule-detail-date-box">
+          <div className="schedule-detail-date-box" ref={containerRef}>
             <div className="schedule-detail-weekdays">
               <div className="schedule-detail-like">찜</div>
               {datedata.map((item, index) => (
@@ -447,6 +472,8 @@ function ScheduleDetail() {
                   <ScheduleDetailFavoritePlaces
                     key={item.placeId}
                     placeId={item.placeId}
+                    placeImg={item.placeImg}
+                    // placeUrl={item.place_url}
                     meetingId={id}
                     scheduleId={schedule_id}
                     bookmarkId={item.bookmarkId}
@@ -472,6 +499,8 @@ function ScheduleDetail() {
                           key={item.bookmarkId}
                           index={index}
                           meetingId={id}
+                          placeUrl={item.palce_url}
+                          placeImg={item.placeImg}
                           scheduleId={schedule_id}
                           bookmarkId={item.bookmarkId}
                           name={item.placeName}

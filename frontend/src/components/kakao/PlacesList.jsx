@@ -3,13 +3,23 @@ import axiosInstance from "../../utils/axiosInstance";
 import "./PlacesList.css";
 import purpleSearch from "../../assets/schedule/purplesearch.png";
 import PlaceListItem from "./PlaceLIstItem";
-
 import JoinFormModal from "../home/JoinFormModal";
+import market from "../../assets/search/market.jpg";
+import attraction from "../../assets/search/attraction.jpg";
+import facility from "../../assets/search/facility.png";
+import accomodation from "../../assets/search/accomodation.jpg";
+import restaurant from "../../assets/search/restaurant.jpg";
+import parking from "../../assets/search/parking.png";
+import subway from "../../assets/search/subway.jpg";
+import cafe from "../../assets/search/cafe.jpg";
+import conviny from "../../assets/search/conviny.jpg";
+import defaultimage from "../../../public/defaultimage.png";
 import { useOutletContext } from "react-router-dom";
 
 const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
   console.log(places);
 
+  // 이미 찜했습니다 모달 띄우기
   const [openAlreadyJjim, setOpenAlreadyJjim] = useState(false);
   const { newBookmark } = useOutletContext();
 
@@ -26,6 +36,31 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
     console.log(imageUrl);
   }, [places]);
 
+  // 여기서 이미지 데이터로 전달해줘야 한다.
+  const typeSelect = (type) => {
+    switch (type) {
+      case "MT1":
+        return market;
+      case "CS2":
+        return conviny;
+      case "SW8":
+        return subway;
+      case "PK6":
+        return parking;
+      case "CT1":
+        return facility;
+      case "AT4":
+        return attraction;
+      case "AD5":
+        return accomodation;
+      case "FD6":
+        return restaurant;
+      case "CE7":
+        return cafe;
+      default:
+        return defaultimage;
+    }
+  };
   const [favoritePlaces, setFavoritePlaces] = useState(places); // 초기화
 
   useEffect(() => {
@@ -45,13 +80,19 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
     console.log("fffffff");
     console.log(place);
     console.log("fffffff");
+
+    const imgType = typeSelect(place.category_group_code);
+
+    console.log("안녕하세요 반갑습니다.", imgType);
+
     // 요청 파라미터 값 생성
     const favoriteFormData = {
       placeId: place.id,
       placeName: place.place_name,
       placeAddr: place.address_name,
-      placeImg: "아니 없어요", // 여기에 실제 이미지 URL을 넣어야 할 수 있습니다.
+      placeImg: imgType, // 여기에 실제 이미지 URL을 넣어야 할 수 있습니다.
     };
+
     try {
       const response = await axiosInstance.post(
         `/teams/${id}/plans/${schedule_id}/bookmarks`,

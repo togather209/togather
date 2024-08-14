@@ -11,6 +11,7 @@ function ScheduleDetailFavoritePlaces({
   meetingId,
   scheduleId,
   bookmarkId,
+  placeImg,
   placeId,
   img_url,
   address,
@@ -19,12 +20,16 @@ function ScheduleDetailFavoritePlaces({
   lastDate,
   setForRendering,
   forRendering,
+  // placeUrl,
 }) {
+  console.log(placeImg);
+  // console.log(placeUrl);
+
   const [isHeartPurple, setIsHeartPurple] = useState(false);
 
   const handleHeartPurple = () => {
     if (!isHeartPurple) {
-      deleteJjimPlace()
+      deleteJjimPlace();
       setIsHeartPurple(!isHeartPurple);
     } else {
       // addJjimPlace()
@@ -43,15 +48,17 @@ function ScheduleDetailFavoritePlaces({
   // 모달 닫기 버튼
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setForRendering(!forRendering)
+    setForRendering(!forRendering);
   };
 
   // 찜하기 목록 삭제 axios 요청
   const deleteJjimPlace = async () => {
     try {
-      const response = await axiosInstance.delete(`/teams/${meetingId}/plans/${scheduleId}/bookmarks/${bookmarkId}`);
+      const response = await axiosInstance.delete(
+        `/teams/${meetingId}/plans/${scheduleId}/bookmarks/${bookmarkId}`
+      );
       //console.log(response.data)
-      setForRendering(!forRendering)
+      setForRendering(!forRendering);
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
     }
@@ -65,7 +72,7 @@ function ScheduleDetailFavoritePlaces({
   //   addJjimFormData["placeName"] = name
   //   addJjimFormData["placeAddr"] = address
   //   // console.log(addJjimFormData)
- 
+
   //   try {
   //     const response = await axiosInstance.post(`/teams/${meetingId}/plans/${scheduleId}/bookmarks`, addJjimFormData);
   //     console.log(response.data)
@@ -95,7 +102,11 @@ function ScheduleDetailFavoritePlaces({
       )}
       <div className="schedule-detail-section1" onClick={openModalFunction}>
         <div>
-          <img className="schedule-detail-place-img" src={matjip} alt="임시" />
+          <img
+            className="schedule-detail-place-img"
+            src={placeImg}
+            alt="임시"
+          />
         </div>
         <div>
           <p className="schedule-detail-place-name">{name}</p>
@@ -117,7 +128,6 @@ function ScheduleDetailFavoritePlaces({
             src={heartpurple}
             alt="full-heart"
           />
-  
         )}
       </div>
     </div>
