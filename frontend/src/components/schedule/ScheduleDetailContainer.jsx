@@ -1,12 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 function ScheduleDetailContainer() {
   const token = useSelector((state) => state.auth.accessToken);
   const sub = getSubFromToken(token);
-  const planId = localStorage.getItem("planId");
+  const params = useParams();
+
+  const planId = params.schedule_id;
   const eventSourceRef = useRef(null);
   const [deletedBookmarkId, setDeletedBookmarkId] = useState(null);
+  const [newBookmark, setNewBookmark] = useState(null);
+  const [newDay, setNewDay] = useState(null);
+  const [newOrder, setNewOrder] = useState(null);
 
   function getSubFromToken(token) {
     // JWT는 '.'으로 구분된 3개의 파트로 구성됨: header.payload.signature
@@ -28,25 +33,60 @@ function ScheduleDetailContainer() {
     return payloadObject.sub;
   }
 
-  eventSourceRef.current = new EventSource(
-    `http://localhost:8080/api/sse/subscribe/${planId}/${sub}`
-  );
-  eventSourceRef.current.addEventListener("bookmark-deleted", function (event) {
-    const eventData = JSON.parse(event.data);
-    handleBookmarkDeleted(eventData);
-  });
+  useEffect(() => {
+    eventSourceRef.current = new EventSource(
+      `http://localhost:8080/api/sse/subscribe/${planId}/${sub}`
+    );
 
-  eventSourceRef.onerror = function (error) {
-    console.error("SSE error:", error);
-  };
+    eventSourceRef.current.addEventListener("bookmark-deleted", (event) => {
+      console.log("삭제 요청 받음")
+      const eventData = JSON.parse(event.data);
+      handleBookmarkDeleted(eventData);
+    });
+
+    eventSourceRef.current.addEventListener("bookmark-added", (event) => {
+      const eventData = JSON.parse(event.data);
+      console.log("추가 요청 받음")
+      //console.log(eventData, "번 추가");
+      setNewBookmark(eventData);
+    });
+
+    eventSourceRef.current.addEventListener("bookmark-date-updated", (event) => {
+      const eventData = JSON.parse(event.data);
+      console.log("날짜 변경 요청 받음")
+      setNewDay(eventData);
+      //console.log(eventData, "이동");
+    });
+
+    eventSourceRef.current.addEventListener("bookmark-index-updated", (event) => {
+      const eventData = JSON.parse(event.data);
+      console.log("인덱스 변경 요청 받음")
+      setNewOrder(eventData);
+      //console.log(eventData, "강림");
+    })
+
+
+
+    eventSourceRef.current.addEventListener("error", (error)  =>{
+      console.error("SSE error:", error);
+    });
+
+    return () => {
+      if(eventSourceRef.current){
+        eventSourceRef.current.close();
+      }
+    };
+  }, []);
+
+
 
   function handleBookmarkDeleted(eventData) {
-    console.log(eventData + " 가 삭제됨");
+   // console.log(eventData + " 가 삭제됨");
     setDeletedBookmarkId(eventData);
   }
   return (
     <>
-      <Outlet context={{ deletedBookmarkId }} />
+      <Outlet context={{ deletedBookmarkId, newBookmark, newDay, newOrder }} />
     </>
   );
 }

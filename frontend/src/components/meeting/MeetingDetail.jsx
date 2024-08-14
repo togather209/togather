@@ -9,6 +9,7 @@ import defaultImage from "../../assets/meeting/defaultMeeting.png";
 
 import MeetingDetailPart from "./MeetingDetailPart";
 import MeetingSetting from "./MeetingSetting";
+import { useSelector } from "react-redux";
 
 function MeetingDetail({ folderName }) {
   const navigation = useNavigate();
@@ -34,18 +35,21 @@ function MeetingDetail({ folderName }) {
   // 해당 페이지 렌더링 되면 모임 상세 조회
   useEffect(() => {
     meetingDetailInfo();
-    wantJoinMembers();
     joinMembers();
-    console.log("렌더링되었습니다.");
+    //console.log("렌더링되었습니다.");
   }, []); // => 이거 의존성 해치우고 싶다.
 
   // 모임 상세 요청
   const meetingDetailInfo = async () => {
     try {
       const response = await axiosInstance.get(`/teams/${id}`);
-      setMeetingDetail(response.data.data);
+      await setMeetingDetail(response.data.data);
+      //관리자일 때만 실행
+      if(response.data.data.admin){
+        wantJoinMembers();
+      }
       setMeetingPlans(response.data.data.plans);
-      console.log(response.data.data);
+      //console.log(response.data.data);
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
     }
