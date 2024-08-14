@@ -76,6 +76,7 @@ div.calculate-tagged-people {
   height: 36px;
   border-radius: 50%;
   margin-right: 10px;
+  border: 0.5px solid #d7d7d7;
 }
 
 /* color별 처리 */

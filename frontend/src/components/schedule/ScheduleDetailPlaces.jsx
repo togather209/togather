@@ -12,6 +12,7 @@ function ScheduleDetailPlaces({
   name,
   address,
   meetingId,
+  placeImg,
   scheduleId,
   bookmarkId,
   datedate,
@@ -25,13 +26,13 @@ function ScheduleDetailPlaces({
   const navigation = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  console.log("ssssssssssssss");
-  console.log(bookmarkId);
-  console.log("ssssssssssssss");
+  // console.log("ssssssssssssss");
+  // console.log(bookmarkId);
+  // console.log("ssssssssssssss");
 
   const openModalFunction = () => {
     setIsModalOpen(true);
-    console.log(isModalOpen);
+    // console.log(isModalOpen);
     // console.log("어렵다");
   };
 
@@ -61,6 +62,7 @@ function ScheduleDetailPlaces({
                   lastDate={lastDate}
                   datedate={datedate}
                   name={name}
+                  placeImg={placeImg}
                   handleCloseModal={handleCloseModal}
                 />
               </div>
@@ -73,7 +75,7 @@ function ScheduleDetailPlaces({
             <div>
               <img
                 className="schedule-detail-place-img"
-                src={matjip}
+                src={placeImg}
                 alt="임시"
               />
             </div>

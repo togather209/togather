@@ -2,15 +2,13 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import "./AlarmList.css";
 import BackButton from "../common/BackButton";
+import EmptyAlarm from "../../assets/icons/empty/alarm.png";
 import { useNavigate } from "react-router-dom";
-import Modal from "../../components/common/Modal";
+import DefaultProfile from "../../assets/icons/common/defaultProfile.png";
+
 function AlarmList() {
   const [alarms, setAlarms] = useState([]);
-  const [selectedAlarms, setSelectedAlarms] = useState([]);
-  const [selectAll, setSelectAll] = useState(false);
   const navigate = useNavigate();
-  const [deleteAlarm, setDeleteAlarm] = useState(false);
-  const [count, setCount] = useState(0);
 
   useEffect(() => {
     const fetchAlarm = async () => {
@@ -23,40 +21,18 @@ function AlarmList() {
     fetchAlarm();
   }, []);
 
-  const handleSelectAll = () => {
-    if (selectAll) {
-      setSelectedAlarms([]);
-    } else {
-      const allAlarmIds = alarms.map((alarm) => alarm.id);
-      setSelectedAlarms(allAlarmIds);
-    }
-    setSelectAll(!selectAll);
-  };
-
-  const handleSelectAlarm = (alarmId) => {
-    if (selectedAlarms.includes(alarmId)) {
-      setSelectedAlarms(selectedAlarms.filter((id) => id !== alarmId));
-    } else {
-      setSelectedAlarms([...selectedAlarms, alarmId]);
-    }
-  };
-
   //선택된 알람 삭제하는 함수
-  const deleteSelectedAlarms = async () => {
+  const deleteSelectedAlarms = async (alarmId) => {
     try {
-      await Promise.all(
-        selectedAlarms.map(
-          (alarmId) => axiosInstance.delete(`/alarms/${alarmId}`),
-          setCount(count + 1)
-        )
-      );
-      setAlarms(alarms.filter((alarm) => !selectedAlarms.includes(alarm.id)));
-      setSelectedAlarms([]);
-      setSelectAll(false);
-      setDeleteAlarm(true);
+      await axiosInstance.delete(`/alarms/${alarmId}`);
     } catch (error) {
       console.error("Failed to delete alarms:", error);
     }
+  };
+
+  const handleAlarm = (alarm) => {
+    moveToPage(alarm?.type, alarm?.alarmDto);
+    deleteSelectedAlarms(alarm.id);
   };
 
   const moveToPage = (type, alarmDto) => {
@@ -82,7 +58,7 @@ function AlarmList() {
 
       // 모임 가입 신청
       case 4:
-        navigate(`/home/meeting/${alarmDto.teamId}/manage`);
+        navigate(`/home/meeting/${alarmDto.teamId}`);
         break;
 
       // 입금 알림
@@ -118,47 +94,13 @@ function AlarmList() {
         <BackButton />
         <h1 className="alarm-page-title">알림</h1>
       </div>
-      <div className="alarm-controls">
-        <input
-          type="checkbox"
-          checked={selectAll}
-          onChange={handleSelectAll}
-          className="alarm-select-all-checkbox"
-        />
-        <label className="alarm-select-all-label">전체 선택</label>
-        <button
-          className="alarm-delete-button"
-          onClick={deleteSelectedAlarms}
-          disabled={selectedAlarms?.length === 0}
-        >
-          삭제
-        </button>
-        {deleteAlarm && (
-          <Modal
-            mainMessage={`${count}개 알림이 삭제 되었습니다.`}
-            onClose={() => {
-              setDeleteAlarm(false);
-              setCount(0);
-            }}
-          />
-        )}
-      </div>
       <div className="alarm-list">
         {alarms.length > 0 &&
           alarms.map((alarm) => (
             <div key={alarm?.id} className="alarm-list-line">
-              <input
-                type="checkbox"
-                checked={selectedAlarms.includes(alarm?.id)}
-                onChange={() => handleSelectAlarm(alarm?.id)}
-                className="alarm-checkbox"
-              />
-              <button
-                className="alarm-item"
-                onClick={() => moveToPage(alarm?.type, alarm?.alarmDto)}
-              >
+              <button className="alarm-item" onClick={() => handleAlarm(alarm)}>
                 <img
-                  src={alarm?.image}
+                  src={alarm?.image ? alarm.image : DefaultProfile}
                   alt="프로필 이미지"
                   className="alarm-item-img"
                 />
@@ -166,8 +108,13 @@ function AlarmList() {
               </button>
             </div>
           ))}
-        <div className="alarm-no-content">알림이 없습니다.</div>
       </div>
+      {alarms.length === 0 && (
+        <div className="empty-alarm-container">
+          <img className="empty-alarm-image" src={EmptyAlarm} alt="" />
+          <div className="alarm-no-content">알림이 없습니다</div>
+        </div>
+      )}
     </div>
   );
 }

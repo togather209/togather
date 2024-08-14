@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useParams, useNavigate, useLocation, useOutletContext } from "react-router-dom";
+import {
+  useParams,
+  useNavigate,
+  useLocation,
+  useOutletContext,
+} from "react-router-dom";
 import "./ScheduleDetail.css";
 import axiosInstance from "../../utils/axiosInstance";
 
@@ -91,15 +96,16 @@ function ScheduleDetail() {
   );
 
   const { deletedBookmarkId } = useOutletContext();
+  const { newBookmark } = useOutletContext();
 
   useEffect(() => {
-    if (deletedBookmarkId){
-      setFavoritePlaces((prevPlaces) =>{
+    if (deletedBookmarkId) {
+      setFavoritePlaces((prevPlaces) => {
         prevPlaces?.filter((place) => place.bookmarkId !== deletedBookmarkId);
       });
       setDatePlaces((prevPlaces) => {
-        prevPlaces?.filter((place) => place.bookmarkId !== deletedBookmarkId)
-      })
+        prevPlaces?.filter((place) => place.bookmarkId !== deletedBookmarkId);
+      });
     }
   }, [deletedBookmarkId]);
 
@@ -117,7 +123,7 @@ function ScheduleDetail() {
       );
       const data = response.data.data;
       setScheduleDetail(data);
-      console.log("일정상세조회data", data);
+      //console.log("일정상세조회data", data);
 
       const start = new Date(data.startDate);
       const end = new Date(data.endDate);
@@ -176,14 +182,13 @@ function ScheduleDetail() {
   // const [isHeadPhone, setIsHeadPhone] = useState(false);
   // const [isMic, setIsMic] = useState(false);
 
-
   // const handleCallStart = () => setIsCallStarted(!isCallStarted);
   // const handleHeadPhone = () => setIsHeadPhone(!isHeadPhone);
   // const handleMic = () => setIsMic(!isMic);
   const handleDateClick = (date) => {
     setSelectedDate(date);
     setIsHeartClicked(false);
-    console.log(date);
+    //console.log(date);
   };
   const handleHeartClick = () => {
     setSelectedDate(null);
@@ -202,6 +207,8 @@ function ScheduleDetail() {
   }, []);
 
   const [forRendering, setForRendering] = useState(true);
+  const { newDay } = useOutletContext();
+  const { newOrder } = useOutletContext();
 
   // 찜목록 조회하는 요청
   useEffect(() => {
@@ -222,15 +229,24 @@ function ScheduleDetail() {
       };
       favoritePlace();
     }
-  }, [isHeartClicked, id, schedule_id, isOpenSearch, forRendering, deletedBookmarkId]);
+  }, [
+    isHeartClicked,
+    id,
+    schedule_id,
+    isOpenSearch,
+    forRendering,
+    deletedBookmarkId,
+    newBookmark,
+    newDay,
+  ]);
 
   useEffect(() => {
-    console.log("Updated favoritePlaces:", favoritePlaces);
+    //console.log("Updated favoritePlaces:", favoritePlaces);
   }, [favoritePlaces]);
 
   // 날짜가 정해진 장소들 요청하는 axios
   useEffect(() => {
-    console.log(selectedDate);
+    //console.log(selectedDate);
     if (!selectedDate) {
       return;
     }
@@ -239,14 +255,21 @@ function ScheduleDetail() {
         const response = await axiosInstance.get(
           `/teams/${id}/plans/${schedule_id}/bookmarks/${selectedDate}`
         );
-        console.log(response.data.data);
+        //console.log(response.data.data);
         setDatePlaces(response.data.data);
       } catch (error) {
         console.error("데이터 불러오기 실패", error);
       }
     };
     getDatePlaces();
-  }, [selectedDate, forRendering]);
+  }, [
+    selectedDate,
+    forRendering,
+    deletedBookmarkId,
+    newBookmark,
+    newDay,
+    newOrder,
+  ]);
 
   // 일정 삭제 axios 요청
   const scheduleExit = async () => {
@@ -289,7 +312,7 @@ function ScheduleDetail() {
       };
 
       try {
-        console.log(orderForm);
+        // console.log(orderForm);
         const response = await axiosInstance.patch(
           `/teams/${id}/plans/${schedule_id}/bookmarks/${newbookmarkid}/order`,
           orderForm,
@@ -299,7 +322,7 @@ function ScheduleDetail() {
             },
           }
         );
-        console.log(response.data);
+        //console.log(response.data);
       } catch (error) {
         console.error("데이터 불러오기 실패", error.response);
       }
@@ -311,6 +334,24 @@ function ScheduleDetail() {
   const handleImageError = (e) => {
     e.target.src = defaultImg; // 이미지 로드 실패 시 디폴트 이미지로 변경
   };
+
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleWheel = (e) => {
+      if (containerRef.current) {
+        containerRef.current.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+    };
+
+    const container = containerRef.current;
+    container.addEventListener("wheel", handleWheel);
+
+    return () => {
+      container.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
 
   return (
     <div className="schedule-detail">
@@ -396,7 +437,7 @@ function ScheduleDetail() {
               </ScheduleButton>
             </div>
           </div>
-          <div className="schedule-detail-date-box">
+          <div className="schedule-detail-date-box" ref={containerRef}>
             <div className="schedule-detail-weekdays">
               <div className="schedule-detail-like">찜</div>
               {datedata.map((item, index) => (
@@ -431,6 +472,8 @@ function ScheduleDetail() {
                   <ScheduleDetailFavoritePlaces
                     key={item.placeId}
                     placeId={item.placeId}
+                    placeImg={item.placeImg}
+                    // placeUrl={item.place_url}
                     meetingId={id}
                     scheduleId={schedule_id}
                     bookmarkId={item.bookmarkId}
@@ -456,6 +499,8 @@ function ScheduleDetail() {
                           key={item.bookmarkId}
                           index={index}
                           meetingId={id}
+                          placeUrl={item.palce_url}
+                          placeImg={item.placeImg}
                           scheduleId={schedule_id}
                           bookmarkId={item.bookmarkId}
                           name={item.placeName}

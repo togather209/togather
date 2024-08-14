@@ -1,4 +1,3 @@
-// components/reciept/RecieptCard.jsx
 import React from "react";
 import "./ReceiptList.css";
 

@@ -40,12 +40,15 @@
 }
 
 .seeall {
+  display: flex;
   text-decoration: none;
   background: none;
   border: none;
   font-size: 12px;
   color: #131212;
   opacity: 70%;
+  margin-left: auto;
+  margin-bottom: 15px;
 }
 
 .no-meeting-at-home {
@@ -82,8 +85,8 @@
   );
   gap: 12px 8px;
   justify-content: start;
-  align-items: center;
-  margin-bottom: 20px;
+  align-items: start;
+  margin-bottom: 10px;
 }
 
 .new-meeting {

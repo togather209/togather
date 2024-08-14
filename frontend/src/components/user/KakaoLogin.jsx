@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { clearToken, setToken } from "../../redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Modal from "../common/Modal";
+import { useFirebase } from "../../firebaseContext";
 
 function KakaoLogin() {
   const navigate = useNavigate();
@@ -11,56 +12,69 @@ function KakaoLogin() {
   const dispatch = useDispatch();
   const [isAlreadyRegist, setIsAlreadyRegist] = useState(false);
   const token = useSelector((state) => state.auth.accessToken);
+  const { fcmToken } = useFirebase();
+  const [fcmTokenReady, setFcmTokenReady] = useState(false);
 
   const code = new URL(window.location.href).searchParams.get("code");
   console.log("Extracted code:", code);
 
+  // FCM 토큰이 초기화되었는지 여부를 감지
   useEffect(() => {
-    console.log("useEffect is triggered"); // 이 로그가 출력되는지 확인
+    if (fcmToken) {
+      console.log("FCM 토큰 준비 완료:", fcmToken);
+      setFcmTokenReady(true);
+    }
+  }, [fcmToken]);
+
+  useEffect(() => {
     const checkCode = async () => {
-      if (code) {
-        await axios
-          .post(
+      if (code && fcmTokenReady) {
+        console.log("axios 내부!!! : " + fcmToken);
+        try {
+          const res = await axios.post(
             `${API_LINK}/auth/kakao`,
-            { code },
+            { code, fcmToken },
             {
               withCredentials: true,
             }
-          )
-          .then(async (res) => {
-            console.log("Response from server:", res.data);
-            if (res.data.data.isMember) {
-              const { accessToken, refreshToken } = res.data.data.tokenInfo;
+          );
 
-              dispatch(
-                setToken({
-                  accessToken,
-                  refreshToken,
-                })
-              );
-              
-            } else {
-              // 회원가입으로 이동
-              navigate("/signupWithKakao", {
-                state: { userData: res.data.data.kakaoUserInfo },
-              });
-            }
-          })
-          //이미 가입된 회원이라면
-          .catch((error) => {
-            if(error.response.data.error === "Login Method Mismatch"){
-              setIsAlreadyRegist(true);
-            }
-          });
+          console.log("Response from server:", res.data);
+
+          if (res.data.data.isMember) {
+            const { accessToken, refreshToken } = res.data.data.tokenInfo;
+
+            dispatch(
+              setToken({
+                accessToken,
+                refreshToken,
+              })
+            );
+          } else {
+            // 회원가입으로 이동
+            navigate("/signupWithKakao", {
+              state: { userData: res.data.data.kakaoUserInfo },
+            });
+          }
+        } catch (error) {
+          if (error.response?.data?.error === "Login Method Mismatch") {
+            setIsAlreadyRegist(true);
+          } else {
+            console.error("로그인 중 오류 발생:", error);
+          }
+        }
+      } else if (!fcmTokenReady) {
+        console.log("FCM 토큰이 아직 초기화되지 않았습니다.");
       } else {
         console.error("No code present in URL");
       }
     };
 
-    checkCode();
-  }, [code, navigate, API_LINK, dispatch]);
+    if (fcmTokenReady) {
+      checkCode();
+    }
+  }, [code, fcmTokenReady, fcmToken, navigate, API_LINK, dispatch]);
 
-  // 모달이 닫힐 때 리다이렉션하도록 설정
   const handleCloseModal = () => {
     navigate("/login");
   };

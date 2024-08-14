@@ -32,7 +32,6 @@ function ConnectReceiptScheduleModal({ onClose, onConfirm }) {
         });
 
         setBookmarks(sortedBookmarks);
-        console.log(sortedBookmarks);
       } catch (error) {
         console.error("북마크를 가져오는 중 문제가 발생했습니다", error);
       }
@@ -71,31 +70,33 @@ function ConnectReceiptScheduleModal({ onClose, onConfirm }) {
           <div className="connect-schedule-select">
             연결할 장소를 선택해주세요
           </div>
-          {bookmarks.map((dayData, index) => (
-            <div className="day-section" key={index}>
-              <h3 onClick={() => toggleDaySection(index)}>
-                {index + 1}일차 ({dayData.date.substr(5)})
-              </h3>
-              {expandedDays.includes(index) && (
-                <div>
-                  {dayData.places.map((place) => (
-                    <div key={place.id} className="place-item">
-                      <input
-                        type="radio"
-                        id={`place${place.id}`}
-                        name="place"
-                        value={place.id}
-                        onChange={() => {
-                          handlePlaceSelect(place);
-                        }}
-                      />
-                      <label htmlFor={`place${place.id}`}>{place.name}</label>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+          {bookmarks
+            .filter((dayData) => dayData.date !== null) // null이 아닌 날짜만 필터링
+            .map((dayData, filteredIndex) => (
+              <div className="day-section" key={filteredIndex}>
+                <h3 onClick={() => toggleDaySection(filteredIndex)}>
+                  {filteredIndex + 1}일차 ({dayData.date.substr(5)})
+                </h3>
+                {expandedDays.includes(filteredIndex) && (
+                  <div>
+                    {dayData.places.map((place) => (
+                      <div key={place.id} className="place-item">
+                        <input
+                          type="radio"
+                          id={`place${place.id}`}
+                          name="place"
+                          value={place.id}
+                          onChange={() => {
+                            handlePlaceSelect(place);
+                          }}
+                        />
+                        <label htmlFor={`place${place.id}`}>{place.name}</label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
         </div>
         <button
           className={`connect-confirm-button ${

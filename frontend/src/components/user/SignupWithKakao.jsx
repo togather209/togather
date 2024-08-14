@@ -5,8 +5,10 @@ import CommonInput from "../common/CommonInput";
 import SubmitButton from "./SubmitButton";
 import "./User.css";
 import axios from "axios";
+import Modal from "../../components/common/Modal";
 
 function SignupWithKakao() {
+  const [signupCheck, setSignupCheck] = useState(false);
   const location = useLocation();
   const userData = { ...location.state };
   const [nickname, setNickname] = useState(userData.userData.nickname);
@@ -22,8 +24,8 @@ function SignupWithKakao() {
     };
 
     const response = await axios.post(`${API_LINK}/auth/kakao/register`, dataForm);
-    console.log(response.data);
-    navigate("/login");
+    //console.log(response.data);
+    setSignupCheck(true);
   };
 
   //닉네임 유효성 검사
@@ -121,6 +123,9 @@ function SignupWithKakao() {
           가입하기{" "}
         </SubmitButton>
       </div>
+      {signupCheck && (
+        <Modal mainMessage={"카카오 회원가입이 완료되었습니다!"} subMessage={"Togather를 즐기러 가볼까요?"} onClose={() => navigate("/login")}/>
+      )}
     </div>
   );
 }
