@@ -32,7 +32,6 @@ function ConnectReceiptScheduleModal({ onClose, onConfirm }) {
         });
 
         setBookmarks(sortedBookmarks);
-        console.log(sortedBookmarks);
       } catch (error) {
         console.error("북마크를 가져오는 중 문제가 발생했습니다", error);
       }

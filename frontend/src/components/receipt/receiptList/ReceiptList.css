@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
-  position: relative; /* Positioning context for centering */
+  position: relative;
 }
 
 .schedule-finish-button {
