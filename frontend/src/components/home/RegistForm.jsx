@@ -61,7 +61,9 @@ function RegistForm() {
       new Blob([memberData], { type: "application/json" })
     ); // JSON 데이터 추가
     if (teamImg) {
-      formData.append("image", teamImg); // 파일 객체를 추가
+      const fileBlob = new Blob([teamImg], { type: "image/png" });
+      const fileData = new File([fileBlob], "image.png");
+      formData.append("image", fileData); // 파일 객체를 추가
     }
 
     // axios요청

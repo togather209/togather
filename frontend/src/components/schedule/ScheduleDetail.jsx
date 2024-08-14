@@ -297,11 +297,13 @@ function ScheduleDetail() {
               onSearch={handleSearch}
               isOpenSearch={isOpenSearch}
             />
-            <img
-              className="schedule-detail-alarm-icon"
-              src={alarm}
-              alt="알람"
-            />
+            <button className="schedule-detail-alarm-button" onClick={() => navigation("/alarm")}>
+              <img
+                className="schedule-detail-alarm-icon"
+                src={alarm}
+                alt="알람"
+              />
+            </button>
           </div>
           <div className="schedule-detail-middle-box">
             <div className="schedule-detail-middle-info">

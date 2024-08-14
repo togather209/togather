@@ -48,22 +48,22 @@ function SelectParticipantsModal({
         />
         <div className="select-participants-modal-detail">
           {participants.map((participant, idx) => (
-            <div key={participant.memberId} className="participant-item">
+            <div key={participant?.memberId} className="participant-item">
               <input
                 type={isSingleSelect ? "radio" : "checkbox"}
-                id={`participant-${participant.memberId}`}
+                id={`participant-${participant?.memberId}`}
                 checked={selected.some(
-                  (p) => p.memberId === participant.memberId
+                  (p) => p?.memberId === participant?.memberId
                 )}
                 onChange={() => handleToggle(participant)}
               />
-              <label htmlFor={`participant-${participant.memberId}`}>
+              <label htmlFor={`participant-${participant?.memberId}`}>
                 <img
                   className="participant-info-img"
-                  src={participant.profileImg}
+                  src={participant?.profileImg}
                   alt=""
                 />
-                {participant.nickname}
+                {participant?.nickname}
               </label>
             </div>
           ))}

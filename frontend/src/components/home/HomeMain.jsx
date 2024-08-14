@@ -38,7 +38,7 @@ function HomeMain() {
   };
 
   return (
-    <div>
+    <div className="home-container">
       <div className="main-header">
         <img
           onClick={() => navigation("/")}
@@ -85,7 +85,10 @@ function HomeMain() {
                   ))
               ) : (
                 <div className="no-meeting-at-home">
-                  <p className="no-meeting-text">모임이 없습니다 !!</p>
+                  <p className="no-meeting-text">모임이 없습니다</p>
+                  <p className="no-meeting-sub-text">
+                    지금 바로 만들어보세요 !
+                  </p>
                 </div>
               )}
             </div>

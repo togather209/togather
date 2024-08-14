@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./User.css";
 import "../common/CommonInput.css";
 import logo from "../../assets/icons/common/logo.png";
@@ -8,31 +8,49 @@ import CommonInput from "../common/CommonInput";
 import BackButton from "../common/BackButton";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // 아이콘 추가
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Modal from "../common/Modal";
+import DefaultProfileImage from "./DefaultProfileImage";
 
 function SignUpForm() {
   const API_LINK = import.meta.env.VITE_API_URL;
   const [isImageBig, setIsImageBig] = useState(false);
-  const [profileImage, setProfileImage] = useState(null); //프로필 이미지
+  const [profileImage, setProfileImage] = useState(null);
   const [profileImagePreview, setProfileImagePreview] = useState("");
-  const [email, setEmail] = useState(""); //이메일
-  const [emailMessage, setEmailMessage] = useState(""); //이메일 메시지
-  const [password, setPassword] = useState(""); //비밀번호
-  const [validPassword, setValidPassword] = useState(""); //비밀번호 확인
-  const [nickname, setNickname] = useState(""); //닉네임
-  const [passwordMessage, setPasswordMessage] = useState(""); //비밀번호 메세지
-  const [certificationClick, setCertificationClick] = useState(false); //인증버튼 클릭
-  const [inputCode, setInputCode] = useState(""); //인증 코드
-  const [certificationComplete, setCertificaionComplete] = useState(false); //인증 정보 확인
-  const [timer, setTimer] = useState(300); // 300초 = 5분
-  const [timerActive, setTimerActive] = useState(false); //시간 재기 시작!
-  const [passwordVisible, setPasswordVisible] = useState(false); // 비밀번호 가시성 상태
-  const [validPasswordVisible, setValidPasswordVisible] = useState(false); // 비밀번호 확인 가시성 상태
-  const [nicknameMessage, setNicknameMessage] = useState(""); //닉네임 메시지
+  const [email, setEmail] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
+  const [password, setPassword] = useState("");
+  const [validPassword, setValidPassword] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [passwordMessage, setPasswordMessage] = useState("");
+  const [certificationClick, setCertificationClick] = useState(false);
+  const [inputCode, setInputCode] = useState("");
+  const [certificationComplete, setCertificaionComplete] = useState(false);
+  const [timer, setTimer] = useState(300);
+  const [timerActive, setTimerActive] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [validPasswordVisible, setValidPasswordVisible] = useState(false);
+  const [nicknameMessage, setNicknameMessage] = useState("");
   const [signupOk, setSignupOk] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [defaultProfileImageUrl, setDefaultProfileImageUrl] = useState(null); // Default 이미지 URL 저장
+
   const navigate = useNavigate();
+
+  const colorPairs = [
+    { background: "#FFD700", text: "#B8860B" },
+    { background: "#FF8C00", text: "#D2691E" },
+    { background: "#FF6347", text: "#CD5C5C" },
+    { background: "#4682B4", text: "#1C1C72" },
+    { background: "#32CD32", text: "#228B22" },
+    { background: "#BA55D3", text: "#8A2BE2" },
+    { background: "#FF69B4", text: "#FF1493" },
+    { background: "#8A2BE2", text: "#4B0082" },
+    { background: "#00CED1", text: "#008B8B" },
+    { background: "#FF4500", text: "#B22222" },
+    { background: "#2E8B57", text: "#006400" },
+    { background: "#DAA520", text: "#B8860B" },
+  ];
 
   useEffect(() => {
     let interval;
@@ -45,7 +63,6 @@ function SignUpForm() {
     if (timer === 0) {
       clearInterval(interval);
       setTimerActive(false);
-      // 타이머가 끝나면 추가로 수행할 작업
       alert("인증 시간이 만료되었습니다. 다시 인증해주세요.");
       setCertificationClick(false);
     }
@@ -59,7 +76,6 @@ function SignUpForm() {
     return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
   };
 
-  //회원가입 제출 폼
   const handleSignup = async (e) => {
     e.preventDefault();
 
@@ -96,6 +112,12 @@ function SignUpForm() {
       const fileBlob = new Blob([profileImage], { type: "image/png" });
       const fileData = new File([fileBlob], "image.png");
       memberData.append("image", fileData);
+    } else if (defaultProfileImageUrl) {
+      const fileBlob = await (await fetch(defaultProfileImageUrl)).blob();
+      const fileData = new File([fileBlob], "default_profile.png", {
+        type: "image/png",
+      });
+      memberData.append("image", fileData);
     }
 
     if (email === "" || password === "" || nickname === "") {
@@ -121,7 +143,6 @@ function SignUpForm() {
     }
   };
 
-  //이메일 인증 버튼 클릭시
   const emailCertification = async (e) => {
     e.preventDefault();
 
@@ -139,7 +160,6 @@ function SignUpForm() {
     };
 
     try {
-      // 이메일 코드 전송...
       const response = await axios.post(
         `${API_LINK}/auth/verification-codes`,
         emailData,
@@ -151,16 +171,14 @@ function SignUpForm() {
       );
 
       setCertificationClick(true);
-      setTimer(300); // 타이머를 5분으로 설정
-      setTimerActive(true); // 타이머 시작
-
+      setTimer(300);
+      setTimerActive(true);
       console.log("이메일 인증 메일 전송 성공", response);
     } catch (error) {
       console.log("이메일 인증 메일 전송 오류", error);
     }
   };
 
-  //비밀번호 유효성 검사
   const validatePassword = (password) => {
     const hasLetter = /[a-zA-Z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
@@ -168,26 +186,22 @@ function SignUpForm() {
     return hasLetter && hasNumber && hasSpecialChar;
   };
 
-  //닉네임 유효성 검사
   const validateNickname = (nickname) => {
     const nicknameRegex = /^[a-zA-Z0-9가-힣]{2,15}$/;
     return nicknameRegex.test(nickname);
   };
 
-  //이메일 유효성 검사
   const validateEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
   };
 
   const handleEmailBlur = async () => {
-    //이메일 없으면 메세지 없앤다.
     if (email.length === 0) {
       setEmailMessage("");
       return;
     }
 
-    //유효성 검사 탈락이면?
     if (!validateEmail(email)) {
       setEmailMessage("올바른 이메일 형식이 아닙니다.");
     } else {
@@ -207,7 +221,6 @@ function SignUpForm() {
         );
 
         if (response.data.data) {
-          //true이면
           setEmailMessage("중복된 이메일 입니다.");
         } else {
           setEmailMessage("");
@@ -218,12 +231,10 @@ function SignUpForm() {
     }
   };
 
-  //값 변경하는 메서드
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
 
-  //focus해제 됐을 때, 유효성 검사 실시
   const handlePasswordBlur = () => {
     if (password.length === 0) {
       setPasswordMessage("");
@@ -241,7 +252,6 @@ function SignUpForm() {
     }
   };
 
-  //닉네임 유효성 검사하기
   const handleNicknameBlur = async () => {
     if (nickname.length === 0) {
       setNicknameMessage("");
@@ -279,12 +289,10 @@ function SignUpForm() {
     }
   };
 
-  //비밀번호 확인 입력할 때 ...
   const handleValidPasswordChange = (e) => {
     setValidPassword(e.target.value);
   };
 
-  //비밀번호 확인 focus 떼면 수행
   const handleValidPasswordBlur = () => {
     if (!validatePassword(validPassword)) {
       setPasswordMessage(
@@ -297,7 +305,6 @@ function SignUpForm() {
     }
   };
 
-  //이미지 첨부하는 함수
   const handleImageChange = (e) => {
     if (
       e.target.files &&
@@ -306,14 +313,13 @@ function SignUpForm() {
     ) {
       const file = e.target.files[0];
 
-      setProfileImage(file); // 선택된 파일을 프로필 이미지로 설정
-      setProfileImagePreview(URL.createObjectURL(file)); // 미리보기를 위해 파일 URL 생성
+      setProfileImage(file);
+      setProfileImagePreview(URL.createObjectURL(file));
     } else {
       setIsImageBig(true);
     }
   };
 
-  // 인증번호 비교하기
   const certificationCode = async (e) => {
     e.preventDefault();
 
@@ -332,11 +338,9 @@ function SignUpForm() {
           },
         }
       );
-      // 인증 성공시...
       setCertificaionComplete(true);
       console.log("이메일 인증 성공!");
 
-      // 타이머와 입력 창 닫기
       setTimerActive(false);
       setCertificationClick(false);
     } catch (error) {
@@ -390,6 +394,13 @@ function SignUpForm() {
               style={{ display: "none" }}
             />
           </div>
+          {!profileImage && (
+            <DefaultProfileImage
+              nickname={nickname}
+              colorPairs={colorPairs}
+              onGenerate={setDefaultProfileImageUrl}
+            />
+          )}
           <div className="emailForm">
             <label
               htmlFor="email"
@@ -456,15 +467,19 @@ function SignUpForm() {
           ) : (
             ""
           )}
-          {certificationComplete ? <div>인증 완료되었습니다.</div> : ""}
+          {certificationComplete ? (
+            <div className="complete-certification">인증 완료되었습니다.</div>
+          ) : (
+            ""
+          )}
           <div className="password-container">
             <CommonInput
               id="password"
-              type={passwordVisible ? "text" : "password"} // 비밀번호 가시성에 따라 타입 변경
+              type={passwordVisible ? "text" : "password"}
               placeholder="비밀번호"
               value={password}
               onChange={handlePasswordChange}
-              onBlur={handlePasswordBlur} // 포커스가 해제될 때 유효성 검사
+              onBlur={handlePasswordBlur}
               className="password-input"
             />
             <button
@@ -478,11 +493,11 @@ function SignUpForm() {
           <div className="password-container">
             <CommonInput
               id="validPassword"
-              type={validPasswordVisible ? "text" : "password"} // 비밀번호 확인 가시성에 따라 타입 변경
+              type={validPasswordVisible ? "text" : "password"}
               placeholder="비밀번호확인"
               value={validPassword}
               onChange={handleValidPasswordChange}
-              onBlur={handleValidPasswordBlur} // 포커스가 해제될 때 유효성 검사
+              onBlur={handleValidPasswordBlur}
             />
           </div>
           {passwordMessage && (

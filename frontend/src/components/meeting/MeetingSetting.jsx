@@ -6,12 +6,15 @@ import MeetingParticipantManage from "./MeetingParticipantManage";
 import axiosInstance from "../../utils/axiosInstance";
 import BackButton from "../common/BackButton";
 import defaultImage from "../../../public/defaultimage.png";
+import Modal from "../common/Modal";
 
 function MeetingSetting() {
   const { id } = useParams();
   //   const { state } = useLocation();
   const [joinMembersRequest, setJoinMembersRequest] = useState([]);
   const [joinMember, setJoinMember] = useState([]);
+
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const location = useLocation();
   const state = location.state;
@@ -50,6 +53,19 @@ function MeetingSetting() {
     e.target.src = defaultImage; // 이미지 로드 실패 시 디폴트 이미지로 변경
   };
 
+  const copyToClipboard = () => {
+    if (state && state.teamCode) {
+      navigator.clipboard
+        .writeText(state.teamCode)
+        .then(() => {
+          setCopySuccess(true);
+        })
+        .catch((err) => {
+          setCopySuccess(false);
+        });
+    }
+  };
+
   return (
     <div className="none-meetingdetail">
       <div className="none-meetingdetail-header">
@@ -72,11 +88,22 @@ function MeetingSetting() {
       <div>
         <div className="meeting-setting-member-manage-box">
           <div className="setting-member-manage">멤버 관리</div>
-          <div className="part-code">{state.teamCode}</div>
+          <div
+            className="part-code"
+            onClick={copyToClipboard}
+            style={{ cursor: "pointer" }}
+          >
+            {state?.teamCode}
+          </div>
+          {copySuccess && (
+            <Modal
+              mainMessage={"초대코드가 복사됐어요!"}
+              onClose={() => setCopySuccess(false)}
+            />
+          )}
         </div>
         <div className="hr"></div>
         <div>
-          {/* 반복문 들어가야 한다. */}
           {joinMember.map((item, index) => (
             <MeetingParticipants
               key={index}
@@ -84,7 +111,6 @@ function MeetingSetting() {
               guestId={item.memberId}
               forR={forR}
               setForR={setForR}
-              // meetingDetail={meetingDetail}
             />
           ))}
         </div>
@@ -102,7 +128,6 @@ function MeetingSetting() {
               forR={forR}
               setForR={setForR}
               joinrequeststatus={item.status}
-              // meetingDetail={meetingDetail}
             />
           ))}
         </div>

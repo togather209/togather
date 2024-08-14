@@ -83,8 +83,8 @@ public class BookmarkController {
     @Operation(summary = "북마크 날짜 지정 및 수정")
     @PatchMapping("/bookmakrs/{bookmarkId}/date")
     public ResponseEntity<ResponseDto<List<BookmarkDateUpdateResponse>>> updateBookmarkDate(@PathVariable("teamId") int teamId, @PathVariable("planId") int planId, @PathVariable("bookmarkId") int bookmarkId,
-                                                                                      @RequestHeader(value = "Authorization", required = false) String header,
-                                                                                      @RequestBody BookmarkDateUpdateRequest request) {
+                                                                                            @RequestHeader(value = "Authorization", required = false) String header,
+                                                                                            @RequestBody BookmarkDateUpdateRequest request) {
 
 
         ResponseDto<List<BookmarkDateUpdateResponse>> responseDto = ResponseDto.<List<BookmarkDateUpdateResponse>>builder()
