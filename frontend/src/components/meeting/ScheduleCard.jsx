@@ -18,12 +18,6 @@ function ScheduleCard({ id, name, meetingName, meetingImg }) {
       >
         {name}
       </div>
-      <img
-        className="schedule-receipt"
-        onClick={() => navigation("/receipt/regist-form")}
-        src={schedulereceipt}
-        alt="영수증 사진"
-      />
     </div>
   );
 }

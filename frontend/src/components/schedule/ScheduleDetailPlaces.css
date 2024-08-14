@@ -1,60 +1,59 @@
 .schedule-detail-list-box {
-    /* border: 1px black solid; */
-    width: 327px;
-    height: 73px;
-    margin-bottom: 13px;
-    border-radius: 15px;
-    box-shadow: 5px 10px 20px #E9E9E9;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  /* border: 1px black solid; */
+  width: 327px;
+  height: 73px;
+  margin-bottom: 13px;
+  border-radius: 15px;
+  box-shadow: 5px 10px 20px #e9e9e9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .schedule-detail-section1 {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .schedule-detail-place-img {
-    width: 49px;
-    height: 49px;
-    margin-left: 7px;
-    margin-right: 10px;
-    border-radius: 10px;
+  width: 49px;
+  height: 49px;
+  margin-left: 7px;
+  margin-right: 10px;
+  border-radius: 10px;
 }
 
 .schedule-detail-place-name {
-    font-size: 16px;
+  font-size: 16px;
 }
 
 .schedule-detail-place-address {
-    font-size: 10px;
-    color: #131212;
-    opacity: 50%;
+  font-size: 10px;
+  color: #131212;
+  opacity: 50%;
 }
 
 .schedule-detail-place-receipt-img {
-    width: 16px;
-    height: 16px;
+  width: 16px;
+  height: 16px;
 }
 
 .side-stick {
-    width: 30px;
-    height: 30px;
+  width: 30px;
+  height: 30px;
 }
 
 .schedule-detail-place-receipt-num {
-    color: #712FFF;
+  color: #712fff;
 }
 
-.receipt-box-div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 56px;
-    height: 33px;
-    border: 1px solid #712FFF;
-    border-radius: 12px;
-    margin-right: 20px;
-
+.receipt-box-div-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 30px;
+  border: 1px solid #712fff;
+  border-radius: 8px;
+  margin-right: 20px;
 }

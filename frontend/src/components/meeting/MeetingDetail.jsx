@@ -7,8 +7,17 @@ import BackButton from "../common/BackButton";
 import axiosInstance from "../../utils/axiosInstance";
 import defaultImage from "../../../public/defaultimage.png";
 
-function MeetingDetail() {
+import MeetingDetailPart from "./MeetingDetailPart";
+import MeetingSetting from "./MeetingSetting";
+
+function MeetingDetail({ folderName }) {
   const navigation = useNavigate();
+
+  const [isManageOpen, setIsManageOpen] = useState(false);
+
+  const handleIsManageOpen = () => {
+    setIsManageOpen(true);
+  };
 
   // id 파라미터 값을 받음
   const { id } = useParams();
@@ -19,11 +28,15 @@ function MeetingDetail() {
   const [joinMembersRequest, setJoinMembersRequest] = useState([]);
   const [joinMember, setJoinMember] = useState([]);
 
+  // const [isOpenManage, setIsOpenManage] = useState(true);
+  // setIsOpenManage(true);
+
   // 해당 페이지 렌더링 되면 모임 상세 조회
   useEffect(() => {
     meetingDetailInfo();
     wantJoinMembers();
     joinMembers();
+    console.log("렌더링되었습니다.");
   }, []); // => 이거 의존성 해치우고 싶다.
 
   // 모임 상세 요청
@@ -45,7 +58,7 @@ function MeetingDetail() {
       setJoinMembersRequest(response.data.data);
       // console.log(response.data.data)
     } catch (error) {
-      console.error("데이터 불러오기 실패", error);
+      console.error("모임장이 아니라 요청 인원 조회가 안되서 그런거임.");
     }
   };
 
@@ -68,21 +81,30 @@ function MeetingDetail() {
     <div className="none-meetingdetail">
       <div className="none-meetingdetail-header">
         <BackButton />
-        <div
-          className="none-meetingdetail-header-setting"
-          onClick={() =>
-            navigation(`/home/meeting/${id}/manage`, {
-              state: { code: meetingDetail.code },
-            })
-          }
-        >
-          <p className="meeting-setting-text">모임관리</p>
-          <img
-            className="meeting-setting"
-            src={meetingsetting}
-            alt="settingicon"
-          />
-        </div>
+        {meetingDetail.admin && !isManageOpen ? (
+          <div
+            className="none-meetingdetail-header-setting"
+            onClick={() =>
+              navigation(`/home/meeting/${id}/manage`, {
+                state: {
+                  teamName: meetingDetail.title,
+                  teamDesc: meetingDetail.description,
+                  teamImg: meetingDetail.teamImg,
+                  teamCode: meetingDetail.code,
+                },
+              })
+            }
+          >
+            <p className="meeting-setting-text">모임관리</p>
+            <img
+              className="meeting-setting"
+              src={meetingsetting}
+              alt="settingicon"
+            />
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
 
       <div className="meeting-info-container">
@@ -97,7 +119,14 @@ function MeetingDetail() {
           <p className="meeting-desc-in-detail">{meetingDetail.description}</p>
         </div>
       </div>
-      <Outlet />
+
+      {!isManageOpen ? (
+        <MeetingDetailPart></MeetingDetailPart>
+      ) : (
+        <MeetingSetting></MeetingSetting>
+      )}
+
+      {/* <Outlet /> */}
     </div>
   );
 }
