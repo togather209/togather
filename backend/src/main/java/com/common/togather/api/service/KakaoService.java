@@ -43,6 +43,9 @@ public class KakaoService {
     @Value("${kakao.login.grant.type}")
     private String KAKAO_LOGIN_GRANT_TYPE;
 
+    @Value("${kakao.login.secret.id}")
+    private String KAKAO_LOGIN_SECRET_ID;
+
     private final RestTemplate restTemplate = new RestTemplate();
     private final JwtUtil jwtUtil;
     private final RedisService redisService;
@@ -62,6 +65,7 @@ public class KakaoService {
         params.add("client_id", KAKAO_LOGIN_CLIENT_ID);
         params.add("redirect_uri", KAKAO_LOGIN_REDIRECT_URI);
         params.add("code", code);
+        params.add("client_secret", KAKAO_LOGIN_SECRET_ID);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
