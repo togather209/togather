@@ -5,11 +5,13 @@ import purpleSearch from "../../assets/schedule/purplesearch.png";
 import PlaceListItem from "./PlaceLIstItem";
 
 import JoinFormModal from "../home/JoinFormModal";
+import { useOutletContext } from "react-router-dom";
 
 const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
   console.log(places);
 
   const [openAlreadyJjim, setOpenAlreadyJjim] = useState(false);
+  const { newBookmark } = useOutletContext();
 
   const handleModalClose = () => {
     setOpenAlreadyJjim(false);
@@ -23,6 +25,14 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
     setImageUrl(extractedUrls);
     console.log(imageUrl);
   }, [places]);
+
+  const [favoritePlaces, setFavoritePlaces] = useState(places); // 초기화
+
+  useEffect(() => {
+    if (newBookmark && newBookmark.scheduleId === schedule_id) {
+      setFavoritePlaces((prevPlaces) => [...prevPlaces, newBookmark]);
+    }
+  }, [newBookmark, schedule_id]);
 
   // 크롤링 요청 보내는 코드가 필요합니다.
   // 크롤링 요청 보내는 코드가 필요합니다.

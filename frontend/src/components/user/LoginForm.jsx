@@ -6,7 +6,7 @@ import "./User.css";
 import "../common/CommonInput.css";
 import logo from "../../assets/icons/common/logo.png";
 import { Link } from "react-router-dom";
-import kakao from "../../assets/icons/common/kakao.png";
+import kakao from "../../assets/icons/common/kakao_login.png";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { clearToken, setToken } from "../../redux/slices/authSlice";
@@ -148,9 +148,7 @@ function LoginForm() {
           <img
             src={kakao}
             alt="카카오"
-            style={{ width: "20px", marginRight: "5px" }}
           />
-          카카오 로그인
         </button>
       </div>
       {isAlreadyRegistKakao && (
