@@ -12,15 +12,16 @@ function KakaoLogin() {
   const dispatch = useDispatch();
   const [isAlreadyRegist, setIsAlreadyRegist] = useState(false);
   const token = useSelector((state) => state.auth.accessToken);
-  const fcmToken = useFirebase();
-  console.log(fcmToken);
+  const { fcmToken } = useFirebase();
 
   const code = new URL(window.location.href).searchParams.get("code");
   console.log("Extracted code:", code);
+  console.log(fcmToken)
 
 
   useEffect(() => {
-    //console.log("useEffect is triggered"); // 이 로그가 출력되는지 확인
+    console.log("useEffect is triggered"); // 이 로그가 출력되는지 확인
+
     const checkCode = async () => {
       if (code) {
         await axios
@@ -42,7 +43,6 @@ function KakaoLogin() {
                   refreshToken,
                 })
               );
-              
             } else {
               // 회원가입으로 이동
               navigate("/signupWithKakao", {
@@ -52,7 +52,7 @@ function KakaoLogin() {
           })
           //이미 가입된 회원이라면
           .catch((error) => {
-            if(error.response.data.error === "Login Method Mismatch"){
+            if (error.response.data.error === "Login Method Mismatch") {
               setIsAlreadyRegist(true);
             }
           });
