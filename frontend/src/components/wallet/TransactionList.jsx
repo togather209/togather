@@ -3,8 +3,8 @@ import "./TransactionList.css";
 import image from "../../assets/icons/common/chunsik.png";
 import BackButton from "../common/BackButton";
 import axiosInstance from "../../utils/axiosInstance";
-import deposit from "../../assets/wallet/deposit.png";
-import withdraw from "../../assets/wallet/withdraw.png";
+import deposit from "../../assets/wallet/deposit.jpg";
+import withdraw from "../../assets/wallet/withdraw.jpg";
 
 function TransactionList() {
   const [transactions, setTransactions] = useState([]);
