@@ -16,6 +16,11 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
     console.log(imageUrl);
   }, [places]);
 
+  // 크롤링 요청 보내는 코드가 필요합니다.
+  // 크롤링 요청 보내는 코드가 필요합니다.
+  // 크롤링 요청 보내는 코드가 필요합니다.
+  // 크롤링 요청 보내는 코드가 필요합니다.
+
   // 찜하기 axios 요청
   const onButtonClick = (place) => async (e) => {
     e.preventDefault();
