@@ -11,9 +11,11 @@ import com.common.togather.db.entity.Plan;
 import com.common.togather.db.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -336,4 +338,14 @@ public class BookmarkService {
 
         return responseList;
     }
+
+//    // 장소 이미지 크롤링
+//    public ResponseEntity<List<String>> getPlaceImgUrls(List<String> placeUrls) {
+//
+//        List<String> response = new ArrayList<>();
+//        for(String placeUrl : placeUrls) {
+//
+//        }
+//
+//    }
 }
