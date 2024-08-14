@@ -86,9 +86,9 @@ function AppRoutes() {
           <Route index element={<Meetings />} />
           <Route path=":id" element={<MeetingDetailContainer />}>
             <Route path="" element={<MeetingDetail />}>
-              <Route index element={<MeetingDetailPart />} />
-              <Route path="manage" element={<MeetingSetting />} />
+              {/* <Route index element={<MeetingDetailPart />} /> */}
             </Route>
+            <Route path="manage" element={<MeetingSetting />} />
             <Route path="schedule-regist" element={<ScheduleRegist />} />
             <Route path="meeting-update" element={<MeetingUpdate />} />
             <Route
