@@ -1,8 +1,8 @@
 import React from "react";
 import "./JoinFormModal.css";
 
-function JoinFormModal({ joinModalOpen, content, onClose }) {
-  if (!joinModalOpen) return null;
+function JoinFormModal({ modalOpen, content, onClose }) {
+  if (!modalOpen) return null;
 
   return (
     <div className="join-modal-overlay" onClick={onClose}>

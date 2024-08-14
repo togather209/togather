@@ -28,6 +28,7 @@ import CheckModal from "../common/CheckModal";
 import ScheduleDeleteModal from "./ScheduleDeleteModal";
 
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import JoinFormModal from "../home/JoinFormModal";
 
 function ScheduleDetail() {
   const { id, schedule_id } = useParams();
@@ -43,6 +44,12 @@ function ScheduleDetail() {
 
   console.log(id);
   console.log(schedule_id);
+
+  const [openCantSearchModal, setOpenCantSearchModal] = useState(false);
+
+  const handleCloseCantSearchModal = () => {
+    setOpenCantSearchModal(false);
+  };
 
   // 카카오 API가 로드되었는지 확인
   useEffect(() => {
@@ -72,7 +79,7 @@ function ScheduleDetail() {
           setPlaces(data);
           setPagination(pagination);
         } else {
-          alert("검색 결과가 존재하지 않거나 오류가 발생했습니다.");
+          setOpenCantSearchModal(true);
         }
       });
     },
@@ -297,7 +304,10 @@ function ScheduleDetail() {
               onSearch={handleSearch}
               isOpenSearch={isOpenSearch}
             />
-            <button className="schedule-detail-alarm-button" onClick={() => navigation("/alarm")}>
+            <button
+              className="schedule-detail-alarm-button"
+              onClick={() => navigation("/alarm")}
+            >
               <img
                 className="schedule-detail-alarm-icon"
                 src={alarm}
@@ -505,9 +515,16 @@ function ScheduleDetail() {
             places={places}
             onPlaceClick={() => {}}
           />
-          {pagination && <Pagination pagination={pagination} />}
+          <div className="pagination-div">
+            {pagination && <Pagination pagination={pagination} />}
+          </div>
         </div>
       )}
+      <JoinFormModal
+        content={"검색결과가 존재하지 않습니다 !!"}
+        modalOpen={openCantSearchModal}
+        onClose={handleCloseCantSearchModal}
+      />
     </div>
   );
 }

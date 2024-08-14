@@ -1,4 +1,5 @@
 import React from "react";
+import "./Pagination.css";
 
 const Pagination = ({ pagination }) => {
   const createPagination = () => {
@@ -8,7 +9,7 @@ const Pagination = ({ pagination }) => {
         <a
           key={i}
           href="#"
-          className={i === pagination.current ? "on" : ""}
+          className={`${i === pagination.current ? "on" : ""} pagination-a-tag`}
           onClick={(e) => {
             e.preventDefault();
             pagination.gotoPage(i);
