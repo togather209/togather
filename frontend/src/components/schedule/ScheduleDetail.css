@@ -198,3 +198,8 @@
   width: 24px;
   height: 24px;
 }
+
+.pagination-div {
+  /* border: #712fff 1px solid; */
+  text-align: center;
+}
