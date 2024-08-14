@@ -4,6 +4,7 @@ import "./RegistForm.css";
 import Button from "../common/Button";
 import BackButton from "../common/BackButton";
 import axiosInstance from "../../utils/axiosInstance";
+import ImageIcon from "../../assets/meeting/imageIcon.png";
 
 // 모임 생성 폼
 function RegistForm() {
@@ -82,7 +83,9 @@ function RegistForm() {
 
   return (
     <div>
-      <BackButton />
+      <div className="regist-form-header">
+        <BackButton />
+      </div>
       <div className="regist-form">
         <div className="regist-form-container">
           <div className="regist-header"></div>
@@ -98,6 +101,14 @@ function RegistForm() {
                 <div>
                   <p className="img-input-desc">모임 대표 사진</p>
                 </div>
+                {!imagePreview && (
+                  <img
+                    src={ImageIcon}
+                    alt=""
+                    className="img-input-icon"
+                    onClick={handleImageContainerClick}
+                  />
+                )}
                 <div
                   className="meeting-regist-input-image-container"
                   onClick={handleImageContainerClick}
@@ -141,9 +152,9 @@ function RegistForm() {
                 onChange={handleMeetingDescriptionChange}
               />
             </div>
-            <Button type={"purple"}>생성</Button>
           </form>
         </div>
+        <Button type={"purple"}>생성</Button>
       </div>
     </div>
   );
