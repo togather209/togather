@@ -412,6 +412,7 @@ function ScheduleDetail() {
                   <ScheduleDetailFavoritePlaces
                     key={item.placeId}
                     placeId={item.placeId}
+                    placeImg={item.placeImg}
                     meetingId={id}
                     scheduleId={schedule_id}
                     bookmarkId={item.bookmarkId}
@@ -436,6 +437,7 @@ function ScheduleDetail() {
                           key={item.bookmarkId}
                           index={index}
                           meetingId={id}
+                          placeImg={item.placeImg}
                           scheduleId={schedule_id}
                           bookmarkId={item.bookmarkId}
                           name={item.placeName}
