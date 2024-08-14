@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import "./ScheduleDetail.css";
 import axiosInstance from "../../utils/axiosInstance";
@@ -293,6 +293,24 @@ function ScheduleDetail() {
     e.target.src = defaultImg; // 이미지 로드 실패 시 디폴트 이미지로 변경
   };
 
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleWheel = (e) => {
+      if (containerRef.current) {
+        containerRef.current.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+    };
+
+    const container = containerRef.current;
+    container.addEventListener("wheel", handleWheel);
+
+    return () => {
+      container.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
+
   return (
     <div className="schedule-detail">
       {!isOpenSearch ? (
@@ -377,7 +395,7 @@ function ScheduleDetail() {
               </ScheduleButton>
             </div>
           </div>
-          <div className="schedule-detail-date-box">
+          <div className="schedule-detail-date-box" ref={containerRef}>
             <div className="schedule-detail-weekdays">
               <div className="schedule-detail-like">찜</div>
               {datedata.map((item, index) => (
@@ -413,7 +431,7 @@ function ScheduleDetail() {
                     key={item.placeId}
                     placeId={item.placeId}
                     placeImg={item.placeImg}
-                    placeUrl={item.place_url}
+                    // placeUrl={item.place_url}
                     meetingId={id}
                     scheduleId={schedule_id}
                     bookmarkId={item.bookmarkId}
