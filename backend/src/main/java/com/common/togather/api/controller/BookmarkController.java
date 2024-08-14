@@ -157,9 +157,15 @@ public class BookmarkController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
-//    @Operation(summary = "장소 이미지 크롤링")
-//    @PostMapping("/bookmarks/search-place")
-//    public ResponseEntity<List<String>> crawlingPlaceImg(@RequestBody List<String> placeUrls){
-//        return bookmarkService.getPlaceImgUrls(placeUrls);
-//    }
+    @Operation(summary = "장소 이미지 크롤링")
+    @PostMapping("/bookmarks/search-place")
+    public ResponseEntity<ResponseDto<List<String>>> crawlingPlaceImg(@RequestBody List<String> placeUrls){
+
+        ResponseDto<List<String>> responseDto = ResponseDto.<List<String>>builder()
+                .status(HttpStatus.OK.value())
+                .message("장소 이미지 크롤링 성공")
+                .data(bookmarkService.getPlaceImgUrls(placeUrls))
+                .build();
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 }

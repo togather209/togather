@@ -11,9 +11,17 @@ import com.common.togather.db.entity.Plan;
 import com.common.togather.db.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -339,13 +347,44 @@ public class BookmarkService {
         return responseList;
     }
 
-//    // 장소 이미지 크롤링
-//    public ResponseEntity<List<String>> getPlaceImgUrls(List<String> placeUrls) {
-//
-//        List<String> response = new ArrayList<>();
-//        for(String placeUrl : placeUrls) {
-//
-//        }
-//
-//    }
+    // 장소 이미지 크롤링
+    public List<String> getPlaceImgUrls(List<String> placeUrls) {
+
+        List<String> response = new ArrayList<>();
+
+        // 크롬 드라이버
+        System.setProperty("webdriver.chrome.driver","C:\\ssafy\\togather\\chromedriver.exe");
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless"); // 브라우저 창을 띄우지 않는 헤드리스 모드
+        options.addArguments("--disable-gpu"); // GPU 비활성화 (Windows에서 필요)
+        options.addArguments("--window-size=1920,1080"); // 창 크기 설정 (옵션)
+        options.addArguments("--disable-extensions"); // 확장 프로그램 비활성화
+        options.addArguments("--no-sandbox"); // 샌드박스 비활성화
+        options.addArguments("--disable-dev-shm-usage"); // 공유 메모리 비활성화
+        options.addArguments("--disable-software-rasterizer"); // 소프트웨어 렌더링 비활성화
+        WebDriver driver = new ChromeDriver(options);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        try {
+            for(String placeUrl : placeUrls) {
+                driver.get(placeUrl);
+
+                // 요소가 클릭 가능할 때까지 기다리기
+                WebElement element = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='mArticle']/div[1]/div[1]/div[1]/a")));
+                element.click();
+
+                // 이미지 나올 때까지 최대 10초 대기
+                WebElement imageElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='photoViewer']/div[2]/div[1]/div[1]/img")));
+
+                String imageUrl = imageElement.getAttribute("src");
+
+                response.add(imageUrl);
+            }
+        } finally {
+            driver.quit();
+        }
+
+        return response;
+
+    }
 }
