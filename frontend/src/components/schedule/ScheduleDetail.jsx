@@ -79,9 +79,6 @@ function ScheduleDetail() {
           setPlaces(data);
           setPagination(pagination);
         } else {
-          // ####
-          // alert("검색 결과가 존재하지 않거나 오류가 발생했습니다.");
-          // setOpenCantSearchModal(true);
           setOpenCantSearchModal(true);
         }
       });
@@ -518,7 +515,9 @@ function ScheduleDetail() {
             places={places}
             onPlaceClick={() => {}}
           />
-          {pagination && <Pagination pagination={pagination} />}
+          <div className="pagination-div">
+            {pagination && <Pagination pagination={pagination} />}
+          </div>
         </div>
       )}
       <JoinFormModal
