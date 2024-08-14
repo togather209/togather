@@ -4,8 +4,16 @@ import "./PlacesList.css";
 import purpleSearch from "../../assets/schedule/purplesearch.png";
 import PlaceListItem from "./PlaceLIstItem";
 
+import JoinFormModal from "../home/JoinFormModal";
+
 const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
   console.log(places);
+
+  const [openAlreadyJjim, setOpenAlreadyJjim] = useState(false);
+
+  const handleModalClose = () => {
+    setOpenAlreadyJjim(false);
+  };
 
   const [imageUrl, setImageUrl] = useState([]);
   // 장소 이미지 주소 담을 배열 생성
@@ -39,7 +47,12 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
         `/teams/${id}/plans/${schedule_id}/bookmarks`,
         favoriteFormData
       );
-      console.log(response); // 응답 데이터 확인
+
+      if (response) {
+        console.log(response); // 응답 데이터 확인
+      } else {
+        setOpenAlreadyJjim(true);
+      }
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
     }
@@ -76,6 +89,11 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
           ))}{" "}
         </ul>
       )}
+      <JoinFormModal
+        modalOpen={openAlreadyJjim}
+        onClose={handleModalClose}
+        content={"이미 찜 했는디요 ???"}
+      />
     </div>
   );
 };
