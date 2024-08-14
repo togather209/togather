@@ -5,7 +5,7 @@ import MeetingParticipants from "./MeetingParticipants";
 import MeetingParticipantManage from "./MeetingParticipantManage";
 import axiosInstance from "../../utils/axiosInstance";
 import BackButton from "../common/BackButton";
-import defaultImage from "../../../public/defaultimage.png";
+import defaultImage from "../../assets/meeting/defaultMeeting.png";
 import Modal from "../common/Modal";
 
 function MeetingSetting() {

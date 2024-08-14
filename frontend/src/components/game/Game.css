@@ -26,13 +26,14 @@
   height: 54px;
   border-radius: 50%;
   margin: 0 5px;
+  display: inline-block;
 }
 
 .game-participant-image {
   width: 54px;
   height: 54px;
   border-radius: 50%;
-  margin: 0 5px;
+  display: inline-block;
 }
 
 .game-container .game-participants {
@@ -46,6 +47,8 @@
   border-radius: 15px;
   padding: 15px 20px;
   background-color: #F9F9F9;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 .game-machine-container {

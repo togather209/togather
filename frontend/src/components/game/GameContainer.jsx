@@ -7,6 +7,7 @@ import MachineTongsHead from "../../assets/game/machine-tongs-head.png";
 import MachineTongs from "../../assets/game/machine-tongs.png";
 import AddButton from "../../assets/icons/common/add.png";
 import SelectedCard from "../../assets/game/selectedCard.png";
+import DefaultProfile from "../../assets/icons/common/defaultProfile.png";
 import Modal from "../common/Modal";
 
 function GameContainer() {
@@ -72,7 +73,9 @@ function GameContainer() {
         {participants.map((participant) => (
           <div key={participant.memberId} className="game-participant">
             <img
-              src={participant.profileImg}
+              src={
+                participant.profileImg ? participant.profileImg : DefaultProfile
+              }
               alt=""
               className="game-participant-image"
             />

@@ -1,3 +1,7 @@
+.meetings-container-box {
+  padding: 16px;
+}
+
 .meetings {
   display: flex;
   flex-direction: column;
@@ -15,6 +19,7 @@
 }
 
 .meetings-list-header {
+  margin-left: 10px;
   margin-bottom: 15px;
 }
 
