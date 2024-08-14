@@ -1,17 +1,26 @@
 .regist-form {
-  margin: 0px;
+  margin: 0px auto 20px auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-bottom: 60px;
-  padding: 16px;
+  width: 90%;
+}
+
+.regist-form-header {
+  padding: 16px 16px 0 16px;
+}
+
+.img-input-icon {
+  position: absolute;
+  width: 36px;
+  transform: translateY(10px);
 }
 
 .meeting-regist-input-image-container {
   background-color: #e9eaeb;
-  width: 256px;
-  height: 172px;
+  width: 264px;
+  height: 176px;
   border-radius: 13px;
 }
 
@@ -24,13 +33,14 @@
 }
 
 .create-ques {
-  font-size: 16px;
-  margin-bottom: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 4px;
 }
 
 .ques-desc {
   font-size: 14px;
-  color: #131212;
+  color: #4b4a4a;
   opacity: 70%;
   margin-bottom: 19px;
 }
@@ -44,7 +54,7 @@
 
 .content-container {
   width: 300px;
-  height: 247px;
+  height: 240px;
   background-color: #f9f9f9;
   border-radius: 15px;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
@@ -59,13 +69,15 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .img-input-desc {
-  width: 256px;
+  width: 260px;
   text-align: start;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #686868;
   margin-right: auto;
 }
 
@@ -74,7 +86,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   border: none;
   width: 300px;
   height: 53px;
@@ -88,7 +100,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-bottom: 67px;
+  margin-bottom: 10px;
   border: none;
   width: 300px;
   height: 53px;
@@ -104,11 +116,19 @@
   background-color: #f9f9f9;
 }
 
+.name-input:focus {
+  outline: none;
+}
+
 .desc-input {
   width: 90%;
   height: 50%;
   border: none;
   background-color: #f9f9f9;
+}
+
+.desc-input:focus {
+  outline: none;
 }
 
 .image-preview {

@@ -35,7 +35,8 @@ function CreatePayment() {
   //인증 되었다.
   const [isVerification, setIsVerification] = useState(false);
   //비밀번호 모달열기
-  const [isAuthenticationSuccess, setIsAuthenticationsSuccess] = useState(false);
+  const [isAuthenticationSuccess, setIsAuthenticationsSuccess] =
+    useState(false);
   //페이생성 모달
   const [completeCreatePay, setCompleteCreatePay] = useState(false);
 
@@ -142,7 +143,7 @@ function CreatePayment() {
       );
       console.log(userPayDataResponse.data);
 
-      //인증 성공했으면! 
+      //인증 성공했으면!
       setIsVerification(true);
       //모달 닫기
       setPasswordModal(false);
@@ -155,30 +156,31 @@ function CreatePayment() {
   //인증이 끝난 상태에서 페이계좌 생성하는거임
   const createPay = async () => {
     //칸이 비어있다면 실명으로 설정
-    if(accountName === null || accountName === ""){
+    if (accountName === null || accountName === "") {
       setAccountName(memberName);
       console.log(accountName);
     }
 
     const payData = {
-      accountName : accountName,
+      accountName: accountName,
       password: password,
       accountNum: accountNum,
       memberName: memberName,
-    }
-
+    };
 
     try {
-      const payDataResponse = await axiosInstance.post("/pay-accounts", payData);
-      
+      const payDataResponse = await axiosInstance.post(
+        "/pay-accounts",
+        payData
+      );
+
       setCompleteCreatePay(true);
-      dispatch(setAccount({account : payDataResponse.data.data}));
+      dispatch(setAccount({ account: payDataResponse.data.data }));
       //지갑 페이지로 이동하면... 다른페이지가 뜰거다.
-      
     } catch (error) {
       console.log("데이터 이상");
     }
-  }
+  };
 
   return (
     <div className="payment-container">
@@ -186,8 +188,16 @@ function CreatePayment() {
         <BackButton />
       </header>
       <div className="progress-bar">
-        <div className={`progress-step ${step >= 1 ? "active" : ""}`}>1</div>
-        <div className={`progress-step ${step >= 2 ? "active" : ""}`}>2</div>
+        <span
+          className={`progress-section-number ${step === 1 ? "active" : ""} ${
+            step === 2 ? "done" : ""
+          }`}
+        >
+          <span className="progress-section-number-inner">1</span>
+        </span>
+        <div className={`progress-section-number ${step >= 2 ? "active" : ""}`}>
+          <span className="progress-section-number-inner">2</span>
+        </div>
       </div>
 
       {step === 1 && (
@@ -254,7 +264,11 @@ function CreatePayment() {
           />
           <div className="btn">
             <button onClick={prevStep}>이전</button>
-            {!isVerification ? <button onClick={openPasswordModal}>인증</button> : <button onClick={createPay}>생성</button>}
+            {!isVerification ? (
+              <button onClick={openPasswordModal}>인증</button>
+            ) : (
+              <button onClick={createPay}>생성</button>
+            )}
           </div>
         </div>
       )}
@@ -309,11 +323,19 @@ function CreatePayment() {
       )}
 
       {isAuthenticationSuccess && (
-        <Modal mainMessage={"비밀번호 인증 성공!"} subMessage={"연동계좌 확인이 완료되었습니다."} onClose={() => setIsAuthenticationsSuccess(false)}/>
+        <Modal
+          mainMessage={"비밀번호 인증 성공!"}
+          subMessage={"연동계좌 확인이 완료되었습니다."}
+          onClose={() => setIsAuthenticationsSuccess(false)}
+        />
       )}
 
       {completeCreatePay && (
-        <Modal mainMessage={"계좌 생성에 성공하였습니다!"} subMessage={`${accountName} 지갑이 생성되었습니다.`} onClose={() => navigate("/wallet")}/>
+        <Modal
+          mainMessage={"계좌 생성에 성공하였습니다!"}
+          subMessage={`${accountName} 지갑이 생성되었습니다.`}
+          onClose={() => navigate("/wallet")}
+        />
       )}
     </div>
   );

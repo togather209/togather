@@ -114,8 +114,10 @@ function AlarmList() {
 
   return (
     <div className="alarm-page">
-      <BackButton />
-      <h1 className="alarm-page-title">알림</h1>
+      <div className="alarm-page-header-contianer">
+        <BackButton />
+        <h1 className="alarm-page-title">알림</h1>
+      </div>
       <div className="alarm-controls">
         <input
           type="checkbox"
@@ -129,7 +131,7 @@ function AlarmList() {
           onClick={deleteSelectedAlarms}
           disabled={selectedAlarms?.length === 0}
         >
-          삭제 
+          삭제
         </button>
         {deleteAlarm && (
           <Modal
@@ -142,7 +144,7 @@ function AlarmList() {
         )}
       </div>
       <div className="alarm-list">
-        {alarms.length > 0 ? (
+        {alarms.length > 0 &&
           alarms.map((alarm) => (
             <div key={alarm?.id} className="alarm-list-line">
               <input
@@ -163,10 +165,8 @@ function AlarmList() {
                 <span className="alarm-item-content">{alarm?.content}</span>
               </button>
             </div>
-          ))
-        ) : (
-          <p>알림이 없습니다.</p>
-        )}
+          ))}
+        <div className="alarm-no-content">알림이 없습니다.</div>
       </div>
     </div>
   );
