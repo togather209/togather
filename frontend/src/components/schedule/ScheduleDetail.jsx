@@ -431,6 +431,7 @@ function ScheduleDetail() {
                           name={item.placeName}
                           address={item.placeAddr}
                           datedate={item.date}
+                          receiptCnt={item.receiptCnt}
                           firstDate={datedata[0]?.date}
                           lastDate={datedata[datedata.length - 1]?.date}
                           forRendering={forRendering}

@@ -29,7 +29,7 @@ const CustomDatePickerWrapper = styled.div`
   }
 
   .react-datepicker__day:hover {
-    background-color: #d1c4e9;
+    background-color: #ffffff;
   }
 
   .react-datepicker__navigation--previous,
@@ -57,10 +57,14 @@ const CustomDatePickerWrapper = styled.div`
   }
 `;
 
-
-const CalendarComponent = ({ onChange, firstDate, lastDate, datedate, handleDateChange, selectedDate }) => {
-
-
+const CalendarComponent = ({
+  onChange,
+  firstDate,
+  lastDate,
+  datedate,
+  handleDateChange,
+  selectedDate,
+}) => {
   return (
     <CustomDatePickerWrapper>
       <DatePicker

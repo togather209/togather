@@ -26,6 +26,7 @@ public class BookmarkController {
 
     private final BookmarkService bookmarkService;
     private final JwtUtil jwtUtil;
+    private final SseController sseController;
 
     // 북마크 조회 by 일정 id
     @Operation(summary = "북마크 조회 by 일정 id")
@@ -150,6 +151,9 @@ public class BookmarkController {
                 .message("찜 목록에서 삭제되었습니다.")
                 .data(bookmarkService.deleteBookmark(teamId, planId, bookmarkId, header))
                 .build();
+
+        sseController.notifyClients(teamId, "bookmark-deleted", bookmarkId);
+
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }
