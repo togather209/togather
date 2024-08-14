@@ -20,8 +20,10 @@ function ScheduleDetailFavoritePlaces({
   lastDate,
   setForRendering,
   forRendering,
+  // placeUrl,
 }) {
   console.log(placeImg);
+  // console.log(placeUrl);
 
   const [isHeartPurple, setIsHeartPurple] = useState(false);
 

@@ -413,6 +413,7 @@ function ScheduleDetail() {
                     key={item.placeId}
                     placeId={item.placeId}
                     placeImg={item.placeImg}
+                    placeUrl={item.place_url}
                     meetingId={id}
                     scheduleId={schedule_id}
                     bookmarkId={item.bookmarkId}
@@ -437,6 +438,7 @@ function ScheduleDetail() {
                           key={item.bookmarkId}
                           index={index}
                           meetingId={id}
+                          placeUrl={item.palce_url}
                           placeImg={item.placeImg}
                           scheduleId={schedule_id}
                           bookmarkId={item.bookmarkId}

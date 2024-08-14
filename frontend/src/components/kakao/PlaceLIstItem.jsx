@@ -42,6 +42,8 @@ const PlaceListItem = ({ place, index, onPlaceClick, onButtonClick }) => {
     }
   };
 
+  console.log(place.place_url);
+
   useEffect(() => {
     setImgType(typeSelect(place.category_group_code));
   }, [place.category_group_code]);
@@ -50,7 +52,9 @@ const PlaceListItem = ({ place, index, onPlaceClick, onButtonClick }) => {
     <li key={index} className="item" onClick={() => onPlaceClick(place)}>
       <div className="info">
         <span className={`markerbg marker_${index + 1}`}></span>
-        <img className="search-result-image" src={imgType} alt="결과임시" />
+        <a className="search-place-detail-info" href={place.place_url}>
+          <img className="search-result-image" src={imgType} alt="결과임시" />
+        </a>
         <div className="search-result-content-container">
           <h5 className="place-list-name">{place.place_name}</h5>
           {place.road_address_name ? (
@@ -60,6 +64,7 @@ const PlaceListItem = ({ place, index, onPlaceClick, onButtonClick }) => {
           )}
         </div>
       </div>
+
       <button className="place-jjim-hagi" onClick={onButtonClick(place)}>
         찜하기
       </button>
