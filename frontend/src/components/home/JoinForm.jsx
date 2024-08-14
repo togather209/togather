@@ -48,7 +48,7 @@ function JoinForm() {
   };
 
   return (
-    <div>
+    <div className="join-form-container">
       <BackButton />
       <div className="joinform">
         <div className="joinform-header">
@@ -61,10 +61,10 @@ function JoinForm() {
               onChange={handleCode}
             />
           </div>
-          <Button type={"purple"} onClick={joinMeeting}>
-            참여
-          </Button>
         </div>
+        <Button type={"purple"} onClick={joinMeeting}>
+          참여
+        </Button>
       </div>
       <JoinFormModal
         joinModalOpen={joinModalOpen}

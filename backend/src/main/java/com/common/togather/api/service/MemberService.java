@@ -3,6 +3,7 @@ package com.common.togather.api.service;
 import com.common.togather.api.error.MemberNotFoundException;
 import com.common.togather.api.request.MemberUpdateRequest;
 import com.common.togather.api.response.MemberFindByIdResponse;
+import com.common.togather.common.util.FCMUtil;
 import com.common.togather.common.util.ImageUtil;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
@@ -24,6 +25,7 @@ public class MemberService {
     private final RedisService redisService;
     private final JwtUtil jwtUtil;
     private final ImageUtil imageUtil;
+    private final FCMUtil fcmUtil;
 
     // 로그아웃
     @Transactional
@@ -36,6 +38,12 @@ public class MemberService {
         // refresh token은 redis에서 삭제해 무효화
         String email = jwtUtil.getEmailFromToken(refreshToken);
         redisService.deleteRefreshToken(email);
+
+        // fcm 토큰 삭제
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 가입된 회원이 없습니다."));
+
+        fcmUtil.deleteToken(member);
     }
 
 
@@ -81,6 +89,9 @@ public class MemberService {
         // refresh token은 redis에서 삭제해 무효화
         String email = jwtUtil.getEmailFromToken(refreshToken);
         redisService.deleteRefreshToken(email);
+
+        // fcm 토큰 삭제
+        fcmUtil.deleteToken(member);
 
         memberRepository.delete(member);
     }

@@ -18,6 +18,7 @@ function KakaoLogin() {
   console.log("Extracted code:", code);
   console.log(fcmToken)
 
+
   useEffect(() => {
     console.log("useEffect is triggered"); // 이 로그가 출력되는지 확인
 
