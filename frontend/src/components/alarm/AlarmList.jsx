@@ -58,7 +58,7 @@ function AlarmList() {
 
       // 모임 가입 신청
       case 4:
-        navigate(`/home/meeting/${alarmDto.teamId}/manage`);
+        navigate(`/home/meeting/${alarmDto.teamId}`);
         break;
 
       // 입금 알림
