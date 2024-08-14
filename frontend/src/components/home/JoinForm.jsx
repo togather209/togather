@@ -4,6 +4,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import "./JoinForm.css";
 import Button from "../common/Button";
 import BackButton from "../common/BackButton";
+import JoinFormModal from "./JoinFormModal";
 
 function JoinForm() {
   const navigation = useNavigate();
@@ -28,13 +29,22 @@ function JoinForm() {
         "/teams/join-requests",
         codeData
       );
+      console.log(response);
       // console.log(response)
       if (response) {
         navigation("/home");
+      } else {
+        setJoinModalOpen(true);
       }
     } catch (error) {
       console.error("데이터 불러오기실패", error);
     }
+  };
+
+  const [joinModalOpen, setJoinModalOpen] = useState(false);
+
+  const handleModalClose = () => {
+    setJoinModalOpen(false);
   };
 
   return (
@@ -56,6 +66,11 @@ function JoinForm() {
           </Button>
         </div>
       </div>
+      <JoinFormModal
+        joinModalOpen={joinModalOpen}
+        content={"존재하지 않는 참여코드 입니다"}
+        onClose={handleModalClose}
+      />
     </div>
   );
 }
