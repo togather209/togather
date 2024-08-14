@@ -42,8 +42,13 @@ public class FCMUtil {
         member.getFcmToken().updateToken(token);
     }
 
+    @Transactional
     public void deleteToken(Member member) {
-        fcmTokenRepository.delete(member.getFcmToken());
+        if (member.getFcmToken() != null) {
+            FCMToken fcmToken = member.getFcmToken();
+            fcmToken.removeMember();
+            fcmTokenRepository.delete(fcmToken);
+        }
     }
 
     @Async
