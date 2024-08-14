@@ -224,7 +224,8 @@
 }
 
 .recognized-store-name {
-  margin: 20px 10px 20px 10px;
+  margin: 20px auto 20px auto;
+  width: 70vw;
   font-size: 16px;
   font-weight: bold;
   background-color: #F9F9F9;
@@ -252,8 +253,8 @@
 .recognized-payment-date.edit {
   all: unset;
   text-align: start;
-  width: 246px;
-  margin: 0 10px 10px 10px;
+  width: 69vw;
+  margin: 0 0 10px 0;
   font-size: 16px;
   font-weight: bold;
   background-color: #F9F9F9;
