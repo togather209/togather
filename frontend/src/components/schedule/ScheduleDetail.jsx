@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useParams, useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import "./ScheduleDetail.css";
 import axiosInstance from "../../utils/axiosInstance";
 
@@ -26,10 +26,14 @@ import PlacesList from "../kakao/PlacesList";
 import Pagination from "../kakao/Pagination";
 import CheckModal from "../common/CheckModal";
 import ScheduleDeleteModal from "./ScheduleDeleteModal";
+import { useSelector } from "react-redux";
 
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
 function ScheduleDetail() {
+  const [favoritePlaces, setFavoritePlaces] = useState([]);
+  // 날짜별 장소 배열 상태
+  const [datePlaces, setDatePlaces] = useState([]);
   const { id, schedule_id } = useParams();
   const [places, setPlaces] = useState([]);
   const [pagination, setPagination] = useState(null);
@@ -41,8 +45,8 @@ function ScheduleDetail() {
   const location = useLocation();
   const { meetingName, meetingImg } = location.state || {};
 
-  console.log(id);
-  console.log(schedule_id);
+  // console.log(id);
+  // console.log(schedule_id);
 
   // 카카오 API가 로드되었는지 확인
   useEffect(() => {
@@ -78,6 +82,19 @@ function ScheduleDetail() {
     },
     [kakaoLoaded]
   );
+
+  const { deletedBookmarkId } = useOutletContext();
+
+  useEffect(() => {
+    if (deletedBookmarkId){
+      setFavoritePlaces((prevPlaces) =>{
+        prevPlaces?.filter((place) => place.bookmarkId !== deletedBookmarkId);
+      });
+      setDatePlaces((prevPlaces) => {
+        prevPlaces?.filter((place) => place.bookmarkId !== deletedBookmarkId)
+      })
+    }
+  }, [deletedBookmarkId]);
 
   // 일정 상세 상태
   const [scheduleDetail, setScheduleDetail] = useState({});
@@ -151,9 +168,7 @@ function ScheduleDetail() {
   // const [isCallStarted, setIsCallStarted] = useState(false);
   // const [isHeadPhone, setIsHeadPhone] = useState(false);
   // const [isMic, setIsMic] = useState(false);
-  const [favoritePlaces, setFavoritePlaces] = useState([]);
-  // 날짜별 장소 배열 상태
-  const [datePlaces, setDatePlaces] = useState([]);
+
 
   // const handleCallStart = () => setIsCallStarted(!isCallStarted);
   // const handleHeadPhone = () => setIsHeadPhone(!isHeadPhone);
@@ -200,7 +215,11 @@ function ScheduleDetail() {
       };
       favoritePlace();
     }
-  }, [isHeartClicked, id, schedule_id, isOpenSearch, forRendering]);
+  }, [isHeartClicked, id, schedule_id, isOpenSearch, forRendering, deletedBookmarkId]);
+
+  useEffect(() => {
+    console.log("Updated favoritePlaces:", favoritePlaces);
+  }, [favoritePlaces]);
 
   // 날짜가 정해진 장소들 요청하는 axios
   useEffect(() => {
@@ -297,7 +316,10 @@ function ScheduleDetail() {
               onSearch={handleSearch}
               isOpenSearch={isOpenSearch}
             />
-            <button className="schedule-detail-alarm-button" onClick={() => navigation("/alarm")}>
+            <button
+              className="schedule-detail-alarm-button"
+              onClick={() => navigation("/alarm")}
+            >
               <img
                 className="schedule-detail-alarm-icon"
                 src={alarm}
@@ -398,7 +420,7 @@ function ScheduleDetail() {
             </p>
             {isHeartClicked ? (
               <div>
-                {favoritePlaces.map((item, index) => (
+                {favoritePlaces?.map((item, index) => (
                   <ScheduleDetailFavoritePlaces
                     key={item.placeId}
                     placeId={item.placeId}
@@ -413,6 +435,7 @@ function ScheduleDetail() {
                     lastDate={datedata[datedata.length - 1]?.date}
                     forRendering={forRendering}
                     setForRendering={setForRendering}
+                    deletedBookmarkId={deletedBookmarkId}
                   />
                 ))}
               </div>
@@ -421,7 +444,7 @@ function ScheduleDetail() {
                 <Droppable droppableId="droppable-places">
                   {(provided) => (
                     <div ref={provided.innerRef} {...provided.droppableProps}>
-                      {datePlaces.map((item, index) => (
+                      {datePlaces?.map((item, index) => (
                         <ScheduleDetailPlaces
                           key={item.bookmarkId}
                           index={index}
