@@ -61,28 +61,26 @@ function HomeMain() {
                 <p className="my-meeting-title">나의 모임</p>
                 <p className="my-meeting-content">모임을 더 쉽고 간편하게 !</p>
               </div>
-              {myMeetings.length > 0 ? (
-                <button className="seeall" onClick={handleSeeAllClick}>
-                  전체보기 및 편집 &gt;
-                </button>
-              ) : (
-                <></>
-              )}
             </div>
 
             {/* 모임들 */}
             <div>
               {myMeetings.length > 0 ? (
-                <div className="meeting-cards">
-                  {myMeetings.slice(0, 6).map((item) => (
-                    <HomeMainCard
-                      key={item.teamId}
-                      id={item.teamId}
-                      name={item.title}
-                      image_url={item.teamImg}
-                    />
-                  ))}
-                </div>
+                <>
+                  <div className="meeting-cards">
+                    {myMeetings.slice(0, 6).map((item) => (
+                      <HomeMainCard
+                        key={item.teamId}
+                        id={item.teamId}
+                        name={item.title}
+                        image_url={item.teamImg}
+                      />
+                    ))}
+                  </div>
+                  <button className="seeall" onClick={handleSeeAllClick}>
+                    전체보기 및 편집
+                  </button>
+                </>
               ) : (
                 <div className="no-meeting-at-home">
                   <p className="no-meeting-text">모임이 없습니다</p>
@@ -113,7 +111,7 @@ function HomeMain() {
               <div className="button-content">
                 <div className="button-desc">
                   <p>모임 만들기</p>
-                  <p className="button-text">모임장이 되어 직접 모임 생산</p>
+                  <p className="button-text">모임장이 되어 직접 모임 생성</p>
                 </div>
                 <img
                   className="folder-icon"
@@ -132,9 +130,7 @@ function HomeMain() {
                 <img className="mouse-icon" src={MouseIcon} alt="아이콘" />
                 <div className="button-desc2">
                   <p>모임 참여하기</p>
-                  <p className="button-text">
-                    초대 코드를 통해 빠르게 모임 가입
-                  </p>
+                  <p className="button-text">초대 코드로 빠르게 모임 가입</p>
                 </div>
               </div>
             </button>

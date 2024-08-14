@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import {
+  useParams,
+  useNavigate,
+  useLocation,
+  useOutletContext,
+} from "react-router-dom";
 import "./ScheduleDetail.css";
 import axiosInstance from "../../utils/axiosInstance";
 
@@ -26,11 +31,15 @@ import PlacesList from "../kakao/PlacesList";
 import Pagination from "../kakao/Pagination";
 import CheckModal from "../common/CheckModal";
 import ScheduleDeleteModal from "./ScheduleDeleteModal";
+import { useSelector } from "react-redux";
 
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import JoinFormModal from "../home/JoinFormModal";
 
 function ScheduleDetail() {
+  const [favoritePlaces, setFavoritePlaces] = useState([]);
+  // 날짜별 장소 배열 상태
+  const [datePlaces, setDatePlaces] = useState([]);
   const { id, schedule_id } = useParams();
   const [places, setPlaces] = useState([]);
   const [pagination, setPagination] = useState(null);
@@ -42,8 +51,8 @@ function ScheduleDetail() {
   const location = useLocation();
   const { meetingName, meetingImg } = location.state || {};
 
-  console.log(id);
-  console.log(schedule_id);
+  // console.log(id);
+  // console.log(schedule_id);
 
   const [openCantSearchModal, setOpenCantSearchModal] = useState(false);
 
@@ -86,6 +95,20 @@ function ScheduleDetail() {
     [kakaoLoaded]
   );
 
+  const { deletedBookmarkId } = useOutletContext();
+  const { newBookmark } = useOutletContext();
+
+  useEffect(() => {
+    if (deletedBookmarkId) {
+      setFavoritePlaces((prevPlaces) => {
+        prevPlaces?.filter((place) => place.bookmarkId !== deletedBookmarkId);
+      });
+      setDatePlaces((prevPlaces) => {
+        prevPlaces?.filter((place) => place.bookmarkId !== deletedBookmarkId);
+      });
+    }
+  }, [deletedBookmarkId]);
+
   // 일정 상세 상태
   const [scheduleDetail, setScheduleDetail] = useState({});
   const [startDate, setStartDate] = useState(null);
@@ -100,7 +123,7 @@ function ScheduleDetail() {
       );
       const data = response.data.data;
       setScheduleDetail(data);
-      console.log("일정상세조회data", data);
+      //console.log("일정상세조회data", data);
 
       const start = new Date(data.startDate);
       const end = new Date(data.endDate);
@@ -158,9 +181,6 @@ function ScheduleDetail() {
   // const [isCallStarted, setIsCallStarted] = useState(false);
   // const [isHeadPhone, setIsHeadPhone] = useState(false);
   // const [isMic, setIsMic] = useState(false);
-  const [favoritePlaces, setFavoritePlaces] = useState([]);
-  // 날짜별 장소 배열 상태
-  const [datePlaces, setDatePlaces] = useState([]);
 
   // const handleCallStart = () => setIsCallStarted(!isCallStarted);
   // const handleHeadPhone = () => setIsHeadPhone(!isHeadPhone);
@@ -168,7 +188,7 @@ function ScheduleDetail() {
   const handleDateClick = (date) => {
     setSelectedDate(date);
     setIsHeartClicked(false);
-    console.log(date);
+    //console.log(date);
   };
   const handleHeartClick = () => {
     setSelectedDate(null);
@@ -187,6 +207,8 @@ function ScheduleDetail() {
   }, []);
 
   const [forRendering, setForRendering] = useState(true);
+  const { newDay } = useOutletContext();
+  const { newOrder } = useOutletContext();
 
   // 찜목록 조회하는 요청
   useEffect(() => {
@@ -207,11 +229,24 @@ function ScheduleDetail() {
       };
       favoritePlace();
     }
-  }, [isHeartClicked, id, schedule_id, isOpenSearch, forRendering]);
+  }, [
+    isHeartClicked,
+    id,
+    schedule_id,
+    isOpenSearch,
+    forRendering,
+    deletedBookmarkId,
+    newBookmark,
+    newDay,
+  ]);
+
+  useEffect(() => {
+    //console.log("Updated favoritePlaces:", favoritePlaces);
+  }, [favoritePlaces]);
 
   // 날짜가 정해진 장소들 요청하는 axios
   useEffect(() => {
-    console.log(selectedDate);
+    //console.log(selectedDate);
     if (!selectedDate) {
       return;
     }
@@ -220,14 +255,21 @@ function ScheduleDetail() {
         const response = await axiosInstance.get(
           `/teams/${id}/plans/${schedule_id}/bookmarks/${selectedDate}`
         );
-        console.log(response.data.data);
+        //console.log(response.data.data);
         setDatePlaces(response.data.data);
       } catch (error) {
         console.error("데이터 불러오기 실패", error);
       }
     };
     getDatePlaces();
-  }, [selectedDate, forRendering]);
+  }, [
+    selectedDate,
+    forRendering,
+    deletedBookmarkId,
+    newBookmark,
+    newDay,
+    newOrder,
+  ]);
 
   // 일정 삭제 axios 요청
   const scheduleExit = async () => {
@@ -270,7 +312,7 @@ function ScheduleDetail() {
       };
 
       try {
-        console.log(orderForm);
+        // console.log(orderForm);
         const response = await axiosInstance.patch(
           `/teams/${id}/plans/${schedule_id}/bookmarks/${newbookmarkid}/order`,
           orderForm,
@@ -280,7 +322,7 @@ function ScheduleDetail() {
             },
           }
         );
-        console.log(response.data);
+        //console.log(response.data);
       } catch (error) {
         console.error("데이터 불러오기 실패", error.response);
       }
@@ -426,7 +468,7 @@ function ScheduleDetail() {
             </p>
             {isHeartClicked ? (
               <div>
-                {favoritePlaces.map((item, index) => (
+                {favoritePlaces?.map((item, index) => (
                   <ScheduleDetailFavoritePlaces
                     key={item.placeId}
                     placeId={item.placeId}
@@ -443,6 +485,7 @@ function ScheduleDetail() {
                     lastDate={datedata[datedata.length - 1]?.date}
                     forRendering={forRendering}
                     setForRendering={setForRendering}
+                    deletedBookmarkId={deletedBookmarkId}
                   />
                 ))}
               </div>
@@ -451,7 +494,7 @@ function ScheduleDetail() {
                 <Droppable droppableId="droppable-places">
                   {(provided) => (
                     <div ref={provided.innerRef} {...provided.droppableProps}>
-                      {datePlaces.map((item, index) => (
+                      {datePlaces?.map((item, index) => (
                         <ScheduleDetailPlaces
                           key={item.bookmarkId}
                           index={index}

@@ -14,12 +14,15 @@ import subway from "../../assets/search/subway.jpg";
 import cafe from "../../assets/search/cafe.jpg";
 import conviny from "../../assets/search/conviny.jpg";
 import defaultimage from "../../../public/defaultimage.png";
+import { useOutletContext } from "react-router-dom";
 
 const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
   console.log(places);
 
   // 이미 찜했습니다 모달 띄우기
   const [openAlreadyJjim, setOpenAlreadyJjim] = useState(false);
+  const { newBookmark } = useOutletContext();
+
   const handleModalClose = () => {
     setOpenAlreadyJjim(false);
   };
@@ -58,6 +61,18 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
         return defaultimage;
     }
   };
+  const [favoritePlaces, setFavoritePlaces] = useState(places); // 초기화
+
+  useEffect(() => {
+    if (newBookmark && newBookmark.scheduleId === schedule_id) {
+      setFavoritePlaces((prevPlaces) => [...prevPlaces, newBookmark]);
+    }
+  }, [newBookmark, schedule_id]);
+
+  // 크롤링 요청 보내는 코드가 필요합니다.
+  // 크롤링 요청 보내는 코드가 필요합니다.
+  // 크롤링 요청 보내는 코드가 필요합니다.
+  // 크롤링 요청 보내는 코드가 필요합니다.
 
   // 찜하기 axios 요청
   const onButtonClick = (place) => async (e) => {

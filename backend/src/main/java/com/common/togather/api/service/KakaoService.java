@@ -5,6 +5,7 @@ import com.common.togather.api.request.KakaoMemverSaveRequest;
 import com.common.togather.api.response.KakaoLoginResponse;
 import com.common.togather.api.response.KakaoUserInfoResponse;
 import com.common.togather.common.auth.TokenInfo;
+import com.common.togather.common.util.FCMUtil;
 import com.common.togather.common.util.JwtUtil;
 import com.common.togather.db.entity.Member;
 import com.common.togather.db.repository.MemberRepository;
@@ -43,9 +44,13 @@ public class KakaoService {
     @Value("${kakao.login.grant.type}")
     private String KAKAO_LOGIN_GRANT_TYPE;
 
+    @Value("${kakao.login.secret.id}")
+    private String KAKAO_LOGIN_SECRET_ID;
+
     private final RestTemplate restTemplate = new RestTemplate();
     private final JwtUtil jwtUtil;
     private final RedisService redisService;
+    private final FCMUtil fcmUtil;
 
     // 인가 코드로 카카오 access token 발급 받기
     public String getAccessToken(String code) {
@@ -62,6 +67,7 @@ public class KakaoService {
         params.add("client_id", KAKAO_LOGIN_CLIENT_ID);
         params.add("redirect_uri", KAKAO_LOGIN_REDIRECT_URI);
         params.add("code", code);
+        params.add("client_secret", KAKAO_LOGIN_SECRET_ID);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
@@ -180,6 +186,11 @@ public class KakaoService {
         String refreshToken = jwtUtil.generateRefreshToken(email); // Refresh Token 생성
 
         redisService.saveRefreshToken(email, refreshToken); // Redis에 Refresh Token 저장 (유효기간 7일)
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
+
+        fcmUtil.saveToken(member, userInfo.getFcmToken());
 
         TokenInfo tokenInfo = new TokenInfo(accessToken, refreshToken); // Access Token과 Refresh Token 저장
 

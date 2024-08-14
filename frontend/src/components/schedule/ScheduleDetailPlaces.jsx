@@ -26,13 +26,13 @@ function ScheduleDetailPlaces({
   const navigation = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  console.log("ssssssssssssss");
-  console.log(bookmarkId);
-  console.log("ssssssssssssss");
+  // console.log("ssssssssssssss");
+  // console.log(bookmarkId);
+  // console.log("ssssssssssssss");
 
   const openModalFunction = () => {
     setIsModalOpen(true);
-    console.log(isModalOpen);
+    // console.log(isModalOpen);
     // console.log("어렵다");
   };
 

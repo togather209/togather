@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./SelectParticipantsModal.css";
 import Close from "../../../assets/icons/common/close.png";
+import DefaultImage from "../../../assets/icons/common/defaultProfile.png";
 
 function SelectParticipantsModal({
   participants,
@@ -60,7 +61,11 @@ function SelectParticipantsModal({
               <label htmlFor={`participant-${participant?.memberId}`}>
                 <img
                   className="participant-info-img"
-                  src={participant?.profileImg}
+                  src={
+                    participant?.profileImg
+                      ? participant.profileImg
+                      : DefaultImage
+                  }
                   alt=""
                 />
                 {participant?.nickname}

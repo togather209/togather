@@ -14,7 +14,6 @@ function ReceiptBookmarkList() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    console.log(teamId, planId, bookmarkId);
     if (!bookmarkId) {
       bookmarkId = Number(localStorage.getItem("bookmarkId"));
     }
@@ -28,8 +27,7 @@ function ReceiptBookmarkList() {
         const response = await axiosInstance.get(
           `/teams/${teamId}/plans/${planId}/bookmarks/${bookmarkId}/receipts`
         );
-        setReceipts(response.data.data); // 서버에서 받은 영수증 데이터를 설정
-        console.log(response.data.data);
+        setReceipts(response.data.data);
       } catch (error) {
         console.error("영수증 데이터를 가져오는 데 실패했습니다.", error);
         setError(true);

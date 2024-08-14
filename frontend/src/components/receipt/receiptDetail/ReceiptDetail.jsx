@@ -11,7 +11,7 @@ import DefaultImage from "../../../assets/icons/common/defaultProfile.png";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setTeamPlan } from "../../../redux/slices/receiptSlice";
-import ViewParticipantsModal from "./ViewParticipantsModal"; // ViewParticipantsModal 모달 컴포넌트 추가
+import ViewParticipantsModal from "./ViewParticipantsModal";
 
 function ReceiptDetail() {
   const navigate = useNavigate();
@@ -43,7 +43,8 @@ function ReceiptDetail() {
       planId = Number(localStorage.getItem("planId"));
 
       if (teamId && planId) {
-        dispatch(setTeamPlan({ teamId, planId })); // Redux에 teamId와 planId 설정
+        // Redux에 teamId와 planId 설정
+        dispatch(setTeamPlan({ teamId, planId }));
       } else {
         console.error("teamId 또는 planId가 전달되지 않았습니다.");
         return;

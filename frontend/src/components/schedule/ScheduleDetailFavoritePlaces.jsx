@@ -57,7 +57,7 @@ function ScheduleDetailFavoritePlaces({
       const response = await axiosInstance.delete(
         `/teams/${meetingId}/plans/${scheduleId}/bookmarks/${bookmarkId}`
       );
-      console.log(response.data);
+      //console.log(response.data)
       setForRendering(!forRendering);
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
