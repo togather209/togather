@@ -96,6 +96,7 @@ function ScheduleDetailFavoritePlaces({
               datedate={datedate}
               name={name}
               handleCloseModal={handleCloseModal}
+              placeImg={placeImg}
             />
           </div>
         </div>
