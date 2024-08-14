@@ -20,6 +20,7 @@ function SchedulePlaceCal({
   onClose,
   onConfirm,
   firstDate,
+  placeImg,
   lastDate,
   name,
   datedate,
@@ -75,7 +76,7 @@ function SchedulePlaceCal({
       </div>
 
       <div className="schedule-place-cal-body">
-        <img className="date-setting-img" src={mayjip} alt="임시" />
+        <img className="date-setting-img" src={placeImg} alt="임시" />
         <div>
           <p className="schedule-place-cal-name">{name}에</p>
           <p className="when-visit">언제 방문할 계획이신가요 ?</p>
