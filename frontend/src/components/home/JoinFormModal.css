@@ -8,6 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 3000;
 }
 
 .join-modal-content {
@@ -20,11 +21,13 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  z-index: 3001;
 }
 
 .join-modal-content-text {
   font-size: 14px;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .join-modal-close {

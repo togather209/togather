@@ -26,6 +26,7 @@ public class BookmarkController {
 
     private final BookmarkService bookmarkService;
     private final JwtUtil jwtUtil;
+    private final SseController sseController;
 
     // 북마크 조회 by 일정 id
     @Operation(summary = "북마크 조회 by 일정 id")
@@ -70,11 +71,14 @@ public class BookmarkController {
                                                             @RequestBody BookmarkSaveRequest request) {
 
         bookmarkService.addBookmark(teamId, planId, header, request);
+
         ResponseDto<String> responseDto = ResponseDto.<String>builder()
                 .status(HttpStatus.OK.value())
                 .message("찜 목록에 추가 되었습니다.")
                 .data(null)
                 .build();
+
+        sseController.notifyClients(planId, "bookmark-added", request);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
 
@@ -93,12 +97,15 @@ public class BookmarkController {
                 .data(bookmarkService.updateDate(teamId, planId, bookmarkId, header, request))
                 .build();
 
+        // 날짜 수정 후 SSE 알림 전송
+        sseController.notifyClients(planId, "bookmark-date-updated", request);
+
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @Operation(summary = "동일 날짜 북마크 내에서 순서 수정 (드래그앤드랍)")
     @PatchMapping("/bookmarks/{bookmarkId}/order")
-    public ResponseEntity<ResponseDto<List<BookmarkOrderUpdateResponse>>> updateBookmarkOrder(@PathVariable("teamId") int teamId, @PathVariable("planId") int planId,@PathVariable("bookmarkId") int bookmarkId,
+    public ResponseEntity<ResponseDto<List<BookmarkOrderUpdateResponse>>> updateBookmarkOrder(@PathVariable("teamId") int teamId, @PathVariable("planId") int planId, @PathVariable("bookmarkId") int bookmarkId,
                                                                                               @RequestHeader(value = "Authorization", required = false) String header,
                                                                                               @RequestBody BookmarkOrderUpdateRequest request) {
         ResponseDto<List<BookmarkOrderUpdateResponse>> responseDto = ResponseDto.<List<BookmarkOrderUpdateResponse>>builder()
@@ -107,6 +114,9 @@ public class BookmarkController {
                 .data(bookmarkService.updateOrder(teamId, planId, bookmarkId, header, request))
                 .build();
 
+        // SSE 알림 전송 (북마크 순서 변경 이벤트)
+        sseController.notifyClients(planId, "bookmark-index-updated", request);
+
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
@@ -114,7 +124,7 @@ public class BookmarkController {
     @GetMapping("/bookmarks/{date}")
     public ResponseEntity<ResponseDto<List<BookmarkFindAllByDateResponse>>> findAllBookmarkByDate(
             @PathVariable("teamId") int teamId, @PathVariable("planId") int planId, @PathVariable("date") LocalDate date,
-            @RequestHeader(value = "Authorization", required = false) String header){
+            @RequestHeader(value = "Authorization", required = false) String header) {
 
         ResponseDto<List<BookmarkFindAllByDateResponse>> responseDto = ResponseDto.<List<BookmarkFindAllByDateResponse>>builder()
                 .status(HttpStatus.OK.value())
@@ -129,7 +139,7 @@ public class BookmarkController {
     @GetMapping("/bookmarks/jjim")
     public ResponseEntity<ResponseDto<List<BookmarkFindAllInJjinResponse>>> findAllBookmarkInJjim(
             @PathVariable("teamId") int teamId, @PathVariable("planId") int planId,
-            @RequestHeader(value = "Authorization", required = false) String header){
+            @RequestHeader(value = "Authorization", required = false) String header) {
 
         ResponseDto<List<BookmarkFindAllInJjinResponse>> responseDto = ResponseDto.<List<BookmarkFindAllInJjinResponse>>builder()
                 .status(HttpStatus.OK.value())
@@ -142,14 +152,18 @@ public class BookmarkController {
 
     @Operation(summary = "북마크 삭제")
     @DeleteMapping("/bookmarks/{bookmarkId}")
-    public ResponseEntity<ResponseDto<List<BookmarkFindAllInJjinResponse>>> deleteBookmark(@PathVariable("teamId") int teamId, @PathVariable("planId") int planId,@PathVariable("bookmarkId") int bookmarkId,
-                                                              @RequestHeader(value = "Authorization", required = false) String header){
+    public ResponseEntity<ResponseDto<List<BookmarkFindAllInJjinResponse>>> deleteBookmark(@PathVariable("teamId") int teamId, @PathVariable("planId") int planId, @PathVariable("bookmarkId") int bookmarkId,
+                                                                                           @RequestHeader(value = "Authorization", required = false) String header) {
 
         ResponseDto<List<BookmarkFindAllInJjinResponse>> responseDto = ResponseDto.<List<BookmarkFindAllInJjinResponse>>builder()
                 .status(HttpStatus.OK.value())
                 .message("찜 목록에서 삭제되었습니다.")
                 .data(bookmarkService.deleteBookmark(teamId, planId, bookmarkId, header))
                 .build();
+
+        // 알림 전송
+        sseController.notifyClients(planId, "bookmark-deleted", bookmarkId);
+
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }
