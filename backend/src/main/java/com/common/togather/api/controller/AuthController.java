@@ -268,7 +268,8 @@ public class AuthController {
     @Operation(summary = "카카오 로그인")
     @PostMapping("/kakao")
     public ResponseEntity<ResponseDto<KakaoLoginResponse>> kakaoLogin(@RequestBody KakaoLoginRequest request, HttpServletResponse response){
-
+        System.out.println("코드에염 : " + request.getCode());
+        System.out.println("fcm 토큰이에염 : " + request.getFcmToken());
         if(request.getCode() == null){
             throw new NotFoundKakaoException("카카오 인가 코드가 존재하지 않습니다.");
         }
@@ -283,6 +284,7 @@ public class AuthController {
 
         // 만약 해당 이메일의 회원이 있다면 로그인 완료
         if(memberRepository.existsByEmail(userInfo.getEmail())){
+            userInfo.setFcmToken(request.getFcmToken()); // fcm토큰 정보도 정해서 넘겨주기
             KakaoLoginResponse kakaoLoginResponse = kakaoService.login(userInfo);
 
             // refresh token은 쿠키에 저장하여 응답 보내줌

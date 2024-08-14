@@ -97,7 +97,7 @@ public class AuthService {
             String accessToken = jwtUtil.generateAccessToken(email); // Access Token 생성
             String refreshToken = jwtUtil.generateRefreshToken(email); // Refresh Token 생성
 
-            redisService.saveRefreshToken(email, refreshToken); // Redis에 Refresh Token 저장 (유효기간 7일)
+            redisService.saveRefreshToken(email, refreshToken); // Redis에 Refresh Token 저장
 
             Member member = memberRepository.findByEmail(email)
                     .orElseThrow(() -> new MemberNotFoundException("해당 회원이 존재하지 않습니다."));
