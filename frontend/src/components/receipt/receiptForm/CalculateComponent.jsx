@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import "./CalculateComponent.css";
 import SelectParticipantsModal from "./SelectParticipantsModal";
 import AddButton from "../../../assets/icons/common/add.png";
+import DefaultProfile from "../../../assets/icons/common/defaultProfile.png";
 import Button from "../../common/Button";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance";
@@ -311,7 +312,11 @@ function CalculateComponent() {
                             <img
                               key={idx}
                               className="participant-badge"
-                              src={participant.profileImg}
+                              src={
+                                participant?.profileImg
+                                  ? participant.profileImg
+                                  : DefaultProfile
+                              }
                               alt="profile"
                             />
                           ))}
@@ -336,7 +341,11 @@ function CalculateComponent() {
                   <img
                     key={idx}
                     className="participant-badge"
-                    src={participant.profileImg}
+                    src={
+                      participant?.profileImg
+                        ? participant.profileImg
+                        : DefaultProfile
+                    }
                     alt={participant.nickname}
                   />
                 ))}

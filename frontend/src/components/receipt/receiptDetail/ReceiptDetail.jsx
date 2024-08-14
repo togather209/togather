@@ -58,6 +58,7 @@ function ReceiptDetail() {
         );
         setReceipt(response.data.data); // API 응답 데이터를 receipt 상태에 저장
         setIsManager(response.data.data.isManager); // 사용자가 관리자인지 설정
+        console.log(response);
       } catch (error) {
         console.error("영수증 상세 조회에 실패했습니다.", error);
       }
