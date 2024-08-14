@@ -7,9 +7,10 @@ import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
 
 @Slf4j
 
@@ -22,7 +23,10 @@ public class FCMInitializer {
     @SneakyThrows
     @PostConstruct
     public void initialize() {
-        FileInputStream serviceAccount = new FileInputStream(googleApplicationCredentials);
+//        FileInputStream serviceAccount = new FileInputStream(googleApplicationCredentials);
+        ClassPathResource resource = new ClassPathResource(googleApplicationCredentials);
+        InputStream serviceAccount = resource.getInputStream();
+
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                 .build();
@@ -31,6 +35,5 @@ public class FCMInitializer {
             FirebaseApp.initializeApp(options);
             log.info("FirebaseApp initialization complete");
         }
-
     }
 }
