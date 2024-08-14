@@ -5,6 +5,8 @@ import axiosInstance from "../../utils/axiosInstance";
 import Modal from "../common/Modal";
 import axios from "axios";
 import store from "../../redux/store";
+import WarningIcon from "../../assets/icons/common/warning.png";
+import Complete from "../../assets/icons/common/complete.png";
 import { useNavigate } from "react-router-dom";
 
 const API_LINK = import.meta.env.VITE_API_URL;
@@ -15,6 +17,7 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
   const [completePayment, setCompletePayment] = useState(false);
   const [insufficientError, setInsufficientError] = useState(false);
   const [noHistory, setNoHistory] = useState(false);
+  const [waitSendError, setWaitSendError] = useState(false);
 
   // 정산 수락하기 요청
   const handleAgree = () => {
@@ -120,9 +123,26 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
       // (개인) 정산 동의 후 & (전체) 정산 동의 천
       // 송금 대기 버튼 활성화
       return (
-        <div className="payment-render-button-container">
-          <button className="payment-button-wait-send">송금 대기</button>
-        </div>
+        <>
+          {waitSendError && (
+            <div className="payment-warning-message">
+              <img src={WarningIcon} alt="" className="warning-payment-icon" />
+              아직 정산 동의 전인 모임원이 있습니다.
+            </div>
+          )}
+          <div className="payment-render-button-container">
+            <button
+              className={`payment-button-wait-send ${
+                waitSendError ? "active" : ""
+              }`}
+              onClick={() => {
+                setWaitSendError(true);
+              }}
+            >
+              송금 대기
+            </button>
+          </div>
+        </>
       );
     } else if (paymentData.status === 2) {
       // (전체) 정산 동의 후 & (개인) 송금 대기
@@ -137,7 +157,14 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
     } else {
       // (개인) 송금 완료
       // 버튼 비활성화
-      return <div className="payment-render-button-container"></div>;
+      return (
+        <div className="payment-render-button-container">
+          <div className="payment-info-message">
+            <img src={Complete} alt="" className="complete-payment-icon" />
+            송금할 금액이 없거나 완료된 일정입니다.
+          </div>
+        </div>
+      );
     }
   };
 

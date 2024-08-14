@@ -6,10 +6,12 @@ import alarm from "../../assets/icons/common/alarm.png";
 import { useDispatch, useSelector } from "react-redux";
 import { setMeetings } from "../../redux/slices/meetingSlice";
 import axiosInstance from "../../utils/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 function Meetings() {
   const [forR, setForR] = useState(true);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   // homemain에서 요청한 모임들 데이터 받기
   const myMeetings = useSelector((state) => state.meetings.list);
 
@@ -30,10 +32,15 @@ function Meetings() {
   };
 
   return (
-    <div>
+    <div className="meetings-container-box">
       <div className="meetings-header">
         <BackButton />
-        <img className="meeting-alarm-button" src={alarm} alt="알람버튼" />
+        <img
+          className="meeting-alarm-button"
+          src={alarm}
+          alt="알람버튼"
+          onClick={() => navigate("/alarm")}
+        />
       </div>
       <div className="meetings">
         <div className="meetings-container">

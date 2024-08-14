@@ -5,7 +5,7 @@ import "./MeetingDetail.css";
 import meetingsetting from "../../assets/meeting/meetingsetting.png";
 import BackButton from "../common/BackButton";
 import axiosInstance from "../../utils/axiosInstance";
-import defaultImage from "../../../public/defaultimage.png";
+import defaultImage from "../../assets/meeting/defaultMeeting.png";
 
 import MeetingDetailPart from "./MeetingDetailPart";
 import MeetingSetting from "./MeetingSetting";

@@ -19,7 +19,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import CameraCapture from "./recognizeDetail/CameraCapture";
 import OcrComponent from "./recognizeDetail/OcrComponent";
-import GeneralOcrComponent from "./recognizeDetail/GeneralOcrComponent"; // GeneralOcrComponent를 import합니다.
+import GeneralOcrComponent from "./recognizeDetail/GeneralOcrComponent";
 
 import Modal from "../../common/Modal";
 
@@ -58,7 +58,6 @@ function RecognizeComponent({ defaultReceipt }) {
     }
 
     if (defaultReceipt !== undefined) {
-      console.log("defaultReceipt is not null");
       setIsEditStatus(true);
       setRecognizedResult(defaultReceipt);
       setEditedItems(defaultReceipt.items);
@@ -81,7 +80,6 @@ function RecognizeComponent({ defaultReceipt }) {
   };
 
   const handleCameraButton = () => {
-    console.log("카메라 버튼 클릭");
     setSelectedImageType(null);
     setSelectedImage(null);
     setIsCameraOpen(true);
@@ -94,7 +92,6 @@ function RecognizeComponent({ defaultReceipt }) {
   const handleImageButton = () => {
     setSelectedImageType(null);
     setSelectedImage(null);
-    console.log("image 버튼 클릭");
     document.getElementById("file-input").click();
   };
 
@@ -105,18 +102,18 @@ function RecognizeComponent({ defaultReceipt }) {
       reader.onloadend = () => {
         const imageBase64 = reader.result;
 
-        // 이미지 로드를 위해 새로운 이미지 객체를 생성합니다.
+        // 이미지 로드를 위해 새로운 이미지 객체를 생성
         const img = new Image();
         img.src = imageBase64;
         img.onload = () => {
-          // Canvas를 생성하여 이미지를 그립니다.
+          // Canvas를 생성하여 이미지를 그림
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
           canvas.width = img.width;
           canvas.height = img.height;
           ctx.drawImage(img, 0, 0);
 
-          // Canvas를 JPG 형식의 base64 문자열로 변환합니다.
+          // Canvas를 JPG 형식의 base64 문자열로 변환
           const jpgBase64 = canvas.toDataURL("image/jpeg");
           setSelectedImage(jpgBase64);
           setSelectedImageType("image");
@@ -173,9 +170,7 @@ function RecognizeComponent({ defaultReceipt }) {
   };
 
   const handleNextTab = () => {
-    console.log("다음버튼 눌렀다");
     if (recognizedResult !== null) {
-      console.log("recognizedResult null 아님");
       const newReceiptData = {
         items: recognizedResult.items,
         businessName: recognizedResult.businessName,
@@ -187,7 +182,6 @@ function RecognizeComponent({ defaultReceipt }) {
         ),
         color,
       };
-      console.log(newReceiptData);
 
       dispatch(setReceiptData(newReceiptData));
       dispatch(setActiveTab("calculate"));

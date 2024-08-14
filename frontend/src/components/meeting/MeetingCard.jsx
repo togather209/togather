@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Delete from "../../assets/meeting/delete.png";
 import Change from "../../assets/meeting/change.png";
 import Out from "../../assets/meeting/out.png";
-import defaultImage from "../../../public/defaultimage.png";
+import defaultImage from "../../assets/meeting/defaultMeeting.png";
 import CheckModal from "../common/CheckModal";
 import ExitModal from "./ExitModal";
 

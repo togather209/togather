@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
-  position: relative; /* Positioning context for centering */
+  position: relative;
 }
 
 .schedule-finish-button {
@@ -19,9 +19,9 @@
   display: grid;
   grid-template-columns: repeat(
     auto-fill,
-    minmax(100px, 1fr)
-  ); /* 최소 102px의 열을 만들고, 가능한 만큼 채운다 */
-  gap: 12px;
+    minmax(102px, 1fr)
+  );
+  gap: 0 10px;
   margin-bottom: 200px;
 }
 
