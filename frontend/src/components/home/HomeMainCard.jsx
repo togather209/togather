@@ -1,7 +1,7 @@
 import React from "react";
 import "./HomeMainCard.css";
 import { useNavigate } from "react-router-dom";
-import defaultImage from "../../../public/defaultimage.png";
+import defaultImage from "../../assets/meeting/defaultMeeting.png";
 
 function HomeMainCard({ id, name, image_url }) {
   const navigation = useNavigate();
