@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import "./User.css";
 import "../common/CommonInput.css";
 import logo from "../../assets/icons/common/logo.png";
@@ -354,6 +354,10 @@ function SignUpForm() {
     setProfileImagePreview("");
   };
 
+  const handleGenerateImage = useCallback((imageUrl) => {
+    setDefaultProfileImageUrl(imageUrl);
+  }, []);
+
   return (
     <div className="signup-box">
       <div className="signup-back-button">
@@ -398,7 +402,7 @@ function SignUpForm() {
             <DefaultProfileImage
               nickname={nickname}
               colorPairs={colorPairs}
-              onGenerate={setDefaultProfileImageUrl}
+              onGenerate={handleGenerateImage}
             />
           )}
           <div className="emailForm">

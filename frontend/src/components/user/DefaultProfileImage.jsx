@@ -1,8 +1,11 @@
 // DefaultProfileImage.js
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 
 const DefaultProfileImage = ({ nickname, colorPairs, onGenerate }) => {
   const canvasRef = useRef(null);
+  const [colorPair, setColorPair] = useState(
+    () => colorPairs[Math.floor(Math.random() * colorPairs.length)]
+  );
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -18,8 +21,7 @@ const DefaultProfileImage = ({ nickname, colorPairs, onGenerate }) => {
       return;
     }
 
-    const colorPair = colorPairs[Math.floor(Math.random() * colorPairs.length)];
-    const initials = nickname.substring(0, 2).toUpperCase();
+    const initials = nickname.substring(0, 2);
 
     const canvasSize = 100;
     canvas.width = canvasSize;
@@ -39,7 +41,7 @@ const DefaultProfileImage = ({ nickname, colorPairs, onGenerate }) => {
     if (onGenerate) {
       onGenerate(imageDataUrl);
     }
-  }, [nickname, colorPairs, onGenerate]);
+  }, [nickname, colorPairs]);
 
   return <canvas ref={canvasRef} style={{ display: "none" }} />;
 };
