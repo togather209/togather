@@ -71,18 +71,18 @@ function HomeMain() {
             </div>
 
             {/* 모임들 */}
-            <div className="meeting-cards">
+            <div>
               {myMeetings.length > 0 ? (
-                myMeetings
-                  .slice(0, 6)
-                  .map((item) => (
+                <div className="meeting-cards">
+                  {myMeetings.slice(0, 6).map((item) => (
                     <HomeMainCard
                       key={item.teamId}
                       id={item.teamId}
                       name={item.title}
                       image_url={item.teamImg}
                     />
-                  ))
+                  ))}
+                </div>
               ) : (
                 <div className="no-meeting-at-home">
                   <p className="no-meeting-text">모임이 없습니다</p>
