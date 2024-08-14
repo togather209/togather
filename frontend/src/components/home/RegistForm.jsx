@@ -154,7 +154,9 @@ function RegistForm() {
             </div>
           </form>
         </div>
-        <Button type={"purple"}>생성</Button>
+        <Button type={"purple"} onClick={addMeeting}>
+          생성
+        </Button>
       </div>
     </div>
   );

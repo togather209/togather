@@ -1,12 +1,14 @@
 .card {
   width: 96px;
   height: 105px;
+  margin: 0 auto;
 }
 
 .card-img {
   width: 96px;
   height: 75px;
   border-radius: 15px;
+  border: 0.8px solid #ececec;
 }
 
 .card-name {

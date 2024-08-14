@@ -9,7 +9,7 @@
 }
 
 .homemain-container {
-  width: 320px;
+  width: 95%;
   margin-bottom: 80px;
 }
 
@@ -72,11 +72,16 @@ border-radius: 13px;
 }
 
 .meeting-cards {
-  display: flex;
-  flex-wrap: wrap;
+  padding: 5px;
+  display: grid;
+  margin: 0 auto;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(90px, 1fr)
+  );
+  gap: 12px 8px;
   justify-content: start;
   align-items: center;
-  gap: 16px;
   margin-bottom: 20px;
 }
 
@@ -126,6 +131,7 @@ border-radius: 13px;
 
 .button-content {
   display: flex;
+  justify-content: space-between;
 }
 
 .button-desc {
