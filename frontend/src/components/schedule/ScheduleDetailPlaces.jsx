@@ -20,6 +20,7 @@ function ScheduleDetailPlaces({
   forRendering,
   setForRendering,
   index,
+  receiptCnt,
 }) {
   const navigation = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -81,7 +82,7 @@ function ScheduleDetailPlaces({
               <p className="schedule-detail-place-address">{address}</p>
             </div>
           </div>
-          <div className="receipt-box-div">
+          <div className="receipt-box-div-container">
             <img
               className="schedule-detail-place-receipt-img"
               src={ScheduleReceiptPurple}
@@ -96,7 +97,7 @@ function ScheduleDetailPlaces({
               }
               alt="영수증 이미지"
             />
-            <p className="schedule-detail-place-receipt-num">1</p>
+            <p className="schedule-detail-place-receipt-num">{receiptCnt}</p>
           </div>
         </div>
       )}

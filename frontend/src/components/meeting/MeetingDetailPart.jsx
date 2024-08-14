@@ -6,7 +6,6 @@ import ScheduleCard from "./ScheduleCard";
 
 function MeetingDetailPart() {
   const navigation = useNavigate();
-
   const { id } = useParams();
 
   const [meetingDetail, setMeetingDetail] = useState({});
@@ -19,8 +18,12 @@ function MeetingDetailPart() {
   const meetingDetailInfo = async () => {
     try {
       const response = await axiosInstance.get(`/teams/${id}`);
-      setMeetingDetail(response.data.data);
-      setMeetingPlans(response.data.data.plans);
+      const data = response.data.data;
+
+      // 데이터 역순으로 저장
+      setMeetingDetail(data);
+      const reversedPlans = data.plans.slice().reverse(); // 원본 배열을 변경하지 않고 복사하여 역순으로 변환
+      setMeetingPlans(reversedPlans);
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
     }
@@ -42,14 +45,14 @@ function MeetingDetailPart() {
       </div>
     );
   }
-  // Object.entries(emptyObject).length === 0
+
   if (Object.entries(meetingPlans).length !== 0) {
     return (
       <div>
         <div className="yes-schedule-container">
           <div className="meetingdetail-schedule2">일정 목록</div>
           <div className="schedule-list-box">
-            {meetingDetail.plans.map((item, index) => (
+            {meetingPlans.map((item, index) => (
               <ScheduleCard
                 key={item.planId}
                 id={item.planId}
@@ -66,6 +69,8 @@ function MeetingDetailPart() {
       </div>
     );
   }
+
+  return null; // 기본적으로 반환할 내용이 없을 때
 }
 
 export default MeetingDetailPart;
