@@ -59,7 +59,7 @@ function AppRoutes() {
       <Route path="/signup" element={<SignUpForm />} />
       <Route path="/login" element={<User />} />
       <Route path="search_password" element={<SearchPasswordForm />} />
-      <Route path="/api/auth/kakao/callback" element={<KakaoLogin />} />
+      <Route path="/oauth/kakao/callback" element={<KakaoLogin />} />
       <Route path="/signupWithKakao" element={<SignupWithKakao />} />
       <Route
         path="/mypage"
