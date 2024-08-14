@@ -1,5 +1,5 @@
 import React from "react";
-import "./FinishedScheduleButton.css"; // 실제 스타일 시트 이름으로 변경하세요.
+import "./FinishedScheduleButton.css";
 import NextButton from "../../../assets/receipt/next.png";
 
 function FinishedScheduleButton({ status, onClick }) {

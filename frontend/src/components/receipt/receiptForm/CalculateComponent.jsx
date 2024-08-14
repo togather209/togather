@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import "./CalculateComponent.css";
 import SelectParticipantsModal from "./SelectParticipantsModal";
 import AddButton from "../../../assets/icons/common/add.png";
+import DefaultProfile from "../../../assets/icons/common/defaultProfile.png";
 import Button from "../../common/Button";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance";
@@ -52,9 +53,7 @@ function CalculateComponent() {
     const fetchParticipants = async () => {
       try {
         const response = await axiosInstance.get(`teams/${teamId}/members`);
-        // console.log("일정 참여자 리스트 조회 결과", response.data.data);
         setParticipants(response.data.data);
-        console.log(response.data.data);
       } catch (error) {
         console.error("일정 참여자 리스트 조회 중 문제가 발생했습니다.", error);
       }
@@ -98,14 +97,11 @@ function CalculateComponent() {
       receiptTempInfo.bookmarkId = bookmarkId;
     }
 
-    console.log(receiptTempInfo);
-
     try {
       const response = await axiosInstance.post(
         `teams/${teamId}/plans/${planId}/receipts`,
         receiptTempInfo
       );
-      console.log("등록 성공:", response);
 
       // 상태 초기화
       setActiveType("divide");
@@ -150,7 +146,6 @@ function CalculateComponent() {
         `teams/${teamId}/plans/${planId}/receipts/${receiptId}`,
         receiptUpdatepInfo
       );
-      console.log("수정 성공", response);
 
       // 수정 후 영수증 전체 조회 페이지로 이동
       navigate("/receipt");
@@ -193,7 +188,6 @@ function CalculateComponent() {
         }))
       );
     }
-    console.log(itemParticipants);
     setIsModalOpen(false);
   };
 
@@ -311,7 +305,11 @@ function CalculateComponent() {
                             <img
                               key={idx}
                               className="participant-badge"
-                              src={participant.profileImg}
+                              src={
+                                participant?.profileImg
+                                  ? participant.profileImg
+                                  : DefaultProfile
+                              }
                               alt="profile"
                             />
                           ))}
@@ -336,7 +334,11 @@ function CalculateComponent() {
                   <img
                     key={idx}
                     className="participant-badge"
-                    src={participant.profileImg}
+                    src={
+                      participant?.profileImg
+                        ? participant.profileImg
+                        : DefaultProfile
+                    }
                     alt={participant.nickname}
                   />
                 ))}

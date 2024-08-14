@@ -5,12 +5,11 @@ import MeetingParticipants from "./MeetingParticipants";
 import MeetingParticipantManage from "./MeetingParticipantManage";
 import axiosInstance from "../../utils/axiosInstance";
 import BackButton from "../common/BackButton";
-import defaultImage from "../../../public/defaultimage.png";
+import defaultImage from "../../assets/meeting/defaultMeeting.png";
 import Modal from "../common/Modal";
 
 function MeetingSetting() {
   const { id } = useParams();
-  //   const { state } = useLocation();
   const [joinMembersRequest, setJoinMembersRequest] = useState([]);
   const [joinMember, setJoinMember] = useState([]);
 
@@ -32,7 +31,6 @@ function MeetingSetting() {
       const response = await axiosInstance.get(`/teams/${id}/join-requests`);
       setJoinMembersRequest(response.data.data);
       console.log(response.data.data);
-      // setForR(!forR)
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
     }
@@ -75,7 +73,7 @@ function MeetingSetting() {
       <div className="meeting-info-container">
         <img
           className="meetingdetail-img"
-          src={state.teamImg || defaultImage} // 디폴트 이미지 사용
+          src={state?.teamImg || defaultImage} // 디폴트 이미지 사용
           alt="모임 이미지"
           onError={handleImageError} // 이미지 로드 실패 시 핸들러 호출
         />

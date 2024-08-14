@@ -21,7 +21,6 @@ public class SseController {
     private final Map<String, Map<String, SseEmitter>> teamClients = new ConcurrentHashMap<>();
     private final MemberRepository memberRepository;
 
-    // SSE 연결
     @GetMapping("/subscribe/{planId}/{email}")
     public SseEmitter subscribe(@PathVariable("planId") int planId, @PathVariable("email") String email) {
         System.out.println("email : " + email);
@@ -31,12 +30,19 @@ public class SseController {
 
         Map<String, SseEmitter> clientEmitters = teamClients.computeIfAbsent(planKey, k -> new ConcurrentHashMap<>());
         SseEmitter existingEmitter = clientEmitters.get(clientId);
+
         if (existingEmitter != null) {
-            System.out.println("exit SSE");
+            System.out.println("Already connected: " + clientId);
             existingEmitter.complete(); // 기존 연결 종료
+            try {
+                // 연결 종료를 기다림
+                Thread.sleep(100); // 짧은 지연 시간을 둬서 기존 연결이 완전히 종료되도록 함
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
-        // 새로운 연결 저장
+        // 새로운 연결을 저장
         clientEmitters.put(clientId, emitter);
 
         emitter.onCompletion(() -> {
@@ -57,7 +63,6 @@ public class SseController {
         return emitter;
     }
 
-    // 클라이언트에게 요청 (비동기 처리)
     @Async
     public void notifyClients(int planId, String eventName, Object data) {
         String planKey = String.valueOf(planId);

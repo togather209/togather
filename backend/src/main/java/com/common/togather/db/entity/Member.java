@@ -78,11 +78,11 @@ public class Member {
     private List<PaymentApproval> paymentApprovals;
 
     // 알림
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Alarm> alarms;
 
     // FCM token
-    @OneToOne(mappedBy = "member")
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private FCMToken fcmToken;
 
     public void update(String profileImg, String password, String nickname) {
@@ -110,6 +110,13 @@ public class Member {
     public void removePayAccount() {
         if (this.payAccount != null) {
             this.payAccount = null;
+        }
+    }
+
+    // FCM토큰과 연관 끊기 메서드
+    public void removeFcmToken() {
+        if (this.fcmToken != null) {
+            this.fcmToken = null;
         }
     }
 
