@@ -74,9 +74,6 @@ dependencies {
 
     // WebSocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
-
-    // Selenium
-    implementation 'org.seleniumhq.selenium:selenium-java:4.1.0'
 }
 
 tasks.named('test') {
