@@ -42,6 +42,10 @@ public class FCMUtil {
         member.getFcmToken().updateToken(token);
     }
 
+    public void deleteToken(Member member) {
+        fcmTokenRepository.delete(member.getFcmToken());
+    }
+
     @Async
     @Retryable(
             value = FirebaseMessagingException.class, // 재시도할 예외 타입
