@@ -45,7 +45,7 @@ function MeetingDetail({ folderName }) {
       const response = await axiosInstance.get(`/teams/${id}`);
       await setMeetingDetail(response.data.data);
       //관리자일 때만 실행
-      if(response.data.data.admin){
+      if (response.data.data.admin) {
         wantJoinMembers();
       }
       setMeetingPlans(response.data.data.plans);
