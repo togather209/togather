@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SchedulePlaceCal.css";
-import mayjip from "../../assets/schedule/mayjip.jpg";
 import Close from "../../assets/icons/common/close.png";
 import SelectDatePicker from "./SelectDatePicker";
 import axiosInstance from "../../utils/axiosInstance";
