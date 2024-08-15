@@ -51,9 +51,26 @@ public class PaymentApprovalService {
 
         plan.updateStatus(1);
 
+        List<PaymentApproval> paymentApprovals = new ArrayList<>();
+
         List<Member> members = paymentApprovalRepositorySupport.getMembers(planId);
 
-        List<PaymentApproval> paymentApprovals = new ArrayList<>();
+        // 영수증 관리자 추가
+        List<Member> managers = paymentApprovalRepositorySupport.getReceiptMangers(planId);
+
+        // 중복 제거
+        for (Member manager : managers) {
+            boolean flag = false;
+            for (Member member : members) {
+                if (manager.getId() == member.getId()) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag) {
+                members.add(manager);
+            }
+        }
 
         for (Member member : members) {
             paymentApprovals.add(
