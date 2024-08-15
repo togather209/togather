@@ -27,4 +27,13 @@ public class FCMToken {
     public void updateToken(String token) {
         this.token = token;
     }
+
+    // 멤버와 연관 끊기 메서드
+    public void removeMember() {
+        if (this.member != null) {
+            this.member.removeFcmToken();
+            this.member = null;
+        }
+    }
+
 }
