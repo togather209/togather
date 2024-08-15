@@ -1,137 +1,139 @@
 .none-meetingdetail {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* padding: 16px; */
 }
 
 .none-meetingdetail-header {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 13px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 13px;
 }
 
 .none-meetingdetail-header-setting {
-    display: flex;
-    align-items: center;
-    margin: 16px 16px 0 0;
-    display: flex;
+  display: flex;
+  align-items: center;
+  margin: 16px 16px 0 0;
+  display: flex;
 }
 
 .meetingdetail-img {
-    width: 100%;
-    height: 175px;
-    object-fit: cover;
-    margin-bottom: 27px;
+  width: 100%;
+  height: 175px;
+  object-fit: cover;
+  margin-bottom: 27px;
 }
 
 .meetingdetail-schedule {
-    box-sizing: border-box;
-    width: 100%;
-    text-align: left;
-    padding-left: 16px;
-    margin-bottom: 123px;
-    font-size: 16px;
-    font-weight: bold;
+  box-sizing: border-box;
+  width: 100%;
+  text-align: left;
+  padding-left: 16px;
+  margin-bottom: 123px;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .schedule-list-box {
-    margin-bottom: 25px;
+  margin-bottom: 25px;
 }
 
 .meetingdetail-schedule2 {
-    box-sizing: border-box;
-    width: 100%;
-    text-align: left;
-    padding-left: 16px;
-    margin-bottom: 15px;
-    font-size: 16px;
-    font-weight: bold;
-    
+  box-sizing: border-box;
+  width: 100%;
+  text-align: left;
+  padding-left: 16px;
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .meeting-setting {
-    width: 16px;
-    height: 16px;
+  width: 16px;
+  height: 16px;
 }
 
 .meeting-setting-text {
-    color: #131212;
-    opacity: 70%;
-    font-size: 10px;
+  color: #131212;
+  opacity: 70%;
+  font-size: 10px;
 }
 
 .no-schedule-box {
-    margin-bottom: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .no-schedule-text {
-    margin-bottom: 13px;
-    color: #131212;
-    opacity: 70%;
-    font-size: 14px;
-    text-align: center;
+  margin-bottom: 13px;
+  color: #131212;
+  opacity: 70%;
+  font-size: 14px;
+  text-align: center;
 }
 
 .make-new-schedule {
-    color: #868687;
-    opacity: 70%;
-    font-size: 12px;
-    text-align: center;
-    margin-bottom: 30px;
+  color: #868687;
+  opacity: 70%;
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-
-
 .meeting-info-container {
-    position: relative; /* 원하는 이미지의 너비로 설정 */
-    width: 110%;
-    height: 175px;
-    max-width: 400px; /* 이미지의 최대 너비 */
-    margin-bottom: 27px;
-  }
-  
-  .overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 150px;
-    display: flex;
-    flex-direction: column;
-    justify-content: end;
-    align-items: start;
-    color: white;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
-  }
-  
-  .meeting-name-in-detail {
-    font-size: 16px;
-    color: #ffffff;
-    margin-left: 15px;
-  }
-  
-  .meeting-desc-in-detail {
-    font-size: 12px;
-    color: #e8e8e8;
-    opacity: 70%;
-    margin-left: 15px;
-    margin-bottom: 15px;
-  }
-  
-  .meeting-detail-no-schedule-container {
-    width: 360px;
-  }
+  position: relative; /* 원하는 이미지의 너비로 설정 */
+  width: 100%;
+  height: 175px;
+  max-width: 100%; /* 이미지의 최대 너비 */
+  margin-bottom: 27px;
+}
 
+.overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: start;
+  color: white;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+}
 
-  .yes-schedule-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
+.text-overlay {
+  position: absolute;
+  left: 0px;
+  bottom: 0;
+}
+
+.meeting-name-in-detail {
+  font-size: 16px;
+  color: #ffffff;
+  margin-left: 15px;
+}
+
+.meeting-desc-in-detail {
+  font-size: 12px;
+  color: #e8e8e8;
+  opacity: 70%;
+  margin-left: 15px;
+  margin-bottom: 15px;
+}
+
+.meeting-detail-no-schedule-container {
+  width: 360px;
+}
+
+.yes-schedule-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
