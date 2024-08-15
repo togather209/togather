@@ -19,6 +19,7 @@ function ReceiptSelect({ setLocalReceiptColor }) {
             <hr />
             <p className={styles.date}>일시 : 24.08.16</p>
           </div>
+          그래서 어디가야 하지
         </div>
 
         <div className={styles.subpic} onClick={() => setLocalReceiptColor(1)}>
