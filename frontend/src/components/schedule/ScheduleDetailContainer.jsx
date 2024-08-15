@@ -35,7 +35,7 @@ function ScheduleDetailContainer() {
 
   useEffect(() => {
     eventSourceRef.current = new EventSource(
-      `api/sse/subscribe/${planId}/${sub}`
+      `/api/sse/subscribe/${planId}/${sub}`
     );
 
     eventSourceRef.current.addEventListener("bookmark-deleted", (event) => {
