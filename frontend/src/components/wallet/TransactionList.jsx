@@ -89,6 +89,18 @@ function TransactionList() {
     return numericBalance.toLocaleString("ko-KR");
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = String(date.getFullYear()).slice(-2); // 두 자리 연도
+    const month = date.getMonth() + 1; // 월은 0부터 시작하므로 +1 필요
+    const day = date.getDate();
+    const hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+
+    return `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분 ${seconds}초`;
+  };
+
   return (
     <div className="transaction-container">
       <div className="transactions-header">
@@ -105,7 +117,11 @@ function TransactionList() {
                 key={transaction.id}
                 onClick={() => openModal(transaction)}
               >
-                <img src={transaction.type === "positive" ? deposit : withdraw} alt="Avatar" className="avatar" />
+                <img
+                  src={transaction.type === "positive" ? deposit : withdraw}
+                  alt="Avatar"
+                  className="avatar"
+                />
                 <div className="transactions-details">
                   <div>
                     <p className="transactions-name">{transaction.name}</p>
@@ -124,19 +140,28 @@ function TransactionList() {
       </div>
 
       {selectedTransaction && detailsTransactions !== null && (
-        <div className="modal" style={{ display: "block" }}>
-          <div className="modal-content">
-            <span className="close" onClick={closeModal}>
-              &times;
-            </span>
-            <div className="modal-details">
-              <p className="modal-details-title">거래 상세 내역</p>
-              <p className="modal-name">
-                {transactions.type === "positive" ? "받는 사람" : "보낸 사람"} :{" "}
-                {selectedTransaction.name}
-              </p>
+        <div className="selected-modal" style={{ display: "block" }}>
+          <div className="selected-modal-content">
+            <div className="selected-modal-header">
+              <p>상세 내역</p>
+              <span className="close" onClick={closeModal}>
+                &times;
+              </span>
+            </div>
+            <div className="selected-modal-details">
+              <div className="selected-modal-details-title">
+                <img
+                  src={
+                    selectedTransaction.type === "positive" ? deposit : withdraw
+                  }
+                  alt="Avatar"
+                />
+                <p>
+                  {selectedTransaction.type === "positive" ? "입금" : "송금"}
+                </p>
+              </div>
+              <p className="selected-modal-name">{selectedTransaction.name}</p>
               <div className="transactions-amount">
-                <p>금액 : &nbsp;</p>
                 <p
                   className={`transactions-amount ${selectedTransaction.type}`}
                 >
@@ -144,17 +169,29 @@ function TransactionList() {
                 </p>
               </div>
               <div className="transactions-information">
-                <p>거래시각: {selectedTransaction.originalDate}</p>
-                <p>
-                  구분:{" "}
-                  {selectedTransaction.type === "positive" ? "입금" : "송금"}
+                <div className="transactions-information-time-header">
+                  <p className="transactions-information-time-title">
+                    거래시각 :{" "}
+                  </p>
+                  <p className="transactions-information-time">
+                    {formatDate(selectedTransaction.originalDate)}
+                  </p>
+                </div>
+                <div className="transactions-information-type-header">
+                  <p className="transactions-information-type-title">구분: </p>
+                  <p className="transactions-information-type">
+                    {selectedTransaction.type === "positive" ? "입금" : "송금"}
+                  </p>
+                </div>
+                <div className="transations-information-amount-header">
+                  <p className="transations-information-amount-title">거래 후 잔액: </p>
+                <p className="transations-information-amount">
+                  {formatBalance(detailsTransactions.balance)}원
                 </p>
-                <p>
-                  거래 후 잔액: {formatBalance(detailsTransactions.balance)}원
-                </p>
+                </div>
               </div>
             </div>
-            <button className="confirm-button" onClick={closeModal}>
+            <button className="selected-confirm-button" onClick={closeModal}>
               확인
             </button>
           </div>
