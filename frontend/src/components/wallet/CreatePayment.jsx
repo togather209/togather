@@ -159,7 +159,7 @@ function CreatePayment() {
     try {
       const response = await axiosInstance.post("/accounts/verify", userPayData);
   
-      if (response.data.success) { // 서버의 성공 여부를 나타내는 플래그 확인
+      if (response.data.status === 200) { // 서버의 성공 여부를 나타내는 플래그 확인
         // 인증 성공했으면!
         setIsVerification(true);
         // 모달 닫기
@@ -189,6 +189,8 @@ function CreatePayment() {
       accountNum: accountNum,
       memberName: memberName,
     };
+
+    console.log(accountNum);
 
     try {
       const payDataResponse = await axiosInstance.post(
