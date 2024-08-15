@@ -37,7 +37,7 @@ public class PaymentService {
     private final AlarmRepository alarmRepository;
     private final FCMUtil fcmUtil;
 
-    private final String systemName = "TOGETHER";
+    private final String systemName = "TOGATHER";
     private final Integer systemType = 1;
 
     // 정산 내역 조회
