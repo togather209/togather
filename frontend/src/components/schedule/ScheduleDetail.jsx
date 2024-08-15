@@ -221,7 +221,7 @@ function ScheduleDetail() {
           const response = await axiosInstance.get(
             `/teams/${id}/plans/${schedule_id}/bookmarks/jjim`
           );
-          // console.log(response);
+          console.log(response);
           // console.log("dychdsfhasdfkljalfj")
           setFavoritePlaces(response.data.data);
           // console.log(favoritePlaces)

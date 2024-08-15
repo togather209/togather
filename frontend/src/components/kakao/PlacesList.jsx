@@ -3,7 +3,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import "./PlacesList.css";
 import purpleSearch from "../../assets/schedule/purplesearch.png";
 import PlaceListItem from "./PlaceLIstItem";
-import JoinFormModal from "../home/JoinFormModal";
+import JoinFormModalT from "../kakao/JoinFormModalT";
 
 import market from "../../assets/search/market.png";
 import attraction from "../../assets/search/attraction.png";
@@ -15,8 +15,7 @@ import subway from "../../assets/search/subway.png";
 import cafe from "../../assets/search/cafe.png";
 import conviny from "../../assets/search/conviny.png";
 import defaultimage from "../../../public/defaultimage.png";
-
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
   console.log(places);
@@ -73,15 +72,47 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
 
   // 크롤링 요청 보내는 코드가 필요합니다.
   // 크롤링 요청 보내는 코드가 필요합니다.
+
+  // 찜리스트 배열
+  // const [jjimList, setJjimList] = useState([]);
+  // 찜리스트 palceId 배열
+  const [jjimPlaceList, setJjimPlaceList] = useState([]);
+
+  // 찜목록 조회하는 요청
+  useEffect(() => {
+    const favoritePlace = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/teams/${id}/plans/${schedule_id}/bookmarks/jjim`
+        );
+
+        // response.data.data가 배열이라고 가정하고 반복하면서 placeId 추출
+        const placeIds = response.data.data.map((item) => item.placeId);
+
+        // placeIds 배열을 상태에 설정
+        setJjimPlaceList(placeIds);
+
+        console.log("찜리스트:", placeIds); // 상태 업데이트 후 로그 출력
+      } catch (error) {
+        console.error("데이터 불러오기 실패", error);
+      }
+    };
+
+    favoritePlace();
+  }, [id, schedule_id]);
+
   // 크롤링 요청 보내는 코드가 필요합니다.
   // 크롤링 요청 보내는 코드가 필요합니다.
+
+  // const [forRand, setForRand] = useState(true);
 
   // 찜하기 axios 요청
   const onButtonClick = (place) => async (e) => {
     e.preventDefault();
-    console.log("fffffff");
-    console.log(place);
-    console.log("fffffff");
+
+    // console.log("before", forRand);
+
+    // console.log("after", forRand);
 
     const imgType = typeSelect(place.category_group_code);
 
@@ -104,11 +135,18 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
       if (response) {
         console.log(response); // 응답 데이터 확인
       } else {
-        setOpenAlreadyJjim(true);
+        setRequestModalOpen(true);
+        // setForRand(!forRand);
       }
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
+      console.log(openAlreadyJjim);
     }
+  };
+
+  const [requestModalOpen, setRequestModalOpen] = useState(false);
+  const handleRequestModalClose = () => {
+    setRequestModalOpen(false);
   };
 
   return (
@@ -138,14 +176,15 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
               index={index}
               onPlaceClick={onPlaceClick}
               onButtonClick={onButtonClick}
+              jjimPlaceList={jjimPlaceList}
             />
           ))}{" "}
         </ul>
       )}
-      <JoinFormModal
-        modalOpen={openAlreadyJjim}
-        onClose={handleModalClose}
-        content={"이미 찜 했는디요 ???"}
+      <JoinFormModalT
+        modalOpen={requestModalOpen}
+        content={"이미 찜한 장소입니다"}
+        onClose={handleRequestModalClose}
       />
     </div>
   );
