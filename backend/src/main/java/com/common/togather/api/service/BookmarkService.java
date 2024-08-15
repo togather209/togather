@@ -97,49 +97,54 @@ public class BookmarkService {
             }
         }
 
-        // 날짜 정보가 있던 장소가 찜으로 이동하는 경우
+        // 1. 날짜 정보가 있던 장소가 찜으로 이동하는 경우
         if (oldDate != null && newDate == null) {
             // 영수증 등록된 장소는 찜으로 이동 불가능
             if(!updatedBookmark.getReceipts().isEmpty()){
                 throw new UpdateNotAllwedException("영수증이 등록된 장소는 찜목록으로 이동할 수 없습니다.");
             }
 
+            // 이동하기 전 날짜에서 가지던 순서 저장해두기
             int oldOrder = updatedBookmark.getItemOrder();
-            // 날짜와 순서 모두 null로 변경
+
+            // 날짜 null로 변경, 순서는 무조건 0
             updatedBookmark.moveToJjim();
             bookmarkRepository.save(updatedBookmark);
 
-            // 수정된 요소와 같은 날짜에 있던 요소들 순서 바꿔주기
-            List<Bookmark> oldBookmarkList = bookmarkRepository.findAllByDate(oldDate);
+            // oldDate에 있던 요소들 순서 바꿔주기
+            List<Bookmark> oldBookmarkList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, oldDate);
             for(Bookmark bookmark : oldBookmarkList){
                 // 수정된 요소가 가지고 있던 순서보다 더 뒷 순서면 -1
                 if(bookmark.getItemOrder() > oldOrder){
                     bookmark.updateOrder(bookmark.getItemOrder() - 1);
+                    bookmarkRepository.save(bookmark);
                 }
             }
-            bookmarkRepository.save(updatedBookmark); // 변경사항 저장
         }
-        // 찜에 있던 장소에 날짜를 지정해준 경우, 날짜 변경하고 순서는 그 날짜의 가장 마지막으로 설정
+
+        // 2. 찜에 있던 장소에 날짜를 지정해준 경우, 날짜 변경하고 순서는 그 날짜의 가장 마지막으로 설정
         else if (oldDate == null && newDate != null) {
+            // newDate 리스트의 마지막 순서에 넣어주기
             updatedBookmark.updateDate(newDate, bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, newDate).size());
             bookmarkRepository.save(updatedBookmark);
         }
 
-        // 날짜 정보가 있던 장소를 다른 날짜로 이동하는 경우 양쪽 모두 순서 재정렬
+        // 3. 날짜 정보가 있던 장소를 다른 날짜로 이동하는 경우 양쪽 모두 순서 재정렬
         else {
             int oldOrder = updatedBookmark.getItemOrder();
-            updatedBookmark.updateDate(newDate, bookmarkRepository.findAllByDate(newDate).size());
+            // newDate 리스트의 마지막 순서로 넣어주기
+            updatedBookmark.updateDate(newDate, bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, newDate).size());
             bookmarkRepository.save(updatedBookmark);
 
-            // 수정된 요소와 같은 날짜에 있던 요소들 순서 바꿔주기
-            List<Bookmark> oldBookmarkList = bookmarkRepository.findAllByDate(oldDate);
+            // oldDate에 있던 요소들 순서 바꿔주기
+            List<Bookmark> oldBookmarkList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, oldDate);
             for(Bookmark bookmark : oldBookmarkList){
                 // 수정된 요소가 가지고 있던 순서보다 더 뒷 순서면 -1
                 if(bookmark.getItemOrder() > oldOrder){
                     bookmark.updateOrder(bookmark.getItemOrder() - 1);
+                    bookmarkRepository.save(bookmark);
                 }
             }
-            bookmarkRepository.save(updatedBookmark); // 변경사항 저장
         }
 
         // OldDate 북마크 리스트
@@ -149,15 +154,6 @@ public class BookmarkService {
         }
         else{ // 변경된 기존 날짜 북마크 보여주기
             oldDateBookmarkList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, oldDate);
-        }
-
-        // NewDate 북마크 리스트
-        List<Bookmark> newDateBookmarkList;
-        if(newDate == null){
-            newDateBookmarkList = bookmarkRepositorySupport.findAllBookmarkByNullDateInSamePlan(planId);
-        }
-        else {
-            newDateBookmarkList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, newDate);
         }
 
         List<BookmarkDateUpdateResponse> oldDateResponseList = oldDateBookmarkList.stream()

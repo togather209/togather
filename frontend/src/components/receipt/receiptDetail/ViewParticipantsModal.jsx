@@ -1,5 +1,6 @@
 import React from "react";
 import "./ViewParticipantsModal.css";
+import DefaultImage from "../../../assets/icons/common/defaultProfile.png";
 
 function ViewParticipantsModal({ participants, onClose, itemName }) {
   return (
@@ -11,7 +12,9 @@ function ViewParticipantsModal({ participants, onClose, itemName }) {
             <div key={participant.memberId} className="view-participant-item">
               <img
                 className="view-participant-info-img"
-                src={participant.profileImg}
+                src={
+                  participant.profileImg ? participant.profileImg : DefaultImage
+                }
                 alt={participant.nickname}
               />
               {participant.nickname}
