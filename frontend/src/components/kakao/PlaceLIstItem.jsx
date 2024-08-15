@@ -1,20 +1,26 @@
 import React, { useEffect, useState } from "react";
 import "./PlaceLIstItem.css";
-import market from "../../assets/search/market.jpg";
-import attraction from "../../assets/search/attraction.jpg";
+import market from "../../assets/search/market.png";
+import attraction from "../../assets/search/attraction.png";
 import facility from "../../assets/search/facility.png";
-import accomodation from "../../assets/search/accomodation.jpg";
-import restaurant from "../../assets/search/restaurant.jpg";
+import accomodation from "../../assets/search/accomodation.png";
+import restaurant from "../../assets/search/restaurant.png";
 import parking from "../../assets/search/parking.png";
-import subway from "../../assets/search/subway.jpg";
-import cafe from "../../assets/search/cafe.jpg";
-import conviny from "../../assets/search/conviny.jpg";
+import subway from "../../assets/search/subway.png";
+import cafe from "../../assets/search/cafe.png";
+import conviny from "../../assets/search/conviny.png";
 import defaultimage from "../../../public/defaultimage.png";
+import scheduleheartimg from "../../assets/schedule/scheduleheartimg.png";
+import scheduleheartpurple from "../../assets/schedule/scheduleheartpurple.png";
 
 // PlaceListItem 컴포넌트 정의
-const PlaceListItem = ({ place, index, onPlaceClick, onButtonClick }) => {
-  console.log(place.category_group_code);
-
+const PlaceListItem = ({
+  place,
+  index,
+  onPlaceClick,
+  onButtonClick,
+  jjimPlaceList,
+}) => {
   const [imgType, setImgType] = useState(null);
 
   const typeSelect = (type) => {
@@ -42,7 +48,11 @@ const PlaceListItem = ({ place, index, onPlaceClick, onButtonClick }) => {
     }
   };
 
-  console.log(place.place_url);
+  const [buttonState, setButtonState] = useState(false);
+
+  useEffect(() => {
+    setButtonState(jjimPlaceList.includes(place.id));
+  }, [jjimPlaceList, place.placeId]);
 
   useEffect(() => {
     setImgType(typeSelect(place.category_group_code));
@@ -66,7 +76,11 @@ const PlaceListItem = ({ place, index, onPlaceClick, onButtonClick }) => {
       </div>
 
       <button className="place-jjim-hagi" onClick={onButtonClick(place)}>
-        찜하기
+        {buttonState ? (
+          <img className="heart-size" src={scheduleheartpurple} alt="찜됨" />
+        ) : (
+          <img className="heart-size" src={scheduleheartimg} alt="찜하기" />
+        )}
       </button>
     </li>
   );
