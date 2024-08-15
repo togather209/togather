@@ -118,7 +118,8 @@ function MeetingDetail({ folderName }) {
           alt="모임 이미지"
           onError={handleImageError} // 이미지 로드 실패 시 핸들러 호출
         />
-        <div className="overlay">
+        <div className="overlay"></div>
+        <div className="text-overlay">
           <p className="meeting-name-in-detail">{meetingDetail.title}</p>
           <p className="meeting-desc-in-detail">{meetingDetail.description}</p>
         </div>
