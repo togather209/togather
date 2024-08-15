@@ -30,6 +30,15 @@ public class PaymentApprovalRepositorySupport {
                 .fetch();
     }
 
+    public List<Member> getReceiptMangers(int planId) {
+        return jpaQueryFactory
+                .select(qReceipt.manager)
+                .from(qReceipt)
+                .where(qReceipt.plan.id.eq(planId))
+                .groupBy(qReceipt.manager.id)
+                .fetch();
+    }
+
     public Long updateApprovalStatus(int planId, String email) {
         return jpaQueryFactory
                 .update(qPaymentApproval)
