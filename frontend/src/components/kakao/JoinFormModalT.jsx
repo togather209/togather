@@ -1,20 +1,12 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import "./JoinFormModal.css";
+// import "./JoinFormModal.css";
 
 function JoinFormModal({ modalOpen, content, onClose }) {
-  const navigate = useNavigate();
-
   useEffect(() => {
     console.log("모달 열림", modalOpen);
   }, [modalOpen]);
 
   if (!modalOpen) return null;
-
-  const handleConfirm = () => {
-    onClose(); // 모달 닫기
-    navigate("/home"); // 페이지 이동
-  };
 
   return (
     <div className="join-modal-overlay" onClick={onClose}>
@@ -22,7 +14,9 @@ function JoinFormModal({ modalOpen, content, onClose }) {
         <p className="join-modal-content-text">{content}</p>
         <button
           className="join-modal-close"
-          onClick={handleConfirm} // 수정된 부분
+          onClick={() => {
+            onClose(); // onClose 함수를 호출하여 모달 닫기
+          }}
         >
           확인
         </button>

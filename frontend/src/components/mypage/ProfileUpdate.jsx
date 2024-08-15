@@ -270,7 +270,7 @@ function ProfileUpdate() {
               onChange={handlePasswordChange}
               onBlur={handlePasswordBlur} // 포커스가 해제될 때 유효성 검사
               className="password-input"
-              readOnly={member.type === 1}
+              disabled={member.type === 1}
             />
             <button
               type="button"
@@ -289,7 +289,7 @@ function ProfileUpdate() {
               value={validPassword}
               onChange={handleValidPasswordChange}
               onBlur={handleValidPasswordBlur} // 포커스가 해제될 때 유효성 검사
-              readOnly={member.type === 1}
+              disabled={member.type === 1}
             />
           </div>
           {passwordMessage && (
@@ -315,7 +315,7 @@ function ProfileUpdate() {
       {isImageBig && (
         <Modal
           mainMessage={"사진 용량 초과!"}
-          subMessage={"1MB이하의 크기만 첨부 가능합니다."}
+          subMessage={"10MB이하의 크기만 첨부 가능합니다."}
           onClose={() => setIsImageBig(false)}
         />
       )}

@@ -11,6 +11,8 @@ import axiosInstance from "../../utils/axiosInstance";
 // import meetingimg from "../../../public/다운로드.jpg";
 import defaultImg from "../../../public/defaultimage.png";
 
+import defaultMeeting from "../../assets/meeting/defaultMeeting.png";
+
 import alarm from "../../assets/icons/common/alarm.png";
 import exit from "../../assets/schedule/scheduleexit.png";
 import heart from "../../assets/schedule/scheduleheartimg.png";
@@ -219,7 +221,7 @@ function ScheduleDetail() {
           const response = await axiosInstance.get(
             `/teams/${id}/plans/${schedule_id}/bookmarks/jjim`
           );
-          // console.log(response);
+          console.log(response);
           // console.log("dychdsfhasdfkljalfj")
           setFavoritePlaces(response.data.data);
           // console.log(favoritePlaces)
@@ -332,7 +334,7 @@ function ScheduleDetail() {
 
   // 날짜 북마크 내에서 순서 수정 (드래그 앤 드롭)
   const handleImageError = (e) => {
-    e.target.src = defaultImg; // 이미지 로드 실패 시 디폴트 이미지로 변경
+    e.target.src = defaultMeeting; // 이미지 로드 실패 시 디폴트 이미지로 변경
   };
 
   const containerRef = useRef(null);
@@ -379,7 +381,7 @@ function ScheduleDetail() {
             <div className="schedule-detail-middle-info">
               <img
                 className="schedule-detail-small-img"
-                src={meetingImg || defaultImg}
+                src={meetingImg || defaultMeeting}
                 alt="모임 사진"
                 onError={handleImageError}
               />
@@ -520,32 +522,6 @@ function ScheduleDetail() {
               </DragDropContext>
             )}
           </div>
-
-          {/* <div className="schedule-detail-button">
-      {isCallStarted ? (
-        <ScheduleButton type={"purple"} onClick={handleCallStart}>
-          통화 시작
-        </ScheduleButton>
-      ) : (
-        <div className="schedule-detail-call-started">
-          <ScheduleButton type={"border"} onClick={handleCallStart}>
-            통화 종료
-          </ScheduleButton>
-          <div
-            className={isHeadPhone ? "headphone-mic-container-activate" : "headphone-mic-container"}
-            onClick={handleHeadPhone}
-          >
-            <img className="headphone-mic-size" src={headphone} alt="헤드폰" />
-          </div>
-          <div
-            className={isMic ? "headphone-mic-container-activate" : "headphone-mic-container"}
-            onClick={handleMic}
-          >
-            <img className="headphone-mic-size" src={mic} alt="마이크" />
-          </div>
-        </div>
-      )}
-    </div> */}
 
           <ScheduleDeleteModal
             isOpen={isExitModalOpen}

@@ -31,19 +31,14 @@
 .search-result-image {
   width: 54px;
   height: 54px;
-  border: 1px solid black;
+  border: 1px solid #d7dedd;
   border-radius: 10px;
   margin-right: 8px;
 }
 
 .place-jjim-hagi {
-  width: 56px;
-  height: 24px;
-  border-radius: 4px;
   border: none;
-  color: white;
-  background: linear-gradient(45deg, #712fff, #a074ff);
-  box-shadow: 5px 10px 20px #b08cff;
+  background: none;
 }
 
 .place-image {
