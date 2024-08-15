@@ -28,7 +28,7 @@
 .sky hr {
   margin: 10px 10px;
   border: 0px;
-  border-top: 2px dashed #98bfd7;
+  border-top: 2px dashed #b9daee;
 }
 
 /* pink */
@@ -49,7 +49,7 @@
 .yellow hr {
   margin: 8px 10px;
   border: 0px;
-  border-top: 2px dashed #efcea7;
+  border-top: 2px dashed #efdea7;
 }
 
 .receipt-card-content p:nth-child(3) {
