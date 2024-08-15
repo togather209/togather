@@ -23,7 +23,7 @@ function JoinForm() {
     codeData["code"] = code;
     console.log(codeData);
 
-    // axios요청
+    // 참여 요청 axios
     try {
       const response = await axiosInstance.post(
         "/teams/join-requests",
@@ -32,7 +32,7 @@ function JoinForm() {
       console.log(response);
       // console.log(response)
       if (response) {
-        navigation("/home");
+        setRequestModalOpen(true);
       } else {
         setJoinModalOpen(true);
       }
@@ -45,6 +45,12 @@ function JoinForm() {
 
   const handleModalClose = () => {
     setJoinModalOpen(false);
+  };
+
+  const [requestModalOpen, setRequestModalOpen] = useState(false);
+
+  const handleRequestModalClose = () => {
+    setRequestModalOpen(false);
   };
 
   return (
@@ -70,6 +76,11 @@ function JoinForm() {
         joinModalOpen={joinModalOpen}
         content={"존재하지 않는 참여코드 입니다"}
         onClose={handleModalClose}
+      />
+      <JoinFormModal
+        joinModalOpen={requestModalOpen}
+        content={"참여신청을 완료했습니다"}
+        onClose={handleRequestModalClose}
       />
     </div>
   );

@@ -1,8 +1,8 @@
 .schedule-detail-header-search-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  width: 88%;
+  width: 360px;
 }
 
 .search-button {
@@ -20,14 +20,19 @@
 }
 
 .schedule-detail-header-search {
+  box-sizing: border-box;
   margin-top: 14px;
-  width: 100%;
+  width: 200px;
   height: 36px;
   border-radius: 20px;
   border: 1px solid #d7dedd;
+  user-select: none;
+  /* margin-right: 40px; */
+  padding: 0px 15px;
 }
 
 .search-button-img {
   width: 28px;
   height: 28px;
+  margin-left: 35px;
 }
