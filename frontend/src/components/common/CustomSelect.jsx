@@ -1,22 +1,26 @@
 import React, { useState } from "react";
 import "./CustomSelect.css";
 
-const CustomSelect = ({ id, placeholder, value, onChange, options }) => {
+const CustomSelect = ({ id, placeholder, value, onChange, options, disabled }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleToggle = () => {
-    setIsOpen(!isOpen);
+    if (!disabled) {
+      setIsOpen(!isOpen);
+    }
   };
 
   const handleSelect = (optionValue) => {
-    onChange(optionValue);
-    setIsOpen(false);
+    if (!disabled) {
+      onChange(optionValue);
+      setIsOpen(false);
+    }
   };
 
   return (
-    <div className="custom-select-container">
+    <div className={`custom-select-container ${disabled ? "disabled" : ""}`}>
       <div
-        className={`custom-select ${isOpen ? "open" : ""}`}
+        className={`custom-select ${isOpen ? "open" : ""} ${disabled ? "disabled" : ""}`}
         onClick={handleToggle}
       >
         <span className={`select-label ${isOpen || value ? "focused" : ""}`}>
@@ -27,7 +31,7 @@ const CustomSelect = ({ id, placeholder, value, onChange, options }) => {
         </span>
         <div className="select-arrow">{isOpen ? "▲" : "▼"}</div>
       </div>
-      {isOpen && (
+      {isOpen && !disabled && (
         <div className="custom-select-options">
           {options.map((option) => (
             <div
