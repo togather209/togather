@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Modal from "../common/Modal";
 
 function SendForm() {
   const [amount, setAmount] = useState(0);
@@ -15,15 +16,17 @@ function SendForm() {
   const navigate = useNavigate();
   const location = useLocation();
   const { name, memberId } = location.state; // 전달된 name과 memberId를 받아옴
+  const [sendSuccess, setSendSuccess] = useState(false);
+  const [ sendFailed, setSendFailed] = useState(false);
 
   useEffect(() => {
     if (password.length >= 6) {
       //이름이 나랑같다?(내 연동계좌로 보낸다..)
-      if(member.memberId === memberId){
+      if (member.memberId === memberId) {
         sendMoneyMe();
       }
       //아니면 상대에게 보내는...
-      else{
+      else {
         sendMoney();
       }
     }
@@ -32,6 +35,7 @@ function SendForm() {
   const handleKeypadInput = (value) => {
     if (amount * 10 + value <= account.balance) {
       setAmount((prevAmount) => parseInt(`${prevAmount}${value}`));
+      setAmountMessage("");
     } else {
       setAmountMessage("잔액 초과");
     }
@@ -74,14 +78,15 @@ function SendForm() {
     return numericBalance.toLocaleString("ko-KR");
   };
 
+  const [moneyOver, setMoneyOver] = useState(false);
+  const [serverError, setServerError] = useState(false);
+
   //송금하는 함수
   const sendMoney = async () => {
     if (amountMessage === "잔액 초과") {
-      console.log("잔액 초과");
+      setMoneyOver(true);
       return;
     }
-
-    console.log(password);
 
     const formData = {
       targetMemberId: memberId,
@@ -94,18 +99,24 @@ function SendForm() {
         "/pay-accounts/transfer",
         formData
       );
-      console.log(sendResponse.data);
-      alert("송금이 완료되었습니다.");
-      navigate("/wallet");
+
+      console.log(sendResponse.status);
+
+      if( sendResponse.status === 204){
+        setSendFailed(true)
+      }
+      else{
+        setSendSuccess(true);
+      }
     } catch (error) {
-      console.log("송금 실패", error);
+      setServerError(true);
     }
   };
 
   //나에게 송금
   const sendMoneyMe = async () => {
     if (amountMessage === "잔액 초과") {
-      console.log("잔액 초과");
+      setMoneyOver(true);
       return;
     }
     //금액만
@@ -113,16 +124,21 @@ function SendForm() {
       price: amount,
     };
 
-    try{
-      const sendMeResponse = await axiosInstance.post("/pay-accounts/withdraw", formData);
+    try {
+      const sendMeResponse = await axiosInstance.post(
+        "/pay-accounts/withdraw",
+        formData
+      );
       console.log(sendMeResponse.data);
-      alert("송금이 완료되었습니다.");
-      navigate("/wallet");
+      setSendSuccess(true);
+    } catch (error) {
+      setSendFailed(true);
     }
-    catch(error){
-      console.log("자기에게 보내기 실패!", error);
-    }
+  };
 
+  const clearPassword = () => {
+    setPassword("");
+    setServerError(false);
   }
 
   return (
@@ -186,6 +202,18 @@ function SendForm() {
             </div>{" "}
           </div>
         </div>
+      )}
+      {sendSuccess && (
+        <Modal mainMessage={"송금이 완료되었습니다!"} onClose={() => navigate("/wallet")}/>
+      )}
+      {sendFailed && (
+        <Modal mainMessage={"상대방의 페이계좌가 존재하지 않습니다."} onClose={() => navigate("/wallet")}/>
+      )}
+      {moneyOver && (
+        <Modal mainMessage={"잔액 초과입니다."} subMessage={"잔액을 확인해주세요."} onClose={() => navigate("/wallet")}/>
+      )}
+      {serverError && (
+        <Modal mainMessage={"비밀번호가 틀렸습니다."} onClose={() => clearPassword()}/>
       )}
     </div>
   );

@@ -1,0 +1,74 @@
+.receipt-card-container {
+  position: relative;
+  margin: 10px 2px;
+}
+
+.receipt-background {
+  width: 102px;
+  height: 140px;
+}
+
+.receipt-card-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 102px;
+  height: 140px;
+}
+
+.receipt-card-content.sky h3,
+.yellow h3 {
+  margin-top: 15px;
+  font-size: 10px;
+  font-weight: bolder;
+  text-align: center;
+}
+
+/* sky */
+.sky hr {
+  margin: 10px 10px;
+  border: 0px;
+  border-top: 2px dashed #b9daee;
+}
+
+/* pink */
+.receipt-card-content.pink h3 {
+  margin: 15px;
+  font-size: 10px;
+  font-weight: bolder;
+  text-align: start;
+}
+
+.pink .pink-line {
+  margin: 20px 10px 10px 10px;
+  border: 0px;
+  border-top: 2px solid #fbced8;
+}
+
+/* yellow */
+.yellow hr {
+  margin: 8px 10px;
+  border: 0px;
+  border-top: 2px dashed #efdea7;
+}
+
+.receipt-card-content p:nth-child(3) {
+  display: flex;
+  font-weight: 600;
+  font-size: 10px;
+  margin-left: 10px;
+}
+
+.receipt-card-content .receipt-amount {
+  margin-right: 10px;
+  font-size: 16px;
+  text-align: end;
+  font-weight: 800;
+}
+
+.receipt-card-content .receipt-date {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  font-size: 11px;
+} 

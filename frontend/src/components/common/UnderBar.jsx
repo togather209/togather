@@ -19,7 +19,7 @@ function UnderBar() {
   const isActive = (path) => location.pathname === path;
 
   // 로그인 및 회원가입 페이지에서 하단 바 숨김
-  const hideUnderBarPaths = ["/login", "/signup"];
+  const hideUnderBarPaths = ["/login", "/signup", "/"];
   if (hideUnderBarPaths.includes(location.pathname)) {
     return null;
   }

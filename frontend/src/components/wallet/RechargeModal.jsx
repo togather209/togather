@@ -16,6 +16,7 @@ import Modal from "../common/Modal";
 
 function RechargeModal({ closeModal }) {
   const [isCompleteRecharge, setIsCompleteRecharge] = useState(false);
+
   const [amount, setAmount] = useState(0);
   const linkedAccountInfo = useSelector(
     (state) => state.linkedAccount.linkedAccountInfo
@@ -26,12 +27,13 @@ function RechargeModal({ closeModal }) {
     setAmount((prevAmount) => prevAmount + value);
   };
 
+  const [countOver, setCountOver] = useState(false);
+
   const handleKeypadInput = (value) => {
-    if (amount <= 9999999999999) {
+    if (amount <= 1000000000) {
       setAmount((prevAmount) => parseInt(`${prevAmount}${value}`));
     } else {
-      alert("금액으로 장난질하지마라");
-      window.location.reload();
+      setCountOver(true);
     }
   };
 
@@ -43,28 +45,26 @@ function RechargeModal({ closeModal }) {
     setAmount(0);
   };
 
+  const [moneyOver, setMoneyOver] = useState(false);
+
   //충전하는 함수
   const handlerRechargePay = async () => {
-    //0원은 충전할 수 없다.
     if (amount === 0) {
       return;
     }
-
-    //충전 금액
+  
     const rechargeData = {
       price: amount,
     };
-
+  
     try {
-      await axiosInstance
-        .post("/pay-accounts/recharge", rechargeData)
-        .then((res) => {
-          console.log(res.data);
-          setIsCompleteRecharge(true);
-        });
+      const res = await axiosInstance.post("/pay-accounts/recharge", rechargeData);
+  
+      if (res.status === 200) {
+        setIsCompleteRecharge(true);
+      }
     } catch (error) {
-      alert("잔액이 부족합니다. 연동 계좌 잔액을 확인해주세요.");
-      closeModal();
+        setMoneyOver(true);
     }
   };
 
@@ -112,6 +112,7 @@ function RechargeModal({ closeModal }) {
       break;
   }
 
+
   return (
     <div className="rechargemodal-overlay">
       <div className="rechargemodal-content">
@@ -155,6 +156,12 @@ function RechargeModal({ closeModal }) {
         </button>
       </div>
       {isCompleteRecharge && <Modal mainMessage={`${amount.toLocaleString()}원 충전`} subMessage={"충전이 완료되었습니다."} onClose={() => navigate(0)}/>}
+      {moneyOver && (
+      <Modal mainMessage={"잔액이 부족합니다."} subMessage={"잔액을 확인해주세요."} onClose={() => closeModal()}/>
+    )}
+    {countOver && (
+      <Modal mainMessage={"이체 한도 초과"} onClose={() => closeModal()}/>
+    )}
     </div>
   );
 }

@@ -84,10 +84,10 @@
   font-size: 12px;
 }
 
-.modal {
+.selected-modal {
   display: none;
   position: fixed;
-  z-index: 1;
+  z-index: 1000;
   left: 0;
   top: 0;
   width: 100%;
@@ -97,7 +97,7 @@
   background-color: rgba(0, 0, 0, 0.4);
 }
 
-.modal-content {
+.selected-modal-content {
   background-color: #fefefe;
   margin: 15% auto;
   padding: 20px;
@@ -120,38 +120,74 @@
   cursor: pointer;
 }
 
-.modal-details img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  margin-bottom: 10px;
+.selected-modal-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
 }
 
-.modal-details {
+.selected-modal-header p {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.selected-modal-details img {
+  width: 25px;
+  height: 25px;
+  margin-right: 10px;
+}
+
+.selected-modal-details {
   display: flex;
   flex-direction: column;
   text-align: left;
+  padding: 3px;
 }
 
-.modal-details-title {
+.selected-modal-details-title {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
 }
 
-.modal-name {
+.selected-modal-name {
   text-align: start;
   margin-left: 5px;
+  font-weight: 600;
+  margin-bottom: 5px; 
 }
 
 .transactions-information {
   margin-top: 20px;
 }
 
+.transations-information-amount-header,
+.transactions-information-type-header,
+.transactions-information-time-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.transations-information-amount-title,
+.transactions-information-type-title,
+.transactions-information-time-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.transations-information-amount,
+.transactions-information-type,
+.transactions-information-time {
+  font-size: 12px;
+}
+
 .transactions-amount {
   display: flex;
   margin-left: 5px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .transactions-information p {
@@ -159,15 +195,16 @@
   padding: 5px;
 }
 
-.confirm-button {
+.selected-confirm-button {
   width: 100%;
   border: none;
   border-radius: 12px;
   padding: 10px 15px;
   background: linear-gradient(to right, #712fff, #925eff);
+  color: white;
 }
 
-.confirm-button:hover {
+.selected-confirm-button:hover {
   background: linear-gradient(to right, #712fff, #712fff);
   box-shadow: 0 14px 28px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.1);
 }

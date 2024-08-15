@@ -35,53 +35,56 @@ function ScheduleDetailContainer() {
 
   useEffect(() => {
     eventSourceRef.current = new EventSource(
-      `http://localhost:8080/api/sse/subscribe/${planId}/${sub}`
+      `https://i11b209.p.ssafy.io/api/sse/subscribe/${planId}/${sub}`,
+      { withCredentials: true }
     );
 
     eventSourceRef.current.addEventListener("bookmark-deleted", (event) => {
-      console.log("삭제 요청 받음")
+      console.log("삭제 요청 받음");
       const eventData = JSON.parse(event.data);
       handleBookmarkDeleted(eventData);
     });
 
     eventSourceRef.current.addEventListener("bookmark-added", (event) => {
       const eventData = JSON.parse(event.data);
-      console.log("추가 요청 받음")
+      console.log("추가 요청 받음");
       //console.log(eventData, "번 추가");
       setNewBookmark(eventData);
     });
 
-    eventSourceRef.current.addEventListener("bookmark-date-updated", (event) => {
-      const eventData = JSON.parse(event.data);
-      console.log("날짜 변경 요청 받음")
-      setNewDay(eventData);
-      //console.log(eventData, "이동");
-    });
+    eventSourceRef.current.addEventListener(
+      "bookmark-date-updated",
+      (event) => {
+        const eventData = JSON.parse(event.data);
+        console.log("날짜 변경 요청 받음");
+        setNewDay(eventData);
+        //console.log(eventData, "이동");
+      }
+    );
 
-    eventSourceRef.current.addEventListener("bookmark-index-updated", (event) => {
-      const eventData = JSON.parse(event.data);
-      console.log("인덱스 변경 요청 받음")
-      setNewOrder(eventData);
-      //console.log(eventData, "강림");
-    })
+    eventSourceRef.current.addEventListener(
+      "bookmark-index-updated",
+      (event) => {
+        const eventData = JSON.parse(event.data);
+        console.log("인덱스 변경 요청 받음");
+        setNewOrder(eventData);
+        //console.log(eventData, "강림");
+      }
+    );
 
-
-
-    eventSourceRef.current.addEventListener("error", (error)  =>{
+    eventSourceRef.current.addEventListener("error", (error) => {
       console.error("SSE error:", error);
     });
 
     return () => {
-      if(eventSourceRef.current){
+      if (eventSourceRef.current) {
         eventSourceRef.current.close();
       }
     };
   }, []);
 
-
-
   function handleBookmarkDeleted(eventData) {
-   // console.log(eventData + " 가 삭제됨");
+    // console.log(eventData + " 가 삭제됨");
     setDeletedBookmarkId(eventData);
   }
   return (

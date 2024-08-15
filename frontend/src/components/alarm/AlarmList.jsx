@@ -40,7 +40,7 @@ function AlarmList() {
       // 최종 정산 동의 요청 및 최종 정산 송금 요청
       case 1:
       case 6:
-        navigate("/receipt/bookmark", {
+        navigate("/payment", {
           state: { teamId: alarmDto.teamId, planId: alarmDto.planId },
         });
         break;
@@ -58,7 +58,7 @@ function AlarmList() {
 
       // 모임 가입 신청
       case 4:
-        navigate(`/home/meeting/${alarmDto.teamId}/manage`);
+        navigate(`/home/meeting/${alarmDto.teamId}`);
         break;
 
       // 입금 알림

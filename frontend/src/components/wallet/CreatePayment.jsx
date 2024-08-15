@@ -94,6 +94,25 @@ function CreatePayment() {
     }
   };
 
+  const formatAccountNumber = (value) => {
+    const cleaned = value.replace(/\D/g, ""); // 숫자만 남기기
+    const match = cleaned.match(/(\d{0,4})(\d{0,4})(\d{0,4})/); // 4-4-4로 그룹화
+
+    if (match) {
+      return `${match[1]}${match[2] ? `-${match[2]}` : ""}${
+        match[3] ? `-${match[3]}` : ""
+      }`;
+    }
+
+    return value;
+  };
+
+  const handleAccountNumChange = (e) => {
+    const value = e.target.value;
+    const formattedValue = formatAccountNumber(value);
+    setAccountNum(formattedValue);
+  };
+
   const handlePasswordConfirm = () => {
     setPassword(tempPassword);
     setIsModalOpen(false);
@@ -125,9 +144,10 @@ function CreatePayment() {
     setPasswordModal(false);
   };
 
+  const [passwordFailed, setPasswordFailed] = useState(false);
   //인증 누를 시!
   const userVerification = async () => {
-    //사용자 연동 계좌 정보
+    // 사용자 연동 계좌 정보
     const userPayData = {
       accountNumber: accountNum,
       type: bank,
@@ -135,21 +155,23 @@ function CreatePayment() {
       birth: birth,
       password: accountPassword,
     };
-
+    
     try {
-      const userPayDataResponse = await axiosInstance.post(
-        "/accounts/verify",
-        userPayData
-      );
-      console.log(userPayDataResponse.data);
-
-      //인증 성공했으면!
-      setIsVerification(true);
-      //모달 닫기
-      setPasswordModal(false);
-      setIsAuthenticationsSuccess(true);
+      const response = await axiosInstance.post("/accounts/verify", userPayData);
+  
+      if (response.data.status === 200) { // 서버의 성공 여부를 나타내는 플래그 확인
+        // 인증 성공했으면!
+        setIsVerification(true);
+        // 모달 닫기
+        setPasswordModal(false);
+        setIsAuthenticationsSuccess(true);
+      } else {
+        // 인증 실패 시
+        setPasswordFailed(true);
+      }
     } catch (error) {
-      console.log("입력에 이상이 있는 것 같은데", error);
+      // 서버 에러나 다른 오류 발생 시
+      setPasswordFailed(true);
     }
   };
 
@@ -168,6 +190,8 @@ function CreatePayment() {
       memberName: memberName,
     };
 
+    console.log(accountNum);
+
     try {
       const payDataResponse = await axiosInstance.post(
         "/pay-accounts",
@@ -180,6 +204,11 @@ function CreatePayment() {
     } catch (error) {
       console.log("데이터 이상");
     }
+  };
+
+  const cleanAccountPassword = () => {
+    setAccountPassword("");
+    setPasswordFailed(false);
   };
 
   return (
@@ -237,7 +266,8 @@ function CreatePayment() {
             type="text"
             placeholder="나의 연동 계좌 번호"
             value={accountNum}
-            onChange={(e) => setAccountNum(e.target.value)}
+            onChange={handleAccountNumChange}
+            disabled={isVerification === true} // 인증 성공 시 비활성화
           />
 
           <CustomSelect
@@ -246,6 +276,7 @@ function CreatePayment() {
             value={bank}
             onChange={(value) => setBank(value)}
             options={bankOptions}
+            disabled={isVerification === true} // 인증 성공 시 비활성화
           />
 
           <CommonInput
@@ -254,6 +285,7 @@ function CreatePayment() {
             placeholder="실명"
             value={memberName}
             onChange={(e) => setMemberName(e.target.value)}
+            disabled={isVerification === true} // 인증 성공 시 비활성화
           />
           <CommonInput
             id="birth"
@@ -261,6 +293,7 @@ function CreatePayment() {
             placeholder="생년월일 8자리"
             value={birth}
             onChange={handleBirthChange}
+            disabled={isVerification === true} // 인증 성공 시 비활성화
           />
           <div className="btn">
             <button onClick={prevStep}>이전</button>
@@ -272,7 +305,6 @@ function CreatePayment() {
           </div>
         </div>
       )}
-
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -335,6 +367,13 @@ function CreatePayment() {
           mainMessage={"계좌 생성에 성공하였습니다!"}
           subMessage={`${accountName} 지갑이 생성되었습니다.`}
           onClose={() => navigate("/wallet")}
+        />
+      )}
+
+      {passwordFailed && (
+        <Modal
+          mainMessage={"비밀번호가 틀렸습니다."}
+          onClose={() => cleanAccountPassword()}
         />
       )}
     </div>
