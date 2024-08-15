@@ -159,7 +159,7 @@ function PaymentContainer() {
                       <div key={index} className="payment-item">
                         <p
                           className={`name ${
-                            payment.name === "TOGETHER"
+                            payment.name === "TOGATHER"
                               ? "payment-system-name"
                               : ""
                           }`}
@@ -168,7 +168,7 @@ function PaymentContainer() {
                         </p>
                         <p
                           className={`name ${
-                            payment.name === "TOGETHER"
+                            payment.name === "TOGATHER"
                               ? "payment-system-name"
                               : ""
                           }`}
