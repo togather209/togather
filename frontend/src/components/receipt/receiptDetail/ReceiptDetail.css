@@ -79,6 +79,12 @@
   font-weight: 500;
 }
 
+.receipt-table td:first-child {
+  word-break: break-word;
+  white-space: pre-wrap;
+  max-width: 12ch;
+}
+
 .tagged-people {
   display: flex;
   flex-direction: row;
