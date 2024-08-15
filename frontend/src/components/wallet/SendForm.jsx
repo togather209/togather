@@ -35,6 +35,7 @@ function SendForm() {
   const handleKeypadInput = (value) => {
     if (amount * 10 + value <= account.balance) {
       setAmount((prevAmount) => parseInt(`${prevAmount}${value}`));
+      setAmountMessage("");
     } else {
       setAmountMessage("잔액 초과");
     }
@@ -78,6 +79,7 @@ function SendForm() {
   };
 
   const [moneyOver, setMoneyOver] = useState(false);
+  const [serverError, setServerError] = useState(false);
 
   //송금하는 함수
   const sendMoney = async () => {
@@ -85,8 +87,6 @@ function SendForm() {
       setMoneyOver(true);
       return;
     }
-
-    console.log(password);
 
     const formData = {
       targetMemberId: memberId,
@@ -99,10 +99,17 @@ function SendForm() {
         "/pay-accounts/transfer",
         formData
       );
-      console.log(sendResponse.data);
-      setSendSuccess(true);
+
+      console.log(sendResponse.status);
+
+      if( sendResponse.status === 204){
+        setSendFailed(true)
+      }
+      else{
+        setSendSuccess(true);
+      }
     } catch (error) {
-      setSendFailed(true)
+      setServerError(true);
     }
   };
 
@@ -128,6 +135,11 @@ function SendForm() {
       setSendFailed(true);
     }
   };
+
+  const clearPassword = () => {
+    setPassword("");
+    setServerError(false);
+  }
 
   return (
     <div className="sendform-container">
@@ -195,10 +207,13 @@ function SendForm() {
         <Modal mainMessage={"송금이 완료되었습니다!"} onClose={() => navigate("/wallet")}/>
       )}
       {sendFailed && (
-        <Modal mainMessage={"송금에 실패하였습니다."} onClose={() => navigate("/wallet")}/>
+        <Modal mainMessage={"상대방의 페이계좌가 존재하지 않습니다."} onClose={() => navigate("/wallet")}/>
       )}
       {moneyOver && (
         <Modal mainMessage={"잔액 초과입니다."} subMessage={"잔액을 확인해주세요."} onClose={() => navigate("/wallet")}/>
+      )}
+      {serverError && (
+        <Modal mainMessage={"비밀번호가 틀렸습니다."} onClose={() => clearPassword()}/>
       )}
     </div>
   );
