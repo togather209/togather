@@ -66,7 +66,7 @@ function ScheduleDetailPart() {
           ]);
 
           // 구독자에게 음소거 상태 적용
-          event.stream.streamManager.subscribeToAudio(!isHeadPhone);
+          //event.stream.streamManager.subscribeToAudio(!isHeadPhone);
         });
 
         newSession.on("streamDestroyed", (event) => {
