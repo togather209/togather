@@ -86,8 +86,11 @@ public class BookmarkService {
         Bookmark updatedBookmark = bookmarkRepository.findById(bookmarkId)
                 .orElseThrow(() -> new BookmarkNotFoundException("해당 북마크가 존재하지 않습니다."));
 
+        System.out.println(updatedBookmark.getPlaceName());
         LocalDate oldDate = updatedBookmark.getDate(); // 기존 날짜
+        System.out.println("원래 날짜 : "+oldDate);
         LocalDate newDate = request.getDate(); // 새로운 날짜
+        System.out.println("새로 지정한 날짜 : "+newDate);
 
         // 일정 날짜 범위를 벗어나면 안됨
         if(newDate != null){
@@ -104,13 +107,15 @@ public class BookmarkService {
                 throw new UpdateNotAllwedException("영수증이 등록된 장소는 찜목록으로 이동할 수 없습니다.");
             }
 
+            // 이동하기 전 날짜에서 가지던 순서 저장해두기
             int oldOrder = updatedBookmark.getItemOrder();
+
             // 날짜와 순서 모두 null로 변경
             updatedBookmark.moveToJjim();
             bookmarkRepository.save(updatedBookmark);
 
             // 수정된 요소와 같은 날짜에 있던 요소들 순서 바꿔주기
-            List<Bookmark> oldBookmarkList = bookmarkRepository.findAllByDate(oldDate);
+            List<Bookmark> oldBookmarkList = bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, oldDate);
             for(Bookmark bookmark : oldBookmarkList){
                 // 수정된 요소가 가지고 있던 순서보다 더 뒷 순서면 -1
                 if(bookmark.getItemOrder() > oldOrder){
@@ -121,6 +126,7 @@ public class BookmarkService {
         }
         // 찜에 있던 장소에 날짜를 지정해준 경우, 날짜 변경하고 순서는 그 날짜의 가장 마지막으로 설정
         else if (oldDate == null && newDate != null) {
+            System.out.println("이동하려는 날짜에 장소 몇개 있대 ??? "+bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, newDate).size());
             updatedBookmark.updateDate(newDate, bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, newDate).size());
             bookmarkRepository.save(updatedBookmark);
         }
@@ -128,7 +134,8 @@ public class BookmarkService {
         // 날짜 정보가 있던 장소를 다른 날짜로 이동하는 경우 양쪽 모두 순서 재정렬
         else {
             int oldOrder = updatedBookmark.getItemOrder();
-            updatedBookmark.updateDate(newDate, bookmarkRepository.findAllByDate(newDate).size());
+            System.out.println("잘못된갯수인가??? : "+bookmarkRepository.findAllByDate(newDate).size());
+            updatedBookmark.updateDate(newDate, bookmarkRepositorySupport.findAllBookmarkByDateInSamePlan(planId, newDate).size());
             bookmarkRepository.save(updatedBookmark);
 
             // 수정된 요소와 같은 날짜에 있던 요소들 순서 바꿔주기
