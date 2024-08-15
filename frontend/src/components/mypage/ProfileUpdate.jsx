@@ -194,7 +194,7 @@ function ProfileUpdate() {
     if (
       e.target.files &&
       e.target.files[0] &&
-      e.target.files[0].size <= 1048576
+      e.target.files[0].size <= 10485760
     ) {
       const file = e.target.files[0];
 
