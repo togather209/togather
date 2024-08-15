@@ -50,6 +50,8 @@ function KakaoLogin() {
                 refreshToken,
               })
             );
+
+            navigate("/home");
           } else {
             // 회원가입으로 이동
             navigate("/signupWithKakao", {
@@ -65,8 +67,6 @@ function KakaoLogin() {
         }
       } else if (!fcmTokenReady) {
         console.log("FCM 토큰이 아직 초기화되지 않았습니다.");
-      } else {
-        console.error("No code present in URL");
       }
     };
 
