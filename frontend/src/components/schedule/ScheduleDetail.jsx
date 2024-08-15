@@ -521,32 +521,6 @@ function ScheduleDetail() {
             )}
           </div>
 
-          {/* <div className="schedule-detail-button">
-      {isCallStarted ? (
-        <ScheduleButton type={"purple"} onClick={handleCallStart}>
-          통화 시작
-        </ScheduleButton>
-      ) : (
-        <div className="schedule-detail-call-started">
-          <ScheduleButton type={"border"} onClick={handleCallStart}>
-            통화 종료
-          </ScheduleButton>
-          <div
-            className={isHeadPhone ? "headphone-mic-container-activate" : "headphone-mic-container"}
-            onClick={handleHeadPhone}
-          >
-            <img className="headphone-mic-size" src={headphone} alt="헤드폰" />
-          </div>
-          <div
-            className={isMic ? "headphone-mic-container-activate" : "headphone-mic-container"}
-            onClick={handleMic}
-          >
-            <img className="headphone-mic-size" src={mic} alt="마이크" />
-          </div>
-        </div>
-      )}
-    </div> */}
-
           <ScheduleDeleteModal
             isOpen={isExitModalOpen}
             isClose={() => setIsExitModalOpen(false)}

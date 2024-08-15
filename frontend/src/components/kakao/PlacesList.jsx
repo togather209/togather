@@ -4,16 +4,18 @@ import "./PlacesList.css";
 import purpleSearch from "../../assets/schedule/purplesearch.png";
 import PlaceListItem from "./PlaceLIstItem";
 import JoinFormModal from "../home/JoinFormModal";
-import market from "../../assets/search/market.jpg";
-import attraction from "../../assets/search/attraction.jpg";
+
+import market from "../../assets/search/market.png";
+import attraction from "../../assets/search/attraction.png";
 import facility from "../../assets/search/facility.png";
-import accomodation from "../../assets/search/accomodation.jpg";
-import restaurant from "../../assets/search/restaurant.jpg";
+import accomodation from "../../assets/search/accomodation.png";
+import restaurant from "../../assets/search/restaurant.png";
 import parking from "../../assets/search/parking.png";
-import subway from "../../assets/search/subway.jpg";
-import cafe from "../../assets/search/cafe.jpg";
-import conviny from "../../assets/search/conviny.jpg";
+import subway from "../../assets/search/subway.png";
+import cafe from "../../assets/search/cafe.png";
+import conviny from "../../assets/search/conviny.png";
 import defaultimage from "../../../public/defaultimage.png";
+
 import { useOutletContext } from "react-router-dom";
 
 const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {

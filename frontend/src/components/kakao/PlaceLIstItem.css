@@ -31,7 +31,7 @@
 .search-result-image {
   width: 54px;
   height: 54px;
-  border: 1px solid black;
+  border: 1px solid #d7dedd;
   border-radius: 10px;
   margin-right: 8px;
 }
