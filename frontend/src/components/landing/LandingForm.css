@@ -34,7 +34,7 @@
 }
 
 .content {
-  margin-bottom: 5px;
+  margin-bottom: 100px;
   position: relative;
   opacity: 1;
   transition: opacity 0.3s ease-in-out;
@@ -63,6 +63,8 @@
   font-weight: 500;
   color: #000;
   margin-bottom: 20px;
+  text-align: center;
+  white-space: pre-line;
 }
 
 .image-container {
@@ -115,7 +117,7 @@
   border-radius: 5px;
   cursor: pointer;
   position: absolute;
-  bottom:80px;
+  bottom:150px;
 }
 
 .start-container {
@@ -128,7 +130,7 @@
 
 .start-button {
   position: absolute;
-  bottom:80px;
+  bottom:150px;
   padding: 10px;
   background-color: #712fff;
   color: white;
