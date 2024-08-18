@@ -19,9 +19,6 @@ function GameContainer() {
   const [isTongsDown, setIsTongsDown] = useState(false);
   const [noParticipant, SetNoParticipant] = useState(false);
 
-  useEffect(() => {
-    console.log(participants);
-  }, [participants]);
 
   const addParticipant = () => {
     // 참여 인원 리셋
@@ -50,7 +47,6 @@ function GameContainer() {
       setTimeout(() => {
         const randomIndex = Math.floor(Math.random() * participants.length);
         setRandomParticipant(participants[randomIndex]);
-        console.log(randomParticipant);
         setIsResultModalOpen(true);
       }, 3000);
     }

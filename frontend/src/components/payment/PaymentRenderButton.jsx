@@ -26,14 +26,12 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
         `/teams/${teamId}/plans/${planId}/payments/approvals`
       );
 
-      console.log(response.data);
 
       if (response.data.data.isAllApproved) {
         const response = await axiosInstance.post(
           `/teams/${teamId}/plans/${planId}/payments`
         );
 
-        console.log(response.data);
       }
 
       // 동의 처리 후 페이지 새로고침
@@ -61,15 +59,12 @@ function PaymentRenderButton({ paymentData, teamId, planId }) {
           }
         );
 
-        console.log(response);
         // 송금 성공 처리
         if (response) {
           if (response.status === 204) {
-            console.log(204);
             // 송금 요청 시에 상쇄로 인해 보낼 내역이 없는 경우
             setNoHistory(true);
           } else {
-            console.log(200);
             setCompletePayment(true);
           }
         }

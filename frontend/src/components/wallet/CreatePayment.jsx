@@ -180,7 +180,6 @@ function CreatePayment() {
     //칸이 비어있다면 실명으로 설정
     if (accountName === null || accountName === "") {
       setAccountName(memberName);
-      console.log(accountName);
     }
 
     const payData = {
@@ -190,7 +189,6 @@ function CreatePayment() {
       memberName: memberName,
     };
 
-    console.log(accountNum);
 
     try {
       const payDataResponse = await axiosInstance.post(
@@ -202,7 +200,7 @@ function CreatePayment() {
       dispatch(setAccount({ account: payDataResponse.data.data }));
       //지갑 페이지로 이동하면... 다른페이지가 뜰거다.
     } catch (error) {
-      console.log("데이터 이상");
+      console.error("데이터 이상");
     }
   };
 
