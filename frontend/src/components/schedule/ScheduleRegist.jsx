@@ -69,8 +69,6 @@ function ScheduleRegist() {
       ScheduleFormData["endDate"] = formatDate(startDate);
     }
 
-    // console.log(ScheduleFormData)
-
     // axios요청
     // 일정 생성 요청
     try {

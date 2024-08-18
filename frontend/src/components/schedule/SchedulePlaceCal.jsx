@@ -54,7 +54,6 @@ function SchedulePlaceCal({
     } else {
       formDateData["date"] = formatDateToYYYYMMDD(new Date(selectedDate));
       console.log(formDateData);
-      console.log("ddddd");
     }
     try {
       const response = await axiosInstance.patch(

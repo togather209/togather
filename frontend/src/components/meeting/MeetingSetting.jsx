@@ -41,8 +41,7 @@ function MeetingSetting() {
     try {
       const response = await axiosInstance.get(`/teams/${id}/members`);
       setJoinMember(response.data.data);
-      // console.log(joinMember)
-      // setForR(!forR)
+
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
     }

@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import "./CheckModal.css";
 import axiosInstance from "../../utils/axiosInstance";
 
-// import { useNavigate } from "react-router-dom";
-
 function CheckModal({
   isOpen,
   isClose,
@@ -14,12 +12,7 @@ function CheckModal({
   setForR,
   forR,
 }) {
-  const [teamIdNumber, setTeamIdNumber] = useState(teamId);
-
-  console.log("dddddx");
-  console.log(teamIdNumber);
-  console.log("dddddx");
-
+  const [teamIdNumber, setTeamIdNumber] = useState(teamId)
   const [isError, setIsError] = useState(false);
 
   // 모임 삭제 요청 axios
@@ -34,7 +27,6 @@ function CheckModal({
         setIsError(true);
       }
     } catch (error) {
-      //   console.log("실패 ㅠㅠㅠㅠ");
       console.error("데이터 불러오기 실패", error);
     }
   };
