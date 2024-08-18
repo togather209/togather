@@ -7,12 +7,8 @@ import {
 } from "react-router-dom";
 import "./ScheduleDetail.css";
 import axiosInstance from "../../utils/axiosInstance";
-
-// import meetingimg from "../../../public/다운로드.jpg";
 import defaultImg from "../../../public/defaultimage.png";
-
 import defaultMeeting from "../../assets/meeting/defaultMeeting.png";
-
 import alarm from "../../assets/icons/common/alarm.png";
 import exit from "../../assets/schedule/scheduleexit.png";
 import heart from "../../assets/schedule/scheduleheartimg.png";
@@ -25,8 +21,7 @@ import ScheduleDates from "./ScheduleDates";
 import ScheduleWeekdays from "./ScheduleWeekdays";
 import ScheduleDetailPlaces from "./ScheduleDetailPlaces";
 import ScheduleDetailFavoritePlaces from "./ScheduleDetailFavoritePlaces";
-// import headphone from "../../assets/schedule/headphone.png";
-// import mic from "../../assets/schedule/mic.png";
+
 import backImage from "../../assets/icons/common/back.png";
 import SearchForm from "../kakao/SearchForm";
 import PlacesList from "../kakao/PlacesList";
@@ -34,7 +29,6 @@ import Pagination from "../kakao/Pagination";
 import CheckModal from "../common/CheckModal";
 import ScheduleDeleteModal from "./ScheduleDeleteModal";
 import { useSelector } from "react-redux";
-
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import JoinFormModal from "../home/JoinFormModal";
 
@@ -52,9 +46,6 @@ function ScheduleDetail() {
 
   const location = useLocation();
   const { meetingName, meetingImg } = location.state || {};
-
-  // console.log(id);
-  // console.log(schedule_id);
 
   const [openCantSearchModal, setOpenCantSearchModal] = useState(false);
 
@@ -125,12 +116,9 @@ function ScheduleDetail() {
       );
       const data = response.data.data;
       setScheduleDetail(data);
-      //console.log("일정상세조회data", data);
 
       const start = new Date(data.startDate);
       const end = new Date(data.endDate);
-
-      // console.log("Fetched Schedule Detail:", data);
 
       setStartDate(start);
       setEndDate(end);
@@ -180,17 +168,11 @@ function ScheduleDetail() {
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [isHeartClicked, setIsHeartClicked] = useState(true);
-  // const [isCallStarted, setIsCallStarted] = useState(false);
-  // const [isHeadPhone, setIsHeadPhone] = useState(false);
-  // const [isMic, setIsMic] = useState(false);
 
-  // const handleCallStart = () => setIsCallStarted(!isCallStarted);
-  // const handleHeadPhone = () => setIsHeadPhone(!isHeadPhone);
-  // const handleMic = () => setIsMic(!isMic);
   const handleDateClick = (date) => {
     setSelectedDate(date);
     setIsHeartClicked(false);
-    //console.log(date);
+
   };
   const handleHeartClick = () => {
     setSelectedDate(null);
@@ -217,14 +199,13 @@ function ScheduleDetail() {
     if (isHeartClicked) {
       const favoritePlace = async () => {
         try {
-          // console.log(`/teams/${id}/plans/${schedule_id}/bookmarks/jjim`)
           const response = await axiosInstance.get(
             `/teams/${id}/plans/${schedule_id}/bookmarks/jjim`
           );
           console.log(response);
-          // console.log("dychdsfhasdfkljalfj")
+
           setFavoritePlaces(response.data.data);
-          // console.log(favoritePlaces)
+
         } catch (error) {
           console.error("데이터 불러오기 실패", error);
         }
@@ -243,12 +224,12 @@ function ScheduleDetail() {
   ]);
 
   useEffect(() => {
-    //console.log("Updated favoritePlaces:", favoritePlaces);
+
   }, [favoritePlaces]);
 
   // 날짜가 정해진 장소들 요청하는 axios
   useEffect(() => {
-    //console.log(selectedDate);
+
     if (!selectedDate) {
       return;
     }
@@ -257,7 +238,7 @@ function ScheduleDetail() {
         const response = await axiosInstance.get(
           `/teams/${id}/plans/${schedule_id}/bookmarks/${selectedDate}`
         );
-        //console.log(response.data.data);
+
         setDatePlaces(response.data.data);
       } catch (error) {
         console.error("데이터 불러오기 실패", error);
@@ -286,8 +267,6 @@ function ScheduleDetail() {
     }
   };
 
-  // 일정 수정 axios 요청
-  // const scheduleUpdate = async () =>
 
   // 드래그 완료 후 호출되는 함수
   const onDragEnd = (result) => {
@@ -314,7 +293,7 @@ function ScheduleDetail() {
       };
 
       try {
-        // console.log(orderForm);
+
         const response = await axiosInstance.patch(
           `/teams/${id}/plans/${schedule_id}/bookmarks/${newbookmarkid}/order`,
           orderForm,
@@ -324,7 +303,7 @@ function ScheduleDetail() {
             },
           }
         );
-        //console.log(response.data);
+
       } catch (error) {
         console.error("데이터 불러오기 실패", error.response);
       }
@@ -546,8 +525,6 @@ function ScheduleDetail() {
               onSearch={handleSearch}
               isOpenSearch={isOpenSearch}
             />
-            {/* <input className="schedule-detail-header-search" type="text" /> */}
-            {/* <img className="schedule-detail-alarm-icon" src={alarm} alt="알람" /> */}
           </div>
 
           <PlacesList
