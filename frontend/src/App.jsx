@@ -11,8 +11,7 @@ function App() {
   useEffect(() => {
     onMessageListener()
       .then((payload) => {
-        console.log("Message received. ", payload);
-        // 알림을 사용자에게 표시하는 로직 추가
+
       })
       .catch((err) => console.log("failed: ", err));
   }, [onMessageListener]);

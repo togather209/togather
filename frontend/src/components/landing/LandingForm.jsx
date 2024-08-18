@@ -8,11 +8,41 @@ import landing3 from "../../assets/landing/LANDING3.png";
 import landing3Detail from "../../assets/landing/LANDING3DETAIL.png";
 import { useSwipeable } from "react-swipeable";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { setToken } from "../../redux/slices/authSlice";
 
 function LandingForm() {
   const [step, setStep] = useState(0);
   const [fadeClass, setFadeClass] = useState("fade-in");
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  useEffect(() => {
+    const isHaveRefreshToken = async () => {
+      const response = await axios.post(`${API_URL}/auth/refresh`,
+        {},
+        {
+          withCredentials: true
+        }
+      )
+
+      //쿠키조회 성공하면...
+      if(response.status === 200){
+        setToken({
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken,
+        })
+
+        //바로 홈으로
+        navigate("/home");
+      }
+      else {
+        return;
+      }
+    }
+
+    isHaveRefreshToken();
+  }, [])
 
   const steps = [
     {
@@ -34,6 +64,8 @@ function LandingForm() {
       detail: landing3Detail,
     },
   ];
+
+
 
   const handleNext = () => {
     if (step < steps.length - 1) {

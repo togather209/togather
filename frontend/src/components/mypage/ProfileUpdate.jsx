@@ -67,7 +67,6 @@ function ProfileUpdate() {
     const formData = new FormData();
     const memJsonData = JSON.stringify(memData);
     const memBlob = new Blob([memJsonData], { type: "application/json" });
-    console.log(memBlob);
 
     formData.append("member", memBlob);
 
@@ -87,11 +86,9 @@ function ProfileUpdate() {
       if (response.status === 200) {
         dispatch(setUser({ member: response.data.data }));
       }
-
-      console.log("수정 됐다요요요요");
       navigate("/mypage");
     } catch (error) {
-      console.log("수정 에러", error);
+      console.error("수정 에러", error);
     }
   };
 
@@ -167,7 +164,7 @@ function ProfileUpdate() {
           setNicknameMessage("사용 가능한 닉네임입니다.");
         }
       } catch (error) {
-        console.log("에러 발생");
+        console.error("에러 발생");
       }
     }
   };

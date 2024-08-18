@@ -123,7 +123,6 @@ function SignUpForm() {
     if (email === "" || password === "" || nickname === "") {
       return;
     } else {
-      console.log(memberData);
     }
 
     try {
@@ -139,7 +138,7 @@ function SignUpForm() {
 
       setSignupOk(true);
     } catch (error) {
-      console.log("회원 가입 오류", error);
+      console.error("회원 가입 오류", error);
     }
   };
 
@@ -147,7 +146,6 @@ function SignUpForm() {
     e.preventDefault();
 
     if (certificationComplete) {
-      console.log("이미 이메일 인증을 완료했습니다.");
       return;
     }
 
@@ -173,9 +171,8 @@ function SignUpForm() {
       setCertificationClick(true);
       setTimer(300);
       setTimerActive(true);
-      console.log("이메일 인증 메일 전송 성공", response);
     } catch (error) {
-      console.log("이메일 인증 메일 전송 오류", error);
+      console.error("이메일 인증 메일 전송 오류", error);
     }
   };
 
@@ -226,7 +223,7 @@ function SignUpForm() {
           setEmailMessage("");
         }
       } catch (error) {
-        console.log("error");
+        console.error("error");
       }
     }
   };
@@ -284,7 +281,7 @@ function SignUpForm() {
           setNicknameMessage("사용 가능한 닉네임입니다.");
         }
       } catch (error) {
-        console.log("에러 발생");
+        console.error("에러 발생");
       }
     }
   };
@@ -339,12 +336,11 @@ function SignUpForm() {
         }
       );
       setCertificaionComplete(true);
-      console.log("이메일 인증 성공!");
 
       setTimerActive(false);
       setCertificationClick(false);
     } catch (error) {
-      console.log("인증번호가 일치하지 않습니다.", error);
+      console.error("인증번호가 일치하지 않습니다.", error);
     }
   };
 

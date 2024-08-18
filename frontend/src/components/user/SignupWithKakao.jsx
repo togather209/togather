@@ -24,7 +24,6 @@ function SignupWithKakao() {
     };
 
     const response = await axios.post(`${API_LINK}/auth/kakao/register`, dataForm);
-    //console.log(response.data);
     setSignupCheck(true);
   };
 
@@ -67,7 +66,7 @@ function SignupWithKakao() {
           setNicknameMessage("사용 가능한 닉네임입니다.");
         }
       } catch (error) {
-        console.log("에러 발생");
+        console.error("에러 발생");
       }
     }
   };

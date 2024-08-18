@@ -75,7 +75,6 @@ function TransactionList() {
     const detailsTransaction = await axiosInstance.get(
       `/transactions/${transaction.id}`
     );
-    console.log(detailsTransaction.data.data);
     setDetailsTransactions(detailsTransaction.data.data);
     setSelectedTransaction(transaction);
   };

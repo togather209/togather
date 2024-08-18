@@ -21,15 +21,12 @@ export const FirebaseProvider = ({ children }) => {
   const [fcmToken, setFcmToken] = useState(null);
 
   const requestPermission = async () => {
-    console.log("권한 요청 중...");
 
     const permission = await Notification.requestPermission();
     if (permission === "denied") {
-      console.log("알림 권한 허용 안됨");
       return;
     }
 
-    console.log("알림 권한이 허용됨");
 
     const token = await getToken(messaging, {
       vapidKey: import.meta.env.VITE_VAPID_KEY,

@@ -18,7 +18,6 @@ function AppealModal({ onClose, teamId, planId }) {
           { data: { contents: inputValue } }
         );
 
-        console.log(response.data);
         navigate("/receipt");
       };
       deleteAppeal();

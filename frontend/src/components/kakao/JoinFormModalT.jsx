@@ -2,9 +2,6 @@ import React, { useEffect } from "react";
 // import "./JoinFormModal.css";
 
 function JoinFormModal({ modalOpen, content, onClose }) {
-  useEffect(() => {
-    console.log("모달 열림", modalOpen);
-  }, [modalOpen]);
 
   if (!modalOpen) return null;
 
