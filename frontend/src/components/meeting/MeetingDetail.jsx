@@ -29,27 +29,22 @@ function MeetingDetail({ folderName }) {
   const [joinMembersRequest, setJoinMembersRequest] = useState([]);
   const [joinMember, setJoinMember] = useState([]);
 
-  // const [isOpenManage, setIsOpenManage] = useState(true);
-  // setIsOpenManage(true);
-
   // 해당 페이지 렌더링 되면 모임 상세 조회
   useEffect(() => {
     meetingDetailInfo();
     joinMembers();
-    //console.log("렌더링되었습니다.");
-  }, []); // => 이거 의존성 해치우고 싶다.
+
+  }, []);
 
   // 모임 상세 요청
   const meetingDetailInfo = async () => {
     try {
       const response = await axiosInstance.get(`/teams/${id}`);
       await setMeetingDetail(response.data.data);
-      //관리자일 때만 실행
       if (response.data.data.admin) {
         wantJoinMembers();
       }
       setMeetingPlans(response.data.data.plans);
-      //console.log(response.data.data);
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
     }
@@ -60,7 +55,6 @@ function MeetingDetail({ folderName }) {
     try {
       const response = await axiosInstance.get(`/teams/${id}/join-requests`);
       setJoinMembersRequest(response.data.data);
-      // console.log(response.data.data)
     } catch (error) {
       console.error("모임장이 아니라 요청 인원 조회가 안되서 그런거임.");
     }
@@ -71,7 +65,6 @@ function MeetingDetail({ folderName }) {
     try {
       const response = await axiosInstance.get(`/teams/${id}/members`);
       setJoinMember(response.data.data);
-      // console.log(joinMember)
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
     }

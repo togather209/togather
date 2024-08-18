@@ -13,7 +13,7 @@ function App() {
       .then((payload) => {
 
       })
-      .catch((err) => console.log("failed: ", err));
+      .catch((err) => console.error("failed: ", err));
   }, [onMessageListener]);
 
   return (
