@@ -16,12 +16,10 @@ function KakaoLogin() {
   const [fcmTokenReady, setFcmTokenReady] = useState(false);
 
   const code = new URL(window.location.href).searchParams.get("code");
-  console.log("Extracted code:", code);
 
   // FCM 토큰이 초기화되었는지 여부를 감지
   useEffect(() => {
     if (fcmToken) {
-      console.log("FCM 토큰 준비 완료:", fcmToken);
       setFcmTokenReady(true);
     }
   }, [fcmToken]);
@@ -29,7 +27,6 @@ function KakaoLogin() {
   useEffect(() => {
     const checkCode = async () => {
       if (code && fcmTokenReady) {
-        console.log("axios 내부!!! : " + fcmToken);
         try {
           const res = await axios.post(
             `${API_LINK}/auth/kakao`,
@@ -39,7 +36,6 @@ function KakaoLogin() {
             }
           );
 
-          console.log("Response from server:", res.data);
 
           if (res.data.data.isMember) {
             const { accessToken, refreshToken } = res.data.data.tokenInfo;
@@ -66,7 +62,6 @@ function KakaoLogin() {
           }
         }
       } else if (!fcmTokenReady) {
-        console.log("FCM 토큰이 아직 초기화되지 않았습니다.");
       }
     };
 

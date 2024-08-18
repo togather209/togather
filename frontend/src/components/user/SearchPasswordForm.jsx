@@ -31,7 +31,7 @@ function SearchPasswordForm() {
       }
       
     } catch (error) {
-      console.log("이메일 전송 실패...", error);
+      console.error("이메일 전송 실패...", error);
     }
   }
 

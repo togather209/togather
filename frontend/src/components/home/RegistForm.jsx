@@ -74,7 +74,6 @@ function RegistForm() {
           "Content-Type": "multipart/form-data", // 파일 업로드 시 필요한 헤더
         },
       });
-      console.log(response);
       navigation("/");
     } catch (error) {
       console.error("데이터 불러오기 실패", error);

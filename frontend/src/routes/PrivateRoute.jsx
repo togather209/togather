@@ -26,10 +26,10 @@ const PrivateRoute = ({ children }) => {
               await dispatch(setAccount({ account: accountResponse.data.data }));
             }
           } catch (error) {
-            console.log("불러오기 에러", error);
+            console.error("불러오기 에러", error);
           }
         } catch (error) {
-          console.log("데이터 불러오기 에러", error);
+          console.error("데이터 불러오기 에러", error);
         }
       }
     };
@@ -50,7 +50,7 @@ const PrivateRoute = ({ children }) => {
             })
           );
         } catch (error) {
-          console.log("연동 계좌가 없는뎁숑");
+          console.error("연동 계좌가 없는뎁숑");
         }
       }
     };

@@ -32,7 +32,6 @@ function MyPageMain() {
     try {
       const response = await axiosInstance.get("/members/me");
       dispatch(setUser({ member: response.data.data }));
-      console.log(member);
     } catch (error) {
       console.error("데이터 불러오기실패", error);
     }
@@ -108,7 +107,7 @@ function MyPageMain() {
       dispatch(clearLinkedAccount());
       dispatch(resetReceipt());
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

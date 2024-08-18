@@ -12,7 +12,6 @@ const TokenRefresher = ({ children }) => {
   const accessToken = useSelector((state) => state.auth.accessToken);
 
   useEffect(() => {
-    //console.log("Current pathname:", location.pathname); // 현재 경로 출력
 
     const excludedPaths = ["/login", "/signup", "/", "/search_password", "/oauth/kakao/callback", "/signupWithKakao"];
     if (!excludedPaths.includes(location.pathname)) {
