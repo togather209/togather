@@ -19,7 +19,6 @@ function PaymentContainer() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    console.log(teamId, planId);
 
     // 정산 예정 내역 API 조회
     const fetchPayment = async () => {
@@ -28,7 +27,6 @@ function PaymentContainer() {
           `/teams/${teamId}/plans/${planId}/payments`
         );
         setPaymentData(response.data.data);
-        console.log(response.data.data);
       } catch (error) {
         console.error("페이먼트 데이터 조회 오류", error);
         setError(true);
@@ -40,7 +38,6 @@ function PaymentContainer() {
       try {
         const response = await axiosInstance.get(`members/me`);
         setLoginUserName(response.data.data.nickname);
-        console.log(loginUserName);
       } catch (error) {
         console.error("유저 정보 조회 중 오류 발생", error);
         setError(true);

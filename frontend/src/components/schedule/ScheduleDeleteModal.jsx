@@ -19,7 +19,6 @@ function ScheduleDeleteModal({
       const response = await axiosInstance.delete(
         `/teams/${teamId}/plans/${planId}`
       );
-      console.log(response.data);
       navigation(`/home/meeting/${teamId}`);
     } catch (error) {
       console.error("데이터 불러오기 실패", error);

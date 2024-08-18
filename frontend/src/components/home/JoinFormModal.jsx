@@ -5,10 +5,6 @@ import "./JoinFormModal.css";
 function JoinFormModal({ modalOpen, content, onClose }) {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log("모달 열림", modalOpen);
-  }, [modalOpen]);
-
   if (!modalOpen) return null;
 
   const handleConfirm = () => {
