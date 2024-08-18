@@ -25,7 +25,7 @@ export default defineConfig({
             type: 'image/png',
           },
           {
-            src: 'Togather.png',
+            src: '/Togather.png',
             sizes: '512x512',
             type: 'image/png',
           },

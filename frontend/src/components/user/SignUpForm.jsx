@@ -306,7 +306,7 @@ function SignUpForm() {
     if (
       e.target.files &&
       e.target.files[0] &&
-      e.target.files[0].size <= 1048576
+      e.target.files[0].size <= 10485760
     ) {
       const file = e.target.files[0];
 
@@ -548,7 +548,7 @@ function SignUpForm() {
       {isImageBig && (
         <Modal
           mainMessage={"사진 용량 초과!"}
-          subMessage={"1MB이하의 크기만 첨부 가능합니다."}
+          subMessage={"10MB이하의 크기만 첨부 가능합니다."}
           onClose={() => setIsImageBig(false)}
         />
       )}
