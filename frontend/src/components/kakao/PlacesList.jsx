@@ -28,6 +28,12 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
     setOpenAlreadyJjim(false);
   };
 
+  const [forRand, setForRand] = useState(false)
+
+  const handleForRand = () => {
+    setForRand(!forRand)
+  }
+
   const [imageUrl, setImageUrl] = useState([]);
   // 장소 이미지 주소 담을 배열 생성
   useEffect(() => {
@@ -99,7 +105,7 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
     };
 
     favoritePlace();
-  }, [id, schedule_id]);
+  }, [id, schedule_id, forRand]);
 
   // 크롤링 요청 보내는 코드가 필요합니다.
   // 크롤링 요청 보내는 코드가 필요합니다.
@@ -134,6 +140,7 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
 
       if (response) {
         console.log(response); // 응답 데이터 확인
+        handleForRand()
       } else {
         setRequestModalOpen(true);
         // setForRand(!forRand);
