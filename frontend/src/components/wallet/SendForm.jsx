@@ -100,7 +100,6 @@ function SendForm() {
         formData
       );
 
-      console.log(sendResponse.status);
 
       if( sendResponse.status === 204){
         setSendFailed(true)
@@ -129,7 +128,6 @@ function SendForm() {
         "/pay-accounts/withdraw",
         formData
       );
-      console.log(sendMeResponse.data);
       setSendSuccess(true);
     } catch (error) {
       setSendFailed(true);
