@@ -19,35 +19,41 @@ function LandingForm() {
 
   useEffect(() => {
     const isHaveRefreshToken = async () => {
-      const response = await axios.post(`${API_URL}/auth/refresh`,
-        {},
-        {
-          withCredentials: true
+      try {
+        const response = await axios.post(`${API_URL}/auth/refresh`,
+          {},
+          {
+            withCredentials: true
+          }
+        );
+
+        //쿠키조회 성공하면...
+        if (response.status === 200) {
+          setToken({
+            accessToken: response.data.accessToken,
+            refreshToken: response.data.refreshToken,
+          });
+
+          //바로 홈으로
+          navigate("/home");
         }
-      )
-
-      //쿠키조회 성공하면...
-      if(response.status === 200){
-        setToken({
-          accessToken: response.data.accessToken,
-          refreshToken: response.data.refreshToken,
-        })
-
-        //바로 홈으로
-        navigate("/home");
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          // 401 에러는 의도된 동작이므로 아무것도 하지 않음
+        } else {
+          // 401 외의 에러는 콘솔에 출력
+          console.error('An error occurred:', error);
+        }
       }
-      else {
-        return;
-      }
-    }
+    };
 
     isHaveRefreshToken();
-  }, [])
+  }, [navigate, API_URL]);
 
   const steps = [
     {
       text: "우리만의 모임 생성 ",
-      subtext: "친구들과 함께 모임과 일정을 만들어 볼 수 있어요.",
+      subtext: "친구들과 함께 모임과 일정을 \n 만들어 볼 수 있어요.",
       image: landing1,
       detail: landing1Detail,
     },
@@ -59,7 +65,7 @@ function LandingForm() {
     },
     {
       text: "귀찮은 영수증 관리를 한번에",
-      subtext: "OCR을 통해 영수증을 인식하거나, 직접 갤러리에서 찾아 등록해 보세요.",
+      subtext: "OCR을 통해 영수증을 인식하거나, \n 직접 갤러리에서 찾아 등록해 보세요.",
       image: landing3,
       detail: landing3Detail,
     },
