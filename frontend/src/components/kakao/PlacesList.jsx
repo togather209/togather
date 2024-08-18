@@ -18,7 +18,6 @@ import defaultimage from "../../../public/defaultimage.png";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
 const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
-  console.log(places);
 
   // 이미 찜했습니다 모달 띄우기
   const [openAlreadyJjim, setOpenAlreadyJjim] = useState(false);
@@ -76,12 +75,6 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
     }
   }, [newBookmark, schedule_id]);
 
-  // 크롤링 요청 보내는 코드가 필요합니다.
-  // 크롤링 요청 보내는 코드가 필요합니다.
-
-  // 찜리스트 배열
-  // const [jjimList, setJjimList] = useState([]);
-  // 찜리스트 palceId 배열
   const [jjimPlaceList, setJjimPlaceList] = useState([]);
 
   // 찜목록 조회하는 요청
@@ -105,20 +98,11 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
     };
 
     favoritePlace();
-  }, [id, schedule_id, forRand]);
-
-  // 크롤링 요청 보내는 코드가 필요합니다.
-  // 크롤링 요청 보내는 코드가 필요합니다.
-
-  // const [forRand, setForRand] = useState(true);
+  }, [id, schedule_id, forRand, places]);
 
   // 찜하기 axios 요청
   const onButtonClick = (place) => async (e) => {
     e.preventDefault();
-
-    // console.log("before", forRand);
-
-    // console.log("after", forRand);
 
     const imgType = typeSelect(place.category_group_code);
 
@@ -143,7 +127,6 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
         handleForRand()
       } else {
         setRequestModalOpen(true);
-        // setForRand(!forRand);
       }
     } catch (error) {
       console.error("데이터 불러오기 실패", error);
@@ -173,7 +156,7 @@ const PlacesList = ({ places, onPlaceClick, id, schedule_id }) => {
           <p className="place-list-example">
             예) 대전 탄방동 맛집과 같이 입력해보세요
           </p>
-        </div> // places 배열이 비어있을 때 표시할 메시지
+        </div> 
       ) : (
         <ul id="placesList">
           {places.map((place, index) => (

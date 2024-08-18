@@ -48,7 +48,6 @@ function ScheduleDetailContainer() {
     eventSourceRef.current.addEventListener("bookmark-added", (event) => {
       const eventData = JSON.parse(event.data);
       console.log("추가 요청 받음");
-      //console.log(eventData, "번 추가");
       setNewBookmark(eventData);
     });
 
@@ -58,7 +57,6 @@ function ScheduleDetailContainer() {
         const eventData = JSON.parse(event.data);
         console.log("날짜 변경 요청 받음");
         setNewDay(eventData);
-        //console.log(eventData, "이동");
       }
     );
 
@@ -68,7 +66,6 @@ function ScheduleDetailContainer() {
         const eventData = JSON.parse(event.data);
         console.log("인덱스 변경 요청 받음");
         setNewOrder(eventData);
-        //console.log(eventData, "강림");
       }
     );
 
@@ -84,7 +81,6 @@ function ScheduleDetailContainer() {
   }, []);
 
   function handleBookmarkDeleted(eventData) {
-    // console.log(eventData + " 가 삭제됨");
     setDeletedBookmarkId(eventData);
   }
   return (

@@ -73,8 +73,6 @@ function ScheduleUpdate() {
       ScheduleFormData["endDate"] = formatDate(startDate)
     }
 
-    // console.log(ScheduleFormData)
-
     // 수정 요청을 보내봅시다. (axios 요청)
     try {
       const response = await axiosInstance.patch(`/teams/${id}/plans/${schedule_id}`, ScheduleFormData);
